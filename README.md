@@ -193,7 +193,7 @@ include Amethyst::Model
 class PostCountByMonth < Base::Model
   property :month, :count
 
-  # override mapping defined in Base::Model
+  # override mapping method that is defined in Base::Model
   def mapping(results : Array)
     result = PostCountByMonth.new
     result.month = results[0]
@@ -201,10 +201,10 @@ class PostCountByMonth < Base::Model
     return result
   end
 
-  # a method that will execute the query and return the results.
-  def doit
+  # override the all method to execute the query and return the results.
+  def all
     query("SELECT MONTH(created_at), COUNT(*) FROM posts 
-    GROUP BY created_at", {})
+    GROUP BY MONTH(created_at)", {})
   end
 
 end
