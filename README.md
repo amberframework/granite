@@ -58,7 +58,7 @@ end
 ```
 ### Fields
 
-To define the fields for this model, you need to provide a hash with the name of the field as a `Symbol` and the and the MySQL type as a String.  This can include any other options that MySQL provides to you.  
+To define the fields for this model, you need to provide a hash with the name of the field as a `Symbol` and the MySQL type as a `String`.  This can include any other options that MySQL provides to you.  
 
 3 Fields are automatically created for you:  id, created_at, updated_at.
 These will also be set for you when you use the `save` method.
