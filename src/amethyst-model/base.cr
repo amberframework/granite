@@ -53,7 +53,7 @@ module Base
           if results.is_a?(Array)
             if results.size > 0
               results.each do |result|
-                rows << make(result)
+                rows << mapping(result)
               end
             end
           end
@@ -102,7 +102,7 @@ module Base
       return true
     end
 
-    abstract def make(results : Array)
+    abstract def mapping(results : Array)
 
     macro fields(names)
       property :id, :created_at, :updated_at
@@ -110,7 +110,7 @@ module Base
         property {{name}}
       {% end %}
 
-      def self.make(result)
+      def self.mapping(result)
         {{@type.name.downcase.id}} = {{@type.name.id}}.new
         {{@type.name.downcase.id}}.id = result[0] 
         {% i = 1 %}
@@ -123,6 +123,7 @@ module Base
         return post
       end
 
+      # DDL
       def self.clear
         return self.query("TRUNCATE {{@type.name.downcase.id}}s")
       end
@@ -142,17 +143,8 @@ module Base
         return self.query("DROP table {{@type.name.downcase.id}}s")
       end
 
-      def self.all
-        return self.query("SELECT id, 
-                           {% for name, type in names %}
-                             {{name.id}}, 
-                           {% end %}            
-                           created_at, updated_at 
-                           FROM {{@type.name.downcase.id}}s 
-                           ORDER BY updated_at desc")
-      end
-
-      def self.clause(clause, params = {} of String => String)
+      # DML
+      def self.all(clause = "", params = {} of String => String)
         return self.query("SELECT _t.id, 
                            {% for name, type in names %}
                              _t.{{name.id}}, 
@@ -214,9 +206,15 @@ module Base
         return update("DELETE FROM {{@type.name.downcase.id}}s 
                       WHERE id=:id", {"id" => id})
       end
-
-
        
+    end #End of Fields Macro
+
+    macro has_many(name)
+
+    end
+
+    macro belongs_to(name)
+
     end
     
   end
