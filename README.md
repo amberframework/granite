@@ -2,12 +2,11 @@
 
 [Amethyst](https://github.com/Codcore/amethyst) is a web framework written in the [Crystal](https://github.com/manastech/crystal) language. 
 
-This project is to provide a mysql ORM Base::Model that provides simple
-database usage.
+This project is to provide an ORM Base::Model for Amethyst using the [waterlink/crystal-mysql](https://github.com/waterlink/crystal-mysql) driver.
 
 ## Installation
 
-Add this library to your Amethyst dependencies in your Projectfile.
+Add this library to your Amethyst dependencies along with the MySQL driver in your Projectfile.
 
 ```crystal
 deps do
@@ -62,6 +61,16 @@ To define the fields for this model, you need to provide a hash with the name of
 
 3 Fields are automatically created for you:  id, created_at, updated_at.
 These will also be set for you when you use the `save` method.
+
+MySQL field definitions for id, created_at, updated_at
+
+```mysql
+  id INT NOT NULL AUTO_INCREMENT
+  # Your fields go here
+  created_at DATE
+  updated_at DATE 
+  PRIMARY KEY (id)
+```
 
 ### DDL Built in
 
@@ -124,9 +133,9 @@ puts "deleted" unless post
 
 The where clause will give you full control over your query. Instead of building another DSL to build the query, we decided to use good ole SQL.
 
-When using the all method, the selected fields will always match the fields specified in the model.  If you need different fields, consider creating a new model.
+When using the `all` method, the SQL selected fields will always match the fields specified in the model.  If you need different fields, consider creating a new model.
 
-Always pass in parameters to avoid SQL Injection.  Use a symbol in your query `:field` for parameter replacements.
+Always pass in parameters to avoid SQL Injection.  Use a symbol in your query i.e. `:param` for parameter replacement.  Check out [waterlink/crystal-mysql](https://github.com/waterlink/crystal-mysql) for more details.
 
 The table is namespaced with `_t` so you can perform joins without conflicting
 field names.
@@ -187,10 +196,9 @@ end
 
 ```
 
-
-
 ## RoadMap
 - Connection Pool
+- Expose the connection to support transactions
 - has_many, belongs_to support
 
 ## Contributing
