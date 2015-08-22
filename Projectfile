@@ -1,0 +1,3 @@
+deps do
+  github "waterlink/crystal-mysql"
+end
