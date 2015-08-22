@@ -17,6 +17,7 @@ deps do
 
   # Amethyst Model
   github "drujensen/amethyst-model"
+  github "waterlink/crystal-mysql"
 end
 ```
 
