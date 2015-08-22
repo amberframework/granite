@@ -1,12 +1,15 @@
 # amethyst-model
 
-[Amethyst](https://github.com/Codcore/amethyst) is a web framework written in the [Crystal](https://github.com/manastech/crystal) language. 
+[Amethyst](https://github.com/Codcore/amethyst) is a web framework written in
+the [Crystal](https://github.com/manastech/crystal) language. 
 
-This project is to provide an ORM Base::Model for Amethyst using the [waterlink/crystal-mysql](https://github.com/waterlink/crystal-mysql) driver.
+This project is to provide an ORM Base::Model for Amethyst using the
+[waterlink/crystal-mysql](https://github.com/waterlink/crystal-mysql) driver.
 
 ## Installation
 
-Add this library to your Amethyst dependencies along with the MySQL driver in your Projectfile.
+Add this library to your Amethyst dependencies along with the MySQL driver in
+your Projectfile.
 
 ```crystal
 deps do
@@ -57,7 +60,9 @@ end
 ```
 ### Fields
 
-To define the fields for this model, you need to provide a hash with the name of the field as a `Symbol` and the MySQL type as a `String`.  This can include any other options that MySQL provides to you.  
+To define the fields for this model, you need to provide a hash with the name
+of the field as a `Symbol` and the MySQL type as a `String`.  This can include
+any other options that MySQL provides to you.  
 
 3 Fields are automatically created for you:  id, created_at, updated_at.
 These will also be set for you when you use the `save` method.
@@ -131,11 +136,17 @@ puts "deleted" unless post
 
 ### Where 
 
-The where clause will give you full control over your query. Instead of building another DSL to build the query, we decided to use good ole SQL.
+The where clause will give you full control over your query. Instead of
+building another DSL to build the query, we decided to use good ole SQL.
 
-When using the `all` method, the SQL selected fields will always match the fields specified in the model.  If you need different fields, consider creating a new model.
+When using the `all` method, the SQL selected fields will always match the
+fields specified in the model.  If you need different fields, consider
+creating a new model.
 
-Always pass in parameters to avoid SQL Injection.  Use a symbol in your query i.e. `:param` for parameter replacement.  Check out [waterlink/crystal-mysql](https://github.com/waterlink/crystal-mysql) for more details.
+Always pass in parameters to avoid SQL Injection.  Use a symbol in your query
+i.e. `:param` for parameter replacement.  Check out
+[waterlink/crystal-mysql](https://github.com/waterlink/crystal-mysql) for more
+details.
 
 The table is namespaced with `_t` so you can perform joins without conflicting
 field names.
@@ -158,13 +169,17 @@ posts = Post.all(", comments c WHERE c.post_id = _t.id AND c.name = :name ORDER 
 
 ### More Control
 
-There are two additional methods `query` and `mapping` that will provide you the ability to have even more control over your model.  This will allow you to create a model that can perform complex queries and map the results to properties.
+There are two additional methods `query` and `mapping` that will provide you
+the ability to have even more control over your model.  This will allow you to
+create a model that can perform complex queries and map the results to
+properties.
 
 #### The Mapping Method
-The Mapping method provides the Object Relational Mapping of the results from the query to an instance of a model.  It is called for each row in the table.  
+The Mapping method provides the Object Relational Mapping of the results from
+the query to an instance of a model.  It is called for each row in the table.  
 
-Be aware that the `fields` macro creates a `mapping` for you, so its recommended
-that you don't overwrite this if your using `fields`.  
+Be aware that the `fields` macro creates a `mapping` for you, so its
+recommended that you don't overwrite this if your using `fields`.  
 
 #### The Query Method
 This method provides you full MySQL query capabilities.  The selected fields
