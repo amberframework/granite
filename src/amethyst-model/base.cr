@@ -219,7 +219,7 @@ module Base
                           {% first = false %}
                         {% end %}
                         {% if timestamps %}
-                          created_at, updated_at
+                          , created_at, updated_at
                         {% end %})
                         VALUES (
                         {% first = true %}
@@ -229,7 +229,7 @@ module Base
                           {% first = false %}
                         {% end %}
                         {% if timestamps %}
-                          :created_at, :updated_at
+                          , :created_at, :updated_at
                         {% end %})", {
                         {% first = true %}
                         {% for name, type in names %}
@@ -238,7 +238,7 @@ module Base
                           {% first = false %}
                         {% end %}
                         {% if timestamps %}
-                          "created_at" => created_at, "updated_at" => updated_at
+                          , "created_at" => created_at, "updated_at" => updated_at
                         {% end %}})
         end
         return true
