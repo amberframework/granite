@@ -120,16 +120,16 @@ module Base
         {% end %}
         {{@type.name.downcase.id}}.created_at = result[{{i}}]
         {{@type.name.downcase.id}}.updated_at = result[{{i + 1}}]
-        return post
+        return {{@type.name.downcase.id}}
       end
 
       # DDL
       def self.clear
-        return self.query("TRUNCATE {{@type.name.downcase.id}}s")
+        return self.query("TRUNCATE {{@type.name.downcase.id}}")
       end
 
       def self.create
-        return self.query("CREATE TABLE {{@type.name.downcase.id}}s (
+        return self.query("CREATE TABLE {{@type.name.downcase.id}} (
                           id INT NOT NULL AUTO_INCREMENT,
                           {% for name, type in names %}
                             {{name.id}} {{type.id}}, 
@@ -140,7 +140,7 @@ module Base
       end
 
       def self.drop
-        return self.query("DROP table {{@type.name.downcase.id}}s")
+        return self.query("DROP table {{@type.name.downcase.id}}")
       end
 
       # DML
@@ -150,7 +150,7 @@ module Base
                              _t.{{name.id}}, 
                            {% end %}            
                            _t.created_at, _t.updated_at 
-                           FROM {{@type.name.downcase.id}}s _t 
+                           FROM {{@type.name.downcase.id}} _t 
                            #{clause}", params)
       end
       
@@ -160,7 +160,7 @@ module Base
                                  {{name.id}}, 
                                {% end %}            
                                created_at, updated_at
-                               FROM {{@type.name.downcase.id}}s 
+                               FROM {{@type.name.downcase.id}} 
                                WHERE id = :id 
                                LIMIT 1", {"id" => id})
       end
@@ -168,7 +168,7 @@ module Base
       def save
         if id
           updated_at = Time.now
-          update("UPDATE {{@type.name.downcase.id}}s SET 
+          update("UPDATE {{@type.name.downcase.id}} SET 
                   {% for name, type in names %}
                     {{name.id}}={{name}}, 
                   {% end %}
@@ -182,7 +182,7 @@ module Base
         else
           created_at = Time.now
           updated_at = Time.now
-          @id = insert("INSERT INTO {{@type.name.downcase.id}}s (
+          @id = insert("INSERT INTO {{@type.name.downcase.id}} (
                         {% for name, type in names %}
                           {{name.id}}, 
                         {% end %}
@@ -203,7 +203,7 @@ module Base
       end
 
       def destroy
-        return update("DELETE FROM {{@type.name.downcase.id}}s 
+        return update("DELETE FROM {{@type.name.downcase.id}} 
                       WHERE id=:id", {"id" => id})
       end
        
