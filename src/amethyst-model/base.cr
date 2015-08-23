@@ -104,12 +104,23 @@ module Base
 
     abstract def mapping(results : Array)
 
-    macro fields(names)
-      property :id, :created_at, :updated_at
+    macro fields(names, table_name = nil, timestamps = true)
+
+      #Set the table name
+      {% table_name = @type.name.downcase.id + "s" unless table_name %}
+
+      #Create the properties
+      property :id
+        
       {% for name, type in names %}
         property {{name}}
       {% end %}
 
+      {% if timestamps %}
+        property :created_at, :updated_at
+      {% end %}
+
+      # Create the mapping method
       def self.mapping(result)
         {{@type.name.downcase.id}} = {{@type.name.id}}.new
         {{@type.name.downcase.id}}.id = result[0] 
@@ -118,49 +129,57 @@ module Base
           {{@type.name.downcase.id}}.{{name.id}} = result[{{i}}]
           {% i += 1 %}
         {% end %}
-        {{@type.name.downcase.id}}.created_at = result[{{i}}]
-        {{@type.name.downcase.id}}.updated_at = result[{{i + 1}}]
+
+        {% if timestamps %}
+          {{@type.name.downcase.id}}.created_at = result[{{i}}]
+          {{@type.name.downcase.id}}.updated_at = result[{{i + 1}}]
+        {% end %}
         return {{@type.name.downcase.id}}
       end
 
       # DDL
       def self.clear
-        return self.query("TRUNCATE {{@type.name.downcase.id}}")
+        return self.query("TRUNCATE {{table_name.id}}")
       end
 
       def self.create
-        return self.query("CREATE TABLE {{@type.name.downcase.id}} (
-                          id INT NOT NULL AUTO_INCREMENT,
+        return self.query("CREATE TABLE {{table_name.id}} (
+                          id INT NOT NULL AUTO_INCREMENT
                           {% for name, type in names %}
-                            {{name.id}} {{type.id}}, 
-                          {% end %}            
-                          created_at DATE,
-                          updated_at DATE 
-                          PRIMARY KEY (id))")
+                            , {{name.id}} {{type.id}} 
+                          {% end %}
+                          {% if timestamps %}
+                            , created_at DATE, updated_at DATE 
+                          {% end %}
+                          , PRIMARY KEY (id))")
       end
 
       def self.drop
-        return self.query("DROP table {{@type.name.downcase.id}}")
+        return self.query("DROP table {{table_name.id}}")
       end
 
       # DML
       def self.all(clause = "", params = {} of String => String)
-        return self.query("SELECT _t.id, 
+        return self.query("SELECT _t.id 
                            {% for name, type in names %}
-                             _t.{{name.id}}, 
-                           {% end %}            
-                           _t.created_at, _t.updated_at 
-                           FROM {{@type.name.downcase.id}} _t 
+                             , _t.{{name.id}} 
+                           {% end %}
+                           {% if timestamps %}
+                             , _t.created_at, _t.updated_at
+                           {% end %}
+                           FROM {{table_name.id}} _t 
                            #{clause}", params)
       end
       
       def self.find(id)
-        return self.query_one("SELECT id, 
+        return self.query_one("SELECT id 
                                {% for name, type in names %}
-                                 {{name.id}}, 
-                               {% end %}            
-                               created_at, updated_at
-                               FROM {{@type.name.downcase.id}} 
+                                 , {{name.id}} 
+                               {% end %}
+                               {% if timestamps %}
+                                 , created_at, updated_at
+                               {% end %}
+                               FROM {{table_name.id}} 
                                WHERE id = :id 
                                LIMIT 1", {"id" => id})
       end
@@ -168,57 +187,70 @@ module Base
       def save
         if id
           updated_at = Time.now
-          update("UPDATE {{@type.name.downcase.id}} SET 
+          update("UPDATE {{table_name.id}} SET 
+                  {% first = true %}
                   {% for name, type in names %}
-                    {{name.id}}={{name}}, 
+                    {% unless first %}, {% end %}
+                    {{name.id}}={{name}} 
+                    {% first = false %}
                   {% end %}
-                  updated_at=:updated_at 
+                  {% if timestamps %}
+                    , updated_at=:updated_at 
+                  {% end %}
                   WHERE id=:id", {
+                  {% first = true %}
                   {% for name, type in names %}
-                    "{{name.id}}" => {{name.id}}, 
+                    {% unless first %}, {% end %}
+                    "{{name.id}}" => {{name.id}}
+                    {% first = false %}
                   {% end %}
-                  "updated_at" => updated_at, 
+                  {% if timestamps %}
+                    , "updated_at" => updated_at, 
+                  {% end %}
                   "id" => id})
         else
           created_at = Time.now
           updated_at = Time.now
-          @id = insert("INSERT INTO {{@type.name.downcase.id}} (
+          @id = insert("INSERT INTO {{table_name.id}} (
+                        {% first = true %}
                         {% for name, type in names %}
-                          {{name.id}}, 
+                          {% unless first %}, {% end %}
+                          {{name.id}}
+                          {% first = false %}
                         {% end %}
-                        created_at, 
-                        updated_at)
+                        {% if timestamps %}
+                          created_at, updated_at
+                        {% end %})
                         VALUES (
+                        {% first = true %}
                         {% for name, type in names %}
-                          {{name}}, 
+                          {% unless first %}, {% end %}
+                          {{name}} 
+                          {% first = false %}
                         {% end %}
-                        :created_at, :updated_at)", {
+                        {% if timestamps %}
+                          :created_at, :updated_at
+                        {% end %})", {
+                        {% first = true %}
                         {% for name, type in names %}
-                          "{{name.id}}" => {{name.id}}, 
+                          {% unless first %}, {% end %}
+                          "{{name.id}}" => {{name.id}}
+                          {% first = false %}
                         {% end %}
-                        "created_at" => created_at, 
-                        "updated_at" => updated_at})
+                        {% if timestamps %}
+                          "created_at" => created_at, "updated_at" => updated_at
+                        {% end %}})
         end
         return true
       end
 
       def destroy
-        return update("DELETE FROM {{@type.name.downcase.id}} 
-                      WHERE id=:id", {"id" => id})
+        return update("DELETE FROM {{table_name.id}} 
+                       WHERE id=:id", {"id" => id})
       end
        
     end #End of Fields Macro
-
-    macro has_many(name)
-
-    end
-
-    macro belongs_to(name)
-
-    end
-    
   end
-
-  
 end
+
 
