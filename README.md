@@ -52,8 +52,13 @@ include Amethyst::Model
 
 class Post < Base::Model
   fields({ name: "VARCHAR(255)", body: "TEXT" })
+  # properties id, name, body, created_at, updated_at are created for you
+  # table name is posts
 
-  # properties id, name, body, created_at, updated_at are generated for you
+  # fields({ name: "VARCHAR(255)", body: "TEXT" }, "blog", false)
+  # custom table name and disable timestamps
+  # properties id, name, body
+  # table name is blog
 
 end
 
