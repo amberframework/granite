@@ -2,7 +2,7 @@ require "spec"
 require "../src/amethyst-model"
 include Amethyst::Model
 
-class Post < Base::Model
+class Post < Model
   fields({ name: "VARCHAR(255)", body: "TEXT" })
 end
 
