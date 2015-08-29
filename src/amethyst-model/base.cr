@@ -26,7 +26,7 @@ abstract class Base
         if results.is_a?(Array)
           if results.size > 0
             results.each do |result|
-              rows << mapping(result)
+              rows << or_mapping(result)
             end
           end
         end
@@ -72,6 +72,6 @@ abstract class Base
     return true
   end
 
-  abstract def mapping(results : Array)
+  abstract def or_mapping(results : Array)
 end
 

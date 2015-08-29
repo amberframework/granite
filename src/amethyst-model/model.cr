@@ -23,8 +23,8 @@ abstract class Model < Base
       property :created_at, :updated_at
     {% end %}
 
-    # Create the mapping method
-    def self.mapping(result)
+    # Create the or mapping method
+    def self.or_mapping(result)
       {{@type.name.downcase.id}} = {{@type.name.id}}.new
       {{@type.name.downcase.id}}.id = result[0] 
       {% i = 1 %}

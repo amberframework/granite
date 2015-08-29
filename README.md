@@ -177,32 +177,32 @@ posts = Post.all("JOIN comments c ON c.post_id = post.id
 
 ### More Control
 
-There are two additional methods `query` and `mapping` that will provide you
+There are two additional methods `query` and `or_mapping` that will provide you
 the ability to have even more control over your model.  This will allow you to
 create a model that can perform complex queries and map the results to
 properties.
 
-#### The Mapping Method
+#### The OR Mapping Method
 The Mapping method provides the Object Relational Mapping of the results from
 the query to an instance of a model.  It is called for each row in the table.  
 
-Be aware that the `fields` macro creates a `mapping` for you, so its
+Be aware that the `fields` macro creates a `or_mapping` for you, so its
 recommended that you don't overwrite this if your using `fields`.  
 
 #### The Query Method
 This method provides you full MySQL query capabilities.  The selected fields
-need to be mapped to properties in your `mapping` method so they work in
+need to be mapped to properties in your `or_mapping` method so they work in
 concert with each other.
 
 ```crystal
 require "amethyst-model"
 include Amethyst::Model
 
-class PostCountByMonth < Base::Model
+class PostCountByMonth < Model
   property :month, :count
 
-  # override mapping method that is defined in Base::Model
-  def mapping(results : Array)
+  # override or_mapping method that is defined in Model
+  def or_mapping(results : Array)
     result = PostCountByMonth.new
     result.month = results[0]
     result.count = results[1]
