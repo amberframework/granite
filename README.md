@@ -50,7 +50,7 @@ Here is classic 'Post' using Amethyst Model
 require "amethyst-model"
 include Amethyst::Model
 
-class Post < Base::Model
+class Post < Model
   fields({ name: "VARCHAR(255)", body: "TEXT" })
   # properties id, name, body, created_at, updated_at are created for you
   # table name is posts
