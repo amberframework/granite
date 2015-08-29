@@ -153,8 +153,8 @@ i.e. `:param` for parameter replacement.  Check out
 [waterlink/crystal-mysql](https://github.com/waterlink/crystal-mysql) for more
 details.
 
-The table is namespaced with `_t` so you can perform joins without conflicting
-field names.
+The table is namespaced with the name of the class so you can perform joins
+without conflicting field names.
 
 ```crystal
 posts = Post.all("WHERE name LIKE :name", {"name" => "Joe%"})
@@ -168,7 +168,10 @@ end
 posts = Post.all("ORDER BY created_at DESC")
 
 # JOIN Example
-posts = Post.all(", comments c WHERE c.post_id = _t.id AND c.name = :name ORDER BY created_at DESC", {"name" => "Joe"})
+posts = Post.all("JOIN comments c ON c.post_id = post.id 
+                  WHERE c.name = :name 
+                  ORDER BY post.created_at DESC", 
+                  {"name" => "Joe"})
 
 ```
 
@@ -208,8 +211,7 @@ class PostCountByMonth < Base::Model
 
   # override the all method to execute the query and return the results.
   def all
-    query("SELECT MONTH(created_at), COUNT(*) FROM posts 
-    GROUP BY MONTH(created_at)", {})
+    query("SELECT MONTH(created_at), COUNT(*) FROM posts GROUP BY MONTH(created_at)")
   end
 
 end

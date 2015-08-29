@@ -5,8 +5,12 @@ abstract class Model < Base
 
   macro fields(names, table_name = nil, timestamps = true)
 
+    #Set the namepace
+    {% name_space = @type.name.downcase.id %}
+
     #Set the table name
-    {% table_name = @type.name.downcase.id + "s" unless table_name %}
+    {% table_name = name_space + "s" unless table_name %}
+
 
     #Create the properties
     property :id
@@ -59,14 +63,14 @@ abstract class Model < Base
 
     # DML
     def self.all(clause = "", params = {} of String => String)
-      return self.query("SELECT _t.id 
+      return self.query("SELECT {{name_space}}.id 
                          {% for name, type in names %}
-                           , _t.{{name.id}} 
+                           , {{name_space}}.{{name.id}} 
                          {% end %}
                          {% if timestamps %}
-                           , _t.created_at, _t.updated_at
+                           , {{name_space}}.created_at, {{name_space}}.updated_at
                          {% end %}
-                         FROM {{table_name.id}} _t 
+                         FROM {{table_name.id}} {{name_space}} 
                          #{clause}", params)
     end
     
