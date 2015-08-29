@@ -3,38 +3,16 @@ abstract class Base
     connection = nil
 
     yaml_file = File.read("config/database.yml")
-    yaml = YAML.load(yaml_file)
-    if yaml.is_a?(Hash(YAML::Type, YAML::Type))
-      settings = yaml[Base::App.settings.environment]
-      if settings.is_a?(Hash(YAML::Type, YAML::Type))
-        if settings["host"]
-          host = settings["host"]
-        end
-        if settings["username"]
-          username = settings["username"]
-        end
-        if settings["password"]
-          password = settings["password"]
-        end
-        if settings["database"]
-          database = settings["database"]
-        end
-        if settings["port"]
-          port = settings["port"]
-          if port.is_a?(String)
-            port = port.to_u16
-          end
-        end
-      end
-    end
+    yaml = YAML.load(yaml_file) as Hash
+    settings = yaml[Base::App.settings.environment] as Hash(YAML::Type, YAML::Type)
     
-    if host.is_a?(String) &&
-       username.is_a?(String) && 
-       password.is_a?(String) &&
-       database.is_a?(String) &&
-       port.is_a?(UInt16)
-        connection = MySQL.connect(host, username, password, database, port, nil)
-    end
+    host = settings["host"] as String
+    username = settings["username"] as String
+    password = settings["password"] as String
+    database = settings["database"] as String
+    port = settings["port"] as String
+    
+    connection = MySQL.connect(host, username, password, database, port.to_u16, nil)
     
     return connection
   end
@@ -73,11 +51,8 @@ abstract class Base
     if conn
       begin
         MySQL::Query.new(query, params).run(conn)
-        results = conn.query("SELECT LAST_INSERT_ID()")
-                               
-        if results
-          id = results[0][0]
-        end
+        results = conn.query("SELECT LAST_INSERT_ID()") as Array
+        id = results[0][0]
       ensure
         conn.close
       end
