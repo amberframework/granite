@@ -3,7 +3,7 @@
 [Amethyst](https://github.com/Codcore/amethyst) is a web framework written in
 the [Crystal](https://github.com/manastech/crystal) language. 
 
-This project is to provide an ORM Base::Model for Amethyst using the
+This project is to provide an ORM Model for Amethyst using the
 [waterlink/crystal-mysql](https://github.com/waterlink/crystal-mysql) driver.
 
 ## Installation
