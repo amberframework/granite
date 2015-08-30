@@ -3,6 +3,9 @@ require "mysql"
 
 abstract class Model < Base
 
+  def initialize
+  end
+
   macro fields(names, table_name = nil, timestamps = true)
 
     #Set the namepace
@@ -10,7 +13,6 @@ abstract class Model < Base
 
     #Set the table name
     {% table_name = name_space + "s" unless table_name %}
-
 
     #Create the properties
     property :id
@@ -23,7 +25,7 @@ abstract class Model < Base
       property :created_at, :updated_at
     {% end %}
 
-    # Create the or mapping method
+    # Create OR Mapping
     def self.or_mapping(result)
       {{@type.name.downcase.id}} = {{@type.name.id}}.new
       {{@type.name.downcase.id}}.id = result[0] 
