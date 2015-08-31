@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-describe ReadOnlyModel do
+describe "Read Only Model" do
   Spec.before_each do
     Post.clear
   end
@@ -14,7 +14,7 @@ describe ReadOnlyModel do
       post.name = "Test Post 2"
       post.save
       posts_by_month = PostsByMonth.all("GROUP BY MONTH(created_at)")
-      posts_by_month.total.should eq 2
+      posts_by_month[0].total.should eq 2
     end
   end
 end
