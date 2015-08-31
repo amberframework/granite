@@ -6,6 +6,12 @@ class Post < Model
   fields({ name: "VARCHAR(255)", body: "TEXT" })
 end
 
+class PostsByMonth < ReadOnlyModel
+  fields({ month: "MONTHNAME(created_at)", 
+           total: "COUNT(*)" 
+         }, "posts")
+end
+
 module Base
   class App
     def self.settings

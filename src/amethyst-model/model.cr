@@ -25,19 +25,19 @@ abstract class Model < Base
 
     # Create the or mapping method
     def self.or_mapping(result)
-      {{@type.name.downcase.id}} = {{@type.name.id}}.new
-      {{@type.name.downcase.id}}.id = result[0] 
+      {{name_space}} = {{@type.name.id}}.new
+      {{name_space}}.id = result[0] 
       {% i = 1 %}
       {% for name, type in names %}
-        {{@type.name.downcase.id}}.{{name.id}} = result[{{i}}]
+        {{name_space}}.{{name.id}} = result[{{i}}]
         {% i += 1 %}
       {% end %}
 
       {% if timestamps %}
-        {{@type.name.downcase.id}}.created_at = result[{{i}}]
-        {{@type.name.downcase.id}}.updated_at = result[{{i + 1}}]
+        {{name_space}}.created_at = result[{{i}}]
+        {{name_space}}.updated_at = result[{{i + 1}}]
       {% end %}
-      return {{@type.name.downcase.id}}
+      return {{name_space}}
     end
 
     # DDL

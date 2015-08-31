@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-describe Amethyst::Model do
+describe Model do
   Spec.before_each do
     Post.clear
   end
