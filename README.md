@@ -174,49 +174,21 @@ posts = Post.all("JOIN comments c ON c.post_id = post.id
                   {"name" => "Joe"})
 
 ```
+### Read Only Model
 
-### More Control
-
-There are two additional methods `query` and `or_mapping` that will provide you
-the ability to have even more control over your model.  This will allow you to
-create a model that can perform complex queries and map the results to
-properties.
-
-#### The OR Mapping Method
-The Mapping method provides the Object Relational Mapping of the results from
-the query to an instance of a model.  It is called for each row in the table.  
-
-Be aware that the `fields` macro creates a `or_mapping` for you, so its
-recommended that you don't overwrite this if your using `fields`.  
-
-#### The Query Method
-This method provides you full MySQL query capabilities.  The selected fields
-need to be mapped to properties in your `or_mapping` method so they work in
-concert with each other.
+A Read Only Model allows you to perform queries against the database that
+cannot be updated.  The results will be mapped to fields in this model.
 
 ```crystal
-require "amethyst-model"
-include Amethyst::Model
-
-class PostCountByMonth < Model
-  property :month, :count
-
-  # override or_mapping method that is defined in Model
-  def or_mapping(results : Array)
-    result = PostCountByMonth.new
-    result.month = results[0]
-    result.count = results[1]
-    return result
-  end
-
-  # override the all method to execute the query and return the results.
-  def all
-    query("SELECT MONTH(created_at), COUNT(*) FROM posts GROUP BY MONTH(created_at)")
-  end
-
+class PostsByMonth < ReadOnlyModel
+  fields({ month: "MONTHNAME(created_at)", total: "COUNT(*)" }, "posts")
 end
 
+posts_by_month = PostsByMonth.all("GROUP BY MONTH(created_at)")
 ```
+
+The fields mapping is a little different than regular models.  Instead of the
+field type, you will use the calculated expression used in a `SELECT` statement.  The table name is required.
 
 ## RoadMap
 - Connection Pool
