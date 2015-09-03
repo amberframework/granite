@@ -1,4 +1,6 @@
 # amethyst-model
+[![Build
+Status](https://travis-ci.org/drujensen/amethyst-model.svg)](https://travis-ci.org/drujensen/amethyst-model)
 
 [Amethyst](https://github.com/Codcore/amethyst) is a web framework written in
 the [Crystal](https://github.com/manastech/crystal) language. 
