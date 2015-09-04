@@ -35,16 +35,18 @@ development:
   host: 127.0.0.1
   port: 3306
   username: root
-  password: 
+  password: ${DB_PASSWORD}
 
 test: 
   database: blog_test
   host: 127.0.0.1
   port: 3306
   username: root
-  password: 
+  password: ${DB_PASSWORD} 
 
 ```
+
+You can leverage environment variables using ${} syntax.
 
 ## Usage
 
@@ -184,7 +186,7 @@ A Read Only Model allows you to perform queries against the database that
 cannot be updated.  The results will be mapped to fields in this model.
 
 ```crystal
-class PostsByMonth < ReadOnlyModel
+class PostsByMonth < RoModel
   fields({ month: "MONTHNAME(created_at)", total: "COUNT(*)" }, "posts")
 end
 
