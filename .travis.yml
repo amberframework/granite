@@ -1,1 +1,3 @@
 language: crystal
+before_script: script/setup-test-db.sh
+

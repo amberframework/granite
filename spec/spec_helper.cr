@@ -25,3 +25,5 @@ end
 
 Base::App.settings.environment = "test"
 
+Post.drop
+Post.create
