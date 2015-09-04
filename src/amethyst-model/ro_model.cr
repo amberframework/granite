@@ -1,7 +1,7 @@
 require "yaml"
 require "mysql"
 
-abstract class ReadOnlyModel < Base
+abstract class RoModel < Base
 
   macro fields(names, table_name)
 

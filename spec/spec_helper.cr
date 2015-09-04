@@ -6,7 +6,7 @@ class Post < Model
   fields({ name: "VARCHAR(255)", body: "TEXT" })
 end
 
-class PostsByMonth < ReadOnlyModel
+class PostsByMonth < RoModel
   fields({ month: "MONTHNAME(created_at)", 
            total: "COUNT(*)" 
          }, "posts")
@@ -24,3 +24,4 @@ module Base
 end
 
 Base::App.settings.environment = "test"
+

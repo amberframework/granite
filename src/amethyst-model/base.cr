@@ -7,14 +7,29 @@ abstract class Base
     settings = yaml[Base::App.settings.environment] as Hash(YAML::Type, YAML::Type)
     
     host = settings["host"] as String
-    username = settings["username"] as String
-    password = settings["password"] as String
-    database = settings["database"] as String
+    host = env(host) if host.starts_with? "$"
+
     port = settings["port"] as String
+    port = env(port) if port.starts_with? "$"
+    
+    username = settings["username"] as String
+    username = env(username) if username.starts_with? "$"
+    
+    password = settings["password"] as String
+    password = env(password) if password.starts_with? "$"
+    
+    database = settings["database"] as String
+    database = env(database) if database.starts_with? "$"
     
     connection = MySQL.connect(host, username, password, database, port.to_u16, nil)
     
     return connection
+  end
+
+  private def self.env(value)
+    value = value.gsub("${","").gsub("}", "")
+    return ENV[value] if ENV.has_key? value
+    return ""
   end
 
   def self.query(query, params = {} of String => String)
