@@ -1,5 +1,6 @@
 # use ${VARIABLE} for interpolating environment variables
-test: 
+test:
+  adapter: mysql
   host: 127.0.0.1
   port: 3306
   database: amethyst_model_test

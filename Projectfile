@@ -1,3 +1,4 @@
 deps do
   github "waterlink/crystal-mysql"
+  github "will/crystal-pg"
 end

@@ -1,6 +1,3 @@
-require "yaml"
-require "mysql"
-
 abstract class Model < Base
 
   macro fields(names, table_name = nil, timestamps = true)
@@ -54,7 +51,7 @@ abstract class Model < Base
                         {% if timestamps %}
                           , created_at DATE, updated_at DATE 
                         {% end %}
-                        , PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8")
+                        , PRIMARY KEY (id))")
     end
 
     def self.drop
