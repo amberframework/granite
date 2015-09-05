@@ -6,3 +6,8 @@ mysql:
   username: amethyst_model
   password: ${DB_PASS} 
 
+sqlite:
+  database: test.db
+
+postgres:
+  connection: postgres://localhost

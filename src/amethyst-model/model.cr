@@ -8,7 +8,6 @@ abstract class Amethyst::Model::Model < Amethyst::Model::Base
     #Set the table name
     {% table_name = name_space + "s" unless table_name %}
 
-
     #Create the properties
     property :id
       
@@ -39,23 +38,29 @@ abstract class Amethyst::Model::Model < Amethyst::Model::Base
 
     # DDL
     def self.clear
-      return self.query("TRUNCATE {{table_name.id}}")
-    end
-
-    def self.create
-      return self.query("CREATE TABLE {{table_name.id}} (
-                        id INT NOT NULL AUTO_INCREMENT
-                        {% for name, type in names %}
-                          , {{name.id}} {{type.id}} 
-                        {% end %}
-                        {% if timestamps %}
-                          , created_at DATE, updated_at DATE 
-                        {% end %}
-                        , PRIMARY KEY (id))")
+      if db = @@database
+        db.clear("{{table_name.id}}")
+      end
     end
 
     def self.drop
-      return self.query("DROP TABLE IF EXISTS {{table_name.id}}")
+      if db = @@database
+        db.drop("{{table_name.id}}")
+      end
+    end
+
+    def self.create
+      if db = @@database
+        fields = {} of String => String
+        {% for name, type in names %}
+        fields["{{name.id}}"] = "{{type.id}}"
+        {% end %}
+        {% if timestamps %}
+        fields["created_at"] = "DATE"
+        fields["updated_at"] = "DATE"
+        {% end %}
+        db.create("{{table_name.id}}", fields)
+      end
     end
 
     # DML

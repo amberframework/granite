@@ -19,6 +19,26 @@ class Amethyst::Model::MysqlAdapter < Amethyst::Model::BaseAdapter
     @database = env(@database) if @database.starts_with? "$"
   end
 
+  # DDL
+  def clear(table_name)
+    return self.query("TRUNCATE #{table_name}")
+  end
+
+  def drop(table_name)
+    return self.query("DROP TABLE IF EXISTS #{table_name}")
+  end
+
+  def create(table_name, fields)
+    value = "CREATE TABLE #{table_name}"
+    value = value + "(id INT NOT NULL AUTO_INCREMENT"
+    fields.each do |name, type|
+      value = value + ", #{name} #{type}" 
+    end
+    value = value + ", PRIMARY KEY (id))"
+    return self.query(value)
+  end
+
+  #DML
   def query(query, params = {} of String => String)
     conn = MySQL.connect(@host, @username, @password, @database, @port.to_u16, nil)
     if conn

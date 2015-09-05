@@ -14,5 +14,13 @@ class PostsByMonth < RoModel
          }, "posts")
 end
 
+class Comment < Model
+  adapter sqlite
+  fields({ name: "CHAR(255)", body: "TEXT" })
+end
+
 Post.drop
 Post.create
+
+Comment.drop
+Comment.create
