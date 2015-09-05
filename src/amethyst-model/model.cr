@@ -1,4 +1,4 @@
-abstract class Model < Base
+abstract class Amethyst::Model::Model < Amethyst::Model::Base
 
   macro fields(names, table_name = nil, timestamps = true)
 

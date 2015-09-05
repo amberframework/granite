@@ -1,9 +1,8 @@
 # use ${VARIABLE} for interpolating environment variables
-test:
-  adapter: mysql
+mysql:
   host: 127.0.0.1
   port: 3306
   database: amethyst_model_test
   username: amethyst_model
-  password: 
+  password: ${DB_PASS} 
 

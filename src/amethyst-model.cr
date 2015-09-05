@@ -1,3 +1,1 @@
-module Amethyst::Model
-  require "./amethyst-model/*" 
-end
+require "./amethyst-model/*" 

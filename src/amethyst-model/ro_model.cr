@@ -1,7 +1,4 @@
-require "yaml"
-require "mysql"
-
-abstract class RoModel < Base
+abstract class Amethyst::Model::RoModel < Amethyst::Model::Base
 
   macro fields(names, table_name)
 
