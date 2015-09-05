@@ -56,8 +56,8 @@ abstract class Amethyst::Model::Model < Amethyst::Model::Base
         fields["{{name.id}}"] = "{{type.id}}"
         {% end %}
         {% if timestamps %}
-        fields["created_at"] = "DATE"
-        fields["updated_at"] = "DATE"
+        fields["created_at"] = "DATETIME"
+        fields["updated_at"] = "DATETIME"
         {% end %}
         db.create("{{table_name.id}}", fields)
       end
@@ -100,7 +100,7 @@ abstract class Amethyst::Model::Model < Amethyst::Model::Base
                   {% first = false %}
                 {% end %}
                 {% if timestamps %}
-                  , updated_at=:updated_at 
+                  , updated_at=:updated_at
                 {% end %}
                 WHERE id=:id", {
                 {% first = true %}
@@ -110,7 +110,7 @@ abstract class Amethyst::Model::Model < Amethyst::Model::Base
                   {% first = false %}
                 {% end %}
                 {% if timestamps %}
-                  , "updated_at" => updated_at, 
+                  , "updated_at" => db_time(updated_at),
                 {% end %}
                 "id" => id})
       else
@@ -143,7 +143,8 @@ abstract class Amethyst::Model::Model < Amethyst::Model::Base
                         {% first = false %}
                       {% end %}
                       {% if timestamps %}
-                        , "created_at" => created_at, "updated_at" => updated_at
+                        , "created_at" => db_time(created_at)
+                        , "updated_at" => db_time(updated_at)
                       {% end %}})
       end
       return true
@@ -155,5 +156,10 @@ abstract class Amethyst::Model::Model < Amethyst::Model::Base
     end
      
   end #End of Fields Macro
+
+  private def db_time (time)
+    formatter = TimeFormat.new("%F %X")
+    return formatter.format(time)
+  end
 end
 

@@ -7,12 +7,11 @@
 [Amethyst](https://github.com/Codcore/amethyst) is a web framework written in
 the [Crystal](https://github.com/manastech/crystal) language. 
 
-This project is to provide an ORM Model for Amethyst using the
-[waterlink/crystal-mysql](https://github.com/waterlink/crystal-mysql) driver.
+This project is to provide an ORM Model for Amethyst.
 
 ## Installation
 
-Add this library to your Amethyst dependencies along with the MySQL driver in
+Add this library to your Amethyst dependencies along with the driver in
 your Projectfile.
 
 ```crystal
@@ -23,11 +22,15 @@ deps do
 
   # Amethyst Model
   github "drujensen/amethyst-model"
+  
+  # Pick your database
+  github "manastech/crystal-sqlite3"
   github "waterlink/crystal-mysql"
 end
 ```
 
 Next you will need to create a `config/database.yml`
+You can leverage environment variables using ${} syntax.
 
 ```yaml
 development:
@@ -37,6 +40,8 @@ development:
     port: 3306
     username: root
     password: ${DB_PASSWORD}
+  sqlite:
+    database: config/blog_development.db
 
 test:
   mysql:
@@ -45,20 +50,21 @@ test:
     port: 3306
     username: root
     password: ${DB_PASSWORD} 
+  sqlite:
+    database: config/blog_test.db
 
 ```
 
-You can leverage environment variables using ${} syntax.
-
 ## Usage
 
-Here is classic 'Post' using Amethyst Model
+Here is an example using Amethyst Model
 
 ```crystal
 require "amethyst-model"
-include Amethyst::Model
 
-class Post < Model
+class Post < Amethyst::Model::Model
+  adapter mysql
+  
   fields({ name: "VARCHAR(255)", body: "TEXT" })
   # properties id, name, body, created_at, updated_at are created for you
   # table name is posts
@@ -67,6 +73,15 @@ class Post < Model
   # custom table name and disable timestamps
   # properties id, name, body
   # table name is blog
+
+end
+
+class Comment < Amethyst::Model::Model
+  adapter sqlite
+
+  fields({ name: "CHAR(255)", body: "TEXT" })
+  # properties id, name, body, created_at, updated_at are created for you
+  # table name is posts
 
 end
 
@@ -188,7 +203,8 @@ A Read Only Model allows you to perform queries against the database that
 cannot be updated.  The results will be mapped to fields in this model.
 
 ```crystal
-class PostsByMonth < RoModel
+class PostsByMonth < Amethyst::Model::RoModel
+  adapter mysql
   fields({ month: "MONTHNAME(created_at)", total: "COUNT(*)" }, "posts")
 end
 
@@ -199,8 +215,9 @@ The fields mapping is a little different than regular models.  Instead of the
 field type, you will use the calculated expression used in a `SELECT` statement.  The table name is required.
 
 ## RoadMap
+- PostgreSQL support
 - Connection Pool
-- Expose the connection to support transactions
+- Expose the transactions
 - has_many, belongs_to support
 
 ## Contributing

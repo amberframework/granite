@@ -43,7 +43,7 @@ class Amethyst::Model::SqliteAdapter < Amethyst::Model::BaseAdapter
     conn = SQLite3::Database.new( @database )
     if conn
       begin
-        conn.execute(query)
+        conn.execute(query, params)
         results = conn.execute("SELECT LAST_INSERT_ROWID()") as Array
         id = results[0][0]
       ensure
@@ -57,7 +57,7 @@ class Amethyst::Model::SqliteAdapter < Amethyst::Model::BaseAdapter
     conn = SQLite3::Database.new( @database )
     if conn
       begin
-        conn.execute(query)
+        conn.execute(query, params)
       ensure
         conn.close
       end

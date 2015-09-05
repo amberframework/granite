@@ -34,7 +34,7 @@ class Amethyst::Model::MysqlAdapter < Amethyst::Model::BaseAdapter
     fields.each do |name, type|
       value = value + ", #{name} #{type}" 
     end
-    value = value + ", PRIMARY KEY (id))"
+    value = value + ", PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8"
     return self.query(value)
   end
 

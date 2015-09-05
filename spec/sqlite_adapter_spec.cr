@@ -6,7 +6,7 @@ describe SqliteAdapter do
   end
 
   describe "#all" do
-    pending "should find all the comments" do
+    it "should find all the comments" do
       comment = Comment.new
       comment.name = "Test Comment"
       comment.save
@@ -19,18 +19,17 @@ describe SqliteAdapter do
   end
 
   describe "#find" do
-    pending "should find the comment by id" do
+    it "should find the comment by id" do
       comment = Comment.new
       comment.name = "Test Comment"
       comment.save
-      id = comment.id
-      comment = Comment.find id
-      comment.id.should eq 1
+      comment = Comment.find comment.id
+      comment.should_not be_nil
     end
   end
 
   describe "#save" do
-    pending "should create a new comment" do
+    it "should create a new comment" do
       comment = Comment.new
       comment.name = "Test Comment"
       comment.body = "Test Comment"
@@ -38,7 +37,7 @@ describe SqliteAdapter do
       comment.id.should eq 1
     end
 
-    pending "should update an existing comment" do
+    it "should update an existing comment" do
       comment = Comment.new
       comment.name = "Test Comment"
       comment.save
@@ -52,7 +51,7 @@ describe SqliteAdapter do
   end
 
   describe "#destroy" do
-    pending "should destroy a comment" do
+    it "should destroy a comment" do
       comment = Comment.new
       comment.name = "Test Comment"
       comment.save
