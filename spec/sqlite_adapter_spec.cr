@@ -1,12 +1,12 @@
 require "./spec_helper"
 
-describe Model do
+describe SqliteAdapter do
   Spec.before_each do
     Comment.clear
   end
 
   describe "#all" do
-    it "should find all the comments" do
+    pending "should find all the comments" do
       comment = Comment.new
       comment.name = "Test Comment"
       comment.save
@@ -19,7 +19,7 @@ describe Model do
   end
 
   describe "#find" do
-    it "should find the comment by id" do
+    pending "should find the comment by id" do
       comment = Comment.new
       comment.name = "Test Comment"
       comment.save
@@ -30,7 +30,7 @@ describe Model do
   end
 
   describe "#save" do
-    it "should create a new comment" do
+    pending "should create a new comment" do
       comment = Comment.new
       comment.name = "Test Comment"
       comment.body = "Test Comment"
@@ -38,7 +38,7 @@ describe Model do
       comment.id.should eq 1
     end
 
-    it "should update an existing comment" do
+    pending "should update an existing comment" do
       comment = Comment.new
       comment.name = "Test Comment"
       comment.save
@@ -52,7 +52,7 @@ describe Model do
   end
 
   describe "#destroy" do
-    it "should destroy a comment" do
+    pending "should destroy a comment" do
       comment = Comment.new
       comment.name = "Test Comment"
       comment.save

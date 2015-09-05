@@ -30,19 +30,21 @@ end
 Next you will need to create a `config/database.yml`
 
 ```yaml
-development: 
-  database: blog_development
-  host: 127.0.0.1
-  port: 3306
-  username: root
-  password: ${DB_PASSWORD}
+development:
+  mysql:
+    database: blog_development
+    host: 127.0.0.1
+    port: 3306
+    username: root
+    password: ${DB_PASSWORD}
 
-test: 
-  database: blog_test
-  host: 127.0.0.1
-  port: 3306
-  username: root
-  password: ${DB_PASSWORD} 
+test:
+  mysql:
+    database: blog_test
+    host: 127.0.0.1
+    port: 3306
+    username: root
+    password: ${DB_PASSWORD} 
 
 ```
 

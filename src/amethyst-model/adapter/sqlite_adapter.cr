@@ -10,7 +10,6 @@ class Amethyst::Model::SqliteAdapter < Amethyst::Model::BaseAdapter
   # DDL
   def clear(table_name)
     self.query("DELETE FROM #{table_name}")
-#    self.query("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='#{table_name}'")
   end
 
   def drop(table_name)
@@ -32,7 +31,7 @@ class Amethyst::Model::SqliteAdapter < Amethyst::Model::BaseAdapter
     conn = SQLite3::Database.new( @database )
     if conn
       begin
-        results = conn.execute(query)
+        results = conn.execute(query, params)
       ensure
         conn.close
       end

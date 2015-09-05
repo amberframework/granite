@@ -1,13 +1,14 @@
 # use ${VARIABLE} for interpolating environment variables
-mysql:
-  host: 127.0.0.1
-  port: 3306
-  database: amethyst_model_test
-  username: amethyst_model
-  password: ${DB_PASS} 
+test:
+  mysql:
+    host: 127.0.0.1
+    port: 3306
+    database: amethyst_model_test
+    username: amethyst_model
+    password: ${DB_PASS} 
 
-sqlite:
-  database: test.db
+  sqlite:
+    database: config/test.db
 
-postgres:
-  connection: postgres://localhost
+  postgres:
+    connection: postgres://localhost

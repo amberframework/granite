@@ -7,7 +7,8 @@ abstract class Amethyst::Model::Base
     unless @@database
       yaml_file = File.read("config/database.yml")
       yaml = YAML.load(yaml_file) as Hash
-      settings = yaml["{{name.id}}"] as Hash(YAML::Type, YAML::Type)
+      settings = yaml[Amethyst::Base::App.settings.environment] as Hash(YAML::Type, YAML::Type)
+      settings = settings["{{name.id}}"] as Hash(YAML::Type, YAML::Type)
       @@database = {{name.id.capitalize}}Adapter.new(settings)
     end
   end  
