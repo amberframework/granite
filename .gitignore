@@ -8,6 +8,3 @@
 # Dependencies will be locked in application that uses them
 /.deps.lock
 
-# Do not store the sqlite db
-config/test.db
-
