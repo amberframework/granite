@@ -29,13 +29,15 @@ class Amethyst::Model::MysqlAdapter < Amethyst::Model::BaseAdapter
   end
 
   def create(table_name, fields)
-    value = "CREATE TABLE #{table_name}"
-    value = value + "(id INT NOT NULL AUTO_INCREMENT"
-    fields.each do |name, type|
-      value = value + ", #{name} #{type}" 
+    statement = String.build do |stmt|
+      stmt << "CREATE TABLE #{table_name} ("
+      stmt << "id INT NOT NULL AUTO_INCREMENT, "
+      stmt << fields.map{|name, type| "#{name} #{type}"}.join(",")
+      stmt << ", PRIMARY KEY (id))"
+      stmt << " ENGINE=InnoDB"
+      stmt << " DEFAULT CHARACTER SET = utf8"
     end
-    value = value + ", PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8"
-    return self.query(value)
+    return self.query(statement)
   end
 
   #DML
