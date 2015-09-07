@@ -43,9 +43,13 @@ describe SqliteAdapter do
       comment.save
       comment.name = "Test Comment 2"
       comment.save
+      comments = Comment.all
+      comments.size.should eq 1
       comment = Comment.find 1
       if comment
         comment.name.should eq "Test Comment 2"
+      else
+       raise "Comment should exist" 
       end
     end
   end

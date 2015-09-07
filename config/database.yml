@@ -9,5 +9,10 @@ mysql:
 sqlite:
   database: config/test.db
 
-postgres:
-  connection: postgres://localhost
+postgresql:
+  host: 127.0.0.1
+  port: 5432
+  database: amethyst_model_test
+  username: drujensen
+  password: ${DB_PASS} 
+

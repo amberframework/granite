@@ -1,10 +1,25 @@
-require "sqlite3"
+require "pg"
 
-class Amethyst::Model::SqliteAdapter < Amethyst::Model::BaseAdapter
+class Amethyst::Model::PostgresqlAdapter < Amethyst::Model::BaseAdapter
 
   def initialize(settings)
+    @host = settings["host"] as String
+    @host = env(@host) if @host.starts_with? "$"
+
+    @port = settings["port"] as String
+    @port = env(@port) if @port.starts_with? "$"
+    
+    @username = settings["username"] as String
+    @username = env(@username) if @username.starts_with? "$"
+    
+    @password = settings["password"] as String
+    @password = env(@password) if @password.starts_with? "$"
+    
     @database = settings["database"] as String
     @database = env(@database) if @database.starts_with? "$"
+
+    @connection =
+      "postgres://#{@username}:#{@password}@#{@host}:#{@port}/#{@database}"
   end
 
   # DDL
@@ -19,14 +34,14 @@ class Amethyst::Model::SqliteAdapter < Amethyst::Model::BaseAdapter
   def create(table_name, fields)
     statement = String.build do |stmt|
       stmt << "CREATE TABLE #{table_name} ("
-      stmt << "id INTEGER NOT NULL PRIMARY KEY, "
+      stmt << "id SERIAL PRIMARY KEY, "
       stmt << fields.map{|name, type| "#{name} #{type}"}.join(",")
       stmt << ")"
     end
     return self.query(statement)
   end
 
-    def select(table_name, fields, clause = "", params = {} of String => String)
+  def select(table_name, fields, clause = "", params = {} of String => String)
     statement = String.build do |stmt|
       stmt << "SELECT "
       stmt << fields.map{|name, type| "#{name}"}.join(",")
@@ -51,20 +66,12 @@ class Amethyst::Model::SqliteAdapter < Amethyst::Model::BaseAdapter
       stmt << fields.map{|name, type| "#{name}"}.join(",")
       stmt << ") VALUES ("
       stmt << fields.map{|name, type| ":#{name}"}.join(",")
-      stmt << ")"
+      stmt << ") RETURNING id"
     end
-    conn = SQLite3::Database.new( @database )
-    if conn
-      begin
-        conn.execute(statement, params)
-        results = conn.execute("SELECT LAST_INSERT_ROWID()") as Array
-        id = results[0][0]
-      ensure
-        conn.close
-      end
+    results = self.query(statement, params)
+    if results
+      return results[0][0]
     end
-    return id
-
   end
   
   def update(table_name, fields, id, params)
@@ -83,17 +90,30 @@ class Amethyst::Model::SqliteAdapter < Amethyst::Model::BaseAdapter
     return self.query("DELETE FROM #{table_name} WHERE id=:id", {"id" => id})
   end
 
+  # DML
   def query(query, params = {} of String => String)
-    conn = SQLite3::Database.new( @database )
+    if params
+      query, params = map_hash_to_array(query, params)
+    end
+    conn = PG.connect(@connection)
     if conn
       begin
-        results = conn.execute(query, params)
+        results = conn.exec(query, params)
+        return results.rows
       ensure
-        conn.close
+        conn.finish
       end
     end
-    return results
+    return [] of String
   end
-  
+
+  def map_hash_to_array(query, params)
+    new_params = [] of (Nil | String | Int32 | Int16 | Int64 | Float32 | Float64 | Bool | Time | Char | Hash(String, JSON::Type) | Array(JSON::Type))
+    params.each_with_index do |key, value, index|
+      query = query.gsub(":#{key}", "$#{index+1}")
+      new_params << value
+    end
+    return query, new_params
+  end
 end
 

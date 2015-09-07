@@ -1,6 +1,6 @@
 abstract class Amethyst::Model::RoModel < Amethyst::Model::Base
 
-  macro fields(names, table_name)
+  macro sql_mapping(names, table_name)
 
     #Set the namepace
     {% name_space = @type.name.downcase.id %}
@@ -10,7 +10,7 @@ abstract class Amethyst::Model::RoModel < Amethyst::Model::Base
     {% end %}
 
     # Create the or mapping method
-    def self.or_mapping(result)
+    def self.from_sql(result)
       {{name_space}} = {{@type.name.id}}.new
       {% i = 0 %}
       {% for name, type in names %}
@@ -21,19 +21,18 @@ abstract class Amethyst::Model::RoModel < Amethyst::Model::Base
       return {{name_space}}
     end
 
-    # DML
-    def self.all(clause = "", params = {} of String => String)
-      return self.query("SELECT 
-                         {% first = true %}
-                         {% for name, sql in names %}
-                           {% unless first %}, {% end %}
-                             {{sql.id}}
-                           {% first = false %}
-                         {% end %}
-                         FROM {{table_name.id}} {{name_space}} 
-                         #{clause}", params)
+    def self.fields
+      fields = {} of String => String
+      {% for name, sql in names %}
+      fields["{{sql.id}}"] = "{{name.id}}"
+      {% end %}
+      return fields
     end
-    
+
+    def self.all(clause = "", params = {} of String => String)
+      self.query("{{table_name.id}}", self.fields, clause, params)
+    end
+
   end #End of Fields Macro
 end
 

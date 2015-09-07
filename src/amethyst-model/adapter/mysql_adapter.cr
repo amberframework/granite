@@ -40,7 +40,63 @@ class Amethyst::Model::MysqlAdapter < Amethyst::Model::BaseAdapter
     return self.query(statement)
   end
 
-  #DML
+  def select(table_name, fields, clause = "", params = {} of String => String)
+    statement = String.build do |stmt|
+      stmt << "SELECT "
+      stmt << fields.map{|name, type| "#{name}"}.join(",")
+      stmt << " FROM #{table_name} #{clause}"
+    end
+    return self.query(statement, params)
+  end
+  
+  def select_one(table_name, fields, id)
+    statement = String.build do |stmt|
+      stmt << "SELECT "
+      stmt << fields.map{|name, type| "#{name}"}.join(",")
+      stmt << " FROM #{table_name}"
+      stmt << " WHERE id=:id LIMIT 1"
+    end
+    return self.query(statement, {"id" => id})
+  end
+
+  def insert(table_name, fields, params)
+    statement = String.build do |stmt|
+      stmt << "INSERT INTO #{table_name} ("
+      stmt << fields.map{|name, type| "#{name}"}.join(",")
+      stmt << ") VALUES ("
+      stmt << fields.map{|name, type| ":#{name}"}.join(",")
+      stmt << ")"
+    end
+    conn = MySQL.connect(@host, @username, @password, @database, @port.to_u16, nil)
+    if conn
+      begin
+        results = MySQL::Query.new(statement, params).run(conn)
+        results = MySQL::Query.new("SELECT LAST_INSERT_ID()").run(conn)
+        if results
+          return results[0][0]
+        end
+      ensure
+        conn.close
+      end
+    end
+  end
+  
+  def update(table_name, fields, id, params)
+    statement = String.build do |stmt|
+      stmt << "UPDATE #{table_name} SET "
+      stmt << fields.map{|name, type| "#{name}=:#{name}"}.join(",")
+      stmt << " WHERE id=:id"
+    end
+    if id.is_a? Int32
+      params["id"] = "#{id}"
+    end
+    return self.query(statement, params)
+  end
+  
+  def delete(table_name, id)
+    return self.query("DELETE FROM #{table_name} WHERE id=:id", {"id" => id})
+  end
+
   def query(query, params = {} of String => String)
     conn = MySQL.connect(@host, @username, @password, @database, @port.to_u16, nil)
     if conn
@@ -52,31 +108,4 @@ class Amethyst::Model::MysqlAdapter < Amethyst::Model::BaseAdapter
     end
     return results
   end
-  
-  def insert(query, params = {} of String => String)
-    conn = MySQL.connect(@host, @username, @password, @database, @port.to_u16, nil)
-    if conn
-      begin
-        MySQL::Query.new(query, params).run(conn)
-        results = conn.query("SELECT LAST_INSERT_ID()") as Array
-        id = results[0][0]
-      ensure
-        conn.close
-      end
-    end
-    return id
-  end
-  
-  def update(query, params = {} of String => String)
-    conn = MySQL.connect(@host, @username, @password, @database, @port.to_u16, nil)
-    if conn
-      begin
-        MySQL::Query.new(query, params).run(conn)
-      ensure
-        conn.close
-      end
-    end
-    return true
-  end
-
 end

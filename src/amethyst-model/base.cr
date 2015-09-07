@@ -12,16 +12,16 @@ abstract class Amethyst::Model::Base
     end
   end  
 
-  abstract def or_mapping(results : Array)
+  abstract def from_sql(results : Array)
 
-  def self.query(query, params = {} of String => String)
+  def self.query(table_name,  fields, clause, params = {} of String => String)
     rows = [] of self
     if db = @@database
-      results = db.query(query, params)
+      results = db.select(table_name, fields, clause, params)
       if results.is_a?(Array)
         if results.size > 0
           results.each do |result|
-            rows << or_mapping(result)
+            rows << self.from_sql(result)
           end
         end
       end
@@ -29,26 +29,20 @@ abstract class Amethyst::Model::Base
     return rows
   end
 
-  def self.query_one(query, params = {} of String => String)
+  def self.query_one(table_name, fields, id)
     row = nil
-    rows = self.query(query, params)
-    if rows && rows.size > 0
-      row = rows[0]
+    if db = @@database
+      results = db.select_one(table_name, fields, id)
+      if results.is_a?(Array)
+        if results.size > 0
+          results.each do |result|
+            row = self.from_sql(result)
+          end
+        end
+      end
     end
     return row
   end
 
-  def insert(query, params = {} of String => String)
-    if db = @@database
-      id = db.insert(query, params)
-    end
-  end
-
-  def update(query, params = {} of String => String)
-    if db = @@database
-      return db.update(query, params)
-    end
-    return false
-  end
 end
 
