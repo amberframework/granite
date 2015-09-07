@@ -33,26 +33,14 @@ Next you will need to create a `config/database.yml`
 You can leverage environment variables using ${} syntax.
 
 ```yaml
-development:
-  mysql:
-    database: blog_development
-    host: 127.0.0.1
-    port: 3306
-    username: root
-    password: ${DB_PASSWORD}
-  sqlite:
-    database: config/blog_development.db
-
-test:
-  mysql:
-    database: blog_test
-    host: 127.0.0.1
-    port: 3306
-    username: root
-    password: ${DB_PASSWORD} 
-  sqlite:
-    database: config/blog_test.db
-
+mysql:
+  database: blog_test
+  host: 127.0.0.1
+  port: 3306
+  username: root
+  password: ${DB_PASSWORD} 
+sqlite:
+  database: config/blog_test.db
 ```
 
 ## Usage
