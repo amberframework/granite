@@ -4,7 +4,6 @@ class Amethyst::Model::SqliteAdapter < Amethyst::Model::BaseAdapter
 
   def initialize(settings)
     @database = settings["database"] as String
-    @database = env(@database) if @database.starts_with? "$"
   end
 
   # DDL
@@ -26,7 +25,7 @@ class Amethyst::Model::SqliteAdapter < Amethyst::Model::BaseAdapter
     return self.query(statement)
   end
 
-    def select(table_name, fields, clause = "", params = {} of String => String)
+  def select(table_name, fields, clause = "", params = {} of String => String)
     statement = String.build do |stmt|
       stmt << "SELECT "
       stmt << fields.map{|name, type| "#{name}"}.join(",")
@@ -56,7 +55,7 @@ class Amethyst::Model::SqliteAdapter < Amethyst::Model::BaseAdapter
     conn = SQLite3::Database.new( @database )
     if conn
       begin
-        conn.execute(statement, params)
+        conn.execute(statement, scrub_params(params))
         results = conn.execute("SELECT LAST_INSERT_ROWID()") as Array
         id = results[0][0]
       ensure
@@ -87,13 +86,35 @@ class Amethyst::Model::SqliteAdapter < Amethyst::Model::BaseAdapter
     conn = SQLite3::Database.new( @database )
     if conn
       begin
-        results = conn.execute(query, params)
+        results = conn.execute(query, scrub_params(params))
       ensure
         conn.close
       end
     end
     return results
   end
-  
+
+  alias SUPPORTED_TYPES = (Nil | String | Int32 | Int16 | Int64 | Float32 |
+                           Float64 | Bool | Time | Char | Slice(UInt8))
+  private def scrub_params(params)
+    new_params = {} of String => SUPPORTED_TYPES
+    params.each do |key, value|
+      if value.is_a? Time
+        new_params[key] = db_time(value)
+      else
+        new_params[key] = value
+      end
+    end
+    return new_params
+  end
+
+  private def db_time (time)
+    if time.is_a? Time
+      formatter = TimeFormat.new("%F %X")
+      return formatter.format(time)
+    end
+    return time
+  end
+
 end
 

@@ -4,19 +4,10 @@ class Amethyst::Model::MysqlAdapter < Amethyst::Model::BaseAdapter
 
   def initialize(settings)
     @host = settings["host"] as String
-    @host = env(@host) if @host.starts_with? "$"
-
     @port = settings["port"] as String
-    @port = env(@port) if @port.starts_with? "$"
-    
     @username = settings["username"] as String
-    @username = env(@username) if @username.starts_with? "$"
-    
     @password = settings["password"] as String
-    @password = env(@password) if @password.starts_with? "$"
-    
     @database = settings["database"] as String
-    @database = env(@database) if @database.starts_with? "$"
   end
 
   # DDL

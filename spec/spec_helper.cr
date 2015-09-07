@@ -22,9 +22,10 @@ class Comment < Model
 end
 
 class User < Model
-  adapter postgresql 
-  sql_mapping({ name: "VARCHAR(20)", 
-                pass: "VARCHAR(20)" })
+#  adapter postgresql
+  adapter sqlite #TODO: change this back to postgres once its available
+  sql_mapping({ name: "TEXT", 
+                pass: "TEXT" })
 end
 
 Post.drop

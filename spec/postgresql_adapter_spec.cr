@@ -1,12 +1,12 @@
 require "./spec_helper"
 
-describe PostgresqlAdapter do
+describe "PostgresqlAdapter" do
   Spec.before_each do
     User.clear
   end
 
   describe "#all" do
-    pending "should find all the users" do
+    it "should find all the users" do
       user = User.new
       user.name = "Test User"
       user.save
@@ -19,7 +19,7 @@ describe PostgresqlAdapter do
   end
 
   describe "#find" do
-    pending "should find the user by id" do
+    it "should find the user by id" do
       user = User.new
       user.name = "Test User"
       user.save
@@ -30,7 +30,7 @@ describe PostgresqlAdapter do
   end
 
   describe "#save" do
-    pending "should create a new user" do
+    it "should create a new user" do
       user = User.new
       user.name = "Test User"
       user.pass = "Password"
@@ -38,7 +38,7 @@ describe PostgresqlAdapter do
       user.id.should eq 1
     end
 
-    pending "should update an existing user" do
+    it "should update an existing user" do
       user = User.new
       user.name = "Test User"
       user.save
@@ -52,7 +52,7 @@ describe PostgresqlAdapter do
   end
 
   describe "#destroy" do
-    pending "should destroy a user" do
+    it "should destroy a user" do
       user = User.new
       user.name = "Test User"
       user.save

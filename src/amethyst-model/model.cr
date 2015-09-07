@@ -3,7 +3,8 @@ abstract class Amethyst::Model::Model < Amethyst::Model::Base
   macro sql_mapping(names, table_name = nil, timestamps = true)
     {% name_space = @type.name.downcase.id %}
     {% table_name = name_space + "s" unless table_name %}
-    
+    # Table Name
+    @@table_name = "{{table_name}}"
     #Create the properties
     property :id
     {% for name, type in names %}
@@ -50,50 +51,24 @@ abstract class Amethyst::Model::Model < Amethyst::Model::Base
             {% first = false %}
           {% end %}
           {% if timestamps %}
-            , "created_at" => db_time(created_at)
-            , "updated_at" => db_time(updated_at)
+            , "created_at" => created_at
+            , "updated_at" => updated_at
           {% end %}
       }
     end
 
-    # DDL
-    def self.clear
-      if db = @@database
-        db.clear("{{table_name.id}}")
-      end
-    end
-
-    def self.drop
-      if db = @@database
-        db.drop("{{table_name.id}}")
-      end
-    end
-
-    def self.create
-      if db = @@database
-        db.create("{{table_name.id}}", fields)
-      end
-    end
-
-    # DML
-    def self.all(clause = "", params = {} of String => String)
-      return self.query("{{table_name.id}}", fields({"id" => "INT"}), clause, params)
-    end
-    
-    def self.find(id)
-      return self.query_one("{{table_name.id}}", fields({"id" => "INT"}), id)
-    end
-    
+    # TODO: because these are instance methods, it causes issues when specified
+    # outside of the macro.  Find a way to restrict the types because the
+    # drivers are polluting the inferred types.
     def save
       if db = @@database
         if value = @id
           updated_at = Time.now
-          db.update("{{table_name.id}}", {{@type.name.id}}.fields, value, params)
-          
+          db.update(@@table_name, self.class.fields, value, params)
         else
           @created_at = Time.now
           @updated_at = Time.now
-          @id = db.insert("{{table_name.id}}", {{@type.name.id}}.fields, params)
+          @id = db.insert(@@table_name, self.class.fields, params)
         end
       end
       return true
@@ -101,17 +76,38 @@ abstract class Amethyst::Model::Model < Amethyst::Model::Base
 
     def destroy
       if db = @@database
-        return db.delete("{{table_name.id}}", @id)
+        return db.delete(@@table_name, @id)
       end
     end
   end #End of Fields Macro
 
-  private def db_time (time)
-    if time.is_a? Time
-      formatter = TimeFormat.new("%F %X")
-      return formatter.format(time)
+  # DDL
+  def self.clear
+    if db = @@database
+      db.clear(@@table_name)
     end
-    return time
   end
+
+  def self.drop
+    if db = @@database
+      db.drop(@@table_name)
+    end
+  end
+
+  def self.create
+    if db = @@database
+      db.create(@@table_name, fields)
+    end
+  end
+
+  def self.all(clause = "", params = {} of String => String)
+    return self.query(@@table_name, fields({"id" => "INT"}), clause, params)
+  end
+  
+  def self.find(id)
+    return self.query_one(@@table_name, fields({"id" => "INT"}), id)
+  end
+  
+
 end
 

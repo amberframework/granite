@@ -8,13 +8,27 @@ abstract class Amethyst::Model::Base
       yaml_file = File.read("config/database.yml")
       yaml = YAML.load(yaml_file) as Hash(YAML::Type, YAML::Type)
       settings = yaml["{{name.id}}"] as Hash(YAML::Type, YAML::Type)
+      settings.each do |key, value|
+        if value.is_a? String && value.starts_with? "$"
+          settings[key] = env(value)
+        end
+      end
       @@database = Amethyst::Model::{{name.id.capitalize}}Adapter.new(settings)
     end
   end  
-
+  
+  private def self.env(value)
+    value = value.gsub("${","").gsub("}", "")
+    if ENV.has_key? value
+      return ENV[value]
+    else
+      return ""
+    end
+  end
+  
   abstract def from_sql(results : Array)
 
-  def self.query(table_name,  fields, clause, params = {} of String => String)
+  def self.query(table_name, fields, clause, params = {} of String => String)
     rows = [] of self
     if db = @@database
       results = db.select(table_name, fields, clause, params)
