@@ -11,6 +11,8 @@ This project is to provide an ORM Model for Amethyst.
 
 ## Installation
 
+*** Work In Progress ***
+
 Add this library to your Amethyst dependencies along with the driver in
 your Projectfile.
 
@@ -26,6 +28,7 @@ deps do
   # Pick your database
   github "manastech/crystal-sqlite3"
   github "waterlink/crystal-mysql"
+  github "will/crystal-pg"
 end
 ```
 
@@ -37,8 +40,14 @@ mysql:
   database: blog_test
   host: 127.0.0.1
   port: 3306
-  username: root
-  password: ${DB_PASSWORD} 
+  username: blog
+  password: ${DB_PASSWORD}
+postgresql:
+  database: blog_test
+  host: 127.0.0.1
+  port: 3306
+  username: blog
+  password: ${DB_PASSWORD}
 sqlite:
   database: config/blog_test.db
 ```
@@ -53,23 +62,22 @@ require "amethyst-model"
 class Post < Amethyst::Model::Model
   adapter mysql
   
-  fields({ name: "VARCHAR(255)", body: "TEXT" })
-  # properties id, name, body, created_at, updated_at are created for you
-  # table name is posts
-
-  # fields({ name: "VARCHAR(255)", body: "TEXT" }, "blog", false)
-  # custom table name and disable timestamps
-  # properties id, name, body
-  # table name is blog
+  sql_mapping({ 
+    name: "VARCHAR(255)", 
+    body: "TEXT" 
+  })
 
 end
 
 class Comment < Amethyst::Model::Model
   adapter sqlite
 
-  fields({ name: "CHAR(255)", body: "TEXT" })
-  # properties id, name, body, created_at, updated_at are created for you
-  # table name is posts
+  sql_mapping({ 
+    name: "CHAR(255)", 
+    body: "TEXT" 
+  }, "post_comments", false)
+
+  # table name is set to post_comments and timestamps are disabled.
 
 end
 
@@ -153,7 +161,7 @@ puts "deleted" unless post
 ### Where 
 
 The where clause will give you full control over your query. Instead of
-building another DSL to build the query, we decided to use good ole SQL.
+building another DSL to build the query, I decided to use good ole SQL.
 
 When using the `all` method, the SQL selected fields will always match the
 fields specified in the model.  If you need different fields, consider
@@ -163,9 +171,6 @@ Always pass in parameters to avoid SQL Injection.  Use a symbol in your query
 i.e. `:param` for parameter replacement.  Check out
 [waterlink/crystal-mysql](https://github.com/waterlink/crystal-mysql) for more
 details.
-
-The table is namespaced with the name of the class so you can perform joins
-without conflicting field names.
 
 ```crystal
 posts = Post.all("WHERE name LIKE :name", {"name" => "Joe%"})
@@ -193,7 +198,10 @@ cannot be updated.  The results will be mapped to fields in this model.
 ```crystal
 class PostsByMonth < Amethyst::Model::RoModel
   adapter mysql
-  fields({ month: "MONTHNAME(created_at)", total: "COUNT(*)" }, "posts")
+  fields({ 
+    month: "MONTHNAME(created_at)", 
+    total: "COUNT(*)"
+  }, "posts")
 end
 
 posts_by_month = PostsByMonth.all("GROUP BY MONTH(created_at)")
