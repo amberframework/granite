@@ -1,5 +1,6 @@
 require "yaml"
-require "./adapter/*"
+require "./adapter/mysql_adapter"
+require "./adapter/sqlite_adapter"
 
 abstract class Amethyst::Model::Base
 
@@ -57,6 +58,6 @@ abstract class Amethyst::Model::Base
     end
     return row
   end
-
 end
+
 
