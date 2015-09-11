@@ -58,6 +58,7 @@ Here is an example using Amethyst Model
 
 ```crystal
 require "amethyst-model"
+require "amethyst-model/adapter/mysql_adapter"
 
 class Post < Amethyst::Model::Model
   adapter mysql
@@ -68,6 +69,10 @@ class Post < Amethyst::Model::Model
   })
 
 end
+```
+```crystal
+require "amethyst-model"
+require "amethyst-model/adapter/sqlite_adapter"
 
 class Comment < Amethyst::Model::Model
   adapter sqlite
@@ -196,6 +201,9 @@ A Read Only Model allows you to perform queries against the database that
 cannot be updated.  The results will be mapped to fields in this model.
 
 ```crystal
+require "amethyst-model"
+require "amethyst-model/adapter/mysql_adapter"
+
 class PostsByMonth < Amethyst::Model::RoModel
   adapter mysql
   fields({ 
