@@ -1,7 +1,7 @@
 require "spec"
-require "../src/amethyst-model/adapter/mysql_adapter"
-require "../src/amethyst-model/adapter/sqlite_adapter"
 require "../src/amethyst-model"
+require "../src/mysql_adapter"
+require "../src/sqlite_adapter"
 include Amethyst::Model
 
 class Post < Model
