@@ -1,6 +1,4 @@
 require "yaml"
-require "./adapter/mysql_adapter"
-require "./adapter/sqlite_adapter"
 
 abstract class Amethyst::Model::Base
 

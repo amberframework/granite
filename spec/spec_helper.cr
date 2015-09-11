@@ -1,4 +1,6 @@
 require "spec"
+require "../src/amethyst-model/adapter/mysql_adapter"
+require "../src/amethyst-model/adapter/sqlite_adapter"
 require "../src/amethyst-model"
 include Amethyst::Model
 
