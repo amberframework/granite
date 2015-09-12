@@ -57,7 +57,6 @@ sqlite:
 Here is an example using Amethyst Model
 
 ```crystal
-require "amethyst-model"
 require "amethyst-model/mysql_adapter"
 
 class Post < Amethyst::Model::Model
@@ -71,7 +70,6 @@ class Post < Amethyst::Model::Model
 end
 ```
 ```crystal
-require "amethyst-model"
 require "amethyst-model/sqlite_adapter"
 
 class Comment < Amethyst::Model::Model
