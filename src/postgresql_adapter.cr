@@ -1,4 +1,4 @@
-#require "./amethyst-model/base_adapter"
+#require "./amethyst-model"
 # require "pg"
 
 # class Amethyst::Model::PostgresqlAdapter < Amethyst::Model::BaseAdapter

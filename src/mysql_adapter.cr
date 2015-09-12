@@ -1,4 +1,4 @@
-require "./amethyst-model/base_adapter"
+require "./amethyst-model"
 require "mysql"
 
 class Amethyst::Model::MysqlAdapter < Amethyst::Model::BaseAdapter

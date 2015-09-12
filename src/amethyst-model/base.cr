@@ -2,6 +2,8 @@ require "yaml"
 
 abstract class Amethyst::Model::Base
 
+  # specify the database adapter you will be using for this model. 
+  # mysql, postgresql, sqlite, etc.
   macro adapter(name)
     unless @@database
       yaml_file = File.read("config/database.yml")
@@ -16,6 +18,7 @@ abstract class Amethyst::Model::Base
     end
   end  
   
+  # private method used to lookup the environment variable if exists
   private def self.env(value)
     value = value.gsub("${","").gsub("}", "")
     if ENV.has_key? value
@@ -25,8 +28,12 @@ abstract class Amethyst::Model::Base
     end
   end
   
+  # from_sql creates an instance of the model for each row returned from the
+  # query.  All of the data is properly mapped to the fields in the results.
   abstract def from_sql(results : Array)
 
+  # query performs the select statement and calls the from_sql with the
+  # results.
   def self.query(table_name, fields, clause, params = {} of String => String)
     rows = [] of self
     if db = @@database
@@ -42,6 +49,8 @@ abstract class Amethyst::Model::Base
     return rows
   end
 
+  # query_one is a convenience method for only returning the first instance of a
+  # query.
   def self.query_one(table_name, fields, id)
     row = nil
     if db = @@database

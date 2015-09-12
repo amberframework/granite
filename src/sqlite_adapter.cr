@@ -1,4 +1,4 @@
-require "./amethyst-model/base_adapter"
+require "./amethyst-model"
 require "sqlite3"
 
 class Amethyst::Model::SqliteAdapter < Amethyst::Model::BaseAdapter
