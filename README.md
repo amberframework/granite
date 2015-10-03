@@ -14,22 +14,35 @@ This project is to provide an ORM Model for Amethyst.
 *** Work In Progress ***
 
 Add this library to your Amethyst dependencies along with the driver in
-your Projectfile.
+your `shard.yml`.
 
-```crystal
-deps do
-  # Amethyst Framework
-  github "Codcore/amethyst"
-  github "spalger/crystal-mime"
-
+```yaml
+dependencies:
   # Amethyst Model
-  github "drujensen/amethyst-model"
-  
+  amethyst:
+    github: Codcore/amethyst
+    branch: master
+  mime:
+    github: spalger/crystal-mime
+    branch: master
+
+  # Amethyst Framework
+  amethyst-model:
+    github: drujensen/amethyst-model
+    branch: master
+
   # Pick your database
-  github "manastech/crystal-sqlite3"
-  github "waterlink/crystal-mysql"
-  github "will/crystal-pg"
-end
+  sqlite3:
+    github: manastech/crystal-sqlite3
+    branch: master
+  mysql:
+    github: waterlink/crystal-mysql
+    branch: master
+  pg:
+    github: will/crystal-pg
+    branch: master
+
+  #...
 ```
 
 Next you will need to create a `config/database.yml`
