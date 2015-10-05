@@ -1,5 +1,0 @@
-deps do
-  github "waterlink/crystal-mysql"
-  github "will/crystal-pg"
-  github "manastech/crystal-sqlite3"
-end

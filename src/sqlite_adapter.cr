@@ -111,7 +111,7 @@ class Amethyst::Model::SqliteAdapter < Amethyst::Model::BaseAdapter
 
   private def db_time (time)
     if time.is_a? Time
-      formatter = TimeFormat.new("%F %X")
+      formatter = Time::Format.new("%F %X")
       return formatter.format(time)
     end
     return time
