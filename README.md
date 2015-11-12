@@ -18,7 +18,7 @@ your `shard.yml`.
 
 ```yaml
 dependencies:
-  # Amethyst Model
+  # Amethyst Framework
   amethyst:
     github: Codcore/amethyst
     branch: master
@@ -26,7 +26,7 @@ dependencies:
     github: spalger/crystal-mime
     branch: master
 
-  # Amethyst Framework
+  # Amethyst Model
   amethyst-model:
     github: drujensen/amethyst-model
     branch: master
