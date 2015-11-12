@@ -53,15 +53,12 @@ abstract class Amethyst::Model::Model < Amethyst::Model::Base
     # keey a hash of the params that will be passed to the adapter.
     def params
       return {
-          {% first = true %}
           {% for name, type in names %}
-            {% unless first %}, {% end %}
-            "{{name.id}}" => {{name.id}}
-            {% first = false %}
+            "{{name.id}}" => {{name.id}},
           {% end %}
           {% if timestamps %}
-            , "created_at" => created_at
-            , "updated_at" => updated_at
+            "created_at" => created_at,
+            "updated_at" => updated_at,
           {% end %}
       }
     end

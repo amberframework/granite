@@ -6,7 +6,7 @@ shards:
 
   pg:
     github: will/crystal-pg
-    commit: cafea4f3cbe504f195300b5283abbcb8dea9fceb
+    commit: cafecb15e11c405b7f66bc55a27e4a11a47d43cc
 
   sqlite3:
     github: manastech/crystal-sqlite3
