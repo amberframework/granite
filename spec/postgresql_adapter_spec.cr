@@ -35,7 +35,7 @@ describe "PostgresqlAdapter" do
       user.name = "Test User"
       user.pass = "Password"
       user.save
-      user.id.should eq 1
+      user.id.should_not be_nil 
     end
 
     it "should update an existing user" do

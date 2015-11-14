@@ -176,8 +176,7 @@ puts "deleted" unless post
 
 ### Where 
 
-The where clause will give you full control over your query. Instead of
-building another DSL to build the query, I decided to use good ole SQL.
+The where clause will give you full control over your query. 
 
 When using the `all` method, the SQL selected fields will always match the
 fields specified in the model.  If you need different fields, consider

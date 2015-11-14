@@ -1,6 +1,7 @@
 require "spec"
 require "../src/mysql_adapter"
 require "../src/sqlite_adapter"
+require "../src/postgresql_adapter"
 include Amethyst::Model
 
 class Post < Model
@@ -28,8 +29,8 @@ class Comment < Model
 end
 
 class User < Model
-#  adapter postgresql
-  adapter sqlite #TODO: change this back to postgres once its available
+  adapter postgresql
+#  adapter sqlite #TODO: change this back to postgres once its available
   sql_mapping({ 
     name: "TEXT", 
     pass: "TEXT" 
