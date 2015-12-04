@@ -227,7 +227,6 @@ posts_by_month = PostsByMonth.all("GROUP BY MONTH(created_at)")
 The fields mapping is a little different than regular models.  Instead of the
 field type, you will use the calculated expression used in a `SELECT` statement.  The table name is required.
 ## RoadMap
-- PostgreSQL support
 - Connection Pool
 - Expose Transactions
 - Error Handling
