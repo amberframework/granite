@@ -1,7 +1,8 @@
-require "./amethyst-model"
+require "../*"
+require "./base"
 require "pg"
 
-class Amethyst::Model::PostgresqlAdapter < Amethyst::Model::BaseAdapter
+class Amethyst::Model::Adapter::Postgresql < Amethyst::Model::Adapter::Base
 
   def initialize(settings)
     @host = settings["host"] as String

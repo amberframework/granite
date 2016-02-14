@@ -1,4 +1,25 @@
-require "./spec_helper"
+require "spec"
+require "../src/mysql"
+include Amethyst::Model
+
+class Post < Model
+  adapter mysql
+  sql_mapping({ 
+    name: "VARCHAR(255)", 
+    body: "TEXT" 
+  })
+end
+
+class PostsByMonth < RoModel
+  adapter mysql
+  sql_mapping({ 
+    month: "MONTHNAME(created_at)", 
+    total: "COUNT(*)" 
+  }, "posts")
+end
+
+Post.drop
+Post.create
 
 describe "Read Only Model" do
   Spec.before_each do

@@ -1,19 +1,16 @@
-require "./amethyst-model"
-require "mysql"
+require "../*"
+require "./base"
+require "sqlite3"
 
-class Amethyst::Model::MysqlAdapter < Amethyst::Model::BaseAdapter
+class Amethyst::Model::Adapter::Sqlite < Amethyst::Model::Adapter::Base
 
   def initialize(settings)
-    @host = settings["host"] as String
-    @port = settings["port"] as String
-    @username = settings["username"] as String
-    @password = settings["password"] as String
     @database = settings["database"] as String
   end
 
   # DDL
   def clear(table_name)
-    return self.query("TRUNCATE #{table_name}")
+    self.query("DELETE FROM #{table_name}")
   end
 
   def drop(table_name)
@@ -23,11 +20,9 @@ class Amethyst::Model::MysqlAdapter < Amethyst::Model::BaseAdapter
   def create(table_name, fields)
     statement = String.build do |stmt|
       stmt << "CREATE TABLE #{table_name} ("
-      stmt << "id INT NOT NULL AUTO_INCREMENT, "
+      stmt << "id INTEGER NOT NULL PRIMARY KEY, "
       stmt << fields.map{|name, type| "#{name} #{type}"}.join(",")
-      stmt << ", PRIMARY KEY (id))"
-      stmt << " ENGINE=InnoDB"
-      stmt << " DEFAULT CHARACTER SET = utf8"
+      stmt << ")"
     end
     return self.query(statement)
   end
@@ -59,18 +54,18 @@ class Amethyst::Model::MysqlAdapter < Amethyst::Model::BaseAdapter
       stmt << fields.map{|name, type| ":#{name}"}.join(",")
       stmt << ")"
     end
-    conn = MySQL.connect(@host, @username, @password, @database, @port.to_u16, nil)
+    conn = SQLite3::Database.new( @database )
     if conn
       begin
-        results = MySQL::Query.new(statement, params).run(conn)
-        results = MySQL::Query.new("SELECT LAST_INSERT_ID()").run(conn)
-        if results
-          return results[0][0]
-        end
+        conn.execute(statement, scrub_params(params))
+        results = conn.execute("SELECT LAST_INSERT_ROWID()") as Array
+        id = results[0][0]
       ensure
         conn.close
       end
     end
+    return id
+
   end
   
   def update(table_name, fields, id, params)
@@ -79,7 +74,7 @@ class Amethyst::Model::MysqlAdapter < Amethyst::Model::BaseAdapter
       stmt << fields.map{|name, type| "#{name}=:#{name}"}.join(",")
       stmt << " WHERE id=:id"
     end
-    if id.is_a? Int32
+    if id
       params["id"] = "#{id}"
     end
     return self.query(statement, params)
@@ -90,14 +85,38 @@ class Amethyst::Model::MysqlAdapter < Amethyst::Model::BaseAdapter
   end
 
   def query(query, params = {} of String => String)
-    conn = MySQL.connect(@host, @username, @password, @database, @port.to_u16, nil)
+    conn = SQLite3::Database.new( @database )
     if conn
       begin
-        results = MySQL::Query.new(query, params).run(conn)
+        results = conn.execute(query, scrub_params(params))
       ensure
         conn.close
       end
     end
     return results
   end
+
+  alias SUPPORTED_TYPES = (Nil | String | Int32 | Int16 | Int64 | Float32 |
+                           Float64 | Bool | Time | Char | Slice(UInt8))
+  private def scrub_params(params)
+    new_params = {} of String => SUPPORTED_TYPES
+    params.each do |key, value|
+      if value.is_a? Time
+        new_params[key] = db_time(value)
+      else
+        new_params[key] = value
+      end
+    end
+    return new_params
+  end
+
+  private def db_time (time)
+    if time.is_a? Time
+      formatter = Time::Format.new("%F %X")
+      return formatter.format(time)
+    end
+    return time
+  end
+
 end
+

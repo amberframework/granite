@@ -2,13 +2,13 @@ version: 1.0
 shards:
   mysql:
     github: waterlink/crystal-mysql
-    commit: b9ce70bc9b45021b2992221b63a1da1b9e7d30a4
+    commit: 4c7922ad5ee3f67423a8f4769ef2e497f9c9b914
 
   pg:
     github: will/crystal-pg
-    commit: cafecb15e11c405b7f66bc55a27e4a11a47d43cc
+    commit: cafe901c4bc46c2c83dde4aff9a9120f261d9877
 
   sqlite3:
     github: manastech/crystal-sqlite3
-    commit: 45fee52b988dcb6b862cde2c944413b837212f9d
+    commit: 67ef13caedcf9003a185c38cc93970fe483afd98
 

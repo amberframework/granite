@@ -1,11 +1,7 @@
 # The Base Adapter specifies the interface that will be used by the model
 # objects to perform actions against a specific database.  Each adapter needs
 # to implement these methods.
-abstract class Amethyst::Model::BaseAdapter
-  
-  # connect will provide a database connection.  The adapter will handle the
-  # pooling of the connections as appropriate.
-  abstract def connect(settings)
+abstract class Amethyst::Model::Adapter::Base
   
   # clear will remove all rows from a table and reset the counter on the id.
   abstract def clear(table_name)

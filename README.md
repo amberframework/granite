@@ -70,7 +70,7 @@ sqlite:
 Here is an example using Amethyst Model
 
 ```crystal
-require "amethyst-model/mysql_adapter"
+require "amethyst-model/mysql"
 
 class Post < Amethyst::Model::Model
   adapter mysql
@@ -83,7 +83,7 @@ class Post < Amethyst::Model::Model
 end
 ```
 ```crystal
-require "amethyst-model/sqlite_adapter"
+require "amethyst-model/sqlite"
 
 class Comment < Amethyst::Model::Model
   adapter sqlite
@@ -211,7 +211,7 @@ A Read Only Model allows you to perform queries against the database that
 cannot be updated.  The results will be mapped to fields in this model.
 
 ```crystal
-require "amethyst-model/mysql_adapter"
+require "amethyst-model/mysql"
 
 class PostsByMonth < Amethyst::Model::RoModel
   adapter mysql
@@ -227,11 +227,9 @@ posts_by_month = PostsByMonth.all("GROUP BY MONTH(created_at)")
 The fields mapping is a little different than regular models.  Instead of the
 field type, you will use the calculated expression used in a `SELECT` statement.  The table name is required.
 ## RoadMap
-- PostgreSQL support
 - Connection Pool
 - Expose Transactions
 - Error Handling
-- has_many, belongs_to support
 
 ## Contributing
 

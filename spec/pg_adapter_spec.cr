@@ -1,6 +1,19 @@
-require "./spec_helper"
+require "spec"
+require "../src/pg"
+include Amethyst::Model
 
-describe "PostgresqlAdapter" do
+class User < Model
+  adapter postgresql
+  sql_mapping({ 
+    name: "TEXT", 
+    pass: "TEXT" 
+  })
+end
+
+User.drop
+User.create
+
+describe Amethyst::Model::Adapter::Postgresql do
   Spec.before_each do
     User.clear
   end

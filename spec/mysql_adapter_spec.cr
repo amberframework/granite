@@ -1,6 +1,19 @@
-require "./spec_helper"
+require "spec"
+require "../src/mysql"
+include Amethyst::Model
 
-describe MysqlAdapter do
+class Post < Model
+  adapter mysql
+  sql_mapping({ 
+    name: "VARCHAR(255)", 
+    body: "TEXT" 
+  })
+end
+
+Post.drop
+Post.create
+
+describe Amethyst::Model::Adapter::Mysql do
   Spec.before_each do
     Post.clear
   end

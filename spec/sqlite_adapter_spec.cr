@@ -1,6 +1,19 @@
-require "./spec_helper"
+require "spec"
+require "../src/sqlite"
+include Amethyst::Model
 
-describe SqliteAdapter do
+class Comment < Model
+  adapter sqlite 
+  sql_mapping({ 
+    name: "CHAR(255)", 
+    body: "TEXT" 
+  })
+end
+
+Comment.drop
+Comment.create
+
+describe Amethyst::Model::Adapter::Sqlite do
   Spec.before_each do
     Comment.clear
   end

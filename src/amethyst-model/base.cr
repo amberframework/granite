@@ -14,7 +14,7 @@ abstract class Amethyst::Model::Base
           settings[key] = env(value)
         end
       end
-      @@database = Amethyst::Model::{{name.id.capitalize}}Adapter.new(settings)
+      @@database = Amethyst::Model::Adapter::{{name.id.capitalize}}.new(settings)
     end
   end  
   
@@ -28,10 +28,6 @@ abstract class Amethyst::Model::Base
     end
   end
   
-  # from_sql creates an instance of the model for each row returned from the
-  # query.  All of the data is properly mapped to the fields in the results.
-  abstract def from_sql(results : Array)
-
   # query performs the select statement and calls the from_sql with the
   # results.
   def self.query(table_name, fields, clause, params = {} of String => String)
