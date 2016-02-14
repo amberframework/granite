@@ -71,8 +71,9 @@ Here is an example using Amethyst Model
 
 ```crystal
 require "amethyst-model/mysql"
+include Amethyst::Model
 
-class Post < Amethyst::Model::Model
+class Post < Model
   adapter mysql
   
   sql_mapping({ 
@@ -82,21 +83,21 @@ class Post < Amethyst::Model::Model
 
 end
 ```
+
 ```crystal
 require "amethyst-model/sqlite"
+include Amethyst::Model
 
-class Comment < Amethyst::Model::Model
+class Comment < Model
   adapter sqlite
 
+  # table name is set to post_comments and timestamps are disabled.
   sql_mapping({ 
     name: "CHAR(255)", 
     body: "TEXT" 
   }, "post_comments", false)
 
-  # table name is set to post_comments and timestamps are disabled.
-
 end
-
 ```
 ### Fields
 
@@ -226,6 +227,7 @@ posts_by_month = PostsByMonth.all("GROUP BY MONTH(created_at)")
 
 The fields mapping is a little different than regular models.  Instead of the
 field type, you will use the calculated expression used in a `SELECT` statement.  The table name is required.
+
 ## RoadMap
 - Connection Pool
 - Expose Transactions

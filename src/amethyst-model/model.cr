@@ -113,13 +113,10 @@ abstract class Amethyst::Model::Model < Amethyst::Model::Base
 
   # All will return all rows in the database. The clause allows you to specify
   # a WHERE, JOIN, GROUP BY, ORDER BY and any other SQL92 compatible query to
-  # your table.  The results will be an array of instanciated instances of
+  # your table.  The results will be an array of instantiated instances of
   # your Model class.  This allows you to take full advantage of the database
-  # that you are using so you are not restricted of dummied down to support a
-  # DSL.  This is where we differ with other ORM approaches but you will find
-  # the freedom and power provided is worth the small amount of SQL that you
-  # need to deal with.  You will no longer have to map in your head a DSL
-  # method with a SQL query string.
+  # that you are using so you are not restricted or dummied down to support a
+  # DSL.  
   def self.all(clause = "", params = {} of String => String)
     return self.query(@@table_name, fields({"id" => "INT"}), clause, params)
   end
