@@ -3,7 +3,7 @@ require "yaml"
 abstract class Amethyst::Model::Base
 
   # specify the database adapter you will be using for this model. 
-  # mysql, postgresql, sqlite, etc.
+  # mysql, pg, sqlite, etc.
   macro adapter(name)
     unless @@database
       yaml_file = File.read("config/database.yml")

@@ -3,7 +3,7 @@ require "../src/pg"
 include Amethyst::Model
 
 class User < Model
-  adapter postgresql
+  adapter pg
   sql_mapping({ 
     name: "TEXT", 
     pass: "TEXT" 
@@ -13,7 +13,7 @@ end
 User.drop
 User.create
 
-describe Amethyst::Model::Adapter::Postgresql do
+describe Amethyst::Model::Adapter::Pg do
   Spec.before_each do
     User.clear
   end

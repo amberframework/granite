@@ -9,7 +9,7 @@ mysql:
 sqlite:
   database: config/test.db
 
-postgresql:
+pg:
   host: 127.0.0.1
   port: 5432
   database: amethyst_model_test

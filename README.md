@@ -55,7 +55,7 @@ mysql:
   port: 3306
   username: blog
   password: ${DB_PASSWORD}
-postgresql:
+pg:
   database: blog_test
   host: 127.0.0.1
   port: 3306
