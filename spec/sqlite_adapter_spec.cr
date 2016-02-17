@@ -1,5 +1,5 @@
 require "spec"
-require "../src/sqlite"
+require "../src/sqlite_adapter"
 include Amethyst::Model
 
 class Comment < Model

@@ -1,5 +1,5 @@
 require "spec"
-require "../src/mysql"
+require "../src/mysql_adapter"
 include Amethyst::Model
 
 class Post < Model

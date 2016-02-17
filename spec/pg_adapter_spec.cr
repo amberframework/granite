@@ -1,5 +1,5 @@
 require "spec"
-require "../src/pg"
+require "../src/pg_adapter"
 include Amethyst::Model
 
 class User < Model
