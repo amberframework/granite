@@ -5,11 +5,14 @@ require "mysql"
 class Amethyst::Model::Adapter::Mysql < Amethyst::Model::Adapter::Base
 
   def initialize(settings)
-    @host = settings["host"] as String
-    @port = settings["port"] as String
-    @username = settings["username"] as String
-    @password = settings["password"] as String
-    @database = settings["database"] as String
+    host = settings["host"] as String
+    port = settings["port"] as String
+    username = settings["username"] as String
+    password = settings["password"] as String
+    database = settings["database"] as String
+    @pool = ConnectionPool.new(capacity: 20, timeout: 0.01) do
+       MySQL.connect(host, username, password, database, port.to_u16, nil)
+    end
   end
 
   # DDL
@@ -60,17 +63,9 @@ class Amethyst::Model::Adapter::Mysql < Amethyst::Model::Adapter::Base
       stmt << fields.map{|name, type| ":#{name}"}.join(",")
       stmt << ")"
     end
-    conn = MySQL.connect(@host, @username, @password, @database, @port.to_u16, nil)
-    if conn
-      begin
-        results = MySQL::Query.new(statement, params).run(conn)
-        results = MySQL::Query.new("SELECT LAST_INSERT_ID()").run(conn)
-        if results
-          return results[0][0]
-        end
-      ensure
-        conn.close
-      end
+    results = self.queries([statement, "SELECT LAST_INSERT_ID()"], params) 
+    if results
+      return results[0][0]
     end
   end
   
@@ -80,9 +75,7 @@ class Amethyst::Model::Adapter::Mysql < Amethyst::Model::Adapter::Base
       stmt << fields.map{|name, type| "#{name}=:#{name}"}.join(",")
       stmt << " WHERE id=:id"
     end
-    if id.is_a? Int32
-      params["id"] = "#{id}"
-    end
+    params["id"] = "#{id}"
     return self.query(statement, params)
   end
   
@@ -91,14 +84,22 @@ class Amethyst::Model::Adapter::Mysql < Amethyst::Model::Adapter::Base
   end
 
   def query(query, params = {} of String => String)
-    conn = MySQL.connect(@host, @username, @password, @database, @port.to_u16, nil)
-    if conn
+    return queries([query], params)
+  end
+
+  def queries(queries, params = {} of String => String)
+    results = nil
+    
+    if conn = @pool.connection
       begin
-        results = MySQL::Query.new(query, params).run(conn)
+        queries.each do |query|
+          results = MySQL::Query.new(query, params).run(conn)
+        end
       ensure
-        conn.close
+        @pool.release
       end
     end
     return results
   end
+
 end

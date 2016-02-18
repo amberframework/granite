@@ -5,13 +5,14 @@ require "pg"
 class Amethyst::Model::Adapter::Pg < Amethyst::Model::Adapter::Base
 
   def initialize(settings)
-    @host = settings["host"] as String
-    @port = settings["port"] as String
-    @username = settings["username"] as String
-    @password = settings["password"] as String
-    @database = settings["database"] as String
-    @connection =
-      "postgres://#{@username}:#{@password}@#{@host}:#{@port}/#{@database}"
+    host = settings["host"] as String
+    port = settings["port"] as String
+    username = settings["username"] as String
+    password = settings["password"] as String
+    database = settings["database"] as String
+    @pool = ConnectionPool.new(capacity: 20, timeout: 0.01) do
+       PG.connect("postgres://#{username}:#{password}@#{host}:#{port}/#{database}")
+    end
   end
 
   # DDL
@@ -33,6 +34,7 @@ class Amethyst::Model::Adapter::Pg < Amethyst::Model::Adapter::Base
     return self.query(statement)
   end
 
+  # DML
   def select(table_name, fields, clause = "", params = {} of String => String)
     statement = String.build do |stmt|
       stmt << "SELECT "
@@ -82,20 +84,17 @@ class Amethyst::Model::Adapter::Pg < Amethyst::Model::Adapter::Base
     return self.query("DELETE FROM #{table_name} WHERE id=:id", {"id" => id})
   end
 
-  # DML
   def query(query, params = {} of String => String, fields = {} of Symbol => String)
     if params
       query, params = scrub_query_and_params(query, params, fields)
     end
-    conn = PG.connect(@connection)
+    conn = @pool.connection 
     if conn
       begin
-        #puts "QUERY: #{query} PARAMS: #{params.inspect}"
         results = conn.exec(query, params)
-        #puts "RESULTS: #{results.inspect}"
         return results.rows
       ensure
-        conn.finish
+        @pool.release
       end
     end
     return [] of String

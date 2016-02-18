@@ -1,6 +1,11 @@
 name: amethyst-model
 version: 0.0.1
 
+dependencies:
+  pool:
+    github: ysbaddaden/pool
+    branch: master
+
 development_dependencies:
   mysql:
     github: waterlink/crystal-mysql

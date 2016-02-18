@@ -5,7 +5,10 @@ require "sqlite3"
 class Amethyst::Model::Adapter::Sqlite < Amethyst::Model::Adapter::Base
 
   def initialize(settings)
-    @database = settings["database"] as String
+    database = settings["database"] as String
+    @pool = ConnectionPool.new(capacity: 20, timeout: 0.01) do
+       SQLite3::Database.new( database )
+    end
   end
 
   # DDL
@@ -54,16 +57,10 @@ class Amethyst::Model::Adapter::Sqlite < Amethyst::Model::Adapter::Base
       stmt << fields.map{|name, type| ":#{name}"}.join(",")
       stmt << ")"
     end
-    conn = SQLite3::Database.new( @database )
-    if conn
-      begin
-        conn.execute(statement, scrub_params(params))
-        results = conn.execute("SELECT LAST_INSERT_ROWID()") as Array
-        id = results[0][0]
-      ensure
-        conn.close
-      end
-    end
+    id = nil
+    self.query(statement, params)
+    results = self.query("SELECT LAST_INSERT_ROWID()", {} of String => String) as Array
+    id = results[0][0]
     return id
 
   end
@@ -85,12 +82,12 @@ class Amethyst::Model::Adapter::Sqlite < Amethyst::Model::Adapter::Base
   end
 
   def query(query, params = {} of String => String)
-    conn = SQLite3::Database.new( @database )
+    conn = @pool.connection
     if conn
       begin
         results = conn.execute(query, scrub_params(params))
       ensure
-        conn.close
+        @pool.release
       end
     end
     return results

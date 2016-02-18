@@ -1,3 +1,5 @@
+require "pool/connection"
+
 # The Base Adapter specifies the interface that will be used by the model
 # objects to perform actions against a specific database.  Each adapter needs
 # to implement these methods.
@@ -37,4 +39,5 @@ abstract class Amethyst::Model::Adapter::Base
 
   # This will delete a row from the database.
   abstract def delete(table_name, id)
-end
+
+  end

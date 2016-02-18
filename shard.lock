@@ -8,6 +8,10 @@ shards:
     github: will/crystal-pg
     commit: cafe901c4bc46c2c83dde4aff9a9120f261d9877
 
+  pool:
+    github: ysbaddaden/pool
+    commit: b2c519adaf4f7ef5a60b2027cd039f932db0b086
+
   sqlite3:
     github: manastech/crystal-sqlite3
     commit: 67ef13caedcf9003a185c38cc93970fe483afd98
