@@ -63,7 +63,8 @@ class Amethyst::Model::Adapter::Mysql < Amethyst::Model::Adapter::Base
       stmt << fields.map{|name, type| ":#{name}"}.join(",")
       stmt << ")"
     end
-    results = self.queries([statement, "SELECT LAST_INSERT_ID()"], params) 
+    self.query(statement, params)
+    results = self.query("SELECT LAST_INSERT_ID()")
     if results
       return results[0][0]
     end
@@ -84,22 +85,30 @@ class Amethyst::Model::Adapter::Mysql < Amethyst::Model::Adapter::Base
   end
 
   def query(query, params = {} of String => String)
-    return queries([query], params)
-  end
-
-  def queries(queries, params = {} of String => String)
     results = nil
     
     if conn = @pool.connection
       begin
-        queries.each do |query|
-          results = MySQL::Query.new(query, params).run(conn)
-        end
+        results = MySQL::Query.new(query, scrub_params(params)).run(conn)
       ensure
         @pool.release
       end
     end
     return results
   end
+
+  alias SUPPORTED_TYPES = (Nil | String | Float64 | Time | Int32 | Int64 |
+                           Bool | MySQL::Types::Date)
+
+  private def scrub_params(params)
+    new_params = {} of String => SUPPORTED_TYPES
+    params.each do |key, value|
+      if value.is_a? SUPPORTED_TYPES
+        new_params[key] = value
+      end
+    end
+    return new_params
+  end
+
 
 end
