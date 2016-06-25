@@ -1,34 +1,28 @@
-# amethyst-model
+# kemalyst-model
 
-[![Build Status](https://travis-ci.org/drujensen/amethyst-model.svg)](https://travis-ci.org/drujensen/amethyst-model)
+[![Build Status](https://travis-ci.org/drujensen/kemalyst-model.svg)](https://travis-ci.org/drujensen/kemalyst-model)
 
-[![docrystal.org](http://www.docrystal.org/badge.svg)](http://www.docrystal.org/github.com/drujensen/amethyst-model)
+[![docrystal.org](http://www.docrystal.org/badge.svg)](http://www.docrystal.org/github.com/drujensen/kemalyst-model)
 
-[Amethyst](https://github.com/Codcore/amethyst) is a web framework written in
+[Kemalyst](https://github.com/drujensen/kemalyst) is a web framework written in
 the [Crystal](https://github.com/manastech/crystal) language. 
 
-This project is to provide an ORM Model for Amethyst.
+This project is to provide an ORM Model for Kemalyst.
 
 ## Installation
 
 *** Work In Progress ***
 
-Add this library to your Amethyst dependencies along with the driver in
-your `shard.yml`.
+Add this library to your projects dependencies along with the driver in
+your `shard.yml`.  This can be used with any framework but was originally
+designed to work with kemalyst in mind.  This library will work with kemal as
+well.
 
 ```yaml
 dependencies:
-  # Amethyst Framework
-  amethyst:
-    github: Codcore/amethyst
-    branch: master
-  mime:
-    github: spalger/crystal-mime
-    branch: master
-
-  # Amethyst Model
-  amethyst-model:
-    github: drujensen/amethyst-model
+  # Kemalyst Model
+  kemalyst-model:
+    github: drujensen/kemalyst-model
     branch: master
 
   # Pick your database
@@ -67,34 +61,32 @@ sqlite:
 
 ## Usage
 
-Here is an example using Amethyst Model
+Here is an example using Kemalyst Model
 
 ```crystal
-require "amethyst-model/mysql_adapter"
-include Amethyst::Model
+require "kemalyst/adapter/mysql"
 
-class Post < Model
+class Post < Kemalyst::Model
   adapter mysql
   
   sql_mapping({ 
-    name: "VARCHAR(255)", 
-    body: "TEXT" 
+    name: ["VARCHAR(255)", String],
+    body: ["TEXT", String]
   })
 
 end
 ```
 
 ```crystal
-require "amethyst-model/sqlite_adapter"
-include Amethyst::Model
+require "kemalyst/adapter/sqlite"
 
-class Comment < Model
+class Comment < Kemalyst::Model
   adapter sqlite
 
   # table name is set to post_comments and timestamps are disabled.
   sql_mapping({ 
-    name: "CHAR(255)", 
-    body: "TEXT" 
+    name: ["VARCHAR(255)", String], 
+    body: ["TEXT", String]
   }, "post_comments", false)
 
 end
@@ -102,11 +94,10 @@ end
 ### Fields
 
 To define the fields for this model, you need to provide a hash with the name
-of the field as a `Symbol` and the MySQL type as a `String`.  This can include
-any other options that MySQL provides to you.  
+of the field as a `Symbol` and an array of the datbase type as a `String` and
+the type.  This can include any other options that the database provides to you.
 
 3 Fields are automatically created for you:  id, created_at, updated_at.
-These will also be set for you when you use the `save` method.
 
 MySQL field definitions for id, created_at, updated_at
 
@@ -126,6 +117,11 @@ Post.drop #drop the table
 Post.create #create the table
 
 Post.clear #truncate the table
+
+Post.migrate #safe migration of fields. Fields will be renamed to `old_\*`
+before migrated.
+
+Post.prune #clean up any fields not defined in model.  DANGER!!!!
 ```
 
 ### DML
@@ -154,7 +150,7 @@ end
 
 ```crystal
 post = Post.new
-post.name = "Amethyst Rocks!"
+post.name = "Kemalyst Rocks!"
 post.body = "Check this out."
 post.save
 ```
@@ -163,7 +159,7 @@ post.save
 
 ```crystal
 post = Post.find 1
-post.name = "Amethyst Really Rocks!"
+post.name = "Kemalyst Really Rocks!"
 post.save
 ```
 
@@ -206,36 +202,12 @@ posts = Post.all("JOIN comments c ON c.post_id = post.id
                   {"name" => "Joe"})
 
 ```
-### Read Only Model
-
-A Read Only Model allows you to perform queries against the database that
-cannot be updated.  The results will be mapped to fields in this model.
-
-```crystal
-require "amethyst-model/mysql_adapter"
-
-class PostsByMonth < Amethyst::Model::RoModel
-  adapter mysql
-  fields({ 
-    month: "MONTHNAME(created_at)", 
-    total: "COUNT(*)"
-  }, "posts")
-end
-
-posts_by_month = PostsByMonth.all("GROUP BY MONTH(created_at)")
-```
-
-The fields mapping is a little different than regular models.  Instead of the
-field type, you will use the calculated expression used in a `SELECT` statement.  The table name is required.
-
 ## RoadMap
-- Connection Pool
 - Expose Transactions
-- Error Handling
 
 ## Contributing
 
-1. Fork it ( https://github.com/drujensen/amethyst-model/fork )
+1. Fork it ( https://github.com/drujensen/kemalyst-model/fork )
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)

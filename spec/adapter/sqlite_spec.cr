@@ -1,25 +1,26 @@
-require "spec"
-require "../src/sqlite_adapter"
-include Amethyst::Model
+# TODO: SQLite is failing in a Docker Container.  Disabling for now
 
-class Comment < Model
+require "./spec_helper"
+require "../src/adapter/sqlite"
+
+class Comment < Kemalyst::Model
   adapter sqlite 
   sql_mapping({ 
-    name: "CHAR(255)", 
-    body: "TEXT" 
+    name: ["TEXT", String],
+    body: ["TEXT", String]
   })
 end
 
 Comment.drop
 Comment.create
 
-describe Amethyst::Model::Adapter::Sqlite do
+describe Kemalyst::Adapter::Sqlite do
   Spec.before_each do
     Comment.clear
   end
 
   describe "#all" do
-    it "should find all the comments" do
+    it "finds all the comments" do
       comment = Comment.new
       comment.name = "Test Comment"
       comment.save
@@ -32,7 +33,7 @@ describe Amethyst::Model::Adapter::Sqlite do
   end
 
   describe "#find" do
-    it "should find the comment by id" do
+    it "finds the comment by id" do
       comment = Comment.new
       comment.name = "Test Comment"
       comment.save
@@ -42,7 +43,7 @@ describe Amethyst::Model::Adapter::Sqlite do
   end
 
   describe "#save" do
-    it "should create a new comment" do
+    it "creates a new comment" do
       comment = Comment.new
       comment.name = "Test Comment"
       comment.body = "Test Comment"
@@ -50,7 +51,7 @@ describe Amethyst::Model::Adapter::Sqlite do
       comment.id.should eq 1
     end
 
-    it "should update an existing comment" do
+    it "updates an existing comment" do
       comment = Comment.new
       comment.name = "Test Comment"
       comment.save
@@ -58,7 +59,7 @@ describe Amethyst::Model::Adapter::Sqlite do
       comment.save
       comments = Comment.all
       comments.size.should eq 1
-      comment = Comment.find 1
+      comment = Comment.find comments[0].id
       if comment
         comment.name.should eq "Test Comment 2"
       else
@@ -68,7 +69,7 @@ describe Amethyst::Model::Adapter::Sqlite do
   end
 
   describe "#destroy" do
-    it "should destroy a comment" do
+    it "destroys a comment" do
       comment = Comment.new
       comment.name = "Test Comment"
       comment.save
@@ -78,6 +79,5 @@ describe Amethyst::Model::Adapter::Sqlite do
       comment.should be_nil
     end
   end
-
 end
 

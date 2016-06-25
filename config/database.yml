@@ -1,18 +1,13 @@
-# use ${VARIABLE} for interpolating environment variables
 mysql:
-  host: 127.0.0.1
-  port: 3306
-  database: amethyst_model_test
-  username: amethyst_model
-  password: ${DB_PASS} 
+  host: "${MYSQL_HOST}"
+  port: "${MYSQL_PORT}"
+  database: "${MYSQL_DATA}"
+  username: "${MYSQL_USER}"
+  password: "${MYSQL_PASS}"
+
+pg:
+  database: "${DATABASE_URL}"
 
 sqlite:
   database: config/test.db
-
-pg:
-  host: 127.0.0.1
-  port: 5432
-  database: amethyst_model_test
-  username: drujensen
-  password: ${DB_PASS} 
 

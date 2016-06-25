@@ -1,25 +1,24 @@
-require "spec"
-require "../src/pg_adapter"
-include Amethyst::Model
+require "./spec_helper"
+require "../src/adapter/pg"
 
-class User < Model
+class User < Kemalyst::Model
   adapter pg
   sql_mapping({ 
-    name: "TEXT", 
-    pass: "TEXT" 
+    name: ["VARCHAR(255)", String],
+    pass: ["TEXT", String]
   })
 end
 
 User.drop
 User.create
 
-describe Amethyst::Model::Adapter::Pg do
+describe Kemalyst::Adapter::Pg do
   Spec.before_each do
     User.clear
   end
 
   describe "#all" do
-    it "should find all the users" do
+    it "finds all the users" do
       user = User.new
       user.name = "Test User"
       user.save
@@ -32,7 +31,7 @@ describe Amethyst::Model::Adapter::Pg do
   end
 
   describe "#find" do
-    it "should find the user by id" do
+    it "finds the user by id" do
       user = User.new
       user.name = "Test User"
       user.save
@@ -43,7 +42,7 @@ describe Amethyst::Model::Adapter::Pg do
   end
 
   describe "#save" do
-    it "should create a new user" do
+    it "creates a new user" do
       user = User.new
       user.name = "Test User"
       user.pass = "Password"
@@ -51,7 +50,7 @@ describe Amethyst::Model::Adapter::Pg do
       user.id.should_not be_nil 
     end
 
-    it "should update an existing user" do
+    it "updates an existing user" do
       user = User.new
       user.name = "Test User"
       user.save
@@ -65,7 +64,7 @@ describe Amethyst::Model::Adapter::Pg do
   end
 
   describe "#destroy" do
-    it "should destroy a user" do
+    it "destroys a user" do
       user = User.new
       user.name = "Test User"
       user.save

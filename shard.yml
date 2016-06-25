@@ -1,5 +1,10 @@
-name: amethyst-model
-version: 0.0.1
+name: kemalyst-model
+version: 0.1.0
+
+authors:
+  - drujensen <drujensen@gmail.com>
+
+license: MIT
 
 dependencies:
   pool:
@@ -14,6 +19,7 @@ development_dependencies:
   pg:
     github: will/crystal-pg
     branch: master
+    #version: 0.8.0
 
   sqlite3:
     github: manastech/crystal-sqlite3
