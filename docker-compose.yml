@@ -1,9 +1,5 @@
 version: '2'
 services:
-  doc:
-    build: ./doc
-    ports:
-      - "80:80"
   spec:
     build: .
     command: 'bash -c "cd /app/user && crystal spec"'
