@@ -1,4 +1,5 @@
 require "pool/connection"
+require "../kemalyst-model"
 
 # The Base Adapter specifies the interface that will be used by the model
 # objects to perform actions against a specific database.  Each adapter needs
