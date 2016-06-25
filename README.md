@@ -50,11 +50,7 @@ mysql:
   username: blog
   password: ${DB_PASSWORD}
 pg:
-  database: blog_test
-  host: 127.0.0.1
-  port: 3306
-  username: blog
-  password: ${DB_PASSWORD}
+  database: "${DATABASE_URL}"
 sqlite:
   database: config/blog_test.db
 ```
@@ -64,7 +60,7 @@ sqlite:
 Here is an example using Kemalyst Model
 
 ```crystal
-require "kemalyst/adapter/mysql"
+require "kemalyst-model/adapter/mysql"
 
 class Post < Kemalyst::Model
   adapter mysql
@@ -78,7 +74,7 @@ end
 ```
 
 ```crystal
-require "kemalyst/adapter/sqlite"
+require "kemalyst-model/adapter/sqlite"
 
 class Comment < Kemalyst::Model
   adapter sqlite

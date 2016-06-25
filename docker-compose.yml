@@ -1,0 +1,31 @@
+version: '2'
+services:
+  doc:
+    build: ./doc
+    ports:
+      - "80:80"
+  spec:
+    build: .
+    command: 'bash -c "cd /app/user && crystal spec"'
+    working_dir: /app/user
+    environment:
+      DATABASE_URL: 'postgres://postgres:@pg:5432/postgres'
+      MYSQL_HOST: 'mysql'
+      MYSQL_PORT: '3306'
+      MYSQL_DATA: 'test'
+      MYSQL_USER: 'user'
+      MYSQL_PASS: 'pass'
+    depends_on:
+      - pg
+      - mysql
+    volumes:
+      - '.:/app/user'
+  pg:
+    image: postgres:9.5
+  mysql:
+    image: mysql:5.6
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: test
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
