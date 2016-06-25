@@ -11,8 +11,6 @@ This project is to provide an ORM Model for Kemalyst.
 
 ## Installation
 
-*** Work In Progress ***
-
 Add this library to your projects dependencies along with the driver in
 your `shard.yml`.  This can be used with any framework but was originally
 designed to work with kemalyst in mind.  This library will work with kemal as
