@@ -48,34 +48,34 @@ class Kemalyst::Model
    
     # Create the from_sql method
     def self.from_sql(result)
-      {{name_space}} = {{@type.name.id}}.new
+      model = {{@type.name.id}}.new
       
       # hack around different types for Pg and Mysql drivers
-      unless {{name_space}}.id = result[0] as? Int32
-        {{name_space}}.id = result[0] as? Int64
+      unless model.id = result[0] as? Int32
+        model.id = result[0] as? Int64
       end
       {% i = 1 %}
       {% for name, types in fields %}
         # Need to find a way to map to other types based on SQL type
-        {{name_space}}.{{name.id}} = result[{{i}}] as? {{types[1].id}}
+        model.{{name.id}} = result[{{i}}] as? {{types[1].id}}
         {% i += 1 %}
       {% end %}
 
       {% if timestamps %}
-        unless {{name_space}}.created_at = result[{{i}}] as? Time
+        unless model.created_at = result[{{i}}] as? Time
           created_at_string = result[{{i}}] as? String
           if created_at_string
-            {{name_space}}.created_at = Time::Format.new("%F %X").parse(created_at_string)
+            model.created_at = Time::Format.new("%F %X").parse(created_at_string)
           end
         end
-        unless {{name_space}}.updated_at = result[{{i + 1}}] as? Time
+        unless model.updated_at = result[{{i + 1}}] as? Time
           updated_at_string = result[{{i + 1}}] as? String
           if updated_at_string
-            {{name_space}}.updated_at = Time::Format.new("%F %X").parse(updated_at_string)
+            model.updated_at = Time::Format.new("%F %X").parse(updated_at_string)
           end
         end
       {% end %}
-      return {{name_space}}
+      return model
     end
 
     # keep a hash of the fields to be used for mapping
