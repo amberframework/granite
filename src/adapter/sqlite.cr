@@ -67,7 +67,7 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
   def select(table_name, fields, clause = "", params = {} of String => String)
     statement = String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map{|name, type| "#{name}"}.join(",")
+      stmt << fields.map{|name, type| "#{table_name}.#{name}"}.join(",")
       stmt << " FROM #{table_name} #{clause}"
     end
     return self.query(statement, params, fields)
@@ -77,7 +77,7 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
   def select_one(table_name, fields, id)
     statement = String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map{|name, type| "#{name}"}.join(",")
+      stmt << fields.map{|name, type| "#{table_name}.#{name}"}.join(",")
       stmt << " FROM #{table_name}"
       stmt << " WHERE id=:id LIMIT 1"
     end
