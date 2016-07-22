@@ -1,5 +1,9 @@
 version: 1.0
 shards:
+  db:
+    github: crystal-lang/crystal-db
+    commit: b5112d9a48d092ef6b46c302c865b0b24369c766
+
   mysql:
     github: waterlink/crystal-mysql
     commit: 26ef2b4aaf2e108f1104a84063fb18434bb65abe

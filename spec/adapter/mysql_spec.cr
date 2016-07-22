@@ -28,6 +28,18 @@ describe Kemalyst::Adapter::Mysql do
       posts = Post.all
       posts.size.should eq 2
     end
+
+    it "should get TEXT fields" do
+      post = Post.new
+      post.name = "Test Post"
+      post.body = "Post Body"
+      post.save
+
+      posts = Post.all
+      p1 = posts.first
+      p1.body.should eq "Post Body"
+    end
+
   end
 
   describe "#find" do

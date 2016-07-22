@@ -57,7 +57,11 @@ class Kemalyst::Model
       {% i = 1 %}
       {% for name, types in fields %}
         # Need to find a way to map to other types based on SQL type
-        model.{{name.id}} = result[{{i}}] as? {{types[1].id}}
+        if result[{{i}}].class == Slice(UInt8) && {{types[1].id}} == String
+          model.{{name.id}} = String.new ( result[{{i}}] as Slice(UInt8) )
+        else
+          model.{{name.id}} = result[{{i}}] as? {{types[1].id}}
+        end
         {% i += 1 %}
       {% end %}
 
