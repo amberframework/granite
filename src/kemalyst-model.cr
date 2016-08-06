@@ -169,7 +169,7 @@ class Kemalyst::Model
     if db = @@database
       begin
         if value = @id
-          updated_at = Time.now
+          @updated_at = Time.now
           db.update(@@table_name, self.class.fields, value, params)
         else
           @created_at = Time.now
