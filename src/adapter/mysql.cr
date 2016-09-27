@@ -5,7 +5,7 @@ require "mysql"
 class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
   property pool : ConnectionPool(MySQL::Connection)
   property database : String
-  
+
   def initialize(settings)
     host = env(settings["host"].to_s)
     port = env(settings["port"].to_s)
@@ -21,12 +21,12 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
   def clear(table_name)
     self.query("TRUNCATE #{table_name}")
   end
-  
+
   # drop the table
   def drop(table_name)
     return self.query("DROP TABLE IF EXISTS #{table_name}")
   end
-  
+
   def create(table_name, fields)
     statement = String.build do |stmt|
       stmt << "CREATE TABLE #{table_name} ("
@@ -58,7 +58,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
         if columns && columns.size > 0
           column = columns.first
           #check to see if the data_type matches
-          if !type.downcase.includes?(column[1] as String)
+          if !type.downcase.includes?(column[1].as(String))
             rename_field(table_name, name, "old_#{name}", type)
             add_field(table_name, name, type, prev)
             copy_field(table_name, "old_#{name}", name)
@@ -84,7 +84,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
   end
 
   # Prune will remove fields that are not defined in the model.  This should
-  # be used after you have successfully migrated the colunns and data. 
+  # be used after you have successfully migrated the colunns and data.
   # WARNING: Be aware that if you have fields in your database that are not
   # apart of the model, they will be dropped!
   def prune(table_name, fields)
@@ -92,7 +92,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
                            " FROM information_schema.columns WHERE table_name = '#{table_name}';")
     if db_schema
       db_schema.each do |column|
-        name = column[0] as String
+        name = column[0].as(String)
         unless name == "id" || fields.has_key? name
           remove_field(table_name, name)
         end
@@ -112,7 +112,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
     end
     return self.query(statement)
   end
-  
+
   # rename a field in the table.
   def rename_field(table_name, old_name, new_name, type)
     statement = String.build do |stmt|
@@ -129,7 +129,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
     end
     return self.query(statement)
   end
- 
+
   # Copy data from one column to another
   def copy_field(table_name, from, to)
     statement = String.build do |stmt|
@@ -138,7 +138,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
     end
     return self.query(statement)
   end
-  
+
   # select performs a query against a table.  The table_name and fields are
   # configured using the sql_mapping directive in your model.  The clause and
   # params is the query and params that is passed in via .all() method
@@ -150,7 +150,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
     end
     return self.query(statement, params, fields)
   end
-  
+
   # select_one is used by the find method.
   def select_one(table_name, fields, id)
     statement = String.build do |stmt|
@@ -173,10 +173,10 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
     self.query(statement, params)
     results = self.query("SELECT LAST_INSERT_ID()")
     if results
-      return results[0][0] as Int64
+      return results[0][0].as(Int64)
     end
   end
-  
+
   # This will update a row in the database.
   def update(table_name, fields, id, params)
     statement = String.build do |stmt|
@@ -189,7 +189,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
     end
     return self.query(statement, params, fields)
   end
-  
+
   # This will delete a row from the database.
   def delete(table_name, id)
     return self.query("DELETE FROM #{table_name} WHERE id=:id", {"id" => id})
@@ -197,7 +197,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
 
   def query(statement : String, params = {} of String => String, fields = {} of Symbol => String)
     results = nil
-    
+
     if conn = @pool.connection
       begin
         results = MySQL::Query.new(statement, scrub_params(params)).run(conn)
@@ -221,4 +221,3 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
   end
 
 end
-

@@ -19,7 +19,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
         end
       end
       if ex && conn == nil
-        raise ex 
+        raise ex
       end
       conn
     end
@@ -58,9 +58,9 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
       fields.each do |name, type|
         #check to see if the field is in the db_schema
         column = db_schema.find { |col| col[0] == name }
-        if column 
+        if column
           #check to see if the data_type matches
-          if db_alias_to_schema_type(type) != (column[1] as String)
+          if db_alias_to_schema_type(type) != (column[1].as(String))
             rename_field(table_name, name, "old_#{name}", type)
             add_field(table_name, name, type, prev)
             copy_field(table_name, "old_#{name}", name)
@@ -86,7 +86,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   end
 
   # Prune will remove fields that are not defined in the model.  This should
-  # be used after you have successfully migrated the colunns and data. 
+  # be used after you have successfully migrated the colunns and data.
   # WARNING: Be aware that if you have fields in your database that are not
   # apart of the model, they will be dropped!
   def prune(table_name, fields)
@@ -94,7 +94,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
                            " FROM information_schema.columns WHERE table_name = '#{table_name}';")
     if db_schema
       db_schema.each do |column|
-        name = column[0] as String
+        name = column[0].as(String)
         unless name == "id" || fields.has_key? name
           remove_field(table_name, name)
         end
@@ -120,7 +120,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
     end
     return self.query(statement)
   end
-  
+
   def remove_field(table_name, name)
     statement = String.build do |stmt|
       stmt << "ALTER TABLE #{table_name} DROP COLUMN"
@@ -149,7 +149,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
     end
     return self.query(statement, params, fields)
   end
-  
+
   # select_one is used by the find method.
   def select_one(table_name, fields, id)
     statement = String.build do |stmt|
@@ -171,10 +171,10 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
     end
     results = self.query(statement, params, fields)
     if results
-      return results[0][0] as Int32
+      return results[0][0].as(Int32)
     end
   end
-  
+
   # This will update a row in the database.
   def update(table_name, fields, id, params)
     statement = String.build do |stmt|
@@ -329,4 +329,3 @@ end
 # txid_snapshot	 	                    user-level transaction ID snapshot
 # uuid	 	                            universally unique identifier
 # xml	 	                              XML data
-
