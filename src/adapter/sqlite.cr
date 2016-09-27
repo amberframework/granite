@@ -4,7 +4,7 @@ require "sqlite3"
 # Sqlite implementation of the Adapter
 class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
   @pool : ConnectionPool(SQLite3::Database)
-  
+
   def initialize(settings)
     filename = env(settings["database"].to_s)
     @pool = ConnectionPool.new(capacity: 20) do
@@ -43,7 +43,7 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
   def add_field(table_name, name, type, previous = nil)
     raise "Not Available for Sqlite"
   end
-  
+
   def rename_field(table_name, from, to, type)
     raise "Not Available for Sqlite"
   end
@@ -60,7 +60,7 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
     end
     return self.query(statement)
   end
-  
+
   # select performs a query against a table.  The table_name and fields are
   # configured using the sql_mapping directive in your model.  The clause and
   # params is the query and params that is passed in via .all() method
@@ -72,7 +72,7 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
     end
     return self.query(statement, params, fields)
   end
-  
+
   # select_one is used by the find method.
   def select_one(table_name, fields, id)
     statement = String.build do |stmt|
@@ -94,11 +94,11 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
     end
     id = nil
     self.query(statement, params)
-    results = self.query("SELECT LAST_INSERT_ROWID()") as Array
-    id = results[0][0] as Int64
+    results = self.query("SELECT LAST_INSERT_ROWID()").as(Array)
+    id = results[0][0].as(Int64)
     return id
   end
-  
+
   # This will update a row in the database.
   def update(table_name, fields, id, params)
     statement = String.build do |stmt|
@@ -111,7 +111,7 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
     end
     return self.query(statement, params, fields)
   end
-  
+
   # This will delete a row from the database.
   def delete(table_name, id)
     return self.query("DELETE FROM #{table_name} WHERE id=:id", {"id" => id})
@@ -151,5 +151,3 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
   end
 
 end
-
-
