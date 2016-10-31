@@ -2,21 +2,17 @@ version: 1.0
 shards:
   db:
     github: crystal-lang/crystal-db
-    commit: b5112d9a48d092ef6b46c302c865b0b24369c766
+    version: 0.2.0
 
   mysql:
-    github: waterlink/crystal-mysql
-    commit: 26ef2b4aaf2e108f1104a84063fb18434bb65abe
+    github: crystal-lang/crystal-mysql
+    commit: 4fe8d6a9e6aec9594196a9ac4e28178291ee7ea1
 
   pg:
-    github: will/crystal-pg
-    commit: cafe3e90b4a239aa9819482543c63503a6a3f477
-
-  pool:
-    github: ysbaddaden/pool
-    commit: c4ecfad1b87fbd8c6484d1fd536ccfd14c40cc94
+    github: asterite/crystal-pg
+    commit: 505cfac4b224ee48b905ad62c89700f68cef9e00
 
   sqlite3:
-    github: manastech/crystal-sqlite3
-    commit: 135f33d9eac82c63a48b14942c8eff647c070410
+    github: crystal-lang/crystal-sqlite3
+    commit: 71347ad377628cfe714923e8f45429ed07c20404
 

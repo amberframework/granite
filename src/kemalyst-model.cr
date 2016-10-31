@@ -1,8 +1,9 @@
 require "yaml"
+require "db"
 
 # Kemalyst::Model is the base class for your model objects.
 class Kemalyst::Model
-  VERSION = "0.1.0"
+  VERSION = "0.2.0"
   property errors : Array(String)?
 
   def errors
@@ -17,10 +18,10 @@ class Kemalyst::Model
       yaml = YAML.parse(yaml_file)
       settings = yaml["{{name.id}}"]
     end
-    @@database = Kemalyst::Adapter::{{name.id.capitalize}}.new(settings)
+    @@adapter = Kemalyst::Adapter::{{name.id.capitalize}}.new(settings)
 
-    def self.database
-      @@database
+    def self.adapter
+      @@adapter
     end
   end
 
@@ -37,7 +38,7 @@ class Kemalyst::Model
     # Table Name
     @@table_name = "{{table_name}}"
     #Create the properties
-    property id : (Int32 | Int64 | Nil)
+    property id : (Int64 | Nil)
     {% for name, types in fields %}
       property {{name.id}} : {{types[1].id}}?
     {% end %}
@@ -50,34 +51,18 @@ class Kemalyst::Model
     def self.from_sql(result)
       model = {{@type.name.id}}.new
 
-      # hack around different types for Pg and Mysql drivers
-      unless model.id = result[0].as?(Int32)
-        model.id = result[0].as?(Int64)
-      end
+      model.id = result.read(Int64)
+
       {% i = 1 %}
       {% for name, types in fields %}
-        # Need to find a way to map to other types based on SQL type
-        if result[{{i}}].class == Slice(UInt8) && {{types[1].id}} == String
-          model.{{name.id}} = String.new ( result[{{i}}].as(Slice(UInt8)) )
-        else
-          model.{{name.id}} = result[{{i}}].as?({{types[1].id}})
-        end
+        model.{{name.id}} = result.read(Union({{types[1].id}} | Nil))
         {% i += 1 %}
       {% end %}
 
       {% if timestamps %}
-        unless model.created_at = result[{{i}}].as?(Time)
-          created_at_string = result[{{i}}].as?(String)
-          if created_at_string
-            model.created_at = Time::Format.new("%F %X").parse(created_at_string)
-          end
-        end
-        unless model.updated_at = result[{{i + 1}}].as?(Time)
-          updated_at_string = result[{{i + 1}}].as?(String)
-          if updated_at_string
-            model.updated_at = Time::Format.new("%F %X").parse(updated_at_string)
-          end
-        end
+        formatter = Time::Format.new("%F %X")
+        model.created_at = formatter.parse(result.read(String))
+        model.updated_at = formatter.parse(result.read(String))
       {% end %}
       return model
     end
@@ -88,122 +73,116 @@ class Kemalyst::Model
         fields["{{name.id}}"] = "{{types[0].id}}"
         {% end %}
         {% if timestamps %}
-        fields["created_at"] = "TIMESTAMP"
-        fields["updated_at"] = "TIMESTAMP"
+        fields["created_at"] = "VARCHAR(255)"
+        fields["updated_at"] = "VARCHAR(255)"
         {% end %}
         return fields
     end
 
     # keep a hash of the params that will be passed to the adapter.
     def params
-      return {
-          {% for name, types in fields %}
-            "{{name.id}}" => {{name.id}},
-          {% end %}
-          {% if timestamps %}
-            "created_at" => created_at,
-            "updated_at" => updated_at,
-          {% end %}
-      }
-    end
-
+      params = [] of DB::Any
+      {% for name, types in fields %}
+        params << {{name.id}}
+      {% end %}
+      {% if timestamps %}
+        formatter = Time::Format.new("%F %X")
+        if time = created_at
+          params << formatter.format(time)
+        else
+          params << nil
+        end
+        if time = updated_at
+          params << formatter.format(time)
+        else
+          params << nil
+        end
+      {% end %}
+      return params
+   end
   end #End of Fields Macro
-
 
   # Clear is used to remove all rows from the table and reset the counter for
   # the id.
   def self.clear
-    if db = @@database
-      db.clear(@@table_name)
-    end
-    return true
+    @@adapter.open {|db| db.exec( @@adapter.clear(@@table_name) ) }
   end
 
   # Drop will drop the table completely.  This will lose data so be very
   # careful with this call.
   def self.drop
-    if db = @@database
-      db.drop(@@table_name)
-    end
-    return true
+    @@adapter.open {|db| db.exec( @@adapter.drop(@@table_name) ) }
   end
 
   # Create will create the table for you based on the sql_mapping specified.
   def self.create
-    if db = @@database
-      db.create(@@table_name, fields)
-    end
-    return true
+    @@adapter.open {|db| db.exec( @@adapter.create(@@table_name, fields) ) }
   end
 
   # Migrate will examine the current schema and additively update to match the
   # model.
   def self.migrate
-    if db = @@database
-      db.migrate(@@table_name, fields)
-    end
-    return true
+    @@adapter.migrate(@@table_name, fields)
   end
 
-  # Prune fields no longer defined in the model.  This should be used after
-  # you have successfully migrated.
+  # # Prune fields no longer defined in the model.  This should be used after
+  # # you have successfully migrated.
   def self.prune
-    if db = @@database
-      db.prune(@@table_name, fields)
-    end
-    return true
-  end
-
-  # Perform a query directly against the database
-  def self.query(statement : String, params = {} of String => String)
-    if db = @@database
-      results = db.query(statement, params, fields)
-    end
-    return results
+    @@adapter.prune(@@table_name, fields)
   end
 
   # The save method will check to see if the @id exists yet.  If it does it
   # will call the update method, otherwise it will call the create method.
   # This will update the timestamps apropriately.
   def save
-    if db = @@database
-      begin
-        if value = @id
-          @updated_at = Time.now
-          db.update(@@table_name, self.class.fields, value, params)
-        else
-          @created_at = Time.now
-          @updated_at = Time.now
-          @id = db.insert(@@table_name, self.class.fields, params)
+    begin
+      if value = @id
+        @updated_at = Time.now
+        params_and_id = params
+        params_and_id << value
+        @@adapter.open {|db| db.exec( @@adapter.update(@@table_name, self.class.fields), params_and_id ) }
+      else
+        @created_at = Time.now
+        @updated_at = Time.now
+        @@adapter.open do |db|
+          db.exec( @@adapter.insert(@@table_name, self.class.fields), params )
+          @id = db.scalar(@@adapter.last_val()).as(Int64)
         end
-        return true
-      rescue ex
-        if message = ex.message
-          errors << message
-        end
-        return false
       end
-    else
+      return true
+    rescue ex
+      if message = ex.message
+        puts "Save Exception: #{message}"
+        errors << message
+      end
       return false
     end
   end
 
   # Destroy will remove this from the database.
   def destroy
-    if db = @@database
-      begin
-        db.delete(@@table_name, @id)
-        return true
-      rescue ex
-        if message = ex.message
-          errors << message
-        end
-
-        return false
+    begin
+      @@adapter.open {|db| db.exec( @@adapter.delete(@@table_name), id ) }
+      return true
+    rescue ex
+      if message = ex.message
+        puts "Destroy Exception: #{message}"
+        errors << message
       end
-    else
       return false
     end
+  end
+
+  def self.exec(clause = "")
+    @@adapter.open {|db| db.exec(clause) }
+  end
+
+  def self.query(clause = "", params = [] of DB::Any, &block)
+    @@adapter.open {|db| yield db.query(clause, params) }
+  end
+
+  def self.scalar(clause = "", &block)
+    @@adapter.open {|db| yield db.scalar(clause) }
   end
 
   # All will return all rows in the database. The clause allows you to specify
@@ -212,26 +191,23 @@ class Kemalyst::Model
   # your Model class.  This allows you to take full advantage of the database
   # that you are using so you are not restricted or dummied down to support a
   # DSL.
-  def self.all(clause = "", params = {} of String => String)
-    return self.select(@@table_name, fields({"id" => "INT"}), clause, params)
+  def self.all(clause = "", params = [] of DB::Any)
+    return self.select(@@table_name, fields({"id" => "BIGINT"}), clause, params)
   end
 
   # find returns the row with the id specified.
   def self.find(id)
-    return self.select_one(@@table_name, fields({"id" => "INT"}), id)
+    return self.select_one(@@table_name, fields({"id" => "BIGINT"}), id)
   end
 
   # select performs the select statement and calls the from_sql with the
   # results.
-  def self.select(table_name, fields, clause, params = {} of String => String)
+  def self.select(table_name, fields, clause, params = [] of DB::Any)
     rows = [] of self
-    if db = @@database
-      results = db.select(table_name, fields, clause, params)
-      if results.is_a?(Array)
-        if results.size > 0
-          results.each do |result|
-            rows << self.from_sql(result)
-          end
+    @@adapter.open do |db|
+      db.query( @@adapter.select(table_name, fields, clause), params ) do |results|
+        results.each do
+          rows << self.from_sql(results)
         end
       end
     end
@@ -242,15 +218,11 @@ class Kemalyst::Model
   # results.
   def self.select_one(table_name, fields, id)
     row = nil
-    if db = @@database
-      results = db.select_one(table_name, fields, id)
-      if results.is_a?(Array)
-        if results.size > 0
-          row = self.from_sql(results.first)
-        end
+    @@adapter.open do |db|
+      db.query_one?( @@adapter.select_one(table_name, fields), id ) do |result|
+        row = self.from_sql(result) if result
       end
     end
     return row
   end
-
 end
