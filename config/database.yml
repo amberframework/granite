@@ -1,13 +1,8 @@
 mysql:
-  host: "${MYSQL_HOST}"
-  port: "${MYSQL_PORT}"
-  database: "${MYSQL_DATA}"
-  username: "${MYSQL_USER}"
-  password: "${MYSQL_PASS}"
+  database: "${MYSQL_DATABASE_URL}"
 
 pg:
-  database: "${DATABASE_URL}"
+  database: "${PG_DATABASE_URL}"
 
 sqlite:
-  database: config/test.db
-
+  database: "${SQLITE_DATABASE_URL}"

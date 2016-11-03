@@ -3,47 +3,33 @@ require "pg"
 
 # PostgreSQL implementation of the Adapter
 class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
-  @pool : ConnectionPool(PG::Connection?)
-
-  def initialize(settings)
-    database = env(settings["database"].to_s)
-    @pool = ConnectionPool.new(capacity: 20) do
-      retry = 10
-      while retry > 0
-        begin
-          conn = PG.connect(database)
-          retry = 0
-        rescue ex : PQ::ConnectionError
-          sleep 1
-          retry -= 1
-        end
-      end
-      if ex && conn == nil
-        raise ex
-      end
-      conn
-    end
-  end
-
   # remove all rows from a table and reset the counter on the id.
   def clear(table_name)
-    self.query("DELETE FROM #{table_name}")
+    return "DELETE FROM #{table_name}"
   end
 
   # drop the table
   def drop(table_name)
-    return self.query("DROP TABLE IF EXISTS #{table_name}")
+    return "DROP TABLE IF EXISTS #{table_name}"
   end
 
   def create(table_name, fields)
     statement = String.build do |stmt|
       stmt << "CREATE TABLE #{table_name} ("
-      stmt << "id SERIAL PRIMARY KEY, "
+      stmt << "id BIGSERIAL PRIMARY KEY, "
       stmt << fields.map{|name, type| "#{name} #{type}"}.join(",")
       stmt << ")"
     end
-    return self.query(statement)
+    return statement
   end
+
+  def schema(table_name)
+    return "SELECT column_name, data_type, character_maximum_length" \
+           " FROM information_schema.columns" \
+           " WHERE table_name = '#{table_name}';"
+#           " AND table_schema = '#{database}';"
+  end
+
   # Migrate is an addative only approach.  It adds new columns but never
   # delete them to avoid data loss.  If the column type or size changes, a new
   # column will be created and the existing one will be renamed to
@@ -51,54 +37,71 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   # need to perform insert queries if the migration cannot determine
   # how to convert the data for you.
   def migrate(table_name, fields)
-    db_schema = self.query("SELECT column_name, data_type, character_maximum_length" \
-                           " FROM information_schema.columns WHERE table_name = '#{table_name}';")
-    if db_schema && !db_schema.empty?
-      prev = "id"
-      fields.each do |name, type|
-        #check to see if the field is in the db_schema
-        column = db_schema.find { |col| col[0] == name }
-        if column
-          #check to see if the data_type matches
-          if db_alias_to_schema_type(type) != (column[1].as(String))
-            rename_field(table_name, name, "old_#{name}", type)
-            add_field(table_name, name, type, prev)
-            copy_field(table_name, "old_#{name}", name)
-          else
-            if size = column[2]
-              if !type.downcase.includes?(size.to_s)
-                rename_field(table_name, name, "old_#{name}", type)
-                add_field(table_name, name, type, prev)
-                copy_field(table_name, "old_#{name}", name)
+    open do |db|
+      db_schema = [] of Array(String|Int32|Nil)
+      db.query( schema(table_name) ) do |results|
+        results.each do
+          db_row = [] of String|Int32|Nil
+          db_row << results.read(String)
+          db_row << results.read(String)
+          db_row << results.read(Union(Int32|Nil))
+          db_schema << db_row
+        end
+      end
+      if db_schema && !db_schema.empty?
+        prev = "id"
+        fields.each do |name, type|
+          #check to see if the field is in the db_schema
+          columns = db_schema.select{|col| col[0] == name}
+          if columns && columns.size > 0
+            column = columns.first
+
+            #check to see if the data_type matches
+            if db_type = column[1].as(String)
+              if db_alias_to_schema_type(type) != db_type
+                db.exec( rename_field(table_name, name, "old_#{name}", type) )
+                db.exec( add_field(table_name, name, type, prev) )
+                db.exec( copy_field(table_name, "old_#{name}", name) )
+              else
+                if size = column[2].as(Int32)
+                  if !type.downcase.includes?(size.to_s)
+                    db.exec( rename_field(table_name, name, "old_#{name}", type) )
+                    db.exec( add_field(table_name, name, type, prev) )
+                    db.exec( copy_field(table_name, "old_#{name}", name) )
+                  end
+                end
               end
             end
+          else
+            db.exec( add_field(table_name, name, type, prev) )
           end
-          #TODO: check to see if other flags match
-          # Ignore if other flags are not specificed in SQL definition
-        else
-          add_field(table_name, name, type, prev)
+          prev = name
         end
-        prev = name
+      else
+        db.exec( create(table_name, fields) )
       end
-    else
-      create(table_name, fields)
     end
   end
+
 
   # Prune will remove fields that are not defined in the model.  This should
   # be used after you have successfully migrated the colunns and data.
   # WARNING: Be aware that if you have fields in your database that are not
   # apart of the model, they will be dropped!
   def prune(table_name, fields)
-    db_schema = self.query("SELECT column_name, data_type, character_maximum_length" \
-                           " FROM information_schema.columns WHERE table_name = '#{table_name}';")
-    if db_schema
-      db_schema.each do |column|
-        name = column[0].as(String)
-        unless name == "id" || fields.has_key? name
-          remove_field(table_name, name)
+    open do |db|
+      names = [] of String
+      db.query( schema(table_name) ) do |results|
+        results.each do
+          name = results.read(String)
+          type = results.read(String)
+          size = results.read(Union(Int32|Nil))
+          unless name == "id" || fields.has_key? name
+            names << name
+          end
         end
       end
+      names.each {|name| db.exec( remove_field(table_name, name) )}
     end
   end
 
@@ -109,7 +112,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
       stmt << "ALTER TABLE #{table_name} ADD COLUMN"
       stmt << " #{name} #{type}"
     end
-    return self.query(statement)
+    return statement
   end
 
   # change a field in the table.
@@ -118,7 +121,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
       stmt << "ALTER TABLE #{table_name} RENAME"
       stmt << " #{old_name} TO #{new_name}"
     end
-    return self.query(statement)
+    return statement
   end
 
   def remove_field(table_name, name)
@@ -126,7 +129,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
       stmt << "ALTER TABLE #{table_name} DROP COLUMN"
       stmt << " #{name}"
     end
-    return self.query(statement)
+    return statement
   end
 
   # Copy data from one column to another
@@ -135,112 +138,63 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
       stmt << "UPDATE #{table_name}"
       stmt << " SET #{to} = #{from}"
     end
-    return self.query(statement)
+    return statement
   end
 
   # select performs a query against a table.  The table_name and fields are
   # configured using the sql_mapping directive in your model.  The clause and
   # params is the query and params that is passed in via .all() method
-  def select(table_name, fields, clause = "", params = {} of String => String)
+  def select(table_name, fields, clause = "")
     statement = String.build do |stmt|
       stmt << "SELECT "
       stmt << fields.map{|name, type| "#{table_name}.#{name}"}.join(",")
       stmt << " FROM #{table_name} #{clause}"
     end
-    return self.query(statement, params, fields)
+    return statement
   end
 
   # select_one is used by the find method.
-  def select_one(table_name, fields, id)
+  def select_one(table_name, fields)
     statement = String.build do |stmt|
       stmt << "SELECT "
       stmt << fields.map{|name, type| "#{table_name}.#{name}"}.join(",")
       stmt << " FROM #{table_name}"
-      stmt << " WHERE id=:id LIMIT 1"
+      stmt << " WHERE id=$1 LIMIT 1"
     end
-    return self.query(statement, {"id" => id})
+    return statement
   end
 
-  def insert(table_name, fields, params)
+  def insert(table_name, fields)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{table_name} ("
       stmt << fields.map{|name, type| "#{name}"}.join(",")
       stmt << ") VALUES ("
-      stmt << fields.map{|name, type| ":#{name}"}.join(",")
-      stmt << ") RETURNING id"
+      stmt << fields.map_with_index{|fields, index| "$#{index+1}"}.join(",")
+      stmt << ")"
     end
-    results = self.query(statement, params, fields)
-    if results
-      return results[0][0].as(Int32)
-    end
+    return statement
+  end
+
+  def last_val()
+    return "SELECT LASTVAL()"
   end
 
   # This will update a row in the database.
-  def update(table_name, fields, id, params)
+  def update(table_name, fields)
     statement = String.build do |stmt|
       stmt << "UPDATE #{table_name} SET "
-      stmt << fields.map{|name, type| "#{name}=:#{name}"}.join(",")
-      stmt << " WHERE id=:id"
+      stmt << fields.map_with_index{|fields, index| "#{fields[0]}=$#{index+1}"}.join(",")
+      stmt << " WHERE id=$#{fields.size + 1}"
     end
-    if id
-      params["id"] = "#{id}"
-    end
-    return self.query(statement, params, fields)
+    return statement
   end
-  
+
   # This will delete a row from the database.
-  def delete(table_name, id)
-    return self.query("DELETE FROM #{table_name} WHERE id=:id", {"id" => id})
+  def delete(table_name)
+    return "DELETE FROM #{table_name} WHERE id=$1"
   end
 
-  def query(statement : String, params = {} of String => String, fields = {} of Symbol => String)
-    query, new_params = scrub_query_and_params(statement, params, fields)
-    conn = @pool.connection
-    if conn
-      begin
-        results = conn.exec(query, new_params)
-        return results.rows
-      ensure
-        @pool.release
-      end
-    end
-    return [] of String
-  end
-
-
-  alias SUPPORTED_TYPES = (Nil | String | Int32 | Int16 | Int64 | Float32 | Float64 | Bool | Time | Char)
-  private def scrub_query_and_params(query, params, fields)
-    new_params = [] of SUPPORTED_TYPES
-    params.each_with_index do |param, index|
-      key = param[0]
-      value = param[1]
-      if value.is_a? SUPPORTED_TYPES
-        query = query.gsub(":#{key}", "$#{index+1}#{lookup_type(fields,key)}")
-        new_params << value
-      end
-    end
-    return query, new_params
-  end
-
-  # I can't find a way to lookup a symbol using a string.  This method
-  # unfortunately traverses the map to find it.
-  private def lookup_type(fields, key_as_string)
-    if key_as_string == "id"
-      return "::int"
-    else
-      fields.each do |key, pg_type|
-        if key.to_s == key_as_string
-          if pg_type.includes? " "
-            pg_type = pg_type.split(" ")[0]
-          end
-          return "::#{pg_type.downcase}"
-        end
-      end
-    end
-    return ""
-  end
-
-  # method to perform a reverse mapping of Database Type to Schema Type.
+    # method to perform a reverse mapping of Database Type to Schema Type.
   private def db_alias_to_schema_type(db_type)
     case db_type.upcase
     when .includes?("VARCHAR")

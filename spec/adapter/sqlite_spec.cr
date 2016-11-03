@@ -1,5 +1,3 @@
-# TODO: SQLite is failing in a Docker Container.  Disabling for now
-
 require "./spec_helper"
 require "../src/adapter/sqlite"
 

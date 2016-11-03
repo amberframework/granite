@@ -49,7 +49,7 @@ describe Kemalyst::Adapter::Sqlite do
   describe "#add_field" do
     it "raises an exception" do
       begin
-        Comment.database.add_field("users", "test", "TEXT")
+        Comment.exec( Comment.adapter.add_field("users", "test", "TEXT"))
       rescue ex
         ex.message.should eq "Not Available for Sqlite"
       end
@@ -60,7 +60,7 @@ describe Kemalyst::Adapter::Sqlite do
   describe "#rename_field" do
     it "raises an exception" do
       begin
-        Comment.database.rename_field("users", "name", "old_name", "TEXT")
+        Comment.exec( Comment.adapter.rename_field("users", "name", "old_name", "TEXT"))
       rescue ex
         ex.message.should eq "Not Available for Sqlite"
       end
@@ -70,7 +70,7 @@ describe Kemalyst::Adapter::Sqlite do
   describe "#remove_field" do
     it "raises an exception" do
       begin
-        Comment.database.remove_field("users", "name")
+        Comment.exec( Comment.adapter.remove_field("users", "name"))
       rescue ex
         ex.message.should eq "Not Available for Sqlite"
       end
@@ -84,12 +84,14 @@ describe Kemalyst::Adapter::Sqlite do
       comment = Comment.new
       comment.name = "Hello"
       comment.save
-      Comment.database.copy_field("comments", "name", "body")
-      if results = Comment.query("select body from comments")
-        results[0][0].to_s.should eq "Hello"
-      else
-        raise "copy data failed"
+      Comment.exec( Comment.adapter.copy_field("comments", "name", "body"))
+      field = ""
+      Comment.query("select body from comments") do |results|
+        results.each do
+          field = results.read(String)
+        end
       end
+      field.should eq "Hello"
     end
   end
   

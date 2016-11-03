@@ -18,23 +18,25 @@ well.
 
 ```yaml
 dependencies:
-  # Kemalyst Model
   kemalyst-model:
     github: drujensen/kemalyst-model
-    branch: master
 
   # Pick your database
-  sqlite3:
-    github: manastech/crystal-sqlite3
-    branch: master
   mysql:
-    github: waterlink/crystal-mysql
-    branch: master
-  pg:
-    github: will/crystal-pg
-    branch: master
+    github: crystal-lang/crystal-mysql
 
-  #...
+  sqlite3:
+    github: crystal-lang/crystal-sqlite3
+
+  # postgres driver is still in development
+  pg:
+    github: asterite/crystal-pg
+    branch: feature/db
+
+  # when it is released
+  pg:
+    github: crystal-lang/crystal-pg
+
 ```
 
 Next you will need to create a `config/database.yml`
@@ -42,15 +44,11 @@ You can leverage environment variables using ${} syntax.
 
 ```yaml
 mysql:
-  database: blog_test
-  host: 127.0.0.1
-  port: 3306
-  username: blog
-  password: ${DB_PASSWORD}
+  database: "mysql://user:pass@mysql:3306/test"
 pg:
-  database: "${DATABASE_URL}"
+  database: "postgres://postgres:@pg:5432/postgres"
 sqlite:
-  database: config/blog_test.db
+  database: "sqlite3:./config/test.db}"
 ```
 
 ## Usage
@@ -173,13 +171,12 @@ When using the `all` method, the SQL selected fields will always match the
 fields specified in the model.  If you need different fields, consider
 creating a new model.
 
-Always pass in parameters to avoid SQL Injection.  Use a symbol in your query
-i.e. `:param` for parameter replacement.  Check out
-[waterlink/crystal-mysql](https://github.com/waterlink/crystal-mysql) for more
-details.
+Always pass in parameters to avoid SQL Injection.  Use a `?` (or `$1`, `$2`,.. for pg) 
+in your query as placeholder. Checkout the [Crystal DB Driver](https://github.com/crystal-lang/crystal-db)
+for documentation of the drivers.
 
 ```crystal
-posts = Post.all("WHERE name LIKE :name", {"name" => "Joe%"})
+posts = Post.all("WHERE name LIKE ?", ["Joe%"])
 if posts
   posts.each do |post|
     puts post.name
@@ -191,14 +188,11 @@ posts = Post.all("ORDER BY created_at DESC")
 
 # JOIN Example
 posts = Post.all("JOIN comments c ON c.post_id = post.id 
-                  WHERE c.name = :name 
+                  WHERE c.name = ? 
                   ORDER BY post.created_at DESC", 
-                  {"name" => "Joe"})
+                  ["Joe"])
 
 ```
-## RoadMap
-- Expose Transactions
-
 ## Contributing
 
 1. Fork it ( https://github.com/drujensen/kemalyst-model/fork )

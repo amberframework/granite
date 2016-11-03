@@ -7,20 +7,19 @@ authors:
 license: MIT
 
 dependencies:
-  pool:
-    github: ysbaddaden/pool
-    branch: master
+  db:
+    github: crystal-lang/crystal-db
+    version: 0.2.0
 
 development_dependencies:
   mysql:
-    github: waterlink/crystal-mysql
+    github: crystal-lang/crystal-mysql
+    branch: master
+
+  sqlite3:
+    github: crystal-lang/crystal-sqlite3
     branch: master
 
   pg:
-    github: will/crystal-pg
-    branch: master
-    #version: 0.8.0
-
-  sqlite3:
-    github: manastech/crystal-sqlite3
-    branch: master
+    github: asterite/crystal-pg
+    branch: feature/db

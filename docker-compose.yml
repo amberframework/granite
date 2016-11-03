@@ -5,12 +5,9 @@ services:
     command: 'bash -c "cd /app/user && crystal spec"'
     working_dir: /app/user
     environment:
-      DATABASE_URL: 'postgres://postgres:@pg:5432/postgres'
-      MYSQL_HOST: 'mysql'
-      MYSQL_PORT: '3306'
-      MYSQL_DATA: 'test'
-      MYSQL_USER: 'user'
-      MYSQL_PASS: 'pass'
+      PG_DATABASE_URL: 'postgres://postgres:@pg:5432/postgres'
+      MYSQL_DATABASE_URL: 'mysql://user:pass@mysql:3306/test'
+      SQLITE_DATABASE_URL: 'sqlite3:./config/test.db'
     depends_on:
       - pg
       - mysql

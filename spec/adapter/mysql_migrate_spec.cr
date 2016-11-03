@@ -43,11 +43,11 @@ describe Kemalyst::Adapter::Mysql do
       Post1.drop
       Post1.create
       Post2.migrate
-      if results = Post2.query("describe posts;")
-        results.size.should eq 6
-      else
-        raise "describe posts returned nil"
+      cnt = 0
+      Post2.query("describe posts;") do |results|
+        results.each { cnt += 1 }
       end
+      cnt.should eq 6
     end
 
     context "type change" do
@@ -55,22 +55,26 @@ describe Kemalyst::Adapter::Mysql do
         Post1.drop
         Post1.create
         Post3.migrate
-        if results = Post1.query("describe posts;")
-          results[3][0].should eq "old_body"
-        else
-          raise "describe posts returned nil"
+        field = ""
+        Post1.query("describe posts;") do |results|
+          cnt = 0
+          results.each do
+            field = results.read(String) if cnt == 3
+            cnt += 1
+          end
         end
+        field.should eq "old_body"
       end
 
       it "adds a new field" do
         Post1.drop
         Post1.create
         Post3.migrate
-        if results = Post1.query("describe posts;")
-          results.size.should eq 6
-        else
-          raise "describe posts returned nil"
+        cnt = 0
+        Post2.query("describe posts;") do |results|
+          results.each { cnt += 1 }
         end
+        cnt.should eq 6
       end
 
       it "copies the data from the old field" do
@@ -80,12 +84,13 @@ describe Kemalyst::Adapter::Mysql do
         post.body = "Hello"
         post.save
         Post3.migrate
-        if results = Post1.query("select body from posts")
-          #TODO: This should return a string, not a slice
-          #results[0][0].to_s.should eq "Hello"
-        else
-          raise "copy data failed"
+        field = ""
+        Post1.query("select body from posts") do |results|
+          results.each do
+            field = results.read(String)
+          end
         end
+        field.should eq "Hello"
       end
     end
 
@@ -94,22 +99,26 @@ describe Kemalyst::Adapter::Mysql do
         Post1.drop
         Post1.create
         Post4.migrate
-        if results = Post1.query("describe posts;")
-          results[3][0].should eq "old_body"
-        else
-          raise "describe posts returned nil"
+        field = ""
+        Post1.query("describe posts;") do |results|
+          cnt = 0
+          results.each do
+            field = results.read(String) if cnt == 3
+            cnt += 1
+          end
         end
+        field.should eq "old_body"
       end
 
       it "adds a new field" do
         Post1.drop
         Post1.create
         Post4.migrate
-        if results = Post1.query("describe posts;")
-          results.size.should eq 6
-        else
-          raise "describe posts returned nil"
+        cnt = 0
+        Post2.query("describe posts;") do |results|
+          results.each { cnt += 1 }
         end
+        cnt.should eq 6
       end
 
       it "copies the data from the old field" do
@@ -119,11 +128,13 @@ describe Kemalyst::Adapter::Mysql do
         post.body = "Hello"
         post.save
         Post4.migrate
-        if results = Post1.query("select body from posts")
-          results[0][0].to_s.should eq "Hello"
-        else
-          raise "copy data failed"
+        field = ""
+        Post1.query("select body from posts") do |results|
+          results.each do
+            field = results.read(String)
+          end
         end
+        field.should eq "Hello"
       end
     end
   end
@@ -133,11 +144,11 @@ describe Kemalyst::Adapter::Mysql do
       Post2.drop
       Post2.migrate
       Post1.prune
-      if results = Post1.query("describe posts;")
-        results.size.should eq 5
-      else
-        raise "describe posts returned null"
+      cnt = 0
+      Post2.query("describe posts;") do |results|
+        results.each { cnt += 1 }
       end
+      cnt.should eq 5
     end
   end
 
@@ -145,55 +156,61 @@ describe Kemalyst::Adapter::Mysql do
     it "adds a new field" do
       Post1.drop
       Post1.create
-      Post1.database.add_field("posts", "test", "TEXT")
-      if results = Post1.query("describe posts;")
-        results.size.should eq 6
-      else
-        raise "describe posts returned nil"
+      Post1.exec( Post1.adapter.add_field("posts", "test", "TEXT") )
+      cnt = 0
+      Post2.query("describe posts;") do |results|
+        results.each { cnt += 1 }
       end
+      cnt.should eq 6
     end
   end
 
   describe "#rename_field" do
     it "renames a field" do
       Post1.drop
-      Post1.migrate
-      Post1.database.rename_field("posts", "name", "old_name", "TEXT")
-      if results = Post1.query("describe posts;")
-        results[1][0].should eq "old_name"
-      else
-        raise "describe posts returned nil"
+      Post1.create
+      Post1.exec( Post1.adapter.rename_field("posts", "name", "old_name", "TEXT"))
+      field = ""
+      Post1.query("describe posts;") do |results|
+        cnt = 0
+        results.each do
+          field = results.read(String) if cnt == 1
+          cnt += 1
+        end
       end
+      field.should eq "old_name"
     end
   end
 
   describe "#remove_field" do
     it "removes a field" do
       Post1.drop
-      Post1.migrate
-      Post1.database.remove_field("posts", "name")
-      if results = Post1.query("describe posts;")
-        results.size.should eq 4
-      else
-        raise "describe posts returned nil"
+      Post1.create
+      Post1.exec(Post1.adapter.remove_field("posts", "name"))
+      cnt = 0
+      Post2.query("describe posts;") do |results|
+        results.each { cnt += 1 }
       end
+      cnt.should eq 4
     end
   end
 
   describe "#copy_field" do
     it "copies data from field" do
       Post1.drop
-      Post1.migrate
+      Post1.create
       post = Post1.new
       post.name = "Hello"
       post.save
-      Post1.database.add_field("posts", "test", "VARCHAR(255)")
-      Post1.database.copy_field("posts", "name", "test")
-      if results = Post1.query("select test from posts")
-        results[0][0].to_s.should eq "Hello"
-      else
-        raise "copy data failed"
+      Post1.exec( Post1.adapter.add_field("posts", "test", "VARCHAR(255)"))
+      Post1.exec( Post1.adapter.copy_field("posts", "name", "test"))
+      field = ""
+      Post1.query("select test from posts") do |results|
+        results.each do
+          field = results.read(String)
+        end
       end
+      field.should eq "Hello"
     end
   end
 end

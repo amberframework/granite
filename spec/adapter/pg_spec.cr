@@ -5,7 +5,8 @@ class User < Kemalyst::Model
   adapter pg
   sql_mapping({ 
     name: ["VARCHAR(255)", String],
-    pass: ["TEXT", String]
+    pass: ["TEXT", String],
+    total: ["INT", Int32]
   })
 end
 
@@ -21,6 +22,7 @@ describe Kemalyst::Adapter::Pg do
     it "finds all the users" do
       user = User.new
       user.name = "Test User"
+      user.total = 10
       user.save
       user = User.new
       user.name = "Test User 2"

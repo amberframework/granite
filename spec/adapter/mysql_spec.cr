@@ -5,7 +5,8 @@ class Post < Kemalyst::Model
   adapter mysql
   sql_mapping({ 
     name: ["VARCHAR(255)", String],
-    body: ["TEXT", String]
+    body: ["TEXT", String],
+    total: ["INT", Int32]
   })
 end
 
@@ -21,6 +22,7 @@ describe Kemalyst::Adapter::Mysql do
     it "finds all the posts" do
       post = Post.new
       post.name = "Test Post"
+      post.total = 10
       post.save
       post = Post.new
       post.name = "Test Post 2"
