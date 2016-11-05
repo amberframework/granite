@@ -5,7 +5,7 @@ require "mysql"
 class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
   #Using TRUNCATE instead of DELETE so the id column resets to 0
   def clear(table_name)
-    open do |db| 
+    open do |db|
       db.exec "TRUNCATE #{table_name}"
     end
   end
@@ -27,7 +27,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
       stmt << " DEFAULT CHARACTER SET=utf8"
     end
   end
-  
+
   def create(table_name, fields)
     open do |db|
       db.exec create_statement(table_name, fields)
@@ -48,7 +48,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
   # how to convert the data for you.
   def migrate(table_name, fields)
     open do |db|
-      db_schema = db.query_all( schema_statement(table_name), 
+      db_schema = db.query_all( schema_statement(table_name),
                                as: {String, String, Union(Int64, Nil)} )
       if db_schema && !db_schema.empty?
         prev = "id"
@@ -61,21 +61,21 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
             #check to see if the data_type matches
             if db_type = column[1].as(String)
               if !type.downcase.includes?(db_type)
-                db.exec( rename_field(table_name, name, "old_#{name}", type) )
-                db.exec( add_field(table_name, name, type, prev) )
-                db.exec( copy_field(table_name, "old_#{name}", name) )
+                db.exec rename_field(table_name, name, "old_#{name}", type)
+                db.exec add_field(table_name, name, type, prev)
+                db.exec copy_field(table_name, "old_#{name}", name)
               else
                 if size = column[2].as(Int64)
                   if !type.downcase.includes?(size.to_s)
-                    db.exec( rename_field(table_name, name, "old_#{name}", type) )
-                    db.exec( add_field(table_name, name, type, prev) )
-                    db.exec( copy_field(table_name, "old_#{name}", name) )
+                    db.exec rename_field(table_name, name, "old_#{name}", type)
+                    db.exec add_field(table_name, name, type, prev)
+                    db.exec copy_field(table_name, "old_#{name}", name)
                   end
                 end
               end
             end
           else
-            db.exec( add_field(table_name, name, type, prev) )
+            db.exec add_field(table_name, name, type, prev)
           end
           prev = name
         end
@@ -100,7 +100,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
           end
         end
       end
-      names.each {|name| db.exec( remove_field(table_name, name) )}
+      names.each {|name| db.exec remove_field(table_name, name) }
     end
   end
 
