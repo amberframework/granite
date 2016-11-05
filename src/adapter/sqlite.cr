@@ -5,12 +5,16 @@ require "sqlite3"
 class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
   # remove all rows from a table and reset the counter on the id.
   def clear(table_name)
-    return "DELETE FROM #{table_name}"
+    open do |db|
+      db.exec "DELETE FROM #{table_name}"
+    end
   end
 
   # drop the table
   def drop(table_name)
-    return "DROP TABLE IF EXISTS #{table_name}"
+    open do |db|
+      db.exec "DROP TABLE IF EXISTS #{table_name}"
+    end
   end
 
   def create(table_name, fields)
@@ -20,7 +24,9 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
       stmt << fields.map{|name, type| "#{name} #{type}"}.join(",")
       stmt << ")"
     end
-    return statement
+    open do |db|
+      db.exec statement
+    end
   end
 
   def migrate(table_name, fields)

@@ -38,7 +38,7 @@ class Kemalyst::Model
     # Table Name
     @@table_name = "{{table_name}}"
     #Create the properties
-    property id : (Int64 | Nil)
+    property id : Int64?
     {% for name, types in fields %}
       property {{name.id}} : {{types[1].id}}?
     {% end %}
@@ -105,30 +105,30 @@ class Kemalyst::Model
   # Clear is used to remove all rows from the table and reset the counter for
   # the id.
   def self.clear
-    @@adapter.open {|db| db.exec( @@adapter.clear(@@table_name) ) }
+    @@adapter.clear @@table_name
   end
 
   # Drop will drop the table completely.  This will lose data so be very
   # careful with this call.
   def self.drop
-    @@adapter.open {|db| db.exec( @@adapter.drop(@@table_name) ) }
+    @@adapter.drop @@table_name
   end
 
   # Create will create the table for you based on the sql_mapping specified.
   def self.create
-    @@adapter.open {|db| db.exec( @@adapter.create(@@table_name, fields) ) }
+    @@adapter.create @@table_name, fields
   end
 
   # Migrate will examine the current schema and additively update to match the
   # model.
   def self.migrate
-    @@adapter.migrate(@@table_name, fields)
+    @@adapter.migrate @@table_name, fields
   end
 
   # # Prune fields no longer defined in the model.  This should be used after
   # # you have successfully migrated.
   def self.prune
-    @@adapter.prune(@@table_name, fields)
+    @@adapter.prune @@table_name, fields
   end
 
   # The save method will check to see if the @id exists yet.  If it does it

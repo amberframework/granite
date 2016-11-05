@@ -5,12 +5,16 @@ require "mysql"
 class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
   #Using TRUNCATE instead of DELETE so the id column resets to 0
   def clear(table_name)
-    return "TRUNCATE #{table_name}"
+    open do |db| 
+      db.exec "TRUNCATE #{table_name}"
+    end
   end
 
   # drop the table
   def drop(table_name)
-    return "DROP TABLE IF EXISTS #{table_name}"
+    open do |db|
+      db.exec "DROP TABLE IF EXISTS #{table_name}"
+    end
   end
 
   def create(table_name, fields)
@@ -22,7 +26,9 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
       stmt << " ENGINE=InnoDB"
       stmt << " DEFAULT CHARACTER SET=utf8"
     end
-    return statement
+    open do |db|
+      db.exec statement
+    end
   end
 
   def schema(table_name)
@@ -39,16 +45,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
   # how to convert the data for you.
   def migrate(table_name, fields)
     open do |db|
-      db_schema = [] of Array(String|Int64|Nil)
-      db.query( schema(table_name) ) do |results|
-        results.each do
-          db_row = [] of String|Int64|Nil
-          db_row << results.read(String)
-          db_row << results.read(String)
-          db_row << results.read(Union(Int64|Nil))
-          db_schema << db_row
-        end
-      end
+      db_schema = db.query_all( schema(table_name) ) as: {String, Int64, Nil}
       if db_schema && !db_schema.empty?
         prev = "id"
         fields.each do |name, type|
@@ -94,8 +91,6 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
       db.query( schema(table_name) ) do |results|
         results.each do
           name = results.read(String)
-          type = results.read(String)
-          size = results.read(Union(Int64|Nil))
           unless name == "id" || fields.has_key? name
             names << name
           end

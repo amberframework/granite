@@ -5,12 +5,16 @@ require "pg"
 class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   # remove all rows from a table and reset the counter on the id.
   def clear(table_name)
-    return "DELETE FROM #{table_name}"
+    open do |db|
+      db.exec "DELETE FROM #{table_name}"
+    end
   end
 
   # drop the table
   def drop(table_name)
-    return "DROP TABLE IF EXISTS #{table_name}"
+    open do |db|
+      db.exec "DROP TABLE IF EXISTS #{table_name}"
+    end
   end
 
   def create(table_name, fields)
@@ -20,7 +24,9 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
       stmt << fields.map{|name, type| "#{name} #{type}"}.join(",")
       stmt << ")"
     end
-    return statement
+    open do |db|
+      db.exec statement
+    end
   end
 
   def schema(table_name)
@@ -38,21 +44,12 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   # how to convert the data for you.
   def migrate(table_name, fields)
     open do |db|
-      db_schema = [] of Array(String|Int32|Nil)
-      db.query( schema(table_name) ) do |results|
-        results.each do
-          db_row = [] of String|Int32|Nil
-          db_row << results.read(String)
-          db_row << results.read(String)
-          db_row << results.read(Union(Int32|Nil))
-          db_schema << db_row
-        end
-      end
+      db_schema = db.query_all( schema(table_name) ) as: {String, Int32, Nil}
       if db_schema && !db_schema.empty?
         prev = "id"
         fields.each do |name, type|
           #check to see if the field is in the db_schema
-          columns = db_schema.select{|col| col[0] == name}
+          columns = db_schema.select{|column| column[0] == name}
           if columns && columns.size > 0
             column = columns.first
 
@@ -94,8 +91,6 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
       db.query( schema(table_name) ) do |results|
         results.each do
           name = results.read(String)
-          type = results.read(String)
-          size = results.read(Union(Int32|Nil))
           unless name == "id" || fields.has_key? name
             names << name
           end
