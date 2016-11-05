@@ -47,19 +47,21 @@ abstract class Kemalyst::Adapter::Base
   # select performs a query against a table.  The table_name and fields are
   # configured using the sql_mapping directive in your model.  The clause and
   # params is the query and params that is passed in via .all() method
-  #abstract def select(table_name, fields, clause = "", params = nil, &block)
+  abstract def select(table_name, fields, clause = "", params = nil, &block)
 
   # select_one is used by the find method.
-  #abstract def select_one(table_name, fields, id, &block)
+  # TODO: Seems to be a bug in Crystal. It says I need to implement this field
+  # but clearly its being implmented.  Commenting out for now.
+  # abstract def select_one(table_name, fields, id, &block)
 
   # This will insert a row in the database and return the id generated.
-  #abstract def insert(table_name, fields, params, &block)
+  abstract def insert(table_name, fields, params) : Int64
 
   # This will update a row in the database.
-  #abstract def update(table_name, fields, params)
+  abstract def update(table_name, fields, params)
 
   # This will delete a row from the database.
-  #abstract def delete(table_name, id)
+  abstract def delete(table_name, id)
 
   # method used to lookup the environment variable if exists
   private def env(value)
