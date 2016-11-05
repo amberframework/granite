@@ -5,25 +5,34 @@ require "pg"
 class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   # remove all rows from a table and reset the counter on the id.
   def clear(table_name)
-    return "DELETE FROM #{table_name}"
+    open do |db|
+      db.exec "DELETE FROM #{table_name}"
+    end
   end
 
   # drop the table
   def drop(table_name)
-    return "DROP TABLE IF EXISTS #{table_name}"
+    open do |db|
+      db.exec "DROP TABLE IF EXISTS #{table_name}"
+    end
   end
 
-  def create(table_name, fields)
+  private def create_statement(table_name, fields)
     statement = String.build do |stmt|
       stmt << "CREATE TABLE #{table_name} ("
       stmt << "id BIGSERIAL PRIMARY KEY, "
       stmt << fields.map{|name, type| "#{name} #{type}"}.join(",")
       stmt << ")"
     end
-    return statement
   end
 
-  def schema(table_name)
+  def create(table_name, fields)
+    open do |db|
+      db.exec create_statement(table_name, fields)
+    end
+  end
+
+  private def schema_statement(table_name)
     return "SELECT column_name, data_type, character_maximum_length" \
            " FROM information_schema.columns" \
            " WHERE table_name = '#{table_name}';"
@@ -38,47 +47,39 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   # how to convert the data for you.
   def migrate(table_name, fields)
     open do |db|
-      db_schema = [] of Array(String|Int32|Nil)
-      db.query( schema(table_name) ) do |results|
-        results.each do
-          db_row = [] of String|Int32|Nil
-          db_row << results.read(String)
-          db_row << results.read(String)
-          db_row << results.read(Union(Int32|Nil))
-          db_schema << db_row
-        end
-      end
+      db_schema = db.query_all( schema_statement(table_name),
+                               as: {String, String, Union(Int32, Nil)} )
       if db_schema && !db_schema.empty?
         prev = "id"
         fields.each do |name, type|
           #check to see if the field is in the db_schema
-          columns = db_schema.select{|col| col[0] == name}
+          columns = db_schema.select{|column| column[0] == name}
           if columns && columns.size > 0
             column = columns.first
 
             #check to see if the data_type matches
             if db_type = column[1].as(String)
               if db_alias_to_schema_type(type) != db_type
-                db.exec( rename_field(table_name, name, "old_#{name}", type) )
-                db.exec( add_field(table_name, name, type, prev) )
-                db.exec( copy_field(table_name, "old_#{name}", name) )
+                db.exec rename_field(table_name, name, "old_#{name}", type)
+                db.exec add_field(table_name, name, type, prev)
+                db.exec copy_field(table_name, "old_#{name}", name)
               else
                 if size = column[2].as(Int32)
                   if !type.downcase.includes?(size.to_s)
-                    db.exec( rename_field(table_name, name, "old_#{name}", type) )
-                    db.exec( add_field(table_name, name, type, prev) )
-                    db.exec( copy_field(table_name, "old_#{name}", name) )
+                    db.exec rename_field(table_name, name, "old_#{name}", type)
+                    db.exec add_field(table_name, name, type, prev)
+                    db.exec copy_field(table_name, "old_#{name}", name)
                   end
                 end
               end
             end
           else
-            db.exec( add_field(table_name, name, type, prev) )
+            db.exec add_field(table_name, name, type, prev)
           end
           prev = name
         end
       else
-        db.exec( create(table_name, fields) )
+        db.exec create_statement(table_name, fields)
       end
     end
   end
@@ -91,17 +92,15 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   def prune(table_name, fields)
     open do |db|
       names = [] of String
-      db.query( schema(table_name) ) do |results|
+      db.query( schema_statement(table_name) ) do |results|
         results.each do
           name = results.read(String)
-          type = results.read(String)
-          size = results.read(Union(Int32|Nil))
           unless name == "id" || fields.has_key? name
             names << name
           end
         end
       end
-      names.each {|name| db.exec( remove_field(table_name, name) )}
+      names.each {|name| db.exec remove_field(table_name, name) }
     end
   end
 
@@ -144,27 +143,35 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   # select performs a query against a table.  The table_name and fields are
   # configured using the sql_mapping directive in your model.  The clause and
   # params is the query and params that is passed in via .all() method
-  def select(table_name, fields, clause = "")
+  def select(table_name, fields, clause = "", params = nil, &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
       stmt << fields.map{|name, type| "#{table_name}.#{name}"}.join(",")
       stmt << " FROM #{table_name} #{clause}"
     end
-    return statement
+    open do |db|
+      db.query statement, params do |rs|
+        yield rs
+      end
+    end
   end
 
   # select_one is used by the find method.
-  def select_one(table_name, fields)
+  def select_one(table_name, fields, id, &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
       stmt << fields.map{|name, type| "#{table_name}.#{name}"}.join(",")
       stmt << " FROM #{table_name}"
       stmt << " WHERE id=$1 LIMIT 1"
     end
-    return statement
+    open do |db|
+      db.query_one? statement, id do |rs|
+        yield rs
+      end
+    end
   end
 
-  def insert(table_name, fields)
+  def insert(table_name, fields, params)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{table_name} ("
       stmt << fields.map{|name, type| "#{name}"}.join(",")
@@ -172,26 +179,33 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
       stmt << fields.map_with_index{|fields, index| "$#{index+1}"}.join(",")
       stmt << ")"
     end
-    return statement
+    open do |db|
+      db.exec statement, params
+      return db.scalar(last_val()).as(Int64)
+    end
   end
 
-  def last_val()
+  private def last_val()
     return "SELECT LASTVAL()"
   end
 
   # This will update a row in the database.
-  def update(table_name, fields)
+  def update(table_name, fields, params)
     statement = String.build do |stmt|
       stmt << "UPDATE #{table_name} SET "
       stmt << fields.map_with_index{|fields, index| "#{fields[0]}=$#{index+1}"}.join(",")
       stmt << " WHERE id=$#{fields.size + 1}"
     end
-    return statement
+    open do |db|
+      db.exec statement, params
+    end
   end
 
   # This will delete a row from the database.
-  def delete(table_name)
-    return "DELETE FROM #{table_name} WHERE id=$1"
+  def delete(table_name, id)
+    open do |db|
+      db.exec "DELETE FROM #{table_name} WHERE id=$1", id
+    end
   end
 
     # method to perform a reverse mapping of Database Type to Schema Type.

@@ -38,7 +38,7 @@ class Kemalyst::Model
     # Table Name
     @@table_name = "{{table_name}}"
     #Create the properties
-    property id : (Int64 | Nil)
+    property id : Int64?
     {% for name, types in fields %}
       property {{name.id}} : {{types[1].id}}?
     {% end %}
@@ -105,30 +105,30 @@ class Kemalyst::Model
   # Clear is used to remove all rows from the table and reset the counter for
   # the id.
   def self.clear
-    @@adapter.open {|db| db.exec( @@adapter.clear(@@table_name) ) }
+    @@adapter.clear @@table_name
   end
 
   # Drop will drop the table completely.  This will lose data so be very
   # careful with this call.
   def self.drop
-    @@adapter.open {|db| db.exec( @@adapter.drop(@@table_name) ) }
+    @@adapter.drop @@table_name
   end
 
   # Create will create the table for you based on the sql_mapping specified.
   def self.create
-    @@adapter.open {|db| db.exec( @@adapter.create(@@table_name, fields) ) }
+    @@adapter.create @@table_name, fields
   end
 
   # Migrate will examine the current schema and additively update to match the
   # model.
   def self.migrate
-    @@adapter.migrate(@@table_name, fields)
+    @@adapter.migrate @@table_name, fields
   end
 
   # # Prune fields no longer defined in the model.  This should be used after
   # # you have successfully migrated.
   def self.prune
-    @@adapter.prune(@@table_name, fields)
+    @@adapter.prune @@table_name, fields
   end
 
   # The save method will check to see if the @id exists yet.  If it does it
@@ -140,14 +140,11 @@ class Kemalyst::Model
         @updated_at = Time.now
         params_and_id = params
         params_and_id << value
-        @@adapter.open {|db| db.exec( @@adapter.update(@@table_name, self.class.fields), params_and_id ) }
+        @@adapter.update @@table_name, self.class.fields, params_and_id 
       else
         @created_at = Time.now
         @updated_at = Time.now
-        @@adapter.open do |db|
-          db.exec( @@adapter.insert(@@table_name, self.class.fields), params )
-          @id = db.scalar(@@adapter.last_val()).as(Int64)
-        end
+        @id = @@adapter.insert @@table_name, self.class.fields, params
       end
       return true
     rescue ex
@@ -162,7 +159,7 @@ class Kemalyst::Model
   # Destroy will remove this from the database.
   def destroy
     begin
-      @@adapter.open {|db| db.exec( @@adapter.delete(@@table_name), id ) }
+      @@adapter.delete(@@table_name, id)
       return true
     rescue ex
       if message = ex.message
@@ -171,6 +168,31 @@ class Kemalyst::Model
       end
       return false
     end
+  end
+
+  # All will return all rows in the database. The clause allows you to specify
+  # a WHERE, JOIN, GROUP BY, ORDER BY and any other SQL92 compatible query to
+  # your table.  The results will be an array of instantiated instances of
+  # your Model class.  This allows you to take full advantage of the database
+  # that you are using so you are not restricted or dummied down to support a
+  # DSL.
+  def self.all(clause = "", params = [] of DB::Any)
+    rows = [] of self
+    @@adapter.select(@@table_name, fields({"id" => "BIGINT"}), clause, params) do |results|
+      results.each do
+        rows << self.from_sql(results)
+      end
+    end
+    return rows
+  end
+
+  # find returns the row with the id specified.
+  def self.find(id)
+    row = nil
+    @@adapter.select_one(@@table_name, fields({"id" => "BIGINT"}), id) do |result|
+      row = self.from_sql(result) if result
+    end
+    return row
   end
 
   def self.exec(clause = "")
@@ -183,46 +205,5 @@ class Kemalyst::Model
 
   def self.scalar(clause = "", &block)
     @@adapter.open {|db| yield db.scalar(clause) }
-  end
-
-  # All will return all rows in the database. The clause allows you to specify
-  # a WHERE, JOIN, GROUP BY, ORDER BY and any other SQL92 compatible query to
-  # your table.  The results will be an array of instantiated instances of
-  # your Model class.  This allows you to take full advantage of the database
-  # that you are using so you are not restricted or dummied down to support a
-  # DSL.
-  def self.all(clause = "", params = [] of DB::Any)
-    return self.select(@@table_name, fields({"id" => "BIGINT"}), clause, params)
-  end
-
-  # find returns the row with the id specified.
-  def self.find(id)
-    return self.select_one(@@table_name, fields({"id" => "BIGINT"}), id)
-  end
-
-  # select performs the select statement and calls the from_sql with the
-  # results.
-  def self.select(table_name, fields, clause, params = [] of DB::Any)
-    rows = [] of self
-    @@adapter.open do |db|
-      db.query( @@adapter.select(table_name, fields, clause), params ) do |results|
-        results.each do
-          rows << self.from_sql(results)
-        end
-      end
-    end
-    return rows
-  end
-
-  # select_one is a convenience method for only returning the first instance of a
-  # results.
-  def self.select_one(table_name, fields, id)
-    row = nil
-    @@adapter.open do |db|
-      db.query_one?( @@adapter.select_one(table_name, fields), id ) do |result|
-        row = self.from_sql(result) if result
-      end
-    end
-    return row
   end
 end
