@@ -17,19 +17,22 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
     end
   end
 
-  def create(table_name, fields)
+  private def create_statement(table_name, fields)
     statement = String.build do |stmt|
       stmt << "CREATE TABLE #{table_name} ("
       stmt << "id BIGSERIAL PRIMARY KEY, "
       stmt << fields.map{|name, type| "#{name} #{type}"}.join(",")
       stmt << ")"
     end
+  end
+
+  def create(table_name, fields)
     open do |db|
-      db.exec statement
+      db.exec create_statement(table_name, fields)
     end
   end
 
-  def schema(table_name)
+  private def schema_statement(table_name)
     return "SELECT column_name, data_type, character_maximum_length" \
            " FROM information_schema.columns" \
            " WHERE table_name = '#{table_name}';"
@@ -44,7 +47,8 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   # how to convert the data for you.
   def migrate(table_name, fields)
     open do |db|
-      db_schema = db.query_all( schema(table_name) ) as: {String, Int32, Nil}
+      db_schema = db.query_all( schema_statement(table_name), 
+                               as: {String, String, Union(Int32, Nil)} )
       if db_schema && !db_schema.empty?
         prev = "id"
         fields.each do |name, type|
@@ -75,7 +79,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
           prev = name
         end
       else
-        db.exec( create(table_name, fields) )
+        db.exec create_statement(table_name, fields)
       end
     end
   end
@@ -88,7 +92,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   def prune(table_name, fields)
     open do |db|
       names = [] of String
-      db.query( schema(table_name) ) do |results|
+      db.query( schema_statement(table_name) ) do |results|
         results.each do
           name = results.read(String)
           unless name == "id" || fields.has_key? name
