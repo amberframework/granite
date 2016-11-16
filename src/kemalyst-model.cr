@@ -1,14 +1,10 @@
 require "yaml"
 require "db"
+require "kemalyst-validators"
 
 # Kemalyst::Model is the base class for your model objects.
 class Kemalyst::Model
-  VERSION = "0.2.0"
-  property errors : Array(String)?
-
-  def errors
-    @errors ||= [] of String
-  end
+  include Kemalyst::Validators
 
   # specify the database adapter you will be using for this model.
   # mysql, pg, sqlite, etc.
