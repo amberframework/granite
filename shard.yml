@@ -1,5 +1,5 @@
 name: kemalyst-model
-version: 0.1.0
+version: 0.2.2
 
 authors:
   - drujensen <drujensen@gmail.com>
@@ -10,6 +10,9 @@ dependencies:
   db:
     github: crystal-lang/crystal-db
     version: 0.2.0
+
+  kemalyst-validators:
+    github: drujensen/kemalyst-validators
 
 development_dependencies:
   mysql:

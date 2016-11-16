@@ -4,6 +4,10 @@ shards:
     github: crystal-lang/crystal-db
     version: 0.2.0
 
+  kemalyst-validators:
+    github: drujensen/kemalyst-validators
+    version: 0.1.0
+
   mysql:
     github: crystal-lang/crystal-mysql
     commit: 4fe8d6a9e6aec9594196a9ac4e28178291ee7ea1
