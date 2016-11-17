@@ -4,7 +4,9 @@ require "kemalyst-validators"
 
 # Kemalyst::Model is the base class for your model objects.
 class Kemalyst::Model
-  include Kemalyst::Validators
+  macro inherited
+    include Kemalyst::Validators
+  end
 
   # specify the database adapter you will be using for this model.
   # mysql, pg, sqlite, etc.
@@ -136,7 +138,7 @@ class Kemalyst::Model
         @updated_at = Time.now
         params_and_id = params
         params_and_id << value
-        @@adapter.update @@table_name, self.class.fields, params_and_id 
+        @@adapter.update @@table_name, self.class.fields, params_and_id
       else
         @created_at = Time.now
         @updated_at = Time.now
