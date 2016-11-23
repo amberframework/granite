@@ -2,8 +2,8 @@ require "./spec_helper"
 require "../src/adapter/sqlite"
 
 class Comment < Kemalyst::Model
-  adapter sqlite 
-  sql_mapping({ 
+  adapter sqlite
+  sql_mapping({
     name: ["TEXT", String],
     body: ["TEXT", String]
   })
@@ -11,7 +11,7 @@ end
 
 class Comment2 < Kemalyst::Model
   adapter sqlite
-  sql_mapping({ 
+  sql_mapping({
     name: ["TEXT", String],
     body: ["TEXT", String],
     flag: ["BOOLEAN", Bool]
@@ -94,6 +94,4 @@ describe Kemalyst::Adapter::Sqlite do
       field.should eq "Hello"
     end
   end
-  
 end
-

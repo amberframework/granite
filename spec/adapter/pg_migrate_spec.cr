@@ -3,7 +3,7 @@ require "../src/adapter/pg"
 
 class User1 < Kemalyst::Model
   adapter pg
-  sql_mapping({ 
+  sql_mapping({
     name: ["VARCHAR(255)", String],
     body: ["VARCHAR(255)", String]
   }, users)
@@ -12,7 +12,7 @@ end
 # Add a new field
 class User2 < Kemalyst::Model
   adapter pg
-  sql_mapping({ 
+  sql_mapping({
     name: ["VARCHAR(255)", String],
     body: ["VARCHAR(255)", String],
     flag: ["BOOLEAN", Bool]
@@ -22,7 +22,7 @@ end
 # Change type of field
 class User3 < Kemalyst::Model
   adapter pg
-  sql_mapping({ 
+  sql_mapping({
     name: ["VARCHAR(255)", String],
     body: ["TEXT", String],
   }, users)
@@ -31,7 +31,7 @@ end
 # Change size of field
 class User4 < Kemalyst::Model
   adapter pg
-  sql_mapping({ 
+  sql_mapping({
     name: ["VARCHAR(255)", String],
     body: ["VARCHAR(512)", String],
   }, users)
