@@ -53,10 +53,8 @@ class Kemalyst::Model
 
       model.id = result.read(Int64)
 
-      {% i = 1 %}
       {% for name, types in fields %}
         model.{{name.id}} = result.read(Union({{types[1].id}} | Nil))
-        {% i += 1 %}
       {% end %}
 
       {% if timestamps %}
