@@ -5,7 +5,7 @@
 [![docrystal.org](http://www.docrystal.org/badge.svg)](http://www.docrystal.org/github.com/drujensen/kemalyst-model)
 
 [Kemalyst](https://github.com/drujensen/kemalyst) is a web framework written in
-the [Crystal](https://github.com/manastech/crystal) language. 
+the [Crystal](https://github.com/manastech/crystal) language.
 
 This project is to provide an ORM Model for Kemalyst.
 
@@ -60,8 +60,8 @@ require "kemalyst-model/adapter/mysql"
 
 class Post < Kemalyst::Model
   adapter mysql
-  
-  sql_mapping({ 
+
+  sql_mapping({
     name: ["VARCHAR(255)", String],
     body: ["TEXT", String]
   })
@@ -76,8 +76,8 @@ class Comment < Kemalyst::Model
   adapter sqlite
 
   # table name is set to post_comments and timestamps are disabled.
-  sql_mapping({ 
-    name: ["VARCHAR(255)", String], 
+  sql_mapping({
+    name: ["VARCHAR(255)", String],
     body: ["TEXT", String]
   }, "post_comments", false)
 
@@ -97,7 +97,7 @@ MySQL field definitions for id, created_at, updated_at
   id INT NOT NULL AUTO_INCREMENT
   # Your fields go here
   created_at DATE
-  updated_at DATE 
+  updated_at DATE
   PRIMARY KEY (id)
 ```
 
@@ -163,15 +163,15 @@ post.destroy
 puts "deleted" unless post
 ```
 
-### Where 
+### Where
 
-The where clause will give you full control over your query. 
+The where clause will give you full control over your query.
 
 When using the `all` method, the SQL selected fields will always match the
 fields specified in the model.  If you need different fields, consider
 creating a new model.
 
-Always pass in parameters to avoid SQL Injection.  Use a `?` (or `$1`, `$2`,.. for pg) 
+Always pass in parameters to avoid SQL Injection.  Use a `?` (or `$1`, `$2`,.. for pg)
 in your query as placeholder. Checkout the [Crystal DB Driver](https://github.com/crystal-lang/crystal-db)
 for documentation of the drivers.
 
@@ -187,9 +187,9 @@ end
 posts = Post.all("ORDER BY created_at DESC")
 
 # JOIN Example
-posts = Post.all("JOIN comments c ON c.post_id = post.id 
-                  WHERE c.name = ? 
-                  ORDER BY post.created_at DESC", 
+posts = Post.all("JOIN comments c ON c.post_id = post.id
+                  WHERE c.name = ?
+                  ORDER BY post.created_at DESC",
                   ["Joe"])
 
 ```

@@ -1,4 +1,4 @@
-FROM drujensen/crystal:0.19.4
+FROM drujensen/crystal:0.20.0
 
 ADD . /app/user
 WORKDIR /app/user

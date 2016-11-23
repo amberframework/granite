@@ -3,7 +3,7 @@ require "../src/adapter/mysql"
 
 class Post1 < Kemalyst::Model
   adapter mysql
-  sql_mapping({ 
+  sql_mapping({
     name: ["VARCHAR(255)", String],
     body: ["VARCHAR(255)", String]
   }, posts)
@@ -12,7 +12,7 @@ end
 # Add a new field
 class Post2 < Kemalyst::Model
   adapter mysql
-  sql_mapping({ 
+  sql_mapping({
     name: ["VARCHAR(255)", String],
     body: ["VARCHAR(255)", String],
     flag: ["BOOLEAN", Bool]
@@ -22,7 +22,7 @@ end
 # Change type of field
 class Post3 < Kemalyst::Model
   adapter mysql
-  sql_mapping({ 
+  sql_mapping({
     name: ["VARCHAR(255)", String],
     body: ["TEXT", String],
   }, posts)
@@ -31,7 +31,7 @@ end
 # Change size of field
 class Post4 < Kemalyst::Model
   adapter mysql
-  sql_mapping({ 
+  sql_mapping({
     name: ["VARCHAR(255)", String],
     body: ["VARCHAR(512)", String],
   }, posts)

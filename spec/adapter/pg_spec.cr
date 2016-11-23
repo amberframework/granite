@@ -3,7 +3,7 @@ require "../src/adapter/pg"
 
 class User < Kemalyst::Model
   adapter pg
-  sql_mapping({ 
+  sql_mapping({
     name: ["VARCHAR(255)", String],
     pass: ["TEXT", String],
     total: ["INT", Int32]
@@ -39,7 +39,7 @@ describe Kemalyst::Adapter::Pg do
       user.save
       id = user.id
       user = User.find id
-      user.should_not be_nil 
+      user.should_not be_nil
     end
   end
 
@@ -49,7 +49,7 @@ describe Kemalyst::Adapter::Pg do
       user.name = "Test User"
       user.pass = "Password"
       user.save
-      user.id.should_not be_nil 
+      user.id.should_not be_nil
     end
 
     it "updates an existing user" do

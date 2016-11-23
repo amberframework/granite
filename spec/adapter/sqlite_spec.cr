@@ -2,8 +2,8 @@ require "./spec_helper"
 require "../src/adapter/sqlite"
 
 class Comment < Kemalyst::Model
-  adapter sqlite 
-  sql_mapping({ 
+  adapter sqlite
+  sql_mapping({
     name: ["TEXT", String],
     body: ["TEXT", String]
   })
@@ -61,7 +61,7 @@ describe Kemalyst::Adapter::Sqlite do
       if comment
         comment.name.should eq "Test Comment 2"
       else
-       raise "Comment should exist" 
+       raise "Comment should exist"
       end
     end
   end

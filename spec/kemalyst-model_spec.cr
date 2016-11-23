@@ -3,8 +3,8 @@ require "../src/adapter/pg"
 
 class Todo < Kemalyst::Model
   adapter pg
-  
-  sql_mapping({ 
+
+  sql_mapping({
     name: ["VARCHAR(255)", String]
   })
 

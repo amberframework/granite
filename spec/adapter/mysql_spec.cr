@@ -3,7 +3,7 @@ require "../src/adapter/mysql"
 
 class Post < Kemalyst::Model
   adapter mysql
-  sql_mapping({ 
+  sql_mapping({
     name: ["VARCHAR(255)", String],
     body: ["TEXT", String],
     total: ["INT", Int32]
@@ -51,7 +51,7 @@ describe Kemalyst::Adapter::Mysql do
       post.save
       id = post.id
       post = Post.find id
-      post.should_not be_nil 
+      post.should_not be_nil
     end
   end
 

@@ -138,7 +138,7 @@ class Kemalyst::Model
         @updated_at = Time.now
         params_and_id = params
         params_and_id << value
-        @@adapter.update @@table_name, self.class.fields, params_and_id 
+        @@adapter.update @@table_name, self.class.fields, params_and_id
       else
         @created_at = Time.now
         @updated_at = Time.now
