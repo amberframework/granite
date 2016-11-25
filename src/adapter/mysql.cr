@@ -3,7 +3,7 @@ require "mysql"
 
 # Mysql implementation of the Adapter
 class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
-  #Using TRUNCATE instead of DELETE so the id column resets to 0
+  # Using TRUNCATE instead of DELETE so the id column resets to 0
   def clear(table_name)
     open do |db|
       db.exec "TRUNCATE #{table_name}"
@@ -21,7 +21,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
     statement = String.build do |stmt|
       stmt << "CREATE TABLE #{table_name} ("
       stmt << "id BIGINT NOT NULL AUTO_INCREMENT, "
-      stmt << fields.map{|name, type| "#{name} #{type}"}.join(",")
+      stmt << fields.map { |name, type| "#{name} #{type}" }.join(",")
       stmt << ", PRIMARY KEY (id))"
       stmt << " ENGINE=InnoDB"
       stmt << " DEFAULT CHARACTER SET=utf8"
@@ -38,8 +38,9 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
     return "SELECT column_name, data_type, character_maximum_length" \
            " FROM information_schema.columns" \
            " WHERE table_name = '#{table_name}';"
-#           " AND table_schema = '#{database}';"
+    #           " AND table_schema = '#{database}';"
   end
+
   # Migrate is an addative only approach.  It adds new columns but never
   # delete them to avoid data loss.  If the column type or size changes, a new
   # column will be created and the existing one will be renamed to
@@ -48,17 +49,17 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
   # how to convert the data for you.
   def migrate(table_name, fields)
     open do |db|
-      db_schema = db.query_all( schema_statement(table_name),
-                               as: {String, String, Union(Int64, Nil)} )
+      db_schema = db.query_all(schema_statement(table_name),
+        as: {String, String, Union(Int64, Nil)})
       if db_schema && !db_schema.empty?
         prev = "id"
         fields.each do |name, type|
-          #check to see if the field is in the db_schema
-          columns = db_schema.select{|col| col[0] == name}
+          # check to see if the field is in the db_schema
+          columns = db_schema.select { |col| col[0] == name }
           if columns && columns.size > 0
             column = columns.first
 
-            #check to see if the data_type matches
+            # check to see if the data_type matches
             if db_type = column[1].as(String)
               if !type.downcase.includes?(db_type)
                 db.exec rename_field(table_name, name, "old_#{name}", type)
@@ -92,7 +93,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
   def prune(table_name, fields)
     open do |db|
       names = [] of String
-      db.query( schema_statement(table_name) ) do |results|
+      db.query(schema_statement(table_name)) do |results|
         results.each do
           name = results.read(String)
           unless name == "id" || fields.has_key? name
@@ -100,7 +101,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
           end
         end
       end
-      names.each {|name| db.exec remove_field(table_name, name) }
+      names.each { |name| db.exec remove_field(table_name, name) }
     end
   end
 
@@ -149,7 +150,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
   def select(table_name, fields, clause = "", params = nil, &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map{|name, type| "#{table_name}.#{name}"}.join(",")
+      stmt << fields.map { |name, type| "#{table_name}.#{name}" }.join(",")
       stmt << " FROM #{table_name} #{clause}"
     end
     open do |db|
@@ -160,12 +161,14 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
   end
 
   # select_one is used by the find method.
-  def select_one(table_name, fields, id, &block)
+  # it checks id by default, but one can
+  # pass another field.
+  def select_one(table_name, fields, field, id, &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map{|name, type| "#{table_name}.#{name}"}.join(",")
+      stmt << fields.map { |name, type| "#{table_name}.#{name}" }.join(",")
       stmt << " FROM #{table_name}"
-      stmt << " WHERE id=? LIMIT 1"
+      stmt << " WHERE #{field}=? LIMIT 1"
     end
     open do |db|
       db.query_one? statement, id do |rs|
@@ -177,9 +180,9 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
   def insert(table_name, fields, params)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{table_name} ("
-      stmt << fields.map{|name, type| "#{name}"}.join(",")
+      stmt << fields.map { |name, type| "#{name}" }.join(",")
       stmt << ") VALUES ("
-      stmt << fields.map{|name, type| "?"}.join(",")
+      stmt << fields.map { |name, type| "?" }.join(",")
       stmt << ")"
     end
     open do |db|
@@ -188,7 +191,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
     end
   end
 
-  private def last_val()
+  private def last_val
     return "SELECT LAST_INSERT_ID()"
   end
 
@@ -196,7 +199,7 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
   def update(table_name, fields, params)
     statement = String.build do |stmt|
       stmt << "UPDATE #{table_name} SET "
-      stmt << fields.map{|name, type| "#{name}=?"}.join(",")
+      stmt << fields.map { |name, type| "#{name}=?" }.join(",")
       stmt << " WHERE id=?"
     end
     open do |db|

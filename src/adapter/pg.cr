@@ -21,7 +21,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
     statement = String.build do |stmt|
       stmt << "CREATE TABLE #{table_name} ("
       stmt << "id BIGSERIAL PRIMARY KEY, "
-      stmt << fields.map{|name, type| "#{name} #{type}"}.join(",")
+      stmt << fields.map { |name, type| "#{name} #{type}" }.join(",")
       stmt << ")"
     end
   end
@@ -36,7 +36,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
     return "SELECT column_name, data_type, character_maximum_length" \
            " FROM information_schema.columns" \
            " WHERE table_name = '#{table_name}';"
-#           " AND table_schema = '#{database}';"
+    #           " AND table_schema = '#{database}';"
   end
 
   # Migrate is an addative only approach.  It adds new columns but never
@@ -47,17 +47,17 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   # how to convert the data for you.
   def migrate(table_name, fields)
     open do |db|
-      db_schema = db.query_all( schema_statement(table_name),
-                               as: {String, String, Union(Int32, Nil)} )
+      db_schema = db.query_all(schema_statement(table_name),
+        as: {String, String, Union(Int32, Nil)})
       if db_schema && !db_schema.empty?
         prev = "id"
         fields.each do |name, type|
-          #check to see if the field is in the db_schema
-          columns = db_schema.select{|column| column[0] == name}
+          # check to see if the field is in the db_schema
+          columns = db_schema.select { |column| column[0] == name }
           if columns && columns.size > 0
             column = columns.first
 
-            #check to see if the data_type matches
+            # check to see if the data_type matches
             if db_type = column[1].as(String)
               if db_alias_to_schema_type(type) != db_type
                 db.exec rename_field(table_name, name, "old_#{name}", type)
@@ -84,7 +84,6 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
     end
   end
 
-
   # Prune will remove fields that are not defined in the model.  This should
   # be used after you have successfully migrated the colunns and data.
   # WARNING: Be aware that if you have fields in your database that are not
@@ -92,7 +91,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   def prune(table_name, fields)
     open do |db|
       names = [] of String
-      db.query( schema_statement(table_name) ) do |results|
+      db.query(schema_statement(table_name)) do |results|
         results.each do
           name = results.read(String)
           unless name == "id" || fields.has_key? name
@@ -100,7 +99,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
           end
         end
       end
-      names.each {|name| db.exec remove_field(table_name, name) }
+      names.each { |name| db.exec remove_field(table_name, name) }
     end
   end
 
@@ -146,7 +145,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   def select(table_name, fields, clause = "", params = nil, &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map{|name, type| "#{table_name}.#{name}"}.join(",")
+      stmt << fields.map { |name, type| "#{table_name}.#{name}" }.join(",")
       stmt << " FROM #{table_name} #{clause}"
     end
     open do |db|
@@ -157,12 +156,12 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   end
 
   # select_one is used by the find method.
-  def select_one(table_name, fields, id, &block)
+  def select_one(table_name, fields, field, id, &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map{|name, type| "#{table_name}.#{name}"}.join(",")
+      stmt << fields.map { |name, type| "#{table_name}.#{name}" }.join(",")
       stmt << " FROM #{table_name}"
-      stmt << " WHERE id=$1 LIMIT 1"
+      stmt << " WHERE #{field}=$1 LIMIT 1"
     end
     open do |db|
       db.query_one? statement, id do |rs|
@@ -174,9 +173,9 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   def insert(table_name, fields, params)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{table_name} ("
-      stmt << fields.map{|name, type| "#{name}"}.join(",")
+      stmt << fields.map { |name, type| "#{name}" }.join(",")
       stmt << ") VALUES ("
-      stmt << fields.map_with_index{|fields, index| "$#{index+1}"}.join(",")
+      stmt << fields.map_with_index { |fields, index| "$#{index + 1}" }.join(",")
       stmt << ")"
     end
     open do |db|
@@ -185,7 +184,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
     end
   end
 
-  private def last_val()
+  private def last_val
     return "SELECT LASTVAL()"
   end
 
@@ -193,7 +192,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   def update(table_name, fields, params)
     statement = String.build do |stmt|
       stmt << "UPDATE #{table_name} SET "
-      stmt << fields.map_with_index{|fields, index| "#{fields[0]}=$#{index+1}"}.join(",")
+      stmt << fields.map_with_index { |fields, index| "#{fields[0]}=$#{index + 1}" }.join(",")
       stmt << " WHERE id=$#{fields.size + 1}"
     end
     open do |db|
@@ -208,7 +207,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
     end
   end
 
-    # method to perform a reverse mapping of Database Type to Schema Type.
+  # method to perform a reverse mapping of Database Type to Schema Type.
   private def db_alias_to_schema_type(db_type)
     case db_type.upcase
     when .includes?("VARCHAR")
@@ -227,7 +226,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
       "bigint"
     when .includes?("INT2")
       "smallint"
-    when .includes?("INT") #int or int4
+    when .includes?("INT") # int or int4
       "integer"
     when .includes?("DECIMAL")
       "numeric"

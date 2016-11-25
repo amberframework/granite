@@ -21,7 +21,7 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
     statement = String.build do |stmt|
       stmt << "CREATE TABLE #{table_name} ("
       stmt << "id INTEGER NOT NULL PRIMARY KEY, "
-      stmt << fields.map{|name, type| "#{name} #{type}"}.join(",")
+      stmt << fields.map { |name, type| "#{name} #{type}" }.join(",")
       stmt << ")"
     end
     open do |db|
@@ -64,7 +64,7 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
   def select(table_name, fields, clause = "", params = nil, &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map{|name, type| "#{table_name}.#{name}"}.join(",")
+      stmt << fields.map { |name, type| "#{table_name}.#{name}" }.join(",")
       stmt << " FROM #{table_name} #{clause}"
     end
     open do |db|
@@ -75,12 +75,12 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
   end
 
   # select_one is used by the find method.
-  def select_one(table_name, fields, id, &block)
+  def select_one(table_name, fields, field, id, &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map{|name, type| "#{table_name}.#{name}"}.join(",")
+      stmt << fields.map { |name, type| "#{table_name}.#{name}" }.join(",")
       stmt << " FROM #{table_name}"
-      stmt << " WHERE id=:id LIMIT 1"
+      stmt << " WHERE #{field}=:id LIMIT 1"
     end
     open do |db|
       db.query_one? statement, id do |rs|
@@ -92,9 +92,9 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
   def insert(table_name, fields, params)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{table_name} ("
-      stmt << fields.map{|name, type| "#{name}"}.join(",")
+      stmt << fields.map { |name, type| "#{name}" }.join(",")
       stmt << ") VALUES ("
-      stmt << fields.map{|name, type| "?"}.join(",")
+      stmt << fields.map { |name, type| "?" }.join(",")
       stmt << ")"
     end
     open do |db|
@@ -103,7 +103,7 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
     end
   end
 
-  private def last_val()
+  private def last_val
     return "SELECT LAST_INSERT_ROWID()"
   end
 
@@ -111,7 +111,7 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
   def update(table_name, fields, params)
     statement = String.build do |stmt|
       stmt << "UPDATE #{table_name} SET "
-      stmt << fields.map{|name, type| "#{name}=?"}.join(",")
+      stmt << fields.map { |name, type| "#{name}=?" }.join(",")
       stmt << " WHERE id=?"
     end
     open do |db|

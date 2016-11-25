@@ -5,7 +5,7 @@ class User1 < Kemalyst::Model
   adapter pg
   sql_mapping({
     name: ["VARCHAR(255)", String],
-    body: ["VARCHAR(255)", String]
+    body: ["VARCHAR(255)", String],
   }, users)
 end
 
@@ -15,7 +15,7 @@ class User2 < Kemalyst::Model
   sql_mapping({
     name: ["VARCHAR(255)", String],
     body: ["VARCHAR(255)", String],
-    flag: ["BOOLEAN", Bool]
+    flag: ["BOOLEAN", Bool],
   }, users)
 end
 
@@ -38,8 +38,8 @@ class User4 < Kemalyst::Model
 end
 
 describe_users = "SELECT column_name, data_type, character_maximum_length" \
-" FROM information_schema.columns" \
-" WHERE table_name = 'users'"
+                 " FROM information_schema.columns" \
+                 " WHERE table_name = 'users'"
 
 describe Kemalyst::Adapter::Pg do
   describe "#migrate" do
@@ -160,7 +160,7 @@ describe Kemalyst::Adapter::Pg do
     it "adds a new field" do
       User1.drop
       User1.create
-      User1.exec( User1.adapter.add_field("users", "test", "TEXT") )
+      User1.exec(User1.adapter.add_field("users", "test", "TEXT"))
       cnt = 0
       User2.query(describe_users) do |results|
         results.each { cnt += 1 }
@@ -173,7 +173,7 @@ describe Kemalyst::Adapter::Pg do
     it "renames a field" do
       User1.drop
       User1.create
-      User1.exec( User1.adapter.rename_field("users", "name", "old_name", "TEXT"))
+      User1.exec(User1.adapter.rename_field("users", "name", "old_name", "TEXT"))
       field = ""
       User1.query(describe_users) do |results|
         cnt = 0
@@ -218,4 +218,3 @@ describe Kemalyst::Adapter::Pg do
     end
   end
 end
-
