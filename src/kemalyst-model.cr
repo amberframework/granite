@@ -96,7 +96,7 @@ class Kemalyst::Model
       {% end %}
       return params
    end
-  end #End of Fields Macro
+  end # End of Fields Macro
 
   # Clear is used to remove all rows from the table and reset the counter for
   # the id.
@@ -183,23 +183,25 @@ class Kemalyst::Model
   end
 
   # find returns the row with the id specified.
-  def self.find(id)
+  # it checks by id by default, but one can pass
+  # another field for comparison
+  def self.find(id, field = "id")
     row = nil
-    @@adapter.select_one(@@table_name, fields({"id" => "BIGINT"}), id) do |result|
+    @@adapter.select_one(@@table_name, fields({"id" => "BIGINT"}), field, id) do |result|
       row = self.from_sql(result) if result
     end
     return row
   end
 
   def self.exec(clause = "")
-    @@adapter.open {|db| db.exec(clause) }
+    @@adapter.open { |db| db.exec(clause) }
   end
 
   def self.query(clause = "", params = [] of DB::Any, &block)
-    @@adapter.open {|db| yield db.query(clause, params) }
+    @@adapter.open { |db| yield db.query(clause, params) }
   end
 
   def self.scalar(clause = "", &block)
-    @@adapter.open {|db| yield db.scalar(clause) }
+    @@adapter.open { |db| yield db.scalar(clause) }
   end
 end

@@ -4,9 +4,9 @@ require "../src/adapter/pg"
 class User < Kemalyst::Model
   adapter pg
   sql_mapping({
-    name: ["VARCHAR(255)", String],
-    pass: ["TEXT", String],
-    total: ["INT", Int32]
+    name:  ["VARCHAR(255)", String],
+    pass:  ["TEXT", String],
+    total: ["INT", Int32],
   })
 end
 
@@ -39,6 +39,15 @@ describe Kemalyst::Adapter::Pg do
       user.save
       id = user.id
       user = User.find id
+      user.should_not be_nil
+    end
+
+    it "finds the user by field other than id" do
+      user = User.new
+      user.pass = "my-pass"
+      user.save
+      pass = user.pass
+      user = User.find(pass, "pass")
       user.should_not be_nil
     end
   end
@@ -76,6 +85,4 @@ describe Kemalyst::Adapter::Pg do
       user.should be_nil
     end
   end
-
 end
-

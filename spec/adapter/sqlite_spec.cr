@@ -5,7 +5,7 @@ class Comment < Kemalyst::Model
   adapter sqlite
   sql_mapping({
     name: ["TEXT", String],
-    body: ["TEXT", String]
+    body: ["TEXT", String],
   })
 end
 
@@ -38,6 +38,15 @@ describe Kemalyst::Adapter::Sqlite do
       comment = Comment.find comment.id
       comment.should_not be_nil
     end
+
+    it "finds the comment by field other than id" do
+      comment = Comment.new
+      comment.name = "Test Comment"
+      comment.save
+      name = comment.name
+      comment = Comment.find(name, "name")
+      comment.should_not be_nil
+    end
   end
 
   describe "#save" do
@@ -61,7 +70,7 @@ describe Kemalyst::Adapter::Sqlite do
       if comment
         comment.name.should eq "Test Comment 2"
       else
-       raise "Comment should exist"
+        raise "Comment should exist"
       end
     end
   end
@@ -78,4 +87,3 @@ describe Kemalyst::Adapter::Sqlite do
     end
   end
 end
-

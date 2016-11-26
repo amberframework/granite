@@ -65,7 +65,7 @@ abstract class Kemalyst::Adapter::Base
 
   # method used to lookup the environment variable if exists
   private def env(value)
-    env_var = value.gsub("${","").gsub("}", "")
+    env_var = value.gsub("${", "").gsub("}", "")
     if ENV.has_key? env_var
       return ENV[env_var]
     else
@@ -73,4 +73,3 @@ abstract class Kemalyst::Adapter::Base
     end
   end
 end
-
