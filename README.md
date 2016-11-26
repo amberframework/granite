@@ -163,6 +163,13 @@ post.destroy
 puts "deleted" unless post
 ```
 
+### Find
+
+The find method accepts an optional second parameter and can be used to find a single result from any field:
+```crystal
+post = Post.find("Kemalyst Rocks!", "name")
+```
+
 ### Where
 
 The where clause will give you full control over your query.
