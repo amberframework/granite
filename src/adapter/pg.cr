@@ -35,8 +35,8 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   private def schema_statement(table_name)
     return "SELECT column_name, data_type, character_maximum_length" \
            " FROM information_schema.columns" \
-           " WHERE table_name = '#{table_name}';"
-    #           " AND table_schema = '#{database}';"
+           " WHERE table_name = '#{table_name}'"
+           " AND table_schema = (SELECT DATABASE());"
   end
 
   # Migrate is an addative only approach.  It adds new columns but never
