@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/drujensen/kemalyst-model.svg)](https://travis-ci.org/drujensen/kemalyst-model)
 
-[Documentation](http://drujensen.github.io/kemalyst-model)
+[Documentation](http://drujensen.github.io/kemalyst-model/)
 
 [Kemalyst](https://github.com/drujensen/kemalyst) is a web framework written in
 the [Crystal](https://github.com/manastech/crystal) language.
