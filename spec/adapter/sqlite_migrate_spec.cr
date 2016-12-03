@@ -5,7 +5,7 @@ class Comment < Kemalyst::Model
   adapter sqlite
   sql_mapping({
     name: ["TEXT", String],
-    body: ["TEXT", String]
+    body: ["TEXT", String],
   })
 end
 
@@ -14,7 +14,7 @@ class Comment2 < Kemalyst::Model
   sql_mapping({
     name: ["TEXT", String],
     body: ["TEXT", String],
-    flag: ["BOOLEAN", Bool]
+    flag: ["BOOLEAN", Bool],
   }, comments)
 end
 
@@ -49,18 +49,17 @@ describe Kemalyst::Adapter::Sqlite do
   describe "#add_field" do
     it "raises an exception" do
       begin
-        Comment.exec( Comment.adapter.add_field("users", "test", "TEXT"))
+        Comment.exec(Comment.adapter.add_field("users", "test", "TEXT"))
       rescue ex
         ex.message.should eq "Not Available for Sqlite"
       end
     end
-
   end
 
   describe "#rename_field" do
     it "raises an exception" do
       begin
-        Comment.exec( Comment.adapter.rename_field("users", "name", "old_name", "TEXT"))
+        Comment.exec(Comment.adapter.rename_field("users", "name", "old_name", "TEXT"))
       rescue ex
         ex.message.should eq "Not Available for Sqlite"
       end
@@ -70,7 +69,7 @@ describe Kemalyst::Adapter::Sqlite do
   describe "#remove_field" do
     it "raises an exception" do
       begin
-        Comment.exec( Comment.adapter.remove_field("users", "name"))
+        Comment.exec(Comment.adapter.remove_field("users", "name"))
       rescue ex
         ex.message.should eq "Not Available for Sqlite"
       end
@@ -84,7 +83,7 @@ describe Kemalyst::Adapter::Sqlite do
       comment = Comment.new
       comment.name = "Hello"
       comment.save
-      Comment.exec( Comment.adapter.copy_field("comments", "name", "body"))
+      Comment.exec(Comment.adapter.copy_field("comments", "name", "body"))
       field = ""
       Comment.query("select body from comments") do |results|
         results.each do

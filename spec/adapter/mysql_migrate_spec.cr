@@ -5,7 +5,7 @@ class Post1 < Kemalyst::Model
   adapter mysql
   sql_mapping({
     name: ["VARCHAR(255)", String],
-    body: ["VARCHAR(255)", String]
+    body: ["VARCHAR(255)", String],
   }, posts)
 end
 
@@ -15,7 +15,7 @@ class Post2 < Kemalyst::Model
   sql_mapping({
     name: ["VARCHAR(255)", String],
     body: ["VARCHAR(255)", String],
-    flag: ["BOOLEAN", Bool]
+    flag: ["BOOLEAN", Bool],
   }, posts)
 end
 
@@ -156,7 +156,7 @@ describe Kemalyst::Adapter::Mysql do
     it "adds a new field" do
       Post1.drop
       Post1.create
-      Post1.exec( Post1.adapter.add_field("posts", "test", "TEXT") )
+      Post1.exec(Post1.adapter.add_field("posts", "test", "TEXT"))
       cnt = 0
       Post2.query("describe posts;") do |results|
         results.each { cnt += 1 }
@@ -169,7 +169,7 @@ describe Kemalyst::Adapter::Mysql do
     it "renames a field" do
       Post1.drop
       Post1.create
-      Post1.exec( Post1.adapter.rename_field("posts", "name", "old_name", "TEXT"))
+      Post1.exec(Post1.adapter.rename_field("posts", "name", "old_name", "TEXT"))
       field = ""
       Post1.query("describe posts;") do |results|
         cnt = 0
@@ -202,8 +202,8 @@ describe Kemalyst::Adapter::Mysql do
       post = Post1.new
       post.name = "Hello"
       post.save
-      Post1.exec( Post1.adapter.add_field("posts", "test", "VARCHAR(255)"))
-      Post1.exec( Post1.adapter.copy_field("posts", "name", "test"))
+      Post1.exec(Post1.adapter.add_field("posts", "test", "VARCHAR(255)"))
+      Post1.exec(Post1.adapter.copy_field("posts", "name", "test"))
       field = ""
       Post1.query("select test from posts") do |results|
         results.each do
