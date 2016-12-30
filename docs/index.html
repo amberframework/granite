@@ -29,7 +29,7 @@
 
 <p><a href="https://travis-ci.org/drujensen/kemalyst-model" target="_blank"><img src="https://travis-ci.org/drujensen/kemalyst-model.svg" alt="Build Status"/></a></p>
 
-<p><a href="http://www.docrystal.org/github.com/drujensen/kemalyst-model" target="_blank"><img src="http://www.docrystal.org/badge.svg" alt="docrystal.org"/></a></p>
+<p><a href="http://drujensen.github.io/kemalyst-model/" target="_blank">Documentation</a></p>
 
 <p><a href="https://github.com/drujensen/kemalyst" target="_blank">Kemalyst</a> is a web framework written in
 the <a href="https://github.com/manastech/crystal" target="_blank">Crystal</a> language.</p>
@@ -54,14 +54,8 @@ well.</p>
   sqlite3:
     github: crystal-lang/crystal-sqlite3
 
-  # postgres driver is still in development
   pg:
-    github: asterite/crystal-pg
-    branch: feature/db
-
-  # when it is released
-  pg:
-    github: crystal-lang/crystal-pg
+    github: will/crystal-pg
 </code></pre>
 
 <p>Next you will need to create a <code>config/database.yml</code>
@@ -168,6 +162,12 @@ post.save</code></pre>
 <pre><code class='language-crystal'>post <span class="o">=</span> <span class="t">Post</span>.find <span class="n">1</span>
 post.destroy
 puts <span class="s">&quot;deleted&quot;</span> <span class="k">unless</span> post</code></pre>
+
+<h3>Find</h3>
+
+<p>The find method accepts an optional second parameter and can be used to find a single result from any field:</p>
+
+<pre><code class='language-crystal'>post <span class="o">=</span> <span class="t">Post</span>.find(<span class="s">&quot;Kemalyst Rocks&#33;&quot;</span>, <span class="s">&quot;name&quot;</span>)</code></pre>
 
 <h3>Where</h3>
 
