@@ -42,7 +42,7 @@ mysql:
 pg:
   database: "postgres://postgres:@pg:5432/postgres"
 sqlite:
-  database: "sqlite3:./config/test.db}"
+  database: "sqlite3:./config/test.db"
 ```
 
 ## Usage
