@@ -1,4 +1,4 @@
-FROM drujensen/crystal:0.20.1
+FROM drujensen/crystal:0.20.3
 
 WORKDIR /app/user
 
