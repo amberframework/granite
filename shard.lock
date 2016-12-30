@@ -2,7 +2,7 @@ version: 1.0
 shards:
   db:
     github: crystal-lang/crystal-db
-    version: 0.2.2
+    version: 0.3.3
 
   kemalyst-validators:
     github: drujensen/kemalyst-validators
@@ -10,13 +10,13 @@ shards:
 
   mysql:
     github: crystal-lang/crystal-mysql
-    commit: 400dc4aa8dd91264a8ddbd7cc0f3a6542636cbb8
+    version: 0.3.1
 
   pg:
-    github: asterite/crystal-pg
-    commit: d4640edf5593d141a84b008312a50b714ac78489
+    github: will/crystal-pg
+    version: 0.13.1
 
   sqlite3:
     github: crystal-lang/crystal-sqlite3
-    commit: 71347ad377628cfe714923e8f45429ed07c20404
+    version: 0.8.1
 

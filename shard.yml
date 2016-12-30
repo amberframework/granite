@@ -1,5 +1,5 @@
 name: kemalyst-model
-version: 0.2.7
+version: 0.3.0
 
 authors:
   - drujensen <drujensen@gmail.com>
@@ -16,12 +16,9 @@ dependencies:
 development_dependencies:
   mysql:
     github: crystal-lang/crystal-mysql
-    branch: master
 
   sqlite3:
     github: crystal-lang/crystal-sqlite3
-    branch: master
 
   pg:
-    github: asterite/crystal-pg
-    branch: feature/db
+    github: will/crystal-pg

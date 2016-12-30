@@ -175,7 +175,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
       stmt << "INSERT INTO #{table_name} ("
       stmt << fields.map { |name, type| "#{name}" }.join(",")
       stmt << ") VALUES ("
-      stmt << fields.map_with_index { |fields, index| "$#{index + 1}" }.join(",")
+      stmt << fields.map { |name, type| "$#{fields.key_index(name).not_nil! + 1}" }.join(",")
       stmt << ")"
     end
     open do |db|
@@ -192,7 +192,7 @@ class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
   def update(table_name, fields, params)
     statement = String.build do |stmt|
       stmt << "UPDATE #{table_name} SET "
-      stmt << fields.map_with_index { |fields, index| "#{fields[0]}=$#{index + 1}" }.join(",")
+      stmt << fields.map { |name, type| "#{name}=$#{fields.key_index(name).not_nil! + 1}" }.join(",")
       stmt << " WHERE id=$#{fields.size + 1}"
     end
     open do |db|
