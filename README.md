@@ -28,14 +28,8 @@ dependencies:
   sqlite3:
     github: crystal-lang/crystal-sqlite3
 
-  # postgres driver is still in development
   pg:
-    github: asterite/crystal-pg
-    branch: feature/db
-
-  # when it is released
-  pg:
-    github: crystal-lang/crystal-pg
+    github: will/crystal-pg
 
 ```
 
