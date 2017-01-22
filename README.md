@@ -123,10 +123,19 @@ if posts
 end
 ```
 
-#### Find One
+#### Find
 
 ```crystal
 post = Post.find 1
+if post
+  puts post.name
+end
+```
+
+#### Find By
+
+```crystal
+post = Post.find_by :slug, "example_slug"
 if post
   puts post.name
 end
@@ -157,25 +166,18 @@ post.destroy
 puts "deleted" unless post
 ```
 
-### Find
-
-The find method accepts an optional second parameter and can be used to find a single result from any field:
-```crystal
-post = Post.find("Kemalyst Rocks!", "name")
-```
-
-### Where
+### Queries
 
 The where clause will give you full control over your query.
 
 When using the `all` method, the SQL selected fields will always match the
-fields specified in the model.  If you need different fields, consider
-creating a new model.
+fields specified in the model.
 
 Always pass in parameters to avoid SQL Injection.  Use a `?` (or `$1`, `$2`,.. for pg)
 in your query as placeholder. Checkout the [Crystal DB Driver](https://github.com/crystal-lang/crystal-db)
 for documentation of the drivers.
 
+Here are some examples:
 ```crystal
 posts = Post.all("WHERE name LIKE ?", ["Joe%"])
 if posts

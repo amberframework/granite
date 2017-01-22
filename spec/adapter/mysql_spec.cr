@@ -53,13 +53,24 @@ describe Kemalyst::Adapter::Mysql do
       post = Post.find id
       post.should_not be_nil
     end
+  end
 
-    it "finds the post by field other than id" do
+  describe "#find_by" do
+    it "finds the post by field" do
       post = Post.new
       post.slug = "test-slug-with-hypens"
       post.save
       slug = post.slug
-      post = Post.find(slug, "slug")
+      post = Post.find_by("slug", slug)
+      post.should_not be_nil
+    end
+
+    it "finds the post by field using a symbol" do
+      post = Post.new
+      post.slug = "test-slug-with-hypens"
+      post.save
+      slug = post.slug
+      post = Post.find_by(:slug, slug)
       post.should_not be_nil
     end
   end

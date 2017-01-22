@@ -38,13 +38,24 @@ describe Kemalyst::Adapter::Sqlite do
       comment = Comment.find comment.id
       comment.should_not be_nil
     end
+  end
 
-    it "finds the comment by field other than id" do
+  describe "#find_by" do
+    it "finds the comment by field" do
       comment = Comment.new
       comment.name = "Test Comment"
       comment.save
       name = comment.name
-      comment = Comment.find(name, "name")
+      comment = Comment.find_by("name", name)
+      comment.should_not be_nil
+    end
+
+    it "finds the comment by field using a symbol" do
+      comment = Comment.new
+      comment.name = "Test Comment"
+      comment.save
+      name = comment.name
+      comment = Comment.find_by(:name, name)
       comment.should_not be_nil
     end
   end
