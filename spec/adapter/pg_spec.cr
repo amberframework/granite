@@ -41,13 +41,24 @@ describe Kemalyst::Adapter::Pg do
       user = User.find id
       user.should_not be_nil
     end
+  end
 
-    it "finds the user by field other than id" do
+  describe "#find_by" do
+    it "finds the user by field" do
       user = User.new
-      user.pass = "my-pass"
+      user.pass = "pass"
       user.save
       pass = user.pass
-      user = User.find(pass, "pass")
+      user = User.find_by("pass", pass)
+      user.should_not be_nil
+    end
+
+    it "finds the user by field using a symbol" do
+      user = User.new
+      user.pass = "pass"
+      user.save
+      pass = user.pass
+      user = User.find_by(:pass, pass)
       user.should_not be_nil
     end
   end

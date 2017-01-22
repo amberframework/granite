@@ -185,12 +185,22 @@ class Kemalyst::Model
   # find returns the row with the id specified.
   # it checks by id by default, but one can pass
   # another field for comparison
-  def self.find(id, field = "id")
+  def self.find(id)
+    return self.find_by("id", id)
+  end
+
+  # find_by returns the first row found where the field maches the value
+  def self.find_by(field : String, value)
     row = nil
-    @@adapter.select_one(@@table_name, fields({"id" => "BIGINT"}), field, id) do |result|
+    @@adapter.select_one(@@table_name, fields({"id" => "BIGINT"}), field, value) do |result|
       row = self.from_sql(result) if result
     end
     return row
+  end
+
+  # find_by using symbol for field name.
+  def self.find_by(field : Symbol, value)
+    self.find_by(field.to_s, value)
   end
 
   def self.exec(clause = "")
