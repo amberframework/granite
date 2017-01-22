@@ -189,6 +189,11 @@ class Kemalyst::Model
     return self.find_by("id", id)
   end
 
+  # find_by using symbol for field name.
+  def self.find_by(field : Symbol, value)
+    self.find_by(field.to_s, value)
+  end
+
   # find_by returns the first row found where the field maches the value
   def self.find_by(field : String, value)
     row = nil
@@ -196,11 +201,6 @@ class Kemalyst::Model
       row = self.from_sql(result) if result
     end
     return row
-  end
-
-  # find_by using symbol for field name.
-  def self.find_by(field : Symbol, value)
-    self.find_by(field.to_s, value)
   end
 
   def self.exec(clause = "")
