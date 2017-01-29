@@ -4,15 +4,25 @@ require "../src/adapter/mysql"
 class Post < Kemalyst::Model
   adapter mysql
   sql_mapping({
-    name:  ["VARCHAR(255)", String],
-    body:  ["TEXT", String],
-    total: ["INT", Int32],
-    slug:  ["VARCHAR(255)", String],
+    name:  String,
+    body:  String,
+    total: Int32,
+    slug:  String,
   })
 end
 
-Post.drop
-Post.create
+Post.exec("DROP TABLE IF EXISTS posts;");
+Post.exec("CREATE TABLE posts (
+  id BIGINT NOT NULL AUTO_INCREMENT, 
+  name VARCHAR(255),
+  body TEXT,
+  total INTEGER,
+  slug VARCHAR(255),
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP,
+  PRIMARY KEY (id)
+);
+")
 
 describe Kemalyst::Adapter::Mysql do
   Spec.before_each do

@@ -4,14 +4,22 @@ require "../src/adapter/pg"
 class User < Kemalyst::Model
   adapter pg
   sql_mapping({
-    name:  ["VARCHAR(255)", String],
-    pass:  ["TEXT", String],
-    total: ["INT", Int32],
+    name:  String,
+    pass:  String,
+    total: Int32,
   })
 end
 
-User.drop
-User.create
+User.exec("DROP TABLE IF EXISTS users;")
+User.exec("CREATE TABLE users (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR,
+  pass VARCHAR,
+  total INT,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);
+")
 
 describe Kemalyst::Adapter::Pg do
   Spec.before_each do

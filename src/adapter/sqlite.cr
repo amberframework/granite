@@ -10,33 +10,6 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
     end
   end
 
-  # drop the table
-  def drop(table_name)
-    open do |db|
-      db.exec "DROP TABLE IF EXISTS #{table_name}"
-    end
-  end
-
-  def create(table_name, fields)
-    statement = String.build do |stmt|
-      stmt << "CREATE TABLE #{table_name} ("
-      stmt << "id INTEGER NOT NULL PRIMARY KEY, "
-      stmt << fields.map { |name, type| "#{name} #{type}" }.join(",")
-      stmt << ")"
-    end
-    open do |db|
-      db.exec statement
-    end
-  end
-
-  def migrate(table_name, fields)
-    raise "Not Available for Sqlite"
-  end
-
-  def prune(table_name, fields)
-    raise "Not Available for Sqlite"
-  end
-
   def add_field(table_name, name, type, previous = nil)
     raise "Not Available for Sqlite"
   end
@@ -64,7 +37,7 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
   def select(table_name, fields, clause = "", params = nil, &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map { |name, type| "#{table_name}.#{name}" }.join(",")
+      stmt << fields.map { |name| "#{table_name}.#{name}" }.join(",")
       stmt << " FROM #{table_name} #{clause}"
     end
     open do |db|
@@ -78,7 +51,7 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
   def select_one(table_name, fields, field, id, &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map { |name, type| "#{table_name}.#{name}" }.join(",")
+      stmt << fields.map { |name| "#{table_name}.#{name}" }.join(",")
       stmt << " FROM #{table_name}"
       stmt << " WHERE #{field}=:id LIMIT 1"
     end
@@ -92,9 +65,9 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
   def insert(table_name, fields, params)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{table_name} ("
-      stmt << fields.map { |name, type| "#{name}" }.join(",")
+      stmt << fields.map { |name| "#{name}" }.join(",")
       stmt << ") VALUES ("
-      stmt << fields.map { |name, type| "?" }.join(",")
+      stmt << fields.map { |name| "?" }.join(",")
       stmt << ")"
     end
     open do |db|
@@ -111,7 +84,7 @@ class Kemalyst::Adapter::Sqlite < Kemalyst::Adapter::Base
   def update(table_name, fields, params)
     statement = String.build do |stmt|
       stmt << "UPDATE #{table_name} SET "
-      stmt << fields.map { |name, type| "#{name}=?" }.join(",")
+      stmt << fields.map { |name| "#{name}=?" }.join(",")
       stmt << " WHERE id=?"
     end
     open do |db|

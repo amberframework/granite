@@ -4,13 +4,18 @@ require "../src/adapter/sqlite"
 class Comment < Kemalyst::Model
   adapter sqlite
   sql_mapping({
-    name: ["TEXT", String],
-    body: ["TEXT", String],
-  })
+    name: String,
+    body: String,
+  }, comments, false)
 end
 
-Comment.drop
-Comment.create
+Comment.exec("DROP TABLE IF EXISTS comments;")
+Comment.exec("CREATE TABLE comments (
+  id INTEGER NOT NULL PRIMARY KEY,
+  name VARCHAR,
+  body VARCHAR
+);
+")
 
 describe Kemalyst::Adapter::Sqlite do
   Spec.before_each do

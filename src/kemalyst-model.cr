@@ -37,8 +37,8 @@ class Kemalyst::Model
     @@table_name = "{{table_name}}"
     #Create the properties
     property id : Int64?
-    {% for name, types in fields %}
-      property {{name.id}} : {{types[1].id}}?
+    {% for name, type in fields %}
+      property {{name.id}} : {{type.id}}?
     {% end %}
     {% if timestamps %}
     property created_at : Time?
@@ -51,26 +51,25 @@ class Kemalyst::Model
 
       model.id = result.read(Int64)
 
-      {% for name, types in fields %}
-        model.{{name.id}} = result.read(Union({{types[1].id}} | Nil))
+      {% for name, type in fields %}
+        model.{{name.id}} = result.read(Union({{type.id}} | Nil))
       {% end %}
 
       {% if timestamps %}
-        formatter = Time::Format.new("%F %X")
-        model.created_at = formatter.parse(result.read(String))
-        model.updated_at = formatter.parse(result.read(String))
+        model.created_at = result.read(Union(Time | Nil))
+        model.updated_at = result.read(Union(Time | Nil))
       {% end %}
       return model
     end
 
     # keep a hash of the fields to be used for mapping
-    def self.fields(fields = {} of String => String)
-        {% for name, types in fields %}
-        fields["{{name.id}}"] = "{{types[0].id}}"
+    def self.fields(fields = [] of String)
+        {% for name, type in fields %}
+        fields << "{{name.id}}"
         {% end %}
         {% if timestamps %}
-        fields["created_at"] = "VARCHAR(255)"
-        fields["updated_at"] = "VARCHAR(255)"
+        fields << "created_at"
+        fields << "updated_at"
         {% end %}
         return fields
     end
@@ -78,21 +77,12 @@ class Kemalyst::Model
     # keep a hash of the params that will be passed to the adapter.
     def params
       params = [] of DB::Any
-      {% for name, types in fields %}
+      {% for name, type in fields %}
         params << {{name.id}}
       {% end %}
       {% if timestamps %}
-        formatter = Time::Format.new("%F %X")
-        if time = created_at
-          params << formatter.format(time)
-        else
-          params << nil
-        end
-        if time = updated_at
-          params << formatter.format(time)
-        else
-          params << nil
-        end
+        params << created_at.not_nil!.to_s("%F %X")
+        params << updated_at.not_nil!.to_s("%F %X")
       {% end %}
       return params
    end
@@ -102,29 +92,6 @@ class Kemalyst::Model
   # the id.
   def self.clear
     @@adapter.clear @@table_name
-  end
-
-  # Drop will drop the table completely.  This will lose data so be very
-  # careful with this call.
-  def self.drop
-    @@adapter.drop @@table_name
-  end
-
-  # Create will create the table for you based on the sql_mapping specified.
-  def self.create
-    @@adapter.create @@table_name, fields
-  end
-
-  # Migrate will examine the current schema and additively update to match the
-  # model.
-  def self.migrate
-    @@adapter.migrate @@table_name, fields
-  end
-
-  # # Prune fields no longer defined in the model.  This should be used after
-  # # you have successfully migrated.
-  def self.prune
-    @@adapter.prune @@table_name, fields
   end
 
   # The save method will check to see if the @id exists yet.  If it does it
@@ -174,7 +141,7 @@ class Kemalyst::Model
   # DSL.
   def self.all(clause = "", params = [] of DB::Any)
     rows = [] of self
-    @@adapter.select(@@table_name, fields({"id" => "BIGINT"}), clause, params) do |results|
+    @@adapter.select(@@table_name, fields(["id"]), clause, params) do |results|
       results.each do
         rows << self.from_sql(results)
       end
@@ -197,7 +164,7 @@ class Kemalyst::Model
   # find_by returns the first row found where the field maches the value
   def self.find_by(field : String, value)
     row = nil
-    @@adapter.select_one(@@table_name, fields({"id" => "BIGINT"}), field, value) do |result|
+    @@adapter.select_one(@@table_name, fields(["id"]), field, value) do |result|
       row = self.from_sql(result) if result
     end
     return row

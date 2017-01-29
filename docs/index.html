@@ -66,7 +66,7 @@ You can leverage environment variables using ${} syntax.</p>
 pg:
   database: "postgres://postgres:@pg:5432/postgres"
 sqlite:
-  database: "sqlite3:./config/test.db}"</code></pre>
+  database: "sqlite3:./config/test.db"</code></pre>
 
 <h2>Usage</h2>
 
@@ -137,9 +137,16 @@ before migrated.
   <span class="k">end</span>
 <span class="k">end</span></code></pre>
 
-<h4>Find One</h4>
+<h4>Find</h4>
 
 <pre><code class='language-crystal'>post <span class="o">=</span> <span class="t">Post</span>.find <span class="n">1</span>
+<span class="k">if</span> post
+  puts post.name
+<span class="k">end</span></code></pre>
+
+<h4>Find By</h4>
+
+<pre><code class='language-crystal'>post <span class="o">=</span> <span class="t">Post</span>.find_by <span class="n">:slug</span>, <span class="s">&quot;example_slug&quot;</span>
 <span class="k">if</span> post
   puts post.name
 <span class="k">end</span></code></pre>
@@ -163,23 +170,18 @@ post.save</code></pre>
 post.destroy
 puts <span class="s">&quot;deleted&quot;</span> <span class="k">unless</span> post</code></pre>
 
-<h3>Find</h3>
-
-<p>The find method accepts an optional second parameter and can be used to find a single result from any field:</p>
-
-<pre><code class='language-crystal'>post <span class="o">=</span> <span class="t">Post</span>.find(<span class="s">&quot;Kemalyst Rocks&#33;&quot;</span>, <span class="s">&quot;name&quot;</span>)</code></pre>
-
-<h3>Where</h3>
+<h3>Queries</h3>
 
 <p>The where clause will give you full control over your query.</p>
 
 <p>When using the <code>all</code> method, the SQL selected fields will always match the
-fields specified in the model.  If you need different fields, consider
-creating a new model.</p>
+fields specified in the model.</p>
 
 <p>Always pass in parameters to avoid SQL Injection.  Use a <code>?</code> (or <code>$1</code>, <code>$2</code>,.. for pg)
 in your query as placeholder. Checkout the <a href="https://github.com/crystal-lang/crystal-db" target="_blank">Crystal DB Driver</a>
 for documentation of the drivers.</p>
+
+<p>Here are some examples:</p>
 
 <pre><code class='language-crystal'>posts <span class="o">=</span> <span class="t">Post</span>.all(<span class="s">&quot;WHERE name LIKE ?&quot;</span>, [<span class="s">&quot;Joe&#37;&quot;</span>])
 <span class="k">if</span> posts
