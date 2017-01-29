@@ -113,7 +113,7 @@ class Kemalyst::Model
     rescue ex
       if message = ex.message
         puts "Save Exception: #{message}"
-        errors << message
+        errors << Kemalyst::Validators::Error.new(:base, message)
       end
       return false
     end
@@ -127,7 +127,7 @@ class Kemalyst::Model
     rescue ex
       if message = ex.message
         puts "Destroy Exception: #{message}"
-        errors << message
+        errors << Kemalyst::Validators::Error.new(:base, message)
       end
       return false
     end

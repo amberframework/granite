@@ -156,6 +156,15 @@ post.destroy
 puts "deleted" unless post
 ```
 
+### Errors
+
+All database errors are added to the `errors` array used by Kemalyst::Validators with the symbol ':base'
+```
+post = Post.new
+post.save
+post.errors[0].to_s.should eq "ERROR: name cannot be null"
+```
+
 ### Queries
 
 The where clause will give you full control over your query.
