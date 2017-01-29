@@ -56,13 +56,14 @@ class Post < Kemalyst::Model
   adapter mysql
 
   sql_mapping({
-    name: ["VARCHAR(255)", String],
-    body: ["TEXT", String]
+    name: String,
+    body: String
   })
 
 end
 ```
 
+Disable the timestamps for SqlLite since TIMESTAMP is not supported for this database:
 ```crystal
 require "kemalyst-model/adapter/sqlite"
 
@@ -71,8 +72,8 @@ class Comment < Kemalyst::Model
 
   # table name is set to post_comments and timestamps are disabled.
   sql_mapping({
-    name: ["VARCHAR(255)", String],
-    body: ["TEXT", String]
+    name: String,
+    body: String
   }, "post_comments", false)
 
 end
@@ -80,37 +81,26 @@ end
 ### Fields
 
 To define the fields for this model, you need to provide a hash with the name
-of the field as a `Symbol` and an array of the datbase type as a `String` and
-the type.  This can include any other options that the database provides to you.
+of the field and the type.
 
-3 Fields are automatically created for you:  id, created_at, updated_at.
+3 Fields are automatically included for you:  id, created_at, updated_at.
 
-MySQL field definitions for id, created_at, updated_at
+Here are the MySQL field definitions for id, created_at, updated_at
 
 ```mysql
-  id INT NOT NULL AUTO_INCREMENT
+  id BIGINT NOT NULL AUTO_INCREMENT
   # Your fields go here
-  created_at DATE
-  updated_at DATE
+  created_at TIMESTAMP
+  updated_at TIMESTAMP
   PRIMARY KEY (id)
 ```
 
-### DDL Built in
+### SQL
 
-```crystal
-Post.drop #drop the table
-
-Post.create #create the table
-
-Post.clear #truncate the table
-
-Post.migrate #safe migration of fields. Fields will be renamed to `old_\*`
-before migrated.
-
-Post.prune #clean up any fields not defined in model.  DANGER!!!!
+To clear all the rows in the database:
 ```
-
-### DML
+Post.clear #truncate the table
+```
 
 #### Find All
 
