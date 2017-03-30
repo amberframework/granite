@@ -1,5 +1,5 @@
 name: kemalyst-model
-version: 0.4.2
+version: 0.4.3
 
 authors:
   - drujensen <drujensen@gmail.com>
@@ -9,11 +9,7 @@ license: MIT
 dependencies:
   db:
     github: crystal-lang/crystal-db
-    version: ~> 0.3.0
-
-  kemalyst-validators:
-    github: drujensen/kemalyst-validators
-    version: ~> 0.2.0
+    version: ~> 0.4.0
 
 development_dependencies:
   mysql:
@@ -27,4 +23,3 @@ development_dependencies:
   pg:
     github: will/crystal-pg
     version: ~> 0.13.0
-
