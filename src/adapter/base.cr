@@ -8,7 +8,7 @@ abstract class Kemalyst::Adapter::Base
   property url : String
 
   def initialize(settings)
-    @url = env(settings["database"].to_s)
+    @url = ENV["DATABASE_URL"]? || env(settings["database"].to_s)
   end
 
   def open(&block)
