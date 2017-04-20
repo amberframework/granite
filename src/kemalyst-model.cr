@@ -6,6 +6,13 @@ require "kemalyst-validators"
 class Kemalyst::Model
   macro inherited
     include Kemalyst::Validators
+
+    FIELDS = {} of Nil => Nil
+    SETTINGS = {} of Nil => Nil
+    
+    macro finished
+      process_fields
+    end
   end
 
   # specify the database adapter you will be using for this model.
@@ -23,24 +30,32 @@ class Kemalyst::Model
     end
   end
 
-  # sql_mapping is the mapping between columns in your database and the fields
-  # in this model.  proerties will be created for each field.  The type of the
-  # field is specific to the database you are using.  You may specify other
-  # criteria for each field like `NOT NULL` and Referential Integrity. This
-  # allows you to take full advantage of the database of choice.
-  # you may also specify a specific table_name and if you want the timestamps
-  # or not.  This will help with backward compatibility of existing databases.
-  macro sql_mapping(fields, table_name = nil, timestamps = true)
+  # specify the table name to use otherwise it will use the model's name
+  macro table_name(name)
+    {% SETTINGS[:table_name] = name.id %}
+  end
+
+  # specify the fields you want to define and types
+  macro field(decl)
+    {% FIELDS[decl.var] = decl.type %}
+  end
+
+  # include created_at and updated_at that will automatically be updated
+  macro timestamps
+    {% SETTINGS[:timestamps] = true %}
+  end
+
+  macro process_fields
     {% name_space = @type.name.downcase.id %}
-    {% table_name = name_space + "s" unless table_name %}
+    {% table_name = SETTINGS[:table_name] || name_space + "s" %}
     # Table Name
     @@table_name = "{{table_name}}"
     #Create the properties
     property id : Int64?
-    {% for name, type in fields %}
+    {% for name, type in FIELDS %}
       property {{name.id}} : {{type.id}}?
     {% end %}
-    {% if timestamps %}
+    {% if SETTINGS[:timestamps] %}
     property created_at : Time?
     property updated_at : Time?
     {% end %}
@@ -51,11 +66,11 @@ class Kemalyst::Model
 
       model.id = result.read(Int64)
 
-      {% for name, type in fields %}
+      {% for name, type in FIELDS %}
         model.{{name.id}} = result.read(Union({{type.id}} | Nil))
       {% end %}
 
-      {% if timestamps %}
+      {% if SETTINGS[:timestamps] %}
         model.created_at = result.read(Union(Time | Nil))
         model.updated_at = result.read(Union(Time | Nil))
       {% end %}
@@ -64,10 +79,10 @@ class Kemalyst::Model
 
     # keep a hash of the fields to be used for mapping
     def self.fields(fields = [] of String)
-        {% for name, type in fields %}
+        {% for name, type in FIELDS %}
         fields << "{{name.id}}"
         {% end %}
-        {% if timestamps %}
+        {% if SETTINGS[:timestamps] %}
         fields << "created_at"
         fields << "updated_at"
         {% end %}
@@ -77,10 +92,10 @@ class Kemalyst::Model
     # keep a hash of the params that will be passed to the adapter.
     def params
       params = [] of DB::Any
-      {% for name, type in fields %}
+      {% for name, type in FIELDS %}
         params << {{name.id}}
       {% end %}
-      {% if timestamps %}
+      {% if SETTINGS[:timestamps] %}
         params << created_at.not_nil!.to_s("%F %X")
         params << updated_at.not_nil!.to_s("%F %X")
       {% end %}

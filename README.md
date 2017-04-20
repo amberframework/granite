@@ -54,12 +54,9 @@ require "kemalyst-model/adapter/mysql"
 
 class Post < Kemalyst::Model
   adapter mysql
-
-  sql_mapping({
-    name: String,
-    body: String
-  })
-
+  field name : String
+  field body : Text
+  timestamps
 end
 ```
 
@@ -69,13 +66,9 @@ require "kemalyst-model/adapter/sqlite"
 
 class Comment < Kemalyst::Model
   adapter sqlite
-
-  # table name is set to post_comments and timestamps are disabled.
-  sql_mapping({
-    name: String,
-    body: String
-  }, "post_comments", false)
-
+  table_name post_comments
+  field name : String
+  field body : Text
 end
 ```
 ### Fields

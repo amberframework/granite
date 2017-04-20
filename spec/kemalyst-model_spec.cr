@@ -3,10 +3,8 @@ require "../src/adapter/pg"
 
 class Todo < Kemalyst::Model
   adapter pg
-
-  sql_mapping({
-    name: String,
-  })
+  field name : String
+  timestamps
 
   def initialize(@name)
   end

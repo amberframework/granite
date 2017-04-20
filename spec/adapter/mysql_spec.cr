@@ -3,12 +3,11 @@ require "../src/adapter/mysql"
 
 class Post < Kemalyst::Model
   adapter mysql
-  sql_mapping({
-    name:  String,
-    body:  String,
-    total: Int32,
-    slug:  String,
-  })
+  field name :  String
+  field body :  String
+  field total : Int32
+  field slug :  String
+  timestamps
 end
 
 Post.exec("DROP TABLE IF EXISTS posts;");
