@@ -3,11 +3,10 @@ require "../src/adapter/pg"
 
 class User < Kemalyst::Model
   adapter pg
-  sql_mapping({
-    name:  String,
-    pass:  String,
-    total: Int32,
-  })
+  field name :  String
+  field pass :  String
+  field total : Int32
+  timestamps
 end
 
 User.exec("DROP TABLE IF EXISTS users;")

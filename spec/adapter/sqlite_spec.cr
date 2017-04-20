@@ -3,10 +3,9 @@ require "../src/adapter/sqlite"
 
 class Comment < Kemalyst::Model
   adapter sqlite
-  sql_mapping({
-    name: String,
-    body: String,
-  }, comments, false)
+  table_name comments
+  field name : String
+  field body : String
 end
 
 Comment.exec("DROP TABLE IF EXISTS comments;")
