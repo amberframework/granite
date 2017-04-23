@@ -3,16 +3,16 @@ require "../src/adapter/mysql"
 
 class Post < Kemalyst::Model
   adapter mysql
-  field name :  String
-  field body :  String
+  field name : String
+  field body : String
   field total : Int32
-  field slug :  String
+  field slug : String
   timestamps
 end
 
-Post.exec("DROP TABLE IF EXISTS posts;");
+Post.exec("DROP TABLE IF EXISTS posts;")
 Post.exec("CREATE TABLE posts (
-  id BIGINT NOT NULL AUTO_INCREMENT, 
+  id BIGINT NOT NULL AUTO_INCREMENT,
   name VARCHAR(255),
   body TEXT,
   total INTEGER,

@@ -3,8 +3,8 @@ require "../src/adapter/pg"
 
 class User < Kemalyst::Model
   adapter pg
-  field name :  String
-  field pass :  String
+  field name : String
+  field pass : String
   field total : Int32
   timestamps
 end

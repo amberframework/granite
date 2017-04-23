@@ -9,7 +9,7 @@ class Kemalyst::Model
 
     FIELDS = {} of Nil => Nil
     SETTINGS = {} of Nil => Nil
-    
+
     macro finished
       process_fields
     end
