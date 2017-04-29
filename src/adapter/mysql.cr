@@ -101,11 +101,11 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
   end
 
   # This will update a row in the database.
-  def update(table_name, fields, params)
+  def update(table_name, primary_name, fields, params)
     statement = String.build do |stmt|
       stmt << "UPDATE #{table_name} SET "
       stmt << fields.map { |name| "#{name}=?" }.join(",")
-      stmt << " WHERE id=?"
+      stmt << " WHERE #{primary_name}=?"
     end
     open do |db|
       db.exec statement, params
@@ -113,9 +113,9 @@ class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
   end
 
   # This will delete a row from the database.
-  def delete(table_name, id)
+  def delete(table_name, primary_name, value)
     open do |db|
-      db.exec "DELETE FROM #{table_name} WHERE id=?", id
+      db.exec "DELETE FROM #{table_name} WHERE #{primary_name}=?", value
     end
   end
 end
