@@ -45,6 +45,8 @@ sqlite:
   database: "sqlite3:./config/test.db"
 ```
 
+Or you can set the `DATABASE_URL` environment variable.  This will override the config/database.yml
+
 ## Usage
 
 Here is an example using Kemalyst Model
@@ -60,7 +62,7 @@ class Post < Kemalyst::Model
 end
 ```
 
-Disable the timestamps for SqlLite since TIMESTAMP is not supported for this database:
+You can disable the timestamps for SqlLite since TIMESTAMP is not supported for this database:
 ```crystal
 require "kemalyst-model/adapter/sqlite"
 
@@ -71,12 +73,11 @@ class Comment < Kemalyst::Model
   field body : Text
 end
 ```
-### Fields
 
-To define the fields for this model, you need to provide a hash with the name
-of the field and the type.
+### id, created_at, updated_at
 
-3 Fields are automatically included for you:  id, created_at, updated_at.
+The primary key is automatically created for you and if you use `timestamps` they will be
+automatically updated for you.
 
 Here are the MySQL field definitions for id, created_at, updated_at
 
@@ -88,10 +89,26 @@ Here are the MySQL field definitions for id, created_at, updated_at
   PRIMARY KEY (id)
 ```
 
+### Custom Primary Key
+
+For legacy database mappings, you may already have a table and the primary key is not named `id` or of type `Int32`.
+
+We have a macro called `primary` to help you out:
+
+```crystal
+class Site < Kemalyst::Model
+  adapter mysql
+  primary custom_id : Int32
+  field name : String
+end
+```
+
+This will override the default primary key of `id : Int64`.
+
 ### SQL
 
 To clear all the rows in the database:
-```
+```crystal
 Post.clear #truncate the table
 ```
 
