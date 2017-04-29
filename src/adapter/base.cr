@@ -35,10 +35,10 @@ abstract class Kemalyst::Adapter::Base
   abstract def insert(table_name, fields, params) : Int64
 
   # This will update a row in the database.
-  abstract def update(table_name, fields, params)
+  abstract def update(table_name, primary_name, fields, params)
 
   # This will delete a row from the database.
-  abstract def delete(table_name, id)
+  abstract def delete(table_name, primary_name, id)
 
   # method used to lookup the environment variable if exists
   private def env(value)

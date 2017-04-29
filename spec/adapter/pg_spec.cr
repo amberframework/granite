@@ -9,6 +9,12 @@ class User < Kemalyst::Model
   timestamps
 end
 
+class Role < Kemalyst::Model
+  adapter pg
+  primary custom_id : Int32
+  field name : String
+end
+
 User.exec("DROP TABLE IF EXISTS users;")
 User.exec("CREATE TABLE users (
   id BIGSERIAL PRIMARY KEY,
@@ -17,6 +23,13 @@ User.exec("CREATE TABLE users (
   total INT,
   created_at TIMESTAMP,
   updated_at TIMESTAMP
+);
+")
+
+Role.exec("DROP TABLE IF EXISTS roles;")
+Role.exec("CREATE TABLE roles (
+  custom_id SERIAL PRIMARY KEY,
+  name VARCHAR
 );
 ")
 
@@ -101,6 +114,49 @@ describe Kemalyst::Adapter::Pg do
       user.destroy
       user = User.find id
       user.should be_nil
+    end
+  end
+
+  describe "Role model with custom primary key" do
+    Spec.before_each do
+      Role.clear
+    end
+
+    describe "#find" do
+      it "finds the role by custom_id" do
+        role = Role.new
+        role.name = "Test Role"
+        role.save
+        pk = role.custom_id
+        role = Role.find pk
+        role.should_not be_nil
+      end
+    end
+
+    describe "#save" do
+      it "updates an existing role" do
+        role = Role.new
+        role.name = "Test Role"
+        role.save
+        role.name = "Test Role 2"
+        role.save
+        role = Role.find 1
+        if role
+          role.name.should eq "Test Role 2"
+        end
+      end
+    end
+
+    describe "#destroy" do
+      it "destroys a role" do
+        role = Role.new
+        role.name = "Test Role"
+        role.save
+        pk = role.custom_id
+        role.destroy
+        role = Role.find pk
+        role.should be_nil
+      end
     end
   end
 end

@@ -7,6 +7,7 @@ class Kemalyst::Model
   macro inherited
     include Kemalyst::Validators
 
+    PRIMARY = {name: id, type: Int64}
     FIELDS = {} of Nil => Nil
     SETTINGS = {} of Nil => Nil
 
@@ -35,6 +36,12 @@ class Kemalyst::Model
     {% SETTINGS[:table_name] = name.id %}
   end
 
+  # specify the primary key column and type
+  macro primary(decl)
+    {% PRIMARY[:name] = decl.var %}
+    {% PRIMARY[:type] = decl.type %}
+  end
+
   # specify the fields you want to define and types
   macro field(decl)
     {% FIELDS[decl.var] = decl.type %}
@@ -48,10 +55,13 @@ class Kemalyst::Model
   macro process_fields
     {% name_space = @type.name.downcase.id %}
     {% table_name = SETTINGS[:table_name] || name_space + "s" %}
+    {% primary_name = PRIMARY[:name] %}
+    {% primary_type = PRIMARY[:type] %}
     # Table Name
     @@table_name = "{{table_name}}"
+    @@primary_name = "{{primary_name}}"
     #Create the properties
-    property id : Int64?
+    property {{primary_name}} : {{primary_type}}?
     {% for name, type in FIELDS %}
       property {{name.id}} : {{type.id}}?
     {% end %}
@@ -64,7 +74,7 @@ class Kemalyst::Model
     def self.from_sql(result)
       model = {{@type.name.id}}.new
 
-      model.id = result.read(Int64)
+      model.{{primary_name}} = result.read({{primary_type}})
 
       {% for name, type in FIELDS %}
         model.{{name.id}} = result.read(Union({{type.id}} | Nil))
@@ -101,99 +111,104 @@ class Kemalyst::Model
       {% end %}
       return params
    end
+
+    # Clear is used to remove all rows from the table and reset the counter for
+    # the primary key.
+    def self.clear
+      @@adapter.clear @@table_name
+    end
+
+    # The save method will check to see if the primary exists yet. If it does it
+    # will call the update method, otherwise it will call the create method.
+    # This will update the timestamps apropriately.
+    def save
+      begin
+        if value = @{{primary_name}}
+          @updated_at = Time.now
+          params_and_pk = params
+          params_and_pk << value
+          @@adapter.update @@table_name, @@primary_name, self.class.fields, params_and_pk
+        else
+          @created_at = Time.now
+          @updated_at = Time.now
+          {% if primary_type.id == "Int32" %}
+            @{{primary_name}} = @@adapter.insert(@@table_name, self.class.fields, params).to_i32
+          {% else %}
+            @{{primary_name}} = @@adapter.insert(@@table_name, self.class.fields, params)
+          {% end %}
+        end
+        return true
+      rescue ex
+        if message = ex.message
+          puts "Save Exception: #{message}"
+          errors << Kemalyst::Validators::Error.new(:base, message)
+        end
+        return false
+      end
+    end
+
+    # Destroy will remove this from the database.
+    def destroy
+      begin
+        @@adapter.delete(@@table_name, @@primary_name, {{primary_name}})
+        return true
+      rescue ex
+        if message = ex.message
+          puts "Destroy Exception: #{message}"
+          errors << Kemalyst::Validators::Error.new(:base, message)
+        end
+        return false
+      end
+    end
+
+    # All will return all rows in the database. The clause allows you to specify
+    # a WHERE, JOIN, GROUP BY, ORDER BY and any other SQL92 compatible query to
+    # your table.  The results will be an array of instantiated instances of
+    # your Model class.  This allows you to take full advantage of the database
+    # that you are using so you are not restricted or dummied down to support a
+    # DSL.
+    def self.all(clause = "", params = [] of DB::Any)
+      rows = [] of self
+      @@adapter.select(@@table_name, fields([@@primary_name]), clause, params) do |results|
+        results.each do
+          rows << self.from_sql(results)
+        end
+      end
+      return rows
+    end
+
+    # find returns the row with the primary key specified.
+    # it checks by primary by default, but one can pass
+    # another field for comparison
+    def self.find(value)
+      return self.find_by(@@primary_name, value)
+    end
+
+    # find_by using symbol for field name.
+    def self.find_by(field : Symbol, value)
+      self.find_by(field.to_s, value)
+    end
+
+    # find_by returns the first row found where the field maches the value
+    def self.find_by(field : String, value)
+      row = nil
+      @@adapter.select_one(@@table_name, fields([@@primary_name]), field, value) do |result|
+        row = self.from_sql(result) if result
+      end
+      return row
+    end
+
+    def self.exec(clause = "")
+      @@adapter.open { |db| db.exec(clause) }
+    end
+
+    def self.query(clause = "", params = [] of DB::Any, &block)
+      @@adapter.open { |db| yield db.query(clause, params) }
+    end
+
+    def self.scalar(clause = "", &block)
+      @@adapter.open { |db| yield db.scalar(clause) }
+    end
+
   end # End of Fields Macro
-
-  # Clear is used to remove all rows from the table and reset the counter for
-  # the id.
-  def self.clear
-    @@adapter.clear @@table_name
-  end
-
-  # The save method will check to see if the @id exists yet.  If it does it
-  # will call the update method, otherwise it will call the create method.
-  # This will update the timestamps apropriately.
-  def save
-    begin
-      if value = @id
-        @updated_at = Time.now
-        params_and_id = params
-        params_and_id << value
-        @@adapter.update @@table_name, self.class.fields, params_and_id
-      else
-        @created_at = Time.now
-        @updated_at = Time.now
-        @id = @@adapter.insert @@table_name, self.class.fields, params
-      end
-      return true
-    rescue ex
-      if message = ex.message
-        puts "Save Exception: #{message}"
-        errors << Kemalyst::Validators::Error.new(:base, message)
-      end
-      return false
-    end
-  end
-
-  # Destroy will remove this from the database.
-  def destroy
-    begin
-      @@adapter.delete(@@table_name, id)
-      return true
-    rescue ex
-      if message = ex.message
-        puts "Destroy Exception: #{message}"
-        errors << Kemalyst::Validators::Error.new(:base, message)
-      end
-      return false
-    end
-  end
-
-  # All will return all rows in the database. The clause allows you to specify
-  # a WHERE, JOIN, GROUP BY, ORDER BY and any other SQL92 compatible query to
-  # your table.  The results will be an array of instantiated instances of
-  # your Model class.  This allows you to take full advantage of the database
-  # that you are using so you are not restricted or dummied down to support a
-  # DSL.
-  def self.all(clause = "", params = [] of DB::Any)
-    rows = [] of self
-    @@adapter.select(@@table_name, fields(["id"]), clause, params) do |results|
-      results.each do
-        rows << self.from_sql(results)
-      end
-    end
-    return rows
-  end
-
-  # find returns the row with the id specified.
-  # it checks by id by default, but one can pass
-  # another field for comparison
-  def self.find(id)
-    return self.find_by("id", id)
-  end
-
-  # find_by using symbol for field name.
-  def self.find_by(field : Symbol, value)
-    self.find_by(field.to_s, value)
-  end
-
-  # find_by returns the first row found where the field maches the value
-  def self.find_by(field : String, value)
-    row = nil
-    @@adapter.select_one(@@table_name, fields(["id"]), field, value) do |result|
-      row = self.from_sql(result) if result
-    end
-    return row
-  end
-
-  def self.exec(clause = "")
-    @@adapter.open { |db| db.exec(clause) }
-  end
-
-  def self.query(clause = "", params = [] of DB::Any, &block)
-    @@adapter.open { |db| yield db.query(clause, params) }
-  end
-
-  def self.scalar(clause = "", &block)
-    @@adapter.open { |db| yield db.scalar(clause) }
-  end
 end

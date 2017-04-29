@@ -10,6 +10,12 @@ class Post < Kemalyst::Model
   timestamps
 end
 
+class Site < Kemalyst::Model
+  adapter mysql
+  primary custom_id : Int32
+  field name : String
+end
+
 Post.exec("DROP TABLE IF EXISTS posts;")
 Post.exec("CREATE TABLE posts (
   id BIGINT NOT NULL AUTO_INCREMENT,
@@ -20,6 +26,14 @@ Post.exec("CREATE TABLE posts (
   created_at TIMESTAMP,
   updated_at TIMESTAMP,
   PRIMARY KEY (id)
+);
+")
+
+Site.exec("DROP TABLE IF EXISTS sites;")
+Site.exec("CREATE TABLE sites (
+  custom_id INT(11) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255),
+  PRIMARY KEY (custom_id)
 );
 ")
 
@@ -115,6 +129,49 @@ describe Kemalyst::Adapter::Mysql do
       post.destroy
       post = Post.find id
       post.should be_nil
+    end
+  end
+
+  describe "Site model with custom primary key" do
+    Spec.before_each do
+      Site.clear
+    end
+
+    describe "#find" do
+      it "finds the site by custom_id" do
+        site = Site.new
+        site.name = "Test Site"
+        site.save
+        pk = site.custom_id
+        site = Site.find pk
+        site.should_not be_nil
+      end
+    end
+
+    describe "#save" do
+      it "updates an existing site" do
+        site = Site.new
+        site.name = "Test Site"
+        site.save
+        site.name = "Test Site 2"
+        site.save
+        site = Site.find 1
+        if site
+          site.name.should eq "Test Site 2"
+        end
+      end
+    end
+
+    describe "#destroy" do
+      it "destroys a site" do
+        site = Site.new
+        site.name = "Test Site"
+        site.save
+        pk = site.custom_id
+        site.destroy
+        site = Site.find pk
+        site.should be_nil
+      end
     end
   end
 end

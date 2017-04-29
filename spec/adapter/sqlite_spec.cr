@@ -8,11 +8,25 @@ class Comment < Kemalyst::Model
   field body : String
 end
 
+class Reaction < Kemalyst::Model
+  adapter sqlite
+  table_name reactions
+  primary custom_id : Int64
+  field emote : String
+end
+
 Comment.exec("DROP TABLE IF EXISTS comments;")
 Comment.exec("CREATE TABLE comments (
   id INTEGER NOT NULL PRIMARY KEY,
   name VARCHAR,
   body VARCHAR
+);
+")
+
+Reaction.exec("DROP TABLE IF EXISTS reactions;")
+Reaction.exec("CREATE TABLE reactions (
+  custom_id INTEGER NOT NULL PRIMARY KEY,
+  emote VARCHAR
 );
 ")
 
@@ -99,6 +113,49 @@ describe Kemalyst::Adapter::Sqlite do
       comment.destroy
       comment = Comment.find id
       comment.should be_nil
+    end
+  end
+
+  describe "Reaction model with custom primary key" do
+    Spec.before_each do
+      Reaction.clear
+    end
+
+    describe "#find" do
+      it "finds the reaction by custom_id" do
+        reaction = Reaction.new
+        reaction.emote = ":test:"
+        reaction.save
+        pk = reaction.custom_id
+        reaction = Reaction.find pk
+        reaction.should_not be_nil
+      end
+    end
+
+    describe "#save" do
+      it "updates an existing reaction" do
+        reaction = Reaction.new
+        reaction.emote = ":test:"
+        reaction.save
+        reaction.emote = ":test2:"
+        reaction.save
+        reaction = Reaction.find 1
+        if reaction
+          reaction.emote.should eq ":test2:"
+        end
+      end
+    end
+
+    describe "#destroy" do
+      it "destroys a reaction" do
+        reaction = Reaction.new
+        reaction.emote = ":test:"
+        reaction.save
+        pk = reaction.custom_id
+        reaction.destroy
+        reaction = Reaction.find pk
+        reaction.should be_nil
+      end
     end
   end
 end
