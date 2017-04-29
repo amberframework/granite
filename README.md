@@ -91,7 +91,7 @@ Here are the MySQL field definitions for id, created_at, updated_at
 
 ### Custom Primary Key
 
-For legacy database mappings, you may already have a table and the primary key is not named `id` or of type `Int32`.
+For legacy database mappings, you may already have a table and the primary key is not named `id` or `Int64`.
 
 We have a macro called `primary` to help you out:
 
