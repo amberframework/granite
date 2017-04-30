@@ -38,7 +38,7 @@ abstract class Kemalyst::Adapter::Base
   abstract def update(table_name, primary_name, fields, params)
 
   # This will delete a row from the database.
-  abstract def delete(table_name, primary_name, id)
+  abstract def delete(table_name, primary_name, value)
 
   # method used to lookup the environment variable if exists
   private def env(value)
