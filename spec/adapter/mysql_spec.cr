@@ -16,6 +16,11 @@ class Site < Kemalyst::Model
   field name : String
 end
 
+class Chat::Room < Kemalyst::Model
+  adapter mysql
+  field name : String
+end
+
 Post.exec("DROP TABLE IF EXISTS posts;")
 Post.exec("CREATE TABLE posts (
   id BIGINT NOT NULL AUTO_INCREMENT,
@@ -34,6 +39,14 @@ Site.exec("CREATE TABLE sites (
   custom_id INT(11) NOT NULL AUTO_INCREMENT,
   name VARCHAR(255),
   PRIMARY KEY (custom_id)
+);
+")
+
+Chat::Room.exec("DROP TABLE IF EXISTS chat_rooms;")
+Chat::Room.exec("CREATE TABLE chat_rooms (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255),
+  PRIMARY KEY (id)
 );
 ")
 
@@ -174,4 +187,48 @@ describe Kemalyst::Adapter::Mysql do
       end
     end
   end
+
+  describe "Chat::Room using module" do
+    Spec.before_each do
+      Chat::Room.clear
+    end
+
+    describe "#find" do
+      it "finds the Chat::Room" do
+        chat_room = Chat::Room.new
+        chat_room.name = "Test Room"
+        chat_room.save
+        pk = chat_room.id
+        chat_room = Chat::Room.find pk
+        chat_room.should_not be_nil
+      end
+    end
+
+    describe "#save" do
+      it "updates an existing Chat::Room" do
+        chat_room = Chat::Room.new
+        chat_room.name = "Test Site"
+        chat_room.save
+        chat_room.name = "Test Site 2"
+        chat_room.save
+        chat_room = Chat::Room.find 1
+        if chat_room
+          chat_room.name.should eq "Test Site 2"
+        end
+      end
+    end
+
+    describe "#destroy" do
+      it "destroys a Chat::Room" do
+        chat_room = Chat::Room.new
+        chat_room.name = "Test Site"
+        chat_room.save
+        pk = chat_room.id
+        chat_room.destroy
+        chat_room = Site.find pk
+        chat_room.should be_nil
+      end
+    end
+  end
+
 end

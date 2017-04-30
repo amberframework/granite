@@ -53,7 +53,7 @@ class Kemalyst::Model
   end
 
   macro process_fields
-    {% name_space = @type.name.downcase.id %}
+    {% name_space = @type.name.gsub(/::/,"_").downcase.id %}
     {% table_name = SETTINGS[:table_name] || name_space + "s" %}
     {% primary_name = PRIMARY[:name] %}
     {% primary_type = PRIMARY[:type] %}
