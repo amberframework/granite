@@ -245,7 +245,7 @@ class Kemalyst::Model
     set_attributes(args.to_h)
   end
 
-  def initialize(**args)
+  def initialize(**args : Object)
     set_attributes(args.to_h)
   end
 
@@ -257,14 +257,13 @@ class Kemalyst::Model
   end
 
   def self.create(**args)
-    instance = new
-    instance.set_attributes(args.to_h)
-    instance.save
+    self.create(args.to_h)
   end
 
   def self.create(args : Hash(Symbol | String, String | Int32 | Float32))
     instance = new
     instance.set_attributes(args)
     instance.save
+    instance
   end
 end
