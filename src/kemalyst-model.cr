@@ -4,7 +4,6 @@ require "kemalyst-validators"
 
 # Kemalyst::Model is the base class for your model objects.
 class Kemalyst::Model
-  AttributeHash = Hash(Symbol | String, String | Int32 | Float32)
   macro inherited
     include Kemalyst::Validators
 
@@ -248,8 +247,11 @@ class Kemalyst::Model
     set_attributes(args.to_h)
   end
 
-  def initialize(args : AttributeHash)
+  def initialize(args : Hash(Symbol | String, String | Int32 | Float32))
     set_attributes(args)
+  end
+
+  def initialize
   end
 
   def self.create(**args)
@@ -258,7 +260,7 @@ class Kemalyst::Model
     instance.save
   end
 
-  def self.create(args : AttributeHash)
+  def self.create(args : Hash(Symbol | String, String | Int32 | Float32))
     instance = new
     instance.set_attributes(args)
     instance.save
