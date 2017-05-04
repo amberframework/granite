@@ -106,6 +106,8 @@ class Kemalyst::Model
         when "{{ n.id }}"
           {% if type.id == Int32.id %}
             @{{ n }} = value.to_i32{0}
+          {% elsif type.id == Int64.id %}
+            @{{ n }} = value.to_i64{0}
           {% elsif type.id == Float32.id %}
             @{{ n }} = value.to_f32{0.0}
           {% elsif type.id == Float64.id %}
