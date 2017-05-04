@@ -53,7 +53,7 @@ class Kemalyst::Model
   end
 
   macro process_fields
-    {% name_space = @type.name.gsub(/::/,"_").downcase.id %}
+    {% name_space = @type.name.gsub(/::/, "_").downcase.id %}
     {% table_name = SETTINGS[:table_name] || name_space + "s" %}
     {% primary_name = PRIMARY[:name] %}
     {% primary_type = PRIMARY[:type] %}
@@ -98,6 +98,28 @@ class Kemalyst::Model
         {% end %}
         return fields
     end
+    
+    # Cast params and set fields.
+    private def cast_to_field(name, value)
+      case name.to_s
+        {% for n, type in FIELDS %}
+        when "{{ n.id }}"
+          {% if type.id == Int32.id %}
+            @{{ n }} = value.to_i32{0}
+          {% elsif type.id == Float32.id %}
+            @{{ n }} = value.to_f32{0.0}
+          {% elsif type.id == Float64.id %}
+            @{{ n }} = value.to_f64{0.0}
+          {% elsif type.id == Bool.id %}
+            @{{ n }} = %s(1 yes true).includes?(value)
+          {% elsif type.id == Time.id %}
+            @{{ n }} = Time.parse(value, "%F %X")
+          {% else %}
+            @{{ n }} = value.to_s
+          {% end %}
+        {% end %}
+      end
+    end
 
     # keep a hash of the params that will be passed to the adapter.
     def params
@@ -110,7 +132,7 @@ class Kemalyst::Model
         params << updated_at.not_nil!.to_s("%F %X")
       {% end %}
       return params
-   end
+    end
 
     # Clear is used to remove all rows from the table and reset the counter for
     # the primary key.
@@ -209,6 +231,16 @@ class Kemalyst::Model
     def self.scalar(clause = "", &block)
       @@adapter.open { |db| yield db.scalar(clause) }
     end
-
   end # End of Fields Macro
+
+  def set_attributes(args : Hash(Symbol | String, String))
+    args.each do |k, v|
+      cast_to_field(k, v)
+    end
+  end
+
+  def set_attributes(**args)
+    set_attributes(args.to_h)
+  end
+  
 end

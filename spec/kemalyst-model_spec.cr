@@ -11,4 +11,8 @@ class Todo < Kemalyst::Model
 end
 
 describe Kemalyst::Model do
+  it "should create a new todo object with name set" do
+    t = Todo.new("Elorest")
+    t.name.should eq "Elorest"
+  end
 end
