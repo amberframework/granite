@@ -100,7 +100,7 @@ class Kemalyst::Model
     end
     
     # Cast params and set fields.
-    private def cast_to_field(name, value)
+    private def cast_to_field(name, value : (String | Int32 | Float32 | Bool | Time))
       case name.to_s
         {% for n, type in FIELDS %}
         when "{{ n.id }}"
@@ -113,9 +113,13 @@ class Kemalyst::Model
           {% elsif type.id == Float64.id %}
             @{{ n }} = value.to_f64{0.0}
           {% elsif type.id == Bool.id %}
-            @{{ n }} = %s(1 yes true).includes?(value)
+            @{{ n }} = ["1", "yes", "true", true].includes?(value)
           {% elsif type.id == Time.id %}
-            @{{ n }} = Time.parse(value, "%F %X")
+            if value.is_a?(Time)
+              @{{ n }} = value
+            elsif value.to_s =~ /\d{4,}-\d{2,}-\d{2,}\s\d{2,}:\d{2,}:\d{2,}/
+              @{{ n }} = Time.parse(value, "%F %X")
+            end
           {% else %}
             @{{ n }} = value.to_s
           {% end %}
@@ -235,7 +239,7 @@ class Kemalyst::Model
     end
   end # End of Fields Macro
 
-  def set_attributes(args : Hash(Symbol | String, String | Int32 | Float32))
+  def set_attributes(args : Hash(Symbol | String, String | Int32 | Float32 | Bool | Time))
     args.each do |k, v|
       cast_to_field(k, v)
     end
@@ -249,7 +253,7 @@ class Kemalyst::Model
     set_attributes(args.to_h)
   end
 
-  def initialize(args : Hash(Symbol | String, String | Int32 | Float32))
+  def initialize(args : Hash(Symbol | String, String | Int32 | Float32 | Bool | Time))
     set_attributes(args)
   end
 
@@ -260,7 +264,7 @@ class Kemalyst::Model
     self.create(args.to_h)
   end
 
-  def self.create(args : Hash(Symbol | String, String | Int32 | Float32))
+  def self.create(args : Hash(Symbol | String, String | Int32 | Float32 | Bool | Time)) 
     instance = new
     instance.set_attributes(args)
     instance.save
