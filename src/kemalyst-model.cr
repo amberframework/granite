@@ -113,7 +113,7 @@ class Kemalyst::Model
           {% elsif type.id == Float64.id %}
             @{{name.id}} = value.to_f64{0.0}
           {% elsif type.id == Bool.id %}
-            @{{name.id}} = %s(1 yes true).includes?(value)
+            @{{name.id}} = (value == true)
           {% elsif type.id == Time.id %}
             @{{name.id}} = Time.parse(value, "%F %X")
           {% else %}
