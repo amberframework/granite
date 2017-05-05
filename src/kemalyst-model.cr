@@ -235,7 +235,7 @@ class Kemalyst::Model
     end
   end # End of Fields Macro
 
-  def set_attributes(args : Hash(Symbol | String, String))
+  def set_attributes(args : Hash(Symbol | String, String | Int32 | Float32))
     args.each do |k, v|
       cast_to_field(k, v)
     end
@@ -244,5 +244,26 @@ class Kemalyst::Model
   def set_attributes(**args)
     set_attributes(args.to_h)
   end
-  
+
+  def initialize(**args : Object)
+    set_attributes(args.to_h)
+  end
+
+  def initialize(args : Hash(Symbol | String, String | Int32 | Float32))
+    set_attributes(args)
+  end
+
+  def initialize
+  end
+
+  def self.create(**args)
+    self.create(args.to_h)
+  end
+
+  def self.create(args : Hash(Symbol | String, String | Int32 | Float32))
+    instance = new
+    instance.set_attributes(args)
+    instance.save
+    instance
+  end
 end
