@@ -98,32 +98,32 @@ class Kemalyst::Model
         {% end %}
         return fields
     end
-    
+
     # Cast params and set fields.
     private def cast_to_field(name, value : (String | Int32 | Float32 | Bool | Time))
       case name.to_s
-        {% for n, type in FIELDS %}
-        when "{{ n.id }}"
-          {% if type.id == Int32.id %}
-            @{{ n }} = value.to_i32{0}
-          {% elsif type.id == Int64.id %}
-            @{{ n }} = value.to_i64{0}
-          {% elsif type.id == Float32.id %}
-            @{{ n }} = value.to_f32{0.0}
-          {% elsif type.id == Float64.id %}
-            @{{ n }} = value.to_f64{0.0}
-          {% elsif type.id == Bool.id %}
-            @{{ n }} = ["1", "yes", "true", true].includes?(value)
-          {% elsif type.id == Time.id %}
-            if value.is_a?(Time)
-              @{{ n }} = value
-            elsif value.to_s =~ /\d{4,}-\d{2,}-\d{2,}\s\d{2,}:\d{2,}:\d{2,}/
-              @{{ n }} = Time.parse(value, "%F %X")
-            end
-          {% else %}
-            @{{ n }} = value.to_s
-          {% end %}
+      {% for _name, type in FIELDS %}
+      when "{{_name.id}}"
+        {% if type.id == Int32.id %}
+          @{{_name.id}} = value.to_i32{0}
+        {% elsif type.id == Int64.id %}
+          @{{_name.id}} = value.to_i64{0}
+        {% elsif type.id == Float32.id %}
+          @{{_name.id}} = value.to_f32{0.0}
+        {% elsif type.id == Float64.id %}
+          @{{_name.id}} = value.to_f64{0.0}
+        {% elsif type.id == Bool.id %}
+          @{{_name.id}} = ["1", "yes", "true", true].includes?(value)
+        {% elsif type.id == Time.id %}
+          if value.is_a?(Time)
+            @{{_name.id}} = value
+          elsif value.to_s =~ /\d{4,}-\d{2,}-\d{2,}\s\d{2,}:\d{2,}:\d{2,}/
+            @{{_name.id}} = Time.parse(value, "%F %X")
+          end
+        {% else %}
+          @{{_name.id}} = value.to_s
         {% end %}
+      {% end %}
       end
     end
 
