@@ -98,26 +98,26 @@ class Kemalyst::Model
         {% end %}
         return fields
     end
-    
+
     # Cast params and set fields.
     private def cast_to_field(name, value)
       case name.to_s
-        {% for n, type in FIELDS %}
-        when "{{ n.id }}"
+        {% for name, type in FIELDS %}
+        when "{{name.id}}"
           {% if type.id == Int32.id %}
-            @{{ n }} = value.to_i32{0}
+            @{{name.id}} = value.to_i32{0}
           {% elsif type.id == Int64.id %}
-            @{{ n }} = value.to_i64{0}
+            @{{name.id}} = value.to_i64{0}
           {% elsif type.id == Float32.id %}
-            @{{ n }} = value.to_f32{0.0}
+            @{{name.id}} = value.to_f32{0.0}
           {% elsif type.id == Float64.id %}
-            @{{ n }} = value.to_f64{0.0}
+            @{{name.id}} = value.to_f64{0.0}
           {% elsif type.id == Bool.id %}
-            @{{ n }} = %s(1 yes true).includes?(value)
+            @{{name.id}} = %s(1 yes true).includes?(value)
           {% elsif type.id == Time.id %}
-            @{{ n }} = Time.parse(value, "%F %X")
+            @{{name.id}} = Time.parse(value, "%F %X")
           {% else %}
-            @{{ n }} = value.to_s
+            @{{name.id}} = value.to_s
           {% end %}
         {% end %}
       end
