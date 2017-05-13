@@ -7,10 +7,25 @@ require "db"
 abstract class Kemalyst::Adapter::Base
   property url : String
 
-  def initialize(settings)
-    @url = ENV["DATABASE_URL"]? || env(settings["database"].to_s)
+  def initialize(adapter : String)
+    if url = ENV["DATABASE_URL"]? || env(settings(adapter)["database"].to_s)
+      @url = url
+    else
+      raise "database url needs to be set in the config/database.yml or DATABASE_URL environment variable"
+    end
   end
 
+  DATABASE_YML = "config/database.yml"
+  def settings(adapter : String)
+    if File.exists?(DATABASE_YML) &&
+      (yaml = YAML.parse(File.read DATABASE_YML)) &&
+      (settings = yaml[adapter])
+      settings
+    else
+      return {"database": ""}
+    end
+  end
+ 
   def open(&block)
     db = DB.open(@url)
     begin

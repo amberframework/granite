@@ -19,12 +19,7 @@ class Kemalyst::Model
   # specify the database adapter you will be using for this model.
   # mysql, pg, sqlite, etc.
   macro adapter(name)
-    def self.settings
-      yaml_file = File.read("config/database.yml")
-      yaml = YAML.parse(yaml_file)
-      settings = yaml["{{name.id}}"]
-    end
-    @@adapter = Kemalyst::Adapter::{{name.id.capitalize}}.new(settings)
+    @@adapter = Kemalyst::Adapter::{{name.id.capitalize}}.new("{{name.id}}")
 
     def self.adapter
       @@adapter
