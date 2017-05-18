@@ -56,9 +56,9 @@ class Kemalyst::Model
     @@table_name = "{{table_name}}"
     @@primary_name = "{{primary_name}}"
     #Create the properties
-    property {{primary_name}} : {{primary_type}}?
+    property {{primary_name}} : Union({{primary_type.id}} | Nil)
     {% for name, type in FIELDS %}
-      property {{name.id}} : {{type.id}}?
+      property {{name.id}} : Union({{type.id}} | Nil)
     {% end %}
     {% if SETTINGS[:timestamps] %}
     property created_at : Time?
@@ -95,14 +95,14 @@ class Kemalyst::Model
     end
 
     # Cast params and set fields.
-    private def cast_to_field(name, value : (String | Int32 | Float32 | Bool | Time))
+    private def cast_to_field(name, value : DB::Any)
       case name.to_s
       {% for _name, type in FIELDS %}
       when "{{_name.id}}"
         {% if type.id == Int32.id %}
-          @{{_name.id}} = value.to_i32{0}
+          @{{_name.id}} = value.to_i32
         {% elsif type.id == Int64.id %}
-          @{{_name.id}} = value.to_i64{0}
+          @{{_name.id}} = value.to_i64
         {% elsif type.id == Float32.id %}
           @{{_name.id}} = value.to_f32{0.0}
         {% elsif type.id == Float64.id %}
@@ -234,7 +234,7 @@ class Kemalyst::Model
     end
   end # End of Fields Macro
 
-  def set_attributes(args : Hash(Symbol | String, String | Int32 | Float32 | Bool | Time))
+  def set_attributes(args : Hash(Symbol | String, DB::Any))
     args.each do |k, v|
       cast_to_field(k, v)
     end
@@ -248,7 +248,7 @@ class Kemalyst::Model
     set_attributes(args.to_h)
   end
 
-  def initialize(args : Hash(Symbol | String, String | Int32 | Float32 | Bool | Time))
+  def initialize(args : Hash(Symbol | String, DB::Any))
     set_attributes(args)
   end
 
@@ -259,7 +259,7 @@ class Kemalyst::Model
     self.create(args.to_h)
   end
 
-  def self.create(args : Hash(Symbol | String, String | Int32 | Float32 | Bool | Time)) 
+  def self.create(args : Hash(Symbol | String, DB::Any)) 
     instance = new
     instance.set_attributes(args)
     instance.save
