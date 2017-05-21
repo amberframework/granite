@@ -7,7 +7,7 @@
 [Kemalyst](https://github.com/drujensen/kemalyst) is a web framework written in
 the [Crystal](https://github.com/manastech/crystal) language.
 
-This project is to provide an ORM Model for Kemalyst.
+This project is to provide an ORM Model in Crystal.
 
 ## Installation
 
@@ -18,8 +18,8 @@ well.
 
 ```yaml
 dependencies:
-  kemalyst-model:
-    github: drujensen/kemalyst-model
+  granite_orm:
+    github: kemalyst/granite-orm
 
   # Pick your database
   mysql:
@@ -52,7 +52,7 @@ Or you can set the `DATABASE_URL` environment variable.  This will override the 
 Here is an example using Kemalyst Model
 
 ```crystal
-require "kemalyst-model/adapter/mysql"
+require "granite_orm/adapter/mysql"
 
 class Post < Granite::ORM
   adapter mysql
@@ -64,7 +64,7 @@ end
 
 You can disable the timestamps for SqlLite since TIMESTAMP is not supported for this database:
 ```crystal
-require "kemalyst-model/adapter/sqlite"
+require "granite_orm/adapter/sqlite"
 
 class Comment < Granite::ORM
   adapter sqlite
@@ -154,7 +154,7 @@ post.save
 
 ```crystal
 post = Post.find 1
-post.name = "Kemalyst Really Rocks!"
+post.name = "Granite Really Rocks!"
 post.save
 ```
 
