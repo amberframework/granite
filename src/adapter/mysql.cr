@@ -2,7 +2,7 @@ require "./base"
 require "mysql"
 
 # Mysql implementation of the Adapter
-class Kemalyst::Adapter::Mysql < Kemalyst::Adapter::Base
+class Granite::Adapter::Mysql < Granite::Adapter::Base
   # Using TRUNCATE instead of DELETE so the id column resets to 0
   def clear(table_name)
     open do |db|

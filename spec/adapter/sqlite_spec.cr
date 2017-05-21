@@ -1,14 +1,14 @@
 require "./spec_helper"
 require "../src/adapter/sqlite"
 
-class Comment < Kemalyst::Model
+class Comment < Granite::ORM
   adapter sqlite
   table_name comments
   field name : String
   field body : String
 end
 
-class Reaction < Kemalyst::Model
+class Reaction < Granite::ORM
   adapter sqlite
   table_name reactions
   primary custom_id : Int64
@@ -30,7 +30,7 @@ Reaction.exec("CREATE TABLE reactions (
 );
 ")
 
-describe Kemalyst::Adapter::Sqlite do
+describe Granite::Adapter::Sqlite do
   Spec.before_each do
     Comment.clear
   end

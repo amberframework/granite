@@ -1,2 +1,2 @@
 require "spec"
-require "../src/kemalyst-model.cr"
+require "../src/granite_orm.cr"

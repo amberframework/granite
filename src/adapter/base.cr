@@ -1,10 +1,10 @@
-require "../kemalyst-model"
+require "../granite_orm"
 require "db"
 
 # The Base Adapter specifies the interface that will be used by the model
 # objects to perform actions against a specific database.  Each adapter needs
 # to implement these methods.
-abstract class Kemalyst::Adapter::Base
+abstract class Granite::Adapter::Base
   property url : String
 
   def initialize(adapter : String)

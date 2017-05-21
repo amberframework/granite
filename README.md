@@ -54,7 +54,7 @@ Here is an example using Kemalyst Model
 ```crystal
 require "kemalyst-model/adapter/mysql"
 
-class Post < Kemalyst::Model
+class Post < Granite::ORM
   adapter mysql
   field name : String
   field body : Text
@@ -66,7 +66,7 @@ You can disable the timestamps for SqlLite since TIMESTAMP is not supported for 
 ```crystal
 require "kemalyst-model/adapter/sqlite"
 
-class Comment < Kemalyst::Model
+class Comment < Granite::ORM
   adapter sqlite
   table_name post_comments
   field name : String
@@ -96,7 +96,7 @@ For legacy database mappings, you may already have a table and the primary key i
 We have a macro called `primary` to help you out:
 
 ```crystal
-class Site < Kemalyst::Model
+class Site < Granite::ORM
   adapter mysql
   primary custom_id : Int32
   field name : String
