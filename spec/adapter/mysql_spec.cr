@@ -1,7 +1,7 @@
 require "./spec_helper"
 require "../src/adapter/mysql"
 
-class Post < Kemalyst::Model
+class Post < Granite::ORM
   adapter mysql
   field name : String
   field body : String
@@ -10,13 +10,13 @@ class Post < Kemalyst::Model
   timestamps
 end
 
-class Site < Kemalyst::Model
+class Site < Granite::ORM
   adapter mysql
   primary custom_id : Int32
   field name : String
 end
 
-class Chat::Room < Kemalyst::Model
+class Chat::Room < Granite::ORM
   adapter mysql
   field name : String
 end
@@ -50,7 +50,7 @@ Chat::Room.exec("CREATE TABLE chat_rooms (
 );
 ")
 
-describe Kemalyst::Adapter::Mysql do
+describe Granite::Adapter::Mysql do
   Spec.before_each do
     Post.clear
   end

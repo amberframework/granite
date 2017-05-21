@@ -1,8 +1,9 @@
-name: kemalyst-model
+name: granite_orm
 version: 0.6.1
 
 authors:
   - drujensen <drujensen@gmail.com>
+  - elorest <isaac@isaacsloan.com>
 
 license: MIT
 

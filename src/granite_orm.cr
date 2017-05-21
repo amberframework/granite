@@ -2,8 +2,8 @@ require "yaml"
 require "db"
 require "kemalyst-validators"
 
-# Kemalyst::Model is the base class for your model objects.
-class Kemalyst::Model
+# Granite::ORM is the base class for your model objects.
+class Granite::ORM
   macro inherited
     include Kemalyst::Validators
 
@@ -19,7 +19,7 @@ class Kemalyst::Model
   # specify the database adapter you will be using for this model.
   # mysql, pg, sqlite, etc.
   macro adapter(name)
-    @@adapter = Kemalyst::Adapter::{{name.id.capitalize}}.new("{{name.id}}")
+    @@adapter = Granite::Adapter::{{name.id.capitalize}}.new("{{name.id}}")
 
     def self.adapter
       @@adapter

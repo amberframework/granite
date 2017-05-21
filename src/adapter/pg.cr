@@ -2,7 +2,7 @@ require "./base"
 require "pg"
 
 # PostgreSQL implementation of the Adapter
-class Kemalyst::Adapter::Pg < Kemalyst::Adapter::Base
+class Granite::Adapter::Pg < Granite::Adapter::Base
   # remove all rows from a table and reset the counter on the id.
   def clear(table_name)
     open do |db|

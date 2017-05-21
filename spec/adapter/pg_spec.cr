@@ -1,7 +1,7 @@
 require "./spec_helper"
 require "../src/adapter/pg"
 
-class User < Kemalyst::Model
+class User < Granite::ORM
   adapter pg
   field name : String
   field pass : String
@@ -9,7 +9,7 @@ class User < Kemalyst::Model
   timestamps
 end
 
-class Role < Kemalyst::Model
+class Role < Granite::ORM
   adapter pg
   primary custom_id : Int32
   field name : String
@@ -33,7 +33,7 @@ Role.exec("CREATE TABLE roles (
 );
 ")
 
-describe Kemalyst::Adapter::Pg do
+describe Granite::Adapter::Pg do
   Spec.before_each do
     User.clear
   end
