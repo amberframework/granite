@@ -11,8 +11,6 @@ services:
     depends_on:
       - pg
       - mysql
-    volumes:
-      - '.:/app/user'
   pg:
     image: postgres:9.5
   mysql:
