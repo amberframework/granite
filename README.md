@@ -1,10 +1,7 @@
-# kemalyst-model
+# Granite::ORM
 
-[![Build Status](https://travis-ci.org/drujensen/kemalyst-model.svg)](https://travis-ci.org/drujensen/kemalyst-model)
 
-[Documentation](http://drujensen.github.io/kemalyst-model/)
-
-[Kemalyst](https://github.com/drujensen/kemalyst) is a web framework written in
+[Amber](https://github.com/Amber-Crystal/amber) is a web framework written in
 the [Crystal](https://github.com/manastech/crystal) language.
 
 This project is to provide an ORM Model in Crystal.
@@ -19,7 +16,7 @@ well.
 ```yaml
 dependencies:
   granite_orm:
-    github: kemalyst/granite-orm
+    github: Amber-Crystal/granite-orm
 
   # Pick your database
   mysql:
