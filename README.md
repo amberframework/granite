@@ -204,7 +204,7 @@ posts = Post.all("JOIN comments c ON c.post_id = post.id
 ```
 ## Contributing
 
-1. Fork it ( https://github.com/drujensen/kemalyst-model/fork )
+1. Fork it ( https://github.com/Amber-Crystal/granite-orm/fork )
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)
