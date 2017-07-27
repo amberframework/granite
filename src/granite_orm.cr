@@ -10,6 +10,7 @@ class Granite::ORM
     PRIMARY = {name: id, type: Int64}
     FIELDS = {} of Nil => Nil
     SETTINGS = {} of Nil => Nil
+    CALLBACKS = {} of Nil => Nil
 
     macro finished
       process_fields
@@ -46,6 +47,12 @@ class Granite::ORM
   macro timestamps
     {% SETTINGS[:timestamps] = true %}
   end
+
+  {% for name in %i(before_save after_save before_create after_create before_update after_update before_destroy after_destroy) %}
+    macro {{name.id}}(callback)
+      \{% CALLBACKS[{{name}}] = callback.id \%}
+    end
+  {% end %}
 
   macro process_fields
     {% name_space = @type.name.gsub(/::/, "_").downcase.id %}
@@ -146,12 +153,16 @@ class Granite::ORM
     # This will update the timestamps apropriately.
     def save
       begin
+        {{CALLBACKS[:before_save]}}
         if value = @{{primary_name}}
+          {{CALLBACKS[:before_update]}}
           @updated_at = Time.now
           params_and_pk = params
           params_and_pk << value
           @@adapter.update @@table_name, @@primary_name, self.class.fields, params_and_pk
+          {{CALLBACKS[:after_update]}}
         else
+          {{CALLBACKS[:before_create]}}
           @created_at = Time.now
           @updated_at = Time.now
           {% if primary_type.id == "Int32" %}
@@ -159,7 +170,9 @@ class Granite::ORM
           {% else %}
             @{{primary_name}} = @@adapter.insert(@@table_name, self.class.fields, params)
           {% end %}
+          {{CALLBACKS[:after_create]}}
         end
+        {{CALLBACKS[:after_save]}}
         return true
       rescue ex
         if message = ex.message
@@ -173,7 +186,9 @@ class Granite::ORM
     # Destroy will remove this from the database.
     def destroy
       begin
+        {{CALLBACKS[:before_destroy]}}
         @@adapter.delete(@@table_name, @@primary_name, {{primary_name}})
+        {{CALLBACKS[:after_destroy]}}
         return true
       rescue ex
         if message = ex.message
@@ -259,7 +274,7 @@ class Granite::ORM
     self.create(args.to_h)
   end
 
-  def self.create(args : Hash(Symbol | String, DB::Any)) 
+  def self.create(args : Hash(Symbol | String, DB::Any))
     instance = new
     instance.set_attributes(args)
     instance.save
