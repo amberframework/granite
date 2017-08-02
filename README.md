@@ -46,7 +46,7 @@ Or you can set the `DATABASE_URL` environment variable.  This will override the 
 
 ## Usage
 
-Here is an example using Kemalyst Model
+Here is an example using Granite ORM Model
 
 ```crystal
 require "granite_orm/adapter/mysql"
