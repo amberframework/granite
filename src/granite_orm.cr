@@ -131,15 +131,19 @@ class Granite::ORM
 
     # keep a hash of the params that will be passed to the adapter.
     def params
-      params = [] of DB::Any
+      parsed_params = [] of DB::Any
       {% for name, type in FIELDS %}
-        params << {{name.id}}
+        {% if type.id == Time.id %}
+          parsed_params << {{name.id}}.try(&.to_s("%F %X"))
+        {% else %}
+          parsed_params << {{name.id}}
+        {% end %}
       {% end %}
       {% if SETTINGS[:timestamps] %}
-        params << created_at.not_nil!.to_s("%F %X")
-        params << updated_at.not_nil!.to_s("%F %X")
+        parsed_params << created_at.not_nil!.to_s("%F %X")
+        parsed_params << updated_at.not_nil!.to_s("%F %X")
       {% end %}
-      return params
+      return parsed_params
     end
 
     # Clear is used to remove all rows from the table and reset the counter for
