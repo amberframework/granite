@@ -2,7 +2,7 @@ mysql:
   database: "${MYSQL_DATABASE_URL}"
 
 pg:
-  database: "${PG_DATABASE_URL}"
+  database: "<%= ENV["PG_DATABASE_URL"] %>"
 
 sqlite:
   database: "${SQLITE_DATABASE_URL}"

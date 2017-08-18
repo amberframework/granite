@@ -1,5 +1,6 @@
 require "../granite_orm"
 require "db"
+require "ecr/macros"
 
 # The Base Adapter specifies the interface that will be used by the model
 # objects to perform actions against a specific database.  Each adapter needs
@@ -16,18 +17,22 @@ abstract class Granite::Adapter::Base
   end
 
   DATABASE_YML = "config/database.yml"
+
   def settings(adapter : String)
-    if File.exists?(DATABASE_YML) &&
-      (yaml = YAML.parse(File.read DATABASE_YML)) &&
-      (settings = yaml[adapter])
-      settings
-    else
-      return {"database": ""}
-    end
+    parsed_database_config[adapter]
   end
- 
+
   def open(&block)
     yield @database
+  end
+
+  def parsed_database_config
+    return {"database": ""} if !File.exists?(DATABASE_YML)
+
+    config = IO::Memory.new
+    ECR.embed DATABASE_YML, config
+
+    YAML.parse(config.to_s)
   end
 
   # remove all rows from a table and reset the counter on the id.
