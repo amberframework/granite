@@ -10,27 +10,6 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
     end
   end
 
-  def add_field(table_name, name, type, previous = nil)
-    raise "Not Available for Sqlite"
-  end
-
-  def rename_field(table_name, from, to, type)
-    raise "Not Available for Sqlite"
-  end
-
-  def remove_field(table_name, name)
-    raise "Not Available for Sqlite"
-  end
-
-  # Copy data from one column to another
-  def copy_field(table_name, from, to)
-    statement = String.build do |stmt|
-      stmt << "UPDATE #{table_name}"
-      stmt << " SET #{to} = #{from}"
-    end
-    return statement
-  end
-
   # select performs a query against a table.  The table_name and fields are
   # configured using the sql_mapping directive in your model.  The clause and
   # params is the query and params that is passed in via .all() method

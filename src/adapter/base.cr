@@ -8,7 +8,7 @@ abstract class Granite::Adapter::Base
   property database : DB::Database
 
   def initialize(adapter : String)
-    if url = ENV["DATABASE_URL"]? || env(settings(adapter)["database"].to_s)
+    if url = ENV["DATABASE_URL"]? || replace_env_vars(settings(adapter)["database"].to_s)
       @database = DB.open(url)
     else
       raise "database url needs to be set in the config/database.yml or DATABASE_URL environment variable"
@@ -25,7 +25,7 @@ abstract class Granite::Adapter::Base
       return {"database": ""}
     end
   end
- 
+
   def open(&block)
     yield @database
   end
@@ -39,7 +39,7 @@ abstract class Granite::Adapter::Base
   abstract def select(table_name, fields, clause = "", params = nil, &block)
 
   # select_one is used by the find method.
-  # abstract def select_one(table_name, fields, id, &block)
+  abstract def select_one(table_name, fields, field, id, &block)
 
   # This will insert a row in the database and return the id generated.
   abstract def insert(table_name, fields, params) : Int64
@@ -50,13 +50,20 @@ abstract class Granite::Adapter::Base
   # This will delete a row from the database.
   abstract def delete(table_name, primary_name, value)
 
-  # method used to lookup the environment variable if exists
-  private def env(value)
-    env_var = value.gsub("${", "").gsub("}", "")
-    if ENV.has_key? env_var
-      return ENV[env_var]
+  # method used to replace the environment variable if exists
+  private def replace_env_vars(url)
+    Granite::Adapter::Base.env(url)
+  end
+  
+  # class level method so we can test it
+  def self.env(url)
+    regex = /\$\{(.*?)\}/
+    if regex.match(url)
+      url = url.gsub(regex) do |match|
+        ENV[match.gsub("${","").gsub("}","")]
+      end
     else
-      return value
+      return url
     end
   end
 end
