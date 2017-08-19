@@ -28,8 +28,8 @@ Post.exec("CREATE TABLE posts (
   body TEXT,
   total INTEGER,
   slug VARCHAR(255),
-  created_at TIMESTAMP,
-  updated_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 );
 ")
@@ -230,5 +230,4 @@ describe Granite::Adapter::Mysql do
       end
     end
   end
-
 end
