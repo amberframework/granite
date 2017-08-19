@@ -31,13 +31,13 @@ dependencies:
 ```
 
 Next you will need to create a `config/database.yml`
-You can leverage environment variables using ${} syntax.
+You can leverage environment variables using ${} syntax or ECR.
 
 ```yaml
 mysql:
   database: "mysql://user:pass@mysql:3306/test"
 pg:
-  database: "postgres://postgres:@pg:5432/postgres"
+  database: "<%= ENV["PG_DATABASE_URL"] %>"
 sqlite:
   database: "sqlite3:./config/test.db"
 ```
