@@ -10,45 +10,6 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     end
   end
 
-  # Add a field to the table. Your field will be added after the `previous` if
-  # specified.
-  def add_field(table_name, name, type, previous = nil)
-    statement = String.build do |stmt|
-      stmt << "ALTER TABLE #{table_name} ADD COLUMN"
-      stmt << " #{name} #{type}"
-      if previous
-        stmt << " AFTER #{previous}"
-      end
-    end
-    return statement
-  end
-
-  # rename a field in the table.
-  def rename_field(table_name, old_name, new_name, type)
-    statement = String.build do |stmt|
-      stmt << "ALTER TABLE #{table_name} CHANGE"
-      stmt << " #{old_name} #{new_name} #{type}"
-    end
-    return statement
-  end
-
-  def remove_field(table_name, name)
-    statement = String.build do |stmt|
-      stmt << "ALTER TABLE #{table_name} DROP COLUMN"
-      stmt << " #{name}"
-    end
-    return statement
-  end
-
-  # Copy data from one column to another
-  def copy_field(table_name, from, to)
-    statement = String.build do |stmt|
-      stmt << "UPDATE #{table_name}"
-      stmt << " SET #{to} = #{from}"
-    end
-    return statement
-  end
-
   # select performs a query against a table.  The table_name and fields are
   # configured using the sql_mapping directive in your model.  The clause and
   # params is the query and params that is passed in via .all() method
