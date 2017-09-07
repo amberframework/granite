@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta id="repository-name" content="github.com/migeorge/granite-orm">
+  <link href="../css/style.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="../js/doc.js"></script>
+  <title>Granite::ORM - github.com/migeorge/granite-orm</title>
+</head>
+<body>
+
+<div id="types-list">
+  <div id="search-box">
+    <input type="search" id="search-input" placeholder="Search...">
+  </div>
+
+  <ul>
+    <li><a href="../index.html">README</a></li>
+  </ul>
+
+  <ul>
+  
+  <li class="parent open current" data-id="github.com/migeorge/granite-orm/Granite" data-name="granite">
+      <a href="../Granite.html">Granite</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="github.com/migeorge/granite-orm/Granite/Adapter" data-name="granite::adapter">
+      <a href="../Granite/Adapter.html">Adapter</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/migeorge/granite-orm/Granite/Adapter/Base" data-name="granite::adapter::base">
+      <a href="../Granite/Adapter/Base.html">Base</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/migeorge/granite-orm/Granite/Adapter/Mysql" data-name="granite::adapter::mysql">
+      <a href="../Granite/Adapter/Mysql.html">Mysql</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/migeorge/granite-orm/Granite/Adapter/Pg" data-name="granite::adapter::pg">
+      <a href="../Granite/Adapter/Pg.html">Pg</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/migeorge/granite-orm/Granite/Adapter/Sqlite" data-name="granite::adapter::sqlite">
+      <a href="../Granite/Adapter/Sqlite.html">Sqlite</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" current" data-id="github.com/migeorge/granite-orm/Granite/ORM" data-name="granite::orm">
+      <a href="../Granite/ORM.html">ORM</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+</div>
+
+<div id="main-content">
+<h1 class="type-name">
+
+  <span class="kind">class</span> Granite::ORM
+
+</h1>
+
+
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../Granite/ORM.html">Granite::ORM</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+
+
+
+
+  <h2>Overview</h2>
+
+  <p>Granite::ORM is the base class for your model objects.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2>Defined in:</h2>
+  
+    
+      <a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L6" target="_blank">granite_orm.cr</a>
+    
+    <br/>
+  
+
+
+
+
+
+  <h2>Constructors</h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#new%28args%3AHash%28Symbol%7CString%2CDB%3A%3AAny%29%29-class-method" class="signature"><strong>.new</strong>(args : Hash(Symbol | String, DB::Any))</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#new-class-method" class="signature"><strong>.new</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#new-class-method" class="signature"><strong>.new</strong></a>
+        
+      </li>
+    
+  </ul>
+
+
+
+  <h2>Class Method Summary</h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#create%28args%3AHash%28Symbol%7CString%2CDB%3A%3AAny%29%29-class-method" class="signature"><strong>.create</strong>(args : Hash(Symbol | String, DB::Any))</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#create-class-method" class="signature"><strong>.create</strong></a>
+        
+      </li>
+    
+  </ul>
+
+
+
+  <h2>Instance Method Summary</h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#set_attributes%28args%3AHash%28Symbol%7CString%2CDB%3A%3AAny%29%29-instance-method" class="signature"><strong>#set_attributes</strong>(args : Hash(Symbol | String, DB::Any))</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#set_attributes-instance-method" class="signature"><strong>#set_attributes</strong></a>
+        
+      </li>
+    
+  </ul>
+
+
+
+  <h2>Macro Summary</h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#adapter%28name%29-macro" class="signature"><strong>adapter</strong>(name)</a>
+        
+          <div class="summary"><p>specify the database adapter you will be using for this model.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#after_create%28callback%29-macro" class="signature"><strong>after_create</strong>(callback)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#after_destroy%28callback%29-macro" class="signature"><strong>after_destroy</strong>(callback)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#after_save%28callback%29-macro" class="signature"><strong>after_save</strong>(callback)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#after_update%28callback%29-macro" class="signature"><strong>after_update</strong>(callback)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#before_create%28callback%29-macro" class="signature"><strong>before_create</strong>(callback)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#before_destroy%28callback%29-macro" class="signature"><strong>before_destroy</strong>(callback)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#before_save%28callback%29-macro" class="signature"><strong>before_save</strong>(callback)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#before_update%28callback%29-macro" class="signature"><strong>before_update</strong>(callback)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#field%28decl%29-macro" class="signature"><strong>field</strong>(decl)</a>
+        
+          <div class="summary"><p>specify the fields you want to define and types</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#primary%28decl%29-macro" class="signature"><strong>primary</strong>(decl)</a>
+        
+          <div class="summary"><p>specify the primary key column and type</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#process_fields-macro" class="signature"><strong>process_fields</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#table_name%28name%29-macro" class="signature"><strong>table_name</strong>(name)</a>
+        
+          <div class="summary"><p>specify the table name to use otherwise it will use the model's name</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#timestamps-macro" class="signature"><strong>timestamps</strong></a>
+        
+          <div class="summary"><p>include created_at and updated_at that will automatically be updated</p></div>
+        
+      </li>
+    
+  </ul>
+
+
+
+<div class="methods-inherited">
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+</div>
+
+
+  <h2>Constructor Detail</h2>
+  
+    <div class="entry-detail" id="new&#40;args:Hash&#40;Symbol|String,DB::Any&#41;&#41;-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(args : Hash(Symbol | String, DB::Any))
+
+        <a class="method-permalink" href="#new%28args%3AHash%28Symbol%7CString%2CDB%3A%3AAny%29%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L270" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="new-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>
+
+        <a class="method-permalink" href="#new-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L266" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="new-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>
+
+        <a class="method-permalink" href="#new-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L274" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+  <h2>Class Method Detail</h2>
+  
+    <div class="entry-detail" id="create&#40;args:Hash&#40;Symbol|String,DB::Any&#41;&#41;-class-method">
+      <div class="signature">
+        
+        def self.<strong>create</strong>(args : Hash(Symbol | String, DB::Any))
+
+        <a class="method-permalink" href="#create%28args%3AHash%28Symbol%7CString%2CDB%3A%3AAny%29%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L281" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="create-class-method">
+      <div class="signature">
+        
+        def self.<strong>create</strong>
+
+        <a class="method-permalink" href="#create-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L277" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+  <h2>Instance Method Detail</h2>
+  
+    <div class="entry-detail" id="set_attributes&#40;args:Hash&#40;Symbol|String,DB::Any&#41;&#41;-instance-method">
+      <div class="signature">
+        
+        def <strong>set_attributes</strong>(args : Hash(Symbol | String, DB::Any))
+
+        <a class="method-permalink" href="#set_attributes%28args%3AHash%28Symbol%7CString%2CDB%3A%3AAny%29%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L256" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="set_attributes-instance-method">
+      <div class="signature">
+        
+        def <strong>set_attributes</strong>
+
+        <a class="method-permalink" href="#set_attributes-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L262" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+  <h2>Macro Detail</h2>
+  
+    <div class="entry-detail" id="adapter&#40;name&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>adapter</strong>(name)
+
+        <a class="method-permalink" href="#adapter%28name%29-macro">#</a>
+      </div>
+      
+        <div class="doc"><p>specify the database adapter you will be using for this model.
+mysql, pg, sqlite, etc.</p></div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L22" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="after_create&#40;callback&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>after_create</strong>(callback)
+
+        <a class="method-permalink" href="#after_create%28callback%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L51" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="after_destroy&#40;callback&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>after_destroy</strong>(callback)
+
+        <a class="method-permalink" href="#after_destroy%28callback%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L51" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="after_save&#40;callback&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>after_save</strong>(callback)
+
+        <a class="method-permalink" href="#after_save%28callback%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L51" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="after_update&#40;callback&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>after_update</strong>(callback)
+
+        <a class="method-permalink" href="#after_update%28callback%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L51" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="before_create&#40;callback&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>before_create</strong>(callback)
+
+        <a class="method-permalink" href="#before_create%28callback%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L51" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="before_destroy&#40;callback&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>before_destroy</strong>(callback)
+
+        <a class="method-permalink" href="#before_destroy%28callback%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L51" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="before_save&#40;callback&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>before_save</strong>(callback)
+
+        <a class="method-permalink" href="#before_save%28callback%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L51" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="before_update&#40;callback&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>before_update</strong>(callback)
+
+        <a class="method-permalink" href="#before_update%28callback%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L51" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="field&#40;decl&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>field</strong>(decl)
+
+        <a class="method-permalink" href="#field%28decl%29-macro">#</a>
+      </div>
+      
+        <div class="doc"><p>specify the fields you want to define and types</p></div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L42" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="primary&#40;decl&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>primary</strong>(decl)
+
+        <a class="method-permalink" href="#primary%28decl%29-macro">#</a>
+      </div>
+      
+        <div class="doc"><p>specify the primary key column and type</p></div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L36" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="process_fields-macro">
+      <div class="signature">
+        
+        macro <strong>process_fields</strong>
+
+        <a class="method-permalink" href="#process_fields-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L57" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="table_name&#40;name&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>table_name</strong>(name)
+
+        <a class="method-permalink" href="#table_name%28name%29-macro">#</a>
+      </div>
+      
+        <div class="doc"><p>specify the table name to use otherwise it will use the model's name</p></div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L31" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="timestamps-macro">
+      <div class="signature">
+        
+        macro <strong>timestamps</strong>
+
+        <a class="method-permalink" href="#timestamps-macro">#</a>
+      </div>
+      
+        <div class="doc"><p>include created_at and updated_at that will automatically be updated</p></div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/migeorge/granite-orm/blob/e17952be32180b8da936626875c520cb870713f1/src/granite_orm.cr#L47" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+</div>
+
+</body>
+</html>

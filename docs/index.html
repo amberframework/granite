@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta id="repository-name" content="github.com/drujensen/kemalyst-model">
+  <meta id="repository-name" content="github.com/amber-crystal/granite-orm">
   <link href="css/style.css" rel="stylesheet" type="text/css" />
   <script type="text/javascript" src="js/doc.js"></script>
-  <title>README - github.com/drujensen/kemalyst-model</title>
+  <title>README - github.com/amber-crystal/granite-orm</title>
 </head>
 <body>
 
@@ -20,21 +20,62 @@
 
   <ul>
   
+  <li class="parent " data-id="github.com/amber-crystal/granite-orm/Granite" data-name="granite">
+      <a href="Granite.html">Granite</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="github.com/amber-crystal/granite-orm/Granite/Adapter" data-name="granite::adapter">
+      <a href="Granite/Adapter.html">Adapter</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/amber-crystal/granite-orm/Granite/Adapter/Base" data-name="granite::adapter::base">
+      <a href="Granite/Adapter/Base.html">Base</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/amber-crystal/granite-orm/Granite/Adapter/Mysql" data-name="granite::adapter::mysql">
+      <a href="Granite/Adapter/Mysql.html">Mysql</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/amber-crystal/granite-orm/Granite/Adapter/Pg" data-name="granite::adapter::pg">
+      <a href="Granite/Adapter/Pg.html">Pg</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/amber-crystal/granite-orm/Granite/Adapter/Sqlite" data-name="granite::adapter::sqlite">
+      <a href="Granite/Adapter/Sqlite.html">Sqlite</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="github.com/amber-crystal/granite-orm/Granite/ORM" data-name="granite::orm">
+      <a href="Granite/ORM.html">ORM</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
 </ul>
 
 </div>
 
 <div id="main-content">
-<h1>kemalyst-model</h1>
+<h1>Granite::ORM</h1>
 
-<p><a href="https://travis-ci.org/drujensen/kemalyst-model" target="_blank"><img src="https://travis-ci.org/drujensen/kemalyst-model.svg" alt="Build Status"/></a></p>
-
-<p><a href="http://drujensen.github.io/kemalyst-model/" target="_blank">Documentation</a></p>
-
-<p><a href="https://github.com/drujensen/kemalyst" target="_blank">Kemalyst</a> is a web framework written in
+<p><a href="https://github.com/Amber-Crystal/amber" target="_blank">Amber</a> is a web framework written in
 the <a href="https://github.com/manastech/crystal" target="_blank">Crystal</a> language.</p>
 
-<p>This project is to provide an ORM Model for Kemalyst.</p>
+<p>This project is to provide an ORM Model in Crystal.</p>
 
 <h2>Installation</h2>
 
@@ -44,8 +85,8 @@ designed to work with kemalyst in mind.  This library will work with kemal as
 well.</p>
 
 <pre><code class='language-yaml'>dependencies:
-  kemalyst-model:
-    github: drujensen/kemalyst-model
+  granite_orm:
+    github: Amber-Crystal/granite-orm
 
   # Pick your database
   mysql:
@@ -59,74 +100,73 @@ well.</p>
 </code></pre>
 
 <p>Next you will need to create a <code>config/database.yml</code>
-You can leverage environment variables using ${} syntax.</p>
+You can leverage environment variables using <code>${}</code> syntax.</p>
 
 <pre><code class='language-yaml'>mysql:
-  database: "mysql://user:pass@mysql:3306/test"
+  database: "mysql://username:password@hostname:3306/database_${AMBER_ENV}"
 pg:
-  database: "postgres://postgres:@pg:5432/postgres"
+  database: "postgres://username:password@hostname:5432/database"
 sqlite:
-  database: "sqlite3:./config/test.db"</code></pre>
+  database: "sqlite3:./config/${DB_NAME}.db"</code></pre>
+
+<p>Or you can set the <code>DATABASE_URL</code> environment variable.  This will override the config/database.yml</p>
 
 <h2>Usage</h2>
 
-<p>Here is an example using Kemalyst Model</p>
+<p>Here is an example using Granite ORM Model</p>
 
-<pre><code class='language-crystal'><span class="k">require</span> <span class="s">&quot;kemalyst-model/adapter/mysql&quot;</span>
+<pre><code class='language-crystal'><span class="k">require</span> <span class="s">&quot;granite_orm/adapter/mysql&quot;</span>
 
-<span class="k">class</span> <span class="t">Post</span> <span class="o"><</span> <span class="t">Kemalyst</span><span class="t">::</span><span class="t">Model</span>
+<span class="k">class</span> <span class="t">Post</span> <span class="o"><</span> <span class="t">Granite</span><span class="t">::</span><span class="t">ORM</span>
   adapter mysql
-
-  sql_mapping({
-    name: [<span class="s">&quot;VARCHAR&#40;255&#41;&quot;</span>, <span class="t">String</span>],
-    body: [<span class="s">&quot;TEXT&quot;</span>, <span class="t">String</span>]
-  })
-
+  field name : <span class="t">String</span>
+  field body : <span class="t">Text</span>
+  timestamps
 <span class="k">end</span></code></pre>
 
-<pre><code class='language-crystal'><span class="k">require</span> <span class="s">&quot;kemalyst-model/adapter/sqlite&quot;</span>
+<p>You can disable the timestamps for SqlLite since TIMESTAMP is not supported for this database:</p>
 
-<span class="k">class</span> <span class="t">Comment</span> <span class="o"><</span> <span class="t">Kemalyst</span><span class="t">::</span><span class="t">Model</span>
+<pre><code class='language-crystal'><span class="k">require</span> <span class="s">&quot;granite_orm/adapter/sqlite&quot;</span>
+
+<span class="k">class</span> <span class="t">Comment</span> <span class="o"><</span> <span class="t">Granite</span><span class="t">::</span><span class="t">ORM</span>
   adapter sqlite
-
-  <span class="c"># table name is set to post_comments and timestamps are disabled.</span>
-  sql_mapping({
-    name: [<span class="s">&quot;VARCHAR&#40;255&#41;&quot;</span>, <span class="t">String</span>],
-    body: [<span class="s">&quot;TEXT&quot;</span>, <span class="t">String</span>]
-  }, <span class="s">&quot;post_comments&quot;</span>, <span class="n">false</span>)
-
+  table_name post_comments
+  field name : <span class="t">String</span>
+  field body : <span class="t">Text</span>
 <span class="k">end</span></code></pre>
 
-<h3>Fields</h3>
+<h3>id, created_at, updated_at</h3>
 
-<p>To define the fields for this model, you need to provide a hash with the name
-of the field as a <code>Symbol</code> and an array of the datbase type as a <code>String</code> and
-the type.  This can include any other options that the database provides to you.</p>
+<p>The primary key is automatically created for you and if you use <code>timestamps</code> they will be
+automatically updated for you.</p>
 
-<p>3 Fields are automatically created for you:  id, created_at, updated_at.</p>
+<p>Here are the MySQL field definitions for id, created_at, updated_at</p>
 
-<p>MySQL field definitions for id, created_at, updated_at</p>
-
-<pre><code class='language-mysql'>  id INT NOT NULL AUTO_INCREMENT
+<pre><code class='language-mysql'>  id BIGINT NOT NULL AUTO_INCREMENT
   # Your fields go here
-  created_at DATE
-  updated_at DATE
+  created_at TIMESTAMP
+  updated_at TIMESTAMP
   PRIMARY KEY (id)</code></pre>
 
-<h3>DDL Built in</h3>
+<h3>Custom Primary Key</h3>
 
-<pre><code class='language-crystal'><span class="t">Post</span>.drop <span class="c">#drop the table</span>
+<p>For legacy database mappings, you may already have a table and the primary key is not named <code>id</code> or <code>Int64</code>.</p>
 
-<span class="t">Post</span>.create <span class="c">#create the table</span>
+<p>We have a macro called <code>primary</code> to help you out:</p>
 
-<span class="t">Post</span>.clear <span class="c">#truncate the table</span>
+<pre><code class='language-crystal'><span class="k">class</span> <span class="t">Site</span> <span class="o"><</span> <span class="t">Granite</span><span class="t">::</span><span class="t">ORM</span>
+  adapter mysql
+  primary custom_id : <span class="t">Int32</span>
+  field name : <span class="t">String</span>
+<span class="k">end</span></code></pre>
 
-<span class="t">Post</span>.migrate <span class="c">#safe migration of fields. Fields will be renamed to &#96;old_\*&#96;</span>
-before migrated.
+<p>This will override the default primary key of <code>id : Int64</code>.</p>
 
-<span class="t">Post</span>.prune <span class="c">#clean up any fields not defined in model.  DANGER&#33;&#33;&#33;&#33;</span></code></pre>
+<h3>SQL</h3>
 
-<h3>DML</h3>
+<p>To clear all the rows in the database:</p>
+
+<pre><code class='language-crystal'><span class="t">Post</span>.clear <span class="c">#truncate the table</span></code></pre>
 
 <h4>Find All</h4>
 
@@ -161,7 +201,7 @@ post.save</code></pre>
 <h4>Update</h4>
 
 <pre><code class='language-crystal'>post <span class="o">=</span> <span class="t">Post</span>.find <span class="n">1</span>
-post.name <span class="o">=</span> <span class="s">&quot;Kemalyst Really Rocks&#33;&quot;</span>
+post.name <span class="o">=</span> <span class="s">&quot;Granite Really Rocks&#33;&quot;</span>
 post.save</code></pre>
 
 <h4>Delete</h4>
@@ -169,6 +209,14 @@ post.save</code></pre>
 <pre><code class='language-crystal'>post <span class="o">=</span> <span class="t">Post</span>.find <span class="n">1</span>
 post.destroy
 puts <span class="s">&quot;deleted&quot;</span> <span class="k">unless</span> post</code></pre>
+
+<h3>Errors</h3>
+
+<p>All database errors are added to the <code>errors</code> array used by Kemalyst::Validators with the symbol ':base'</p>
+
+<pre><code>post <span class="o">=</span> <span class="t">Post</span>.<span class="k">new</span>
+post.save
+post.errors[<span class="n">0</span>].to_s.should eq <span class="s">&quot;ERROR: name cannot be null&quot;</span></code></pre>
 
 <h3>Queries</h3>
 
@@ -200,9 +248,69 @@ posts <span class="o">=</span> <span class="t">Post</span>.all(<span class="s">&
                   [<span class="s">&quot;Joe&quot;</span>])
 </code></pre>
 
+<h3>Callbacks</h3>
+
+<p>There is support for callbacks on certain events.</p>
+
+<p>Here is an example:</p>
+
+<pre><code class='language-crystal'><span class="k">require</span> <span class="s">&quot;granite_orm/adapter/pg&quot;</span>
+
+<span class="k">class</span> <span class="t">Post</span> <span class="o"><</span> <span class="t">Granite</span><span class="t">::</span><span class="t">ORM</span>
+  adapter pg
+
+  before_save upcase_title <span class="c"># or :upcase_title</span>
+
+  field title : <span class="t">String</span>
+  field content : <span class="t">String</span>
+  timestamps
+
+  <span class="k">def</span> <span class="m">upcase_title</span>
+    <span class="k">if</span> title <span class="o">=</span> @title
+      @title <span class="o">=</span> title.upcase
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre>
+
+<p>You can register callbacks for the following events:</p>
+
+<h4>Create</h4>
+
+<ul><li>before_save</li><li>before_create</li><li><strong>save</strong></li><li>after_create</li><li>after_save</li></ul>
+
+<h4>Update</h4>
+
+<ul><li>before_save</li><li>before_update</li><li><strong>save</strong></li><li>after_update</li><li>after_save</li></ul>
+
+<h4>Destroy</h4>
+
+<ul><li>before_destroy</li><li><strong>destroy</strong></li><li>after_destroy</li></ul>
+
 <h2>Contributing</h2>
 
-<ol><li>Fork it ( https://github.com/drujensen/kemalyst-model/fork )</li><li>Create your feature branch (git checkout -b my-new-feature)</li><li>Commit your changes (git commit -am 'Add some feature')</li><li>Push to the branch (git push origin my-new-feature)</li><li>Create a new Pull Request</li></ol>
+<ol><li>Fork it ( https://github.com/Amber-Crystal/granite-orm/fork )</li><li>Create your feature branch (git checkout -b my-new-feature)</li><li>Commit your changes (git commit -am 'Add some feature')</li><li>Push to the branch (git push origin my-new-feature)</li><li>Create a new Pull Request</li></ol>
+
+<h2>Running tests</h2>
+
+<ol><li>Install dependencies with <code>$ crystal deps</code></li><li>Update .env to use appropriate ENV variables, or create appropriate databases.</li></ol>
+
+<h3>PostgreSQL</h3>
+
+<pre><code class='language-sql'>CREATE USER granite WITH PASSWORD 'password';
+
+CREATE DATABASE granite_db;
+
+GRANT ALL PRIVILEGES ON DATABASE granite_db TO granite;</code></pre>
+
+<h3>MySQL</h3>
+
+<pre><code class='language-sql'>CREATE USER 'granite'@'localhost' IDENTIFIED BY 'password';
+
+CREATE DATABASE granite_db;
+
+GRANT ALL PRIVILEGES ON granite_db.* TO 'granite'@'localhost' WITH GRANT OPTION;</code></pre>
+
+<ol><li>Export <code>.env</code> with <code>$ export .env</code></li><li><code>$ crystal spec</code></li></ol>
 
 <h2>Contributors</h2>
 
