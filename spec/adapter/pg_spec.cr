@@ -50,6 +50,78 @@ describe Granite::Adapter::Pg do
       users = User.all
       users.size.should eq 2
     end
+
+    it "finds users matching clause using named substitution" do
+      user = User.new
+      user.name = "Bob"
+      user.total = 1000
+      user.save
+      user = User.new
+      user.name = "Joe"
+      user.total = 2000
+      user.save
+      user = User.new
+      user.name = "Joline"
+      user.total = 3000
+      user.save
+
+      users = User.all("WHERE name LIKE $1", ["Jo%"])
+      users.size.should eq 2
+    end
+
+    it "finds users matching clause using multiple named substitutions" do
+      user = User.new
+      user.name = "Bob"
+      user.total = 1000
+      user.save
+      user = User.new
+      user.name = "Joe"
+      user.total = 2000
+      user.save
+      user = User.new
+      user.name = "Joline"
+      user.total = 3000
+      user.save
+
+      users = User.all("WHERE name LIKE ANY(ARRAY[$1, $2])", ["Joe%", "Joline%"])
+      users.size.should eq 2
+    end
+
+    it "finds users matching clause using question mark substitution" do
+      user = User.new
+      user.name = "Bob"
+      user.total = 1000
+      user.save
+      user = User.new
+      user.name = "Joe"
+      user.total = 2000
+      user.save
+      user = User.new
+      user.name = "Joline"
+      user.total = 3000
+      user.save
+
+      users = User.all("WHERE name LIKE ?", ["Jo%"])
+      users.size.should eq 2
+    end
+
+    it "finds users matching clause using multiple question mark substitutions" do
+      user = User.new
+      user.name = "Bob"
+      user.total = 1000
+      user.save
+      user = User.new
+      user.name = "Joe"
+      user.total = 2000
+      user.save
+      user = User.new
+      user.name = "Joline"
+      user.total = 3000
+      user.save
+
+      users = User.all("WHERE name LIKE ANY(ARRAY[?, ?])", ["Joe%", "Joline%"])
+      users.size.should eq 2
+    end
   end
 
   describe "#find" do
