@@ -192,6 +192,20 @@ describe Granite::Adapter::Pg do
 
       user.parent.name.should eq "Parent 1"
     end
+
+    it "provides a method to set parent" do
+      parent = Parent.new
+      parent.name = "Parent 1"
+      parent.save
+
+      user = User.new
+      user.name = "Test User"
+      user.pass = "password"
+      user.parent = parent
+      user.save
+
+      user.parent_id.should eq parent.id
+    end
   end
 
   describe "#has_many" do

@@ -148,6 +148,19 @@ describe Granite::Adapter::Mysql do
 
       post.owner.name.should eq "Test Owner"
     end
+
+    it "provides a method to set parent" do
+      owner = Owner.new
+      owner.name = "Test Owner"
+      owner.save
+
+      post = Post.new
+      post.name = "Test Post"
+      post.owner = owner
+      post.save
+
+      post.owner_id.should eq owner.id
+    end
   end
 
   describe "#has_many" do
