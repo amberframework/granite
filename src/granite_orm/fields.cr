@@ -2,7 +2,6 @@ module Granite::ORM::Fields
   macro included
     macro inherited
       FIELDS = {} of Nil => Nil
-      SETTINGS = {} of Nil => Nil
     end
   end
 

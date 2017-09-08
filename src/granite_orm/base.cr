@@ -1,10 +1,12 @@
 require "./callbacks"
 require "./fields"
 require "./querying"
+require "./settings"
 require "./version"
 
 # Granite::ORM::Base is the base class for your model objects.
 class Granite::ORM::Base
+  include Settings
   include Callbacks
   include Fields
 
