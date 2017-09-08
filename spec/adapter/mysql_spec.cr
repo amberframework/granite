@@ -4,6 +4,8 @@ require "../src/adapter/mysql"
 class Owner < Granite::ORM
   adapter mysql
 
+  has_many :posts
+
   field name : String
   timestamps
 end
@@ -47,7 +49,7 @@ Post.exec("CREATE TABLE posts (
   name VARCHAR(255),
   body TEXT,
   total INTEGER,
-  owner_id INTEGER,
+  owner_id BIGINT,
   slug VARCHAR(255),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -145,6 +147,28 @@ describe Granite::Adapter::Mysql do
       post.save
 
       post.owner.name.should eq "Test Owner"
+    end
+  end
+
+  describe "#has_many" do
+    it "provides a method to retrieve children" do
+      owner = Owner.new
+      owner.name = "Test Owner"
+      owner.save
+
+      post = Post.new
+      post.name = "Test Post 1"
+      post.owner_id = owner.id
+      post.save
+      post = Post.new
+      post.name = "Test Post 2"
+      post.owner_id = owner.id
+      post.save
+      post = Post.new
+      post.name = "Test Post 3"
+      post.save
+
+      owner.posts.size.should eq 2
     end
   end
 

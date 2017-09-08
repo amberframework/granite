@@ -4,6 +4,9 @@ require "../src/adapter/sqlite"
 class CommentThread < Granite::ORM
   adapter sqlite
   table_name comment_threads
+
+  has_many :comments
+
   field name : String
 end
 
@@ -108,6 +111,28 @@ describe Granite::Adapter::Sqlite do
       comment.save
 
       comment.comment_thread.name.should eq "Test Thread"
+    end
+  end
+
+  describe "#has_many" do
+    it "provides a method to retrieve children" do
+      comment_thread = CommentThread.new
+      comment_thread.name = "Test Thread"
+      comment_thread.save
+
+      comment = Comment.new
+      comment.name = "Test Comment 1"
+      comment.comment_thread_id = comment_thread.id
+      comment.save
+      comment = Comment.new
+      comment.name = "Test Comment 2"
+      comment.comment_thread_id = comment_thread.id
+      comment.save
+      comment = Comment.new
+      comment.name = "Test Comment 3"
+      comment.save
+
+      comment_thread.comments.size.should eq 2
     end
   end
 

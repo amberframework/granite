@@ -4,6 +4,8 @@ require "../src/adapter/pg"
 class Parent < Granite::ORM
   adapter pg
 
+  has_many :users
+
   field name : String
   timestamps
 end
@@ -40,7 +42,7 @@ User.exec("CREATE TABLE users (
   name VARCHAR,
   pass VARCHAR,
   total INT,
-  parent_id INT,
+  parent_id BIGINT,
   created_at TIMESTAMP,
   updated_at TIMESTAMP
 );
@@ -189,6 +191,29 @@ describe Granite::Adapter::Pg do
       user.save
 
       user.parent.name.should eq "Parent 1"
+    end
+  end
+
+  describe "#has_many" do
+    it "provides a method to retrieve children" do
+      parent = Parent.new
+      parent.name = "Parent 1"
+      parent.save
+
+      user = User.new
+      user.name = "Test User 1"
+      user.pass = "password"
+      user.parent_id = parent.id
+      user.save
+      user = User.new
+      user.name = "Test User 2"
+      user.parent_id = parent.id
+      user.save
+      user = User.new
+      user.name = "Test User 3"
+      user.save
+
+      parent.users.size.should eq 2
     end
   end
 
