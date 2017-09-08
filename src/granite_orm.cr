@@ -48,6 +48,17 @@ class Granite::ORM
     {% SETTINGS[:timestamps] = true %}
   end
 
+  # retrive the parent relationship
+  macro belongs_to(model_name)
+    {% FIELDS["#{model_name.id}_id".id.symbolize] = Int64 %}
+
+    def {{model_name.id}}
+      parent = {{model_name.id.camelcase}}.find {{model_name.id}}_id
+      return {{model_name.id.camelcase}}.new unless parent
+      parent
+    end
+  end
+
   {% for name in %i(before_save after_save before_create after_create before_update after_update before_destroy after_destroy) %}
     macro {{name.id}}(callback)
       \{% CALLBACKS[{{name}}] = callback.id \%}

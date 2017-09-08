@@ -1,8 +1,18 @@
 require "./spec_helper"
 require "../src/adapter/pg"
 
+class Parent < Granite::ORM
+  adapter pg
+
+  field name : String
+  timestamps
+end
+
 class User < Granite::ORM
   adapter pg
+
+  belongs_to :parent
+
   field name : String
   field pass : String
   field total : Int32
@@ -15,12 +25,22 @@ class Role < Granite::ORM
   field name : String
 end
 
+Parent.exec("DROP TABLE IF EXISTS parents;")
+Parent.exec("CREATE TABLE parents (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);
+")
+
 User.exec("DROP TABLE IF EXISTS users;")
 User.exec("CREATE TABLE users (
   id BIGSERIAL PRIMARY KEY,
   name VARCHAR,
   pass VARCHAR,
   total INT,
+  parent_id INT,
   created_at TIMESTAMP,
   updated_at TIMESTAMP
 );
@@ -35,6 +55,7 @@ Role.exec("CREATE TABLE roles (
 
 describe Granite::Adapter::Pg do
   Spec.before_each do
+    Parent.clear
     User.clear
   end
 
@@ -152,6 +173,22 @@ describe Granite::Adapter::Pg do
       pass = user.pass
       user = User.find_by(:pass, pass)
       user.should_not be_nil
+    end
+  end
+
+  describe "#belongs_to" do
+    it "provides a method to retrieve parent" do
+      parent = Parent.new
+      parent.name = "Parent 1"
+      parent.save
+
+      user = User.new
+      user.name = "Test User"
+      user.pass = "password"
+      user.parent_id = parent.id
+      user.save
+
+      user.parent.name.should eq "Parent 1"
     end
   end
 

@@ -1,8 +1,18 @@
 require "./spec_helper"
 require "../src/adapter/mysql"
 
+class Owner < Granite::ORM
+  adapter mysql
+
+  field name : String
+  timestamps
+end
+
 class Post < Granite::ORM
   adapter mysql
+
+  belongs_to :owner
+
   field name : String
   field body : String
   field total : Int32
@@ -21,12 +31,23 @@ class Chat::Room < Granite::ORM
   field name : String
 end
 
+Owner.exec("DROP TABLE IF EXISTS owners;")
+Owner.exec("CREATE TABLE owners (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY(id)
+);
+")
+
 Post.exec("DROP TABLE IF EXISTS posts;")
 Post.exec("CREATE TABLE posts (
   id BIGINT NOT NULL AUTO_INCREMENT,
   name VARCHAR(255),
   body TEXT,
   total INTEGER,
+  owner_id INTEGER,
   slug VARCHAR(255),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -52,6 +73,7 @@ Chat::Room.exec("CREATE TABLE chat_rooms (
 
 describe Granite::Adapter::Mysql do
   Spec.before_each do
+    Owner.clear
     Post.clear
   end
 
@@ -108,6 +130,21 @@ describe Granite::Adapter::Mysql do
       slug = post.slug
       post = Post.find_by(:slug, slug)
       post.should_not be_nil
+    end
+  end
+
+  describe "#belongs_to" do
+    it "provides a method to retrieve parent" do
+      owner = Owner.new
+      owner.name = "Test Owner"
+      owner.save
+
+      post = Post.new
+      post.name = "Test Post"
+      post.owner_id = owner.id
+      post.save
+
+      post.owner.name.should eq "Test Owner"
     end
   end
 
