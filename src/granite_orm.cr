@@ -53,9 +53,11 @@ class Granite::ORM
     field {{model_name.id}}_id : Int64
 
     def {{model_name.id}}
-      parent = {{model_name.id.camelcase}}.find {{model_name.id}}_id
-      return {{model_name.id.camelcase}}.new unless parent
-      parent
+      if parent = {{model_name.id.camelcase}}.find {{model_name.id}}_id
+        parent
+      else
+        {{model_name.id.camelcase}}.new
+      end
     end
   end
 
