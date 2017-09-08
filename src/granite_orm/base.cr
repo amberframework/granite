@@ -1,14 +1,16 @@
 require "./version"
+require "./callbacks"
 
 # Granite::ORM::Base is the base class for your model objects.
 class Granite::ORM::Base
+  include Callbacks
+
   macro inherited
     include Kemalyst::Validators
 
     PRIMARY = {name: id, type: Int64}
     FIELDS = {} of Nil => Nil
     SETTINGS = {} of Nil => Nil
-    CALLBACKS = {} of Nil => Nil
 
     macro finished
       process_fields
@@ -45,12 +47,6 @@ class Granite::ORM::Base
   macro timestamps
     {% SETTINGS[:timestamps] = true %}
   end
-
-  {% for name in %i(before_save after_save before_create after_create before_update after_update before_destroy after_destroy) %}
-    macro {{name.id}}(callback)
-      \{% CALLBACKS[{{name}}] = callback.id \%}
-    end
-  {% end %}
 
   macro process_fields
     {% name_space = @type.name.gsub(/::/, "_").downcase.id %}
@@ -155,16 +151,16 @@ class Granite::ORM::Base
     # This will update the timestamps apropriately.
     def save
       begin
-        {{CALLBACKS[:before_save]}}
+        __run_before_save
         if value = @{{primary_name}}
-          {{CALLBACKS[:before_update]}}
+          __run_before_update
           @updated_at = Time.now
           params_and_pk = params
           params_and_pk << value
           @@adapter.update @@table_name, @@primary_name, self.class.fields, params_and_pk
-          {{CALLBACKS[:after_update]}}
+          __run_after_update
         else
-          {{CALLBACKS[:before_create]}}
+          __run_before_create
           @created_at = Time.now
           @updated_at = Time.now
           {% if primary_type.id == "Int32" %}
@@ -172,9 +168,9 @@ class Granite::ORM::Base
           {% else %}
             @{{primary_name}} = @@adapter.insert(@@table_name, self.class.fields, params)
           {% end %}
-          {{CALLBACKS[:after_create]}}
+          __run_after_create
         end
-        {{CALLBACKS[:after_save]}}
+        __run_after_save
         return true
       rescue ex
         if message = ex.message
@@ -188,9 +184,9 @@ class Granite::ORM::Base
     # Destroy will remove this from the database.
     def destroy
       begin
-        {{CALLBACKS[:before_destroy]}}
+        __run_before_destroy
         @@adapter.delete(@@table_name, @@primary_name, {{primary_name}})
-        {{CALLBACKS[:after_destroy]}}
+        __run_after_destroy
         return true
       rescue ex
         if message = ex.message
