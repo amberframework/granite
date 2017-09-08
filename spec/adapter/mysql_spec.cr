@@ -1,7 +1,7 @@
 require "./spec_helper"
 require "../src/adapter/mysql"
 
-class Post < Granite::ORM
+class Post < Granite::ORM::Base
   adapter mysql
   field name : String
   field body : String
@@ -10,13 +10,13 @@ class Post < Granite::ORM
   timestamps
 end
 
-class Site < Granite::ORM
+class Site < Granite::ORM::Base
   adapter mysql
   primary custom_id : Int32
   field name : String
 end
 
-class Chat::Room < Granite::ORM
+class Chat::Room < Granite::ORM::Base
   adapter mysql
   field name : String
 end

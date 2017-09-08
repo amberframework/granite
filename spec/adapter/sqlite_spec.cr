@@ -1,14 +1,14 @@
 require "./spec_helper"
 require "../src/adapter/sqlite"
 
-class Comment < Granite::ORM
+class Comment < Granite::ORM::Base
   adapter sqlite
   table_name comments
   field name : String
   field body : String
 end
 
-class Reaction < Granite::ORM
+class Reaction < Granite::ORM::Base
   adapter sqlite
   table_name reactions
   primary custom_id : Int64

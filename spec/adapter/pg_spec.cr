@@ -1,7 +1,7 @@
 require "./spec_helper"
 require "../src/adapter/pg"
 
-class User < Granite::ORM
+class User < Granite::ORM::Base
   adapter pg
   field name : String
   field pass : String
@@ -9,7 +9,7 @@ class User < Granite::ORM
   timestamps
 end
 
-class Role < Granite::ORM
+class Role < Granite::ORM::Base
   adapter pg
   primary custom_id : Int32
   field name : String
