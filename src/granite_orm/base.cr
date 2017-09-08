@@ -1,19 +1,19 @@
-require "./version"
 require "./callbacks"
+require "./fields"
+require "./version"
 
 # Granite::ORM::Base is the base class for your model objects.
 class Granite::ORM::Base
   include Callbacks
+  include Fields
 
   macro inherited
     include Kemalyst::Validators
 
     PRIMARY = {name: id, type: Int64}
-    FIELDS = {} of Nil => Nil
-    SETTINGS = {} of Nil => Nil
 
     macro finished
-      process_fields
+      __process
     end
   end
 
@@ -38,17 +38,7 @@ class Granite::ORM::Base
     {% PRIMARY[:type] = decl.type %}
   end
 
-  # specify the fields you want to define and types
-  macro field(decl)
-    {% FIELDS[decl.var] = decl.type %}
-  end
-
-  # include created_at and updated_at that will automatically be updated
-  macro timestamps
-    {% SETTINGS[:timestamps] = true %}
-  end
-
-  macro process_fields
+  macro __process
     {% name_space = @type.name.gsub(/::/, "_").downcase.id %}
     {% table_name = SETTINGS[:table_name] || name_space + "s" %}
     {% primary_name = PRIMARY[:name] %}
@@ -56,15 +46,10 @@ class Granite::ORM::Base
     # Table Name
     @@table_name = "{{table_name}}"
     @@primary_name = "{{primary_name}}"
-    #Create the properties
+    # Create the primary key
     property {{primary_name}} : Union({{primary_type.id}} | Nil)
-    {% for name, type in FIELDS %}
-      property {{name.id}} : Union({{type.id}} | Nil)
-    {% end %}
-    {% if SETTINGS[:timestamps] %}
-    property created_at : Time?
-    property updated_at : Time?
-    {% end %}
+
+    __process_fields
 
     # Create the from_sql method
     def self.from_sql(result)
@@ -81,63 +66,6 @@ class Granite::ORM::Base
         model.updated_at = result.read(Union(Time | Nil))
       {% end %}
       return model
-    end
-
-    # keep a hash of the fields to be used for mapping
-    def self.fields(fields = [] of String)
-        {% for name, type in FIELDS %}
-        fields << "{{name.id}}"
-        {% end %}
-        {% if SETTINGS[:timestamps] %}
-        fields << "created_at"
-        fields << "updated_at"
-        {% end %}
-        return fields
-    end
-
-    # Cast params and set fields.
-    private def cast_to_field(name, value : DB::Any)
-      case name.to_s
-      {% for _name, type in FIELDS %}
-      when "{{_name.id}}"
-        {% if type.id == Int32.id %}
-          @{{_name.id}} = value.to_i32
-        {% elsif type.id == Int64.id %}
-          @{{_name.id}} = value.to_i64
-        {% elsif type.id == Float32.id %}
-          @{{_name.id}} = value.to_f32{0.0}
-        {% elsif type.id == Float64.id %}
-          @{{_name.id}} = value.to_f64{0.0}
-        {% elsif type.id == Bool.id %}
-          @{{_name.id}} = ["1", "yes", "true", true].includes?(value)
-        {% elsif type.id == Time.id %}
-          if value.is_a?(Time)
-            @{{_name.id}} = value
-          elsif value.to_s =~ /\d{4,}-\d{2,}-\d{2,}\s\d{2,}:\d{2,}:\d{2,}/
-            @{{_name.id}} = Time.parse(value, "%F %X")
-          end
-        {% else %}
-          @{{_name.id}} = value.to_s
-        {% end %}
-      {% end %}
-      end
-    end
-
-    # keep a hash of the params that will be passed to the adapter.
-    def params
-      parsed_params = [] of DB::Any
-      {% for name, type in FIELDS %}
-        {% if type.id == Time.id %}
-          parsed_params << {{name.id}}.try(&.to_s("%F %X"))
-        {% else %}
-          parsed_params << {{name.id}}
-        {% end %}
-      {% end %}
-      {% if SETTINGS[:timestamps] %}
-        parsed_params << created_at.not_nil!.to_s("%F %X")
-        parsed_params << updated_at.not_nil!.to_s("%F %X")
-      {% end %}
-      return parsed_params
     end
 
     # Clear is used to remove all rows from the table and reset the counter for
@@ -246,16 +174,6 @@ class Granite::ORM::Base
       @@adapter.open { |db| yield db.scalar(clause) }
     end
   end # End of Fields Macro
-
-  def set_attributes(args : Hash(Symbol | String, DB::Any))
-    args.each do |k, v|
-      cast_to_field(k, v)
-    end
-  end
-
-  def set_attributes(**args)
-    set_attributes(args.to_h)
-  end
 
   def initialize(**args : Object)
     set_attributes(args.to_h)
