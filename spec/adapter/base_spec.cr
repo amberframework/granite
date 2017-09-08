@@ -29,8 +29,5 @@ describe Granite::Adapter::Base do
         Granite::Adapter::Base.env(url).should eq "dummy://user:pswd@host:3333/test"
       end
     end
-
-  end 
+  end
 end
-
-
