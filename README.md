@@ -51,7 +51,7 @@ Here is an example using Granite ORM Model
 ```crystal
 require "granite_orm/adapter/mysql"
 
-class Post < Granite::ORM
+class Post < Granite::ORM::Base
   adapter mysql
   field name : String
   field body : Text
@@ -63,7 +63,7 @@ You can disable the timestamps for SqlLite since TIMESTAMP is not supported for 
 ```crystal
 require "granite_orm/adapter/sqlite"
 
-class Comment < Granite::ORM
+class Comment < Granite::ORM::Base
   adapter sqlite
   table_name post_comments
   field name : String
@@ -93,7 +93,7 @@ For legacy database mappings, you may already have a table and the primary key i
 We have a macro called `primary` to help you out:
 
 ```crystal
-class Site < Granite::ORM
+class Site < Granite::ORM::Base
   adapter mysql
   primary custom_id : Int32
   field name : String
@@ -161,6 +161,49 @@ post.save
 post = Post.find 1
 post.destroy
 puts "deleted" unless post
+```
+
+### Relationships
+
+`belongs_to` and `has_many` macros provide a rails like mapping between Objects.
+
+```crystal
+class User < Granite::ORM::Base
+  adapter mysql
+  
+  has_many :posts
+  
+  field email : String
+  field name : String
+  timestamps
+end
+
+
+class Post < Granite::ORM::Base
+  adapter mysql
+
+  belongs_to :user
+  
+  field title : String
+  timestamps
+end
+```
+
+This will add a `posts` instance method to the user which returns an array of posts.
+It will also add a `user` and `user=` methods to the post which returns and sets the user.
+This also adds a field `user_id : Int64` to the field mapping.  
+
+You will need to add a `user_id` and index to your posts table:
+```mysql
+CREATE TABLE posts (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT,
+  title VARCHAR,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);
+
+CREATE INDEX 'user_id_idx' ON TABLE posts (user_id);
 ```
 
 ### Errors
@@ -285,8 +328,3 @@ GRANT ALL PRIVILEGES ON granite_db.* TO 'granite'@'localhost' WITH GRANT OPTION;
 
 3. Export `.env` with `$ export .env`
 4. `$ crystal spec`
-
-
-## Contributors
-
-- [drujensen](https://github.com/drujensen) drujensen - creator, maintainer
