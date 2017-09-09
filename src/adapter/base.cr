@@ -16,10 +16,11 @@ abstract class Granite::Adapter::Base
   end
 
   DATABASE_YML = "config/database.yml"
+
   def settings(adapter : String)
     if File.exists?(DATABASE_YML) &&
-      (yaml = YAML.parse(File.read DATABASE_YML)) &&
-      (settings = yaml[adapter])
+       (yaml = YAML.parse(File.read DATABASE_YML)) &&
+       (settings = yaml[adapter])
       settings
     else
       return {"database": ""}
@@ -54,13 +55,13 @@ abstract class Granite::Adapter::Base
   private def replace_env_vars(url)
     Granite::Adapter::Base.env(url)
   end
-  
+
   # class level method so we can test it
   def self.env(url)
     regex = /\$\{(.*?)\}/
     if regex.match(url)
       url = url.gsub(regex) do |match|
-        ENV[match.gsub("${","").gsub("}","")]
+        ENV[match.gsub("${", "").gsub("}", "")]
       end
     else
       return url

@@ -1,7 +1,7 @@
 require "./spec_helper"
 require "../src/adapter/sqlite"
 
-class CommentThread < Granite::ORM
+class CommentThread < Granite::ORM::Base
   adapter sqlite
   table_name comment_threads
 
@@ -10,7 +10,7 @@ class CommentThread < Granite::ORM
   field name : String
 end
 
-class Comment < Granite::ORM
+class Comment < Granite::ORM::Base
   adapter sqlite
   table_name comments
 
@@ -20,7 +20,7 @@ class Comment < Granite::ORM
   field body : String
 end
 
-class Reaction < Granite::ORM
+class Reaction < Granite::ORM::Base
   adapter sqlite
   table_name reactions
   primary custom_id : Int64

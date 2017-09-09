@@ -1,7 +1,7 @@
 require "./spec_helper"
 require "../src/adapter/mysql"
 
-class Owner < Granite::ORM
+class Owner < Granite::ORM::Base
   adapter mysql
 
   has_many :posts
@@ -10,7 +10,7 @@ class Owner < Granite::ORM
   timestamps
 end
 
-class Post < Granite::ORM
+class Post < Granite::ORM::Base
   adapter mysql
 
   belongs_to :owner
@@ -22,13 +22,13 @@ class Post < Granite::ORM
   timestamps
 end
 
-class Site < Granite::ORM
+class Site < Granite::ORM::Base
   adapter mysql
   primary custom_id : Int32
   field name : String
 end
 
-class Chat::Room < Granite::ORM
+class Chat::Room < Granite::ORM::Base
   adapter mysql
   field name : String
 end

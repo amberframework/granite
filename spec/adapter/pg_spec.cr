@@ -1,7 +1,7 @@
 require "./spec_helper"
 require "../src/adapter/pg"
 
-class Parent < Granite::ORM
+class Parent < Granite::ORM::Base
   adapter pg
 
   has_many :users
@@ -10,7 +10,7 @@ class Parent < Granite::ORM
   timestamps
 end
 
-class User < Granite::ORM
+class User < Granite::ORM::Base
   adapter pg
 
   belongs_to :parent
@@ -21,7 +21,7 @@ class User < Granite::ORM
   timestamps
 end
 
-class Role < Granite::ORM
+class Role < Granite::ORM::Base
   adapter pg
   primary custom_id : Int32
   field name : String
