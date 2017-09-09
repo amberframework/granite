@@ -1,7 +1,7 @@
 require "./spec_helper"
 require "../src/adapter/mysql"
 
-class Owner < Granite::ORM:Base
+class Owner < Granite::ORM::Base
   adapter mysql
 
   has_many :posts
@@ -10,7 +10,7 @@ class Owner < Granite::ORM:Base
   timestamps
 end
 
-class Post < Granite::ORM:Base
+class Post < Granite::ORM::Base
   adapter mysql
 
   belongs_to :owner
