@@ -142,7 +142,7 @@ end
 
 ```crystal
 post = Post.new
-post.name = "Kemalyst Rocks!"
+post.name = "Granite ORM Rocks!"
 post.body = "Check this out."
 post.save
 ```
@@ -208,7 +208,7 @@ CREATE INDEX 'user_id_idx' ON TABLE posts (user_id);
 
 ### Errors
 
-All database errors are added to the `errors` array used by Kemalyst::Validators with the symbol ':base'
+All database errors are added to the `errors` array used by Granite::ORM::Validators with the symbol ':base'
 ```
 post = Post.new
 post.save

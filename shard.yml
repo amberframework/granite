@@ -8,10 +8,6 @@ authors:
 license: MIT
 
 dependencies:
-  kemalyst-validators:
-    github: kemalyst/kemalyst-validators
-    version: ~> 0.2.0
-
   db:
     github: crystal-lang/crystal-db
     version: ~> 0.4.1
