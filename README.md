@@ -179,7 +179,7 @@ The where clause will give you full control over your query.
 When using the `all` method, the SQL selected fields will always match the
 fields specified in the model.
 
-Always pass in parameters to avoid SQL Injection.  Use a `?` (or `$1`, `$2`,.. for pg)
+Always pass in parameters to avoid SQL Injection.  Use a `?`
 in your query as placeholder. Checkout the [Crystal DB Driver](https://github.com/crystal-lang/crystal-db)
 for documentation of the drivers.
 

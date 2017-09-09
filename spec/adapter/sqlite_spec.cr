@@ -1,9 +1,21 @@
 require "./spec_helper"
 require "../src/adapter/sqlite"
 
+class CommentThread < Granite::ORM::Base
+  adapter sqlite
+  table_name comment_threads
+
+  has_many :comments
+
+  field name : String
+end
+
 class Comment < Granite::ORM::Base
   adapter sqlite
   table_name comments
+
+  belongs_to :comment_thread
+
   field name : String
   field body : String
 end
@@ -15,11 +27,19 @@ class Reaction < Granite::ORM::Base
   field emote : String
 end
 
+CommentThread.exec("DROP TABLE IF EXISTS comment_threads;")
+CommentThread.exec("CREATE TABLE comment_threads (
+  id INTEGER NOT NULL PRIMARY KEY,
+  name VARCHAR
+);
+")
+
 Comment.exec("DROP TABLE IF EXISTS comments;")
 Comment.exec("CREATE TABLE comments (
   id INTEGER NOT NULL PRIMARY KEY,
   name VARCHAR,
-  body VARCHAR
+  body VARCHAR,
+  comment_thread_id INTEGER
 );
 ")
 
@@ -32,6 +52,7 @@ Reaction.exec("CREATE TABLE reactions (
 
 describe Granite::Adapter::Sqlite do
   Spec.before_each do
+    CommentThread.clear
     Comment.clear
   end
 
@@ -75,6 +96,56 @@ describe Granite::Adapter::Sqlite do
       name = comment.name
       comment = Comment.find_by(:name, name)
       comment.should_not be_nil
+    end
+  end
+
+  describe "#belongs_to" do
+    it "provides a method to retrieve parent" do
+      comment_thread = CommentThread.new
+      comment_thread.name = "Test Thread"
+      comment_thread.save
+
+      comment = Comment.new
+      comment.name = "Test Comment"
+      comment.comment_thread_id = comment_thread.id
+      comment.save
+
+      comment.comment_thread.name.should eq "Test Thread"
+    end
+
+    it "provides a method to set parent" do
+      comment_thread = CommentThread.new
+      comment_thread.name = "Test Thread"
+      comment_thread.save
+
+      comment = Comment.new
+      comment.name = "Test Comment"
+      comment.comment_thread = comment_thread
+      comment.save
+
+      comment.comment_thread_id.should eq comment_thread.id
+    end
+  end
+
+  describe "#has_many" do
+    it "provides a method to retrieve children" do
+      comment_thread = CommentThread.new
+      comment_thread.name = "Test Thread"
+      comment_thread.save
+
+      comment = Comment.new
+      comment.name = "Test Comment 1"
+      comment.comment_thread_id = comment_thread.id
+      comment.save
+      comment = Comment.new
+      comment.name = "Test Comment 2"
+      comment.comment_thread_id = comment_thread.id
+      comment.save
+      comment = Comment.new
+      comment.name = "Test Comment 3"
+      comment.save
+
+      comment_thread.comments.size.should eq 2
     end
   end
 
