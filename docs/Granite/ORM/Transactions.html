@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta id="repository-name" content="github.com/Amber-Crystal/granite-orm">
+  <link href="../../css/style.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="../../js/doc.js"></script>
+  <title>Granite::ORM::Transactions - github.com/Amber-Crystal/granite-orm</title>
+</head>
+<body>
+
+<div id="types-list">
+  <div id="search-box">
+    <input type="search" id="search-input" placeholder="Search...">
+  </div>
+
+  <ul>
+    <li><a href="../../index.html">README</a></li>
+  </ul>
+
+  <ul>
+  
+  <li class="parent open current" data-id="github.com/Amber-Crystal/granite-orm/Granite" data-name="granite">
+      <a href="../../Granite.html">Granite</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="github.com/Amber-Crystal/granite-orm/Granite/Adapter" data-name="granite::adapter">
+      <a href="../../Granite/Adapter.html">Adapter</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Adapter/Base" data-name="granite::adapter::base">
+      <a href="../../Granite/Adapter/Base.html">Base</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Adapter/Mysql" data-name="granite::adapter::mysql">
+      <a href="../../Granite/Adapter/Mysql.html">Mysql</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Adapter/Pg" data-name="granite::adapter::pg">
+      <a href="../../Granite/Adapter/Pg.html">Pg</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Adapter/Sqlite" data-name="granite::adapter::sqlite">
+      <a href="../../Granite/Adapter/Sqlite.html">Sqlite</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent open current" data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM" data-name="granite::orm">
+      <a href="../../Granite/ORM.html">ORM</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Base" data-name="granite::orm::base">
+      <a href="../../Granite/ORM/Base.html">Base</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Callbacks" data-name="granite::orm::callbacks">
+      <a href="../../Granite/ORM/Callbacks.html">Callbacks</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Error" data-name="granite::orm::error">
+      <a href="../../Granite/ORM/Error.html">Error</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Fields" data-name="granite::orm::fields">
+      <a href="../../Granite/ORM/Fields.html">Fields</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Querying" data-name="granite::orm::querying">
+      <a href="../../Granite/ORM/Querying.html">Querying</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Settings" data-name="granite::orm::settings">
+      <a href="../../Granite/ORM/Settings.html">Settings</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Table" data-name="granite::orm::table">
+      <a href="../../Granite/ORM/Table.html">Table</a>
+      
+    </li>
+  
+  <li class=" current" data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Transactions" data-name="granite::orm::transactions">
+      <a href="../../Granite/ORM/Transactions.html">Transactions</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Validators" data-name="granite::orm::validators">
+      <a href="../../Granite/ORM/Validators.html">Validators</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+</div>
+
+<div id="main-content">
+<h1 class="type-name">
+
+  <span class="kind">module</span> Granite::ORM::Transactions
+
+</h1>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2>Direct including types</h2>
+  <ul class="other-types-list">
+  
+    <li class="other-type"><a href="../../Granite/ORM/Base.html">Granite::ORM::Base</a></li>
+  
+  </ul>
+
+
+
+
+  <h2>Defined in:</h2>
+  
+    
+      <a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/transactions.cr#L1" target="_blank">granite_orm/transactions.cr</a>
+    
+    <br/>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <h2>Macro Summary</h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#__process_transactions-macro" class="signature"><strong>__process_transactions</strong></a>
+        
+      </li>
+    
+  </ul>
+
+
+
+<div class="methods-inherited">
+  
+</div>
+
+
+
+
+
+
+
+
+  <h2>Macro Detail</h2>
+  
+    <div class="entry-detail" id="__process_transactions-macro">
+      <div class="signature">
+        
+        macro <strong>__process_transactions</strong>
+
+        <a class="method-permalink" href="#__process_transactions-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/transactions.cr#L2" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+</div>
+
+</body>
+</html>

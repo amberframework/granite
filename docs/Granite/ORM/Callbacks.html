@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta id="repository-name" content="github.com/Amber-Crystal/granite-orm">
+  <link href="../../css/style.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="../../js/doc.js"></script>
+  <title>Granite::ORM::Callbacks - github.com/Amber-Crystal/granite-orm</title>
+</head>
+<body>
+
+<div id="types-list">
+  <div id="search-box">
+    <input type="search" id="search-input" placeholder="Search...">
+  </div>
+
+  <ul>
+    <li><a href="../../index.html">README</a></li>
+  </ul>
+
+  <ul>
+  
+  <li class="parent open current" data-id="github.com/Amber-Crystal/granite-orm/Granite" data-name="granite">
+      <a href="../../Granite.html">Granite</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="github.com/Amber-Crystal/granite-orm/Granite/Adapter" data-name="granite::adapter">
+      <a href="../../Granite/Adapter.html">Adapter</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Adapter/Base" data-name="granite::adapter::base">
+      <a href="../../Granite/Adapter/Base.html">Base</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Adapter/Mysql" data-name="granite::adapter::mysql">
+      <a href="../../Granite/Adapter/Mysql.html">Mysql</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Adapter/Pg" data-name="granite::adapter::pg">
+      <a href="../../Granite/Adapter/Pg.html">Pg</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Adapter/Sqlite" data-name="granite::adapter::sqlite">
+      <a href="../../Granite/Adapter/Sqlite.html">Sqlite</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent open current" data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM" data-name="granite::orm">
+      <a href="../../Granite/ORM.html">ORM</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Base" data-name="granite::orm::base">
+      <a href="../../Granite/ORM/Base.html">Base</a>
+      
+    </li>
+  
+  <li class=" current" data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Callbacks" data-name="granite::orm::callbacks">
+      <a href="../../Granite/ORM/Callbacks.html">Callbacks</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Error" data-name="granite::orm::error">
+      <a href="../../Granite/ORM/Error.html">Error</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Fields" data-name="granite::orm::fields">
+      <a href="../../Granite/ORM/Fields.html">Fields</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Querying" data-name="granite::orm::querying">
+      <a href="../../Granite/ORM/Querying.html">Querying</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Settings" data-name="granite::orm::settings">
+      <a href="../../Granite/ORM/Settings.html">Settings</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Table" data-name="granite::orm::table">
+      <a href="../../Granite/ORM/Table.html">Table</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Transactions" data-name="granite::orm::transactions">
+      <a href="../../Granite/ORM/Transactions.html">Transactions</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/ORM/Validators" data-name="granite::orm::validators">
+      <a href="../../Granite/ORM/Validators.html">Validators</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+</div>
+
+<div id="main-content">
+<h1 class="type-name">
+
+  <span class="kind">module</span> Granite::ORM::Callbacks
+
+</h1>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2>Direct including types</h2>
+  <ul class="other-types-list">
+  
+    <li class="other-type"><a href="../../Granite/ORM/Base.html">Granite::ORM::Base</a></li>
+  
+  </ul>
+
+
+
+
+  <h2>Defined in:</h2>
+  
+    
+      <a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L1" target="_blank">granite_orm/callbacks.cr</a>
+    
+    <br/>
+  
+
+
+
+  
+    <h2>Constant Summary</h2>
+  
+  <dl>
+    
+      <dt class="entry-const" id="CALLBACK_NAMES">
+        <strong>CALLBACK_NAMES</strong> = <code>[<span class="n">:before_save</span>, <span class="n">:after_save</span>, <span class="n">:before_create</span>, <span class="n">:after_create</span>, <span class="n">:before_update</span>, <span class="n">:after_update</span>, <span class="n">:before_destroy</span>, <span class="n">:after_destroy</span>] <span class="k">of</span> <span class="t">::</span><span class="t">Symbol</span></code>
+      </dt>
+      
+    
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h2>Macro Summary</h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#__run_after_create-macro" class="signature"><strong>__run_after_create</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#__run_after_destroy-macro" class="signature"><strong>__run_after_destroy</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#__run_after_save-macro" class="signature"><strong>__run_after_save</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#__run_after_update-macro" class="signature"><strong>__run_after_update</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#__run_before_create-macro" class="signature"><strong>__run_before_create</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#__run_before_destroy-macro" class="signature"><strong>__run_before_destroy</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#__run_before_save-macro" class="signature"><strong>__run_before_save</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#__run_before_update-macro" class="signature"><strong>__run_before_update</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#after_create%28callback%29-macro" class="signature"><strong>after_create</strong>(callback)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#after_destroy%28callback%29-macro" class="signature"><strong>after_destroy</strong>(callback)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#after_save%28callback%29-macro" class="signature"><strong>after_save</strong>(callback)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#after_update%28callback%29-macro" class="signature"><strong>after_update</strong>(callback)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#before_create%28callback%29-macro" class="signature"><strong>before_create</strong>(callback)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#before_destroy%28callback%29-macro" class="signature"><strong>before_destroy</strong>(callback)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#before_save%28callback%29-macro" class="signature"><strong>before_save</strong>(callback)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#before_update%28callback%29-macro" class="signature"><strong>before_update</strong>(callback)</a>
+        
+      </li>
+    
+  </ul>
+
+
+
+<div class="methods-inherited">
+  
+</div>
+
+
+
+
+
+
+
+
+  <h2>Macro Detail</h2>
+  
+    <div class="entry-detail" id="__run_after_create-macro">
+      <div class="signature">
+        
+        macro <strong>__run_after_create</strong>
+
+        <a class="method-permalink" href="#__run_after_create-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="__run_after_destroy-macro">
+      <div class="signature">
+        
+        macro <strong>__run_after_destroy</strong>
+
+        <a class="method-permalink" href="#__run_after_destroy-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="__run_after_save-macro">
+      <div class="signature">
+        
+        macro <strong>__run_after_save</strong>
+
+        <a class="method-permalink" href="#__run_after_save-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="__run_after_update-macro">
+      <div class="signature">
+        
+        macro <strong>__run_after_update</strong>
+
+        <a class="method-permalink" href="#__run_after_update-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="__run_before_create-macro">
+      <div class="signature">
+        
+        macro <strong>__run_before_create</strong>
+
+        <a class="method-permalink" href="#__run_before_create-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="__run_before_destroy-macro">
+      <div class="signature">
+        
+        macro <strong>__run_before_destroy</strong>
+
+        <a class="method-permalink" href="#__run_before_destroy-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="__run_before_save-macro">
+      <div class="signature">
+        
+        macro <strong>__run_before_save</strong>
+
+        <a class="method-permalink" href="#__run_before_save-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="__run_before_update-macro">
+      <div class="signature">
+        
+        macro <strong>__run_before_update</strong>
+
+        <a class="method-permalink" href="#__run_before_update-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="after_create&#40;callback&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>after_create</strong>(callback)
+
+        <a class="method-permalink" href="#after_create%28callback%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="after_destroy&#40;callback&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>after_destroy</strong>(callback)
+
+        <a class="method-permalink" href="#after_destroy%28callback%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="after_save&#40;callback&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>after_save</strong>(callback)
+
+        <a class="method-permalink" href="#after_save%28callback%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="after_update&#40;callback&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>after_update</strong>(callback)
+
+        <a class="method-permalink" href="#after_update%28callback%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="before_create&#40;callback&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>before_create</strong>(callback)
+
+        <a class="method-permalink" href="#before_create%28callback%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="before_destroy&#40;callback&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>before_destroy</strong>(callback)
+
+        <a class="method-permalink" href="#before_destroy%28callback%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="before_save&#40;callback&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>before_save</strong>(callback)
+
+        <a class="method-permalink" href="#before_save%28callback%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="before_update&#40;callback&#41;-macro">
+      <div class="signature">
+        
+        macro <strong>before_update</strong>(callback)
+
+        <a class="method-permalink" href="#before_update%28callback%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/296afe950844ca47d3f0febbbd444ed292b02ee0/src/granite_orm/callbacks.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+</div>
+
+</body>
+</html>
