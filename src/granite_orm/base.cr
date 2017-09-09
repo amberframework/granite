@@ -4,6 +4,7 @@ require "./querying"
 require "./settings"
 require "./table"
 require "./transactions"
+require "./validators"
 require "./version"
 
 # Granite::ORM::Base is the base class for your model objects.
@@ -17,7 +18,7 @@ class Granite::ORM::Base
   extend Querying
 
   macro inherited
-    include Kemalyst::Validators
+    include Granite::ORM::Validators
 
     macro finished
       __process

@@ -32,7 +32,7 @@ module Granite::ORM::Transactions
       rescue ex
         if message = ex.message
           puts "Save Exception: #{message}"
-          errors << Kemalyst::Validators::Error.new(:base, message)
+          errors << Granite::ORM::Error.new(:base, message)
         end
         return false
       end
@@ -48,7 +48,7 @@ module Granite::ORM::Transactions
       rescue ex
         if message = ex.message
           puts "Destroy Exception: #{message}"
-          errors << Kemalyst::Validators::Error.new(:base, message)
+          errors << Granite::ORM::Error.new(:base, message)
         end
         return false
       end
