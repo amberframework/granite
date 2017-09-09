@@ -14,6 +14,8 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
   # configured using the sql_mapping directive in your model.  The clause and
   # params is the query and params that is passed in via .all() method
   def select(table_name, fields, clause = "", params = nil, &block)
+    clause = _ensure_clause_template(clause)
+
     statement = String.build do |stmt|
       stmt << "SELECT "
       stmt << fields.map { |name| "#{table_name}.#{name}" }.join(",")
@@ -76,5 +78,17 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     open do |db|
       db.exec "DELETE FROM #{table_name} WHERE #{primary_name}=$1", value
     end
+  end
+
+  private def _ensure_clause_template(clause)
+    if clause.includes?("?")
+      num_subs = clause.count("?")
+
+      num_subs.times do |i|
+        clause = clause.sub("?", "$#{i+1}")
+      end
+    end
+
+    clause
   end
 end

@@ -48,6 +48,39 @@ class Granite::ORM
     {% SETTINGS[:timestamps] = true %}
   end
 
+  # define getter and setter for parent relationship
+  macro belongs_to(model_name)
+    field {{model_name.id}}_id : Int64
+
+    # retrieve the parent relationship
+    def {{model_name.id}}
+      if parent = {{model_name.id.camelcase}}.find {{model_name.id}}_id
+        parent
+      else
+        {{model_name.id.camelcase}}.new
+      end
+    end
+
+    # set the parent relationship
+    def {{model_name.id}}=(parent)
+      @{{model_name.id}}_id = parent.id
+    end
+  end
+
+  # define getter for related children
+  macro has_many(children_table)
+    def {{children_table.id}}
+      {% children_class = children_table.id[0...-1].camelcase %}
+      {% name_space = @type.name.gsub(/::/, "_").downcase.id %}
+      {% table_name = SETTINGS[:table_name] || name_space + "s" %}
+      foreign_key = "{{children_table.id}}.{{table_name[0...-1]}}_id"
+      query = "JOIN {{table_name}} on {{table_name}}.id = #{foreign_key} WHERE {{table_name}}.id = ?"
+
+      return [] of {{children_class}} unless id
+      {{children_class}}.all(query, id)
+    end
+  end
+
   {% for name in %i(before_save after_save before_create after_create before_update after_update before_destroy after_destroy) %}
     macro {{name.id}}(callback)
       \{% CALLBACKS[{{name}}] = callback.id \%}
