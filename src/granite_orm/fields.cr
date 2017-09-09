@@ -44,8 +44,7 @@ module Granite::ORM::Fields
       query = "JOIN {{table_name}} on {{table_name}}.id = #{foreign_key} WHERE {{table_name}}.id = ?"
   
       return [] of {{children_class}} unless id
-        {{children_class}}.all(query, id)
-      end
+      {{children_class}}.all(query, id)
     end
   end
   
