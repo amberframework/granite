@@ -85,7 +85,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       num_subs = clause.count("?")
 
       num_subs.times do |i|
-        clause = clause.sub("?", "$#{i+1}")
+        clause = clause.sub("?", "$#{i + 1}")
       end
     end
 
