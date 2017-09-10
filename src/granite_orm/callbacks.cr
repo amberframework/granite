@@ -3,17 +3,23 @@ module Granite::ORM::Callbacks
 
   macro included
     macro inherited
-      CALLBACKS = {} of Nil => Nil
+      CALLBACKS = {
+        {% for name in CALLBACK_NAMES %}
+          {{name.id}}: [] of Nil,
+        {% end %}
+      }
     end
   end
 
   {% for name in CALLBACK_NAMES %}
     macro {{name.id}}(callback)
-      \{% CALLBACKS[{{name}}] = callback.id %}
+      \{% CALLBACKS[{{name}}] << callback.id %}
     end
 
     macro __run_{{name.id}}
-      \{{CALLBACKS[{{name}}]}}
+      \{% for callback in CALLBACKS[{{name}}] %}
+         \{{callback}}
+      \{% end %}
     end
   {% end %}
 end
