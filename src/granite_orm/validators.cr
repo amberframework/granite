@@ -14,7 +14,7 @@ module Granite::ORM::Validators
   macro validate(field, message, block)
     @@validators << {field: {{field}}, message: {{message}}, block: {{block}}}
   end
-    
+
   def valid?
     @@validators.each do |validator|
       unless validator[:block].call(self)
@@ -24,4 +24,3 @@ module Granite::ORM::Validators
     errors.empty?
   end
 end
-
