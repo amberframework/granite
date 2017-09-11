@@ -13,7 +13,7 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
   # select performs a query against a table.  The table_name and fields are
   # configured using the sql_mapping directive in your model.  The clause and
   # params is the query and params that is passed in via .all() method
-  def select(table_name, fields, clause = "", params = nil, &block)
+  def select(table_name, fields, clause = "", params = [] of DB::Any, &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
       stmt << fields.map { |name| "#{table_name}.#{name}" }.join(",")

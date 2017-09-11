@@ -16,22 +16,17 @@ class Granite::ORM::Base
   include Settings
   include Table
   include Transactions
+  include Validators
 
   extend Querying
 
   macro inherited
-    include Granite::ORM::Validators
-
     macro finished
-      __process
+      __process_table
+      __process_fields
+      __process_querying
+      __process_transactions
     end
-  end
-
-  macro __process
-    __process_table
-    __process_fields
-    __process_querying
-    __process_transactions
   end
 
   def initialize(**args : Object)

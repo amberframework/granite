@@ -56,29 +56,38 @@ module Granite::ORM::Fields
 
     # Cast params and set fields.
     private def cast_to_field(name, value : DB::Any)
-      case name.to_s
-        {% for _name, type in FIELDS %}
-        when "{{_name.id}}"
-          {% if type.id == Int32.id %}
-            @{{_name.id}} = value.to_i32
-          {% elsif type.id == Int64.id %}
-            @{{_name.id}} = value.to_i64
-          {% elsif type.id == Float32.id %}
-            @{{_name.id}} = value.to_f32{0.0}
-          {% elsif type.id == Float64.id %}
-            @{{_name.id}} = value.to_f64{0.0}
-          {% elsif type.id == Bool.id %}
-            @{{_name.id}} = ["1", "yes", "true", true].includes?(value)
-          {% elsif type.id == Time.id %}
-            if value.is_a?(Time)
-              @{{_name.id}} = value
-            elsif value.to_s =~ /\d{4,}-\d{2,}-\d{2,}\s\d{2,}:\d{2,}:\d{2,}/
-              @{{_name.id}} = Time.parse(value, "%F %X")
-            end
-          {% else %}
-            @{{_name.id}} = value.to_s
+      if !value.nil?
+        case name.to_s
+          {% for _name, type in FIELDS %}
+          when "{{_name.id}}"
+            {% if type.id == Int32.id %}
+              @{{_name.id}} = value.to_i32
+            {% elsif type.id == Int64.id %}
+              @{{_name.id}} = value.to_i64
+            {% elsif type.id == Float32.id %}
+              @{{_name.id}} = value.to_f32{0.0}
+            {% elsif type.id == Float64.id %}
+              @{{_name.id}} = value.to_f64{0.0}
+            {% elsif type.id == Bool.id %}
+              @{{_name.id}} = ["1", "yes", "true", true].includes?(value)
+            {% elsif type.id == Time.id %}
+              if value.is_a?(Time)
+                @{{_name.id}} = value
+              elsif value.to_s =~ /\d{4,}-\d{2,}-\d{2,}\s\d{2,}:\d{2,}:\d{2,}/
+                @{{_name.id}} = Time.parse(value.to_s, "%F %X")
+              end
+            {% else %}
+              @{{_name.id}} = value.to_s
+            {% end %}
           {% end %}
-        {% end %}
+        end
+      else
+        case name.to_s
+          {% for _name, type in FIELDS %}
+          when "{{_name.id}}"
+            @{{_name.id}} = nil
+          {% end %}
+        end
       end
     end
   end
