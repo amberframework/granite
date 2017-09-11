@@ -4,7 +4,9 @@ module Granite::ORM::Validators
   property errors = [] of Error
 
   macro included
-    @@validators = Array({field: Symbol, message: String, block: Proc(self, Bool)}).new
+    macro inherited
+      @@validators = Array({field: Symbol, message: String, block: Proc(self, Bool)}).new
+    end
   end
 
   macro validate(message, block)

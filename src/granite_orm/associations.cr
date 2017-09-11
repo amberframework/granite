@@ -24,10 +24,9 @@ module Granite::ORM::Associations
       {% children_class = children_table.id[0...-1].camelcase %}
       {% name_space = @type.name.gsub(/::/, "_").downcase.id %}
       {% table_name = SETTINGS[:table_name] || name_space + "s" %}
-      foreign_key = "{{children_table.id}}.{{table_name[0...-1]}}_id"
-      query = "JOIN {{table_name}} on {{table_name}}.id = #{foreign_key} WHERE {{table_name}}.id = ?"
-
       return [] of {{children_class}} unless id
+      foreign_key = "{{children_table.id}}.{{table_name[0...-1]}}_id"
+      query = "WHERE #{foreign_key} = ?"
       {{children_class}}.all(query, id)
     end
   end
