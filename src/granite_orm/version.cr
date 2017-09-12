@@ -1,3 +1,3 @@
 module Granite::ORM
-  VERSION = "0.7.1"
+  VERSION = "v0.7.2"
 end
