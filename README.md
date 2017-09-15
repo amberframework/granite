@@ -177,8 +177,10 @@ class User < Granite::ORM::Base
   field name : String
   timestamps
 end
+```
+This will add a `posts` instance method to the user.
 
-
+```
 class Post < Granite::ORM::Base
   adapter mysql
 
@@ -188,7 +190,7 @@ class Post < Granite::ORM::Base
   timestamps
 end
 ```
-This will create a `posts` method on the user and create a `user` property on the post.
+This will add a `user` and `user=` instance method to the post.
 
 For example:
 ```
