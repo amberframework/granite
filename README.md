@@ -54,7 +54,7 @@ require "granite_orm/adapter/mysql"
 class Post < Granite::ORM::Base
   adapter mysql
   field name : String
-  field body : Text
+  field body : String
   timestamps
 end
 ```
@@ -67,7 +67,7 @@ class Comment < Granite::ORM::Base
   adapter sqlite
   table_name post_comments
   field name : String
-  field body : Text
+  field body : String
 end
 ```
 
