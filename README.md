@@ -54,7 +54,7 @@ require "granite_orm/adapter/mysql"
 class Post < Granite::ORM::Base
   adapter mysql
   field name : String
-  field body : Text
+  field body : String
   timestamps
 end
 ```
@@ -67,7 +67,7 @@ class Comment < Granite::ORM::Base
   adapter sqlite
   table_name post_comments
   field name : String
-  field body : Text
+  field body : String
 end
 ```
 
@@ -177,8 +177,10 @@ class User < Granite::ORM::Base
   field name : String
   timestamps
 end
+```
+This will add a `posts` instance method to the user.
 
-
+```crystal
 class Post < Granite::ORM::Base
   adapter mysql
 
@@ -188,10 +190,21 @@ class Post < Granite::ORM::Base
   timestamps
 end
 ```
+This will add a `user` and `user=` instance method to the post.
 
-This will add a `posts` instance method to the user which returns an array of posts.
-It will also add a `user` and `user=` methods to the post which returns and sets the user.
-This also adds a field `user_id : Int64` to the field mapping.  
+For example:
+```crystal
+user = User.find 1
+user.posts.each do |post|
+  puts post.title
+end
+
+post = Post.find 1
+puts post.user
+
+post.user = user
+post.save
+```
 
 You will need to add a `user_id` and index to your posts table:
 ```mysql
@@ -209,7 +222,7 @@ CREATE INDEX 'user_id_idx' ON TABLE posts (user_id);
 ### Errors
 
 All database errors are added to the `errors` array used by Granite::ORM::Validators with the symbol ':base'
-```
+```crystal
 post = Post.new
 post.save
 post.errors[0].to_s.should eq "ERROR: name cannot be null"
