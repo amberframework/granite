@@ -180,7 +180,7 @@ end
 ```
 This will add a `posts` instance method to the user.
 
-```
+```crystal
 class Post < Granite::ORM::Base
   adapter mysql
 
@@ -193,7 +193,7 @@ end
 This will add a `user` and `user=` instance method to the post.
 
 For example:
-```
+```crystal
 user = User.find 1
 user.posts.each do |post|
   puts post.title
@@ -222,7 +222,7 @@ CREATE INDEX 'user_id_idx' ON TABLE posts (user_id);
 ### Errors
 
 All database errors are added to the `errors` array used by Granite::ORM::Validators with the symbol ':base'
-```
+```crystal
 post = Post.new
 post.save
 post.errors[0].to_s.should eq "ERROR: name cannot be null"
