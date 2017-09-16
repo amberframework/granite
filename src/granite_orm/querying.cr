@@ -45,6 +45,16 @@ module Granite::ORM::Querying
     return rows
   end
 
+  # First adds a `LIMIT 1` clause to the query and returns the first result
+  def first(clause = "", params = [] of DB::Any)
+    results = all([clause.strip, "LIMIT 1"].join(" "), params)
+    if results.size > 0
+      results.first
+    else
+      nil
+    end
+  end
+
   # find returns the row with the primary key specified.
   # it checks by primary by default, but one can pass
   # another field for comparison

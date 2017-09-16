@@ -147,6 +147,30 @@ describe Granite::Adapter::Pg do
     end
   end
 
+  describe "#first" do
+    it "finds the first user" do
+      user1 = User.new
+      user1.name = "Joe"
+      user1.save
+      user2 = User.new
+      user2.name = "Joline"
+      user2.save
+      user = User.first
+      user.not_nil!.id.should eq user1.id
+    end
+
+    it "supports a SQL clause" do
+      user1 = User.new
+      user1.name = "Joe"
+      user1.save
+      user2 = User.new
+      user2.name = "Joline"
+      user2.save
+      user = User.first("ORDER BY users.name DESC")
+      user.not_nil!.id.should eq user2.id
+    end
+  end
+
   describe "#find" do
     it "finds the user by id" do
       user = User.new

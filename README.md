@@ -138,6 +138,15 @@ if post
 end
 ```
 
+#### First
+
+```crystal
+post = Post.first
+if post
+  puts post.name
+end
+```
+
 #### Insert
 
 ```crystal
@@ -245,6 +254,20 @@ posts = Post.all("JOIN comments c ON c.post_id = post.id
                   ["Joe"])
 
 ```
+
+It is common to only want the first result and append a `limit 1` to the query.
+This is what the `first` method does.
+
+For example:
+```
+post = Post.first("ORDER BY posts.name DESC")
+```
+
+This is the same as:
+```
+post = Post.all("ORDER BY posts.name DESC LIMIT 1").first
+```
+
 
 ### Callbacks
 
