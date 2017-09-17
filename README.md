@@ -10,13 +10,13 @@ This project is to provide an ORM Model in Crystal.
 
 Add this library to your projects dependencies along with the driver in
 your `shard.yml`.  This can be used with any framework but was originally
-designed to work with kemalyst in mind.  This library will work with kemal as
-well.
+designed to work with the amber framework in mind.  This library will work
+with kemal or any other framework as well.
 
 ```yaml
 dependencies:
   granite_orm:
-    github: Amber-Crystal/granite-orm
+    github: amberframework/granite-orm
 
   # Pick your database
   mysql:
@@ -120,6 +120,15 @@ if posts
 end
 ```
 
+#### Find First
+
+```crystal
+post = Post.first
+if post
+  puts post.name
+end
+```
+
 #### Find
 
 ```crystal
@@ -133,15 +142,6 @@ end
 
 ```crystal
 post = Post.find_by :slug, "example_slug"
-if post
-  puts post.name
-end
-```
-
-#### First
-
-```crystal
-post = Post.first
 if post
   puts post.name
 end
@@ -172,29 +172,79 @@ post.destroy
 puts "deleted" unless post
 ```
 
+### Queries
+
+The where clause will give you full control over your query.
+
+#### All
+
+When using the `all` method, the SQL selected fields will always match the
+fields specified in the model.
+
+Always pass in parameters to avoid SQL Injection.  Use a `?`
+in your query as placeholder. Checkout the [Crystal DB Driver](https://github.com/crystal-lang/crystal-db)
+for documentation of the drivers.
+
+Here are some examples:
+```crystal
+posts = Post.all("WHERE name LIKE ?", ["Joe%"])
+if posts
+  posts.each do |post|
+    puts post.name
+  end
+end
+
+# ORDER BY Example
+posts = Post.all("ORDER BY created_at DESC")
+
+# JOIN Example
+posts = Post.all("JOIN comments c ON c.post_id = post.id
+                  WHERE c.name = ?
+                  ORDER BY post.created_at DESC",
+                  ["Joe"])
+
+```
+
+#### First
+
+It is common to only want the first result and append a `LIMIT 1` to the query.
+This is what the `first` method does.
+
+For example:
+```
+post = Post.first("ORDER BY posts.name DESC")
+```
+
+This is the same as:
+```
+post = Post.all("ORDER BY posts.name DESC LIMIT 1").first
+```
+
 ### Relationships
+
+#### One to Many
 
 `belongs_to` and `has_many` macros provide a rails like mapping between Objects.
 
 ```crystal
 class User < Granite::ORM::Base
   adapter mysql
-  
+
   has_many :posts
-  
+
   field email : String
   field name : String
   timestamps
 end
 ```
-This will add a `posts` instance method to the user.
+This will add a `posts` instance method to the user which returns an array of posts.
 
-```crystal
+```
 class Post < Granite::ORM::Base
   adapter mysql
 
   belongs_to :user
-  
+
   field title : String
   timestamps
 end
@@ -202,7 +252,7 @@ end
 This will add a `user` and `user=` instance method to the post.
 
 For example:
-```crystal
+```
 user = User.find 1
 user.posts.each do |post|
   puts post.title
@@ -215,7 +265,7 @@ post.user = user
 post.save
 ```
 
-You will need to add a `user_id` and index to your posts table:
+In this example, you will need to add a `user_id` and index to your posts table:
 ```mysql
 CREATE TABLE posts (
   id BIGSERIAL PRIMARY KEY,
@@ -228,9 +278,9 @@ CREATE TABLE posts (
 CREATE INDEX 'user_id_idx' ON TABLE posts (user_id);
 ```
 
-### Many to Many Relationships
+#### Many to Many
 
-Instead of using a hidden many to many table, Granite recommends always creating a model for your join tables.  For example, lets say you have many `users` that belong to many `rooms`. We recommend adding a new model called `participants` to represent the many-to-many relationship.
+Instead of using a hidden many-to-many table, Granite recommends always creating a model for your join tables.  For example, let's say you have many `users` that belong to many `rooms`. We recommend adding a new model called `participants` to represent the many-to-many relationship.
 
 Then you can use the `belongs_to` and `has_many` relationships going both ways.
 ```
@@ -268,7 +318,7 @@ CREATE INDEX 'user_id_idx' ON TABLE participants (user_id);
 CREATE INDEX 'room_id_idx' ON TABLE participants (room_id);
 ```
 
-#### has many through
+##### has_many through:
 
 As a convenience, we provide a `through:` clause to simplify accessing the many-to-many relationship:
 ```
@@ -287,7 +337,7 @@ end
 class Room < Granite::ORM::Base
   has_many :participants
   has_many :users, through: participants
-  
+
   field name : String
 end
 ```
@@ -311,56 +361,11 @@ end
 ### Errors
 
 All database errors are added to the `errors` array used by Granite::ORM::Validators with the symbol ':base'
-```crystal
+```
 post = Post.new
 post.save
 post.errors[0].to_s.should eq "ERROR: name cannot be null"
 ```
-
-### Queries
-
-The where clause will give you full control over your query.
-
-When using the `all` method, the SQL selected fields will always match the
-fields specified in the model.
-
-Always pass in parameters to avoid SQL Injection.  Use a `?`
-in your query as placeholder. Checkout the [Crystal DB Driver](https://github.com/crystal-lang/crystal-db)
-for documentation of the drivers.
-
-Here are some examples:
-```crystal
-posts = Post.all("WHERE name LIKE ?", ["Joe%"])
-if posts
-  posts.each do |post|
-    puts post.name
-  end
-end
-
-# ORDER BY Example
-posts = Post.all("ORDER BY created_at DESC")
-
-# JOIN Example
-posts = Post.all("JOIN comments c ON c.post_id = post.id
-                  WHERE c.name = ?
-                  ORDER BY post.created_at DESC",
-                  ["Joe"])
-
-```
-
-It is common to only want the first result and append a `limit 1` to the query.
-This is what the `first` method does.
-
-For example:
-```
-post = Post.first("ORDER BY posts.name DESC")
-```
-
-This is the same as:
-```
-post = Post.all("ORDER BY posts.name DESC LIMIT 1").first
-```
-
 
 ### Callbacks
 
@@ -373,7 +378,7 @@ require "granite_orm/adapter/pg"
 class Post < Granite::ORM
   adapter pg
 
-  before_save upcase_title # or :upcase_title
+  before_save :upcase_title
 
   field title : String
   field content : String
@@ -410,37 +415,3 @@ You can register callbacks for the following events:
 - before_destroy
 - **destroy**
 - after_destroy
-
-## Contributing
-
-1. Fork it ( https://github.com/Amber-Crystal/granite-orm/fork )
-2. Create your feature branch (git checkout -b my-new-feature)
-3. Commit your changes (git commit -am 'Add some feature')
-4. Push to the branch (git push origin my-new-feature)
-5. Create a new Pull Request
-
-## Running tests
-
-
-1. Install dependencies with `$ crystal deps`
-2. Update .env to use appropriate ENV variables, or create appropriate databases.
-
-### PostgreSQL
-```sql
-CREATE USER granite WITH PASSWORD 'password';
-
-CREATE DATABASE granite_db;
-
-GRANT ALL PRIVILEGES ON DATABASE granite_db TO granite;
-```
-### MySQL
-```sql
-CREATE USER 'granite'@'localhost' IDENTIFIED BY 'password';
-
-CREATE DATABASE granite_db;
-
-GRANT ALL PRIVILEGES ON granite_db.* TO 'granite'@'localhost' WITH GRANT OPTION;
-```
-
-3. Export `.env` with `$ export .env`
-4. `$ crystal spec`
