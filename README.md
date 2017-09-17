@@ -415,3 +415,36 @@ You can register callbacks for the following events:
 - before_destroy
 - **destroy**
 - after_destroy
+
+## Contributing
+
+1. Fork it ( https://github.com/amberframework/granite-orm/fork )
+2. Create your feature branch (git checkout -b my-new-feature)
+3. Commit your changes (git commit -am 'Add some feature')
+4. Push to the branch (git push origin my-new-feature)
+5. Create a new Pull Request
+
+## Running tests
+
+1. Install dependencies with `$ crystal deps`
+2. Update .env to use appropriate ENV variables, or create appropriate databases.
+
+### PostgreSQL
+```sql
+CREATE USER granite WITH PASSWORD 'password';
+
+CREATE DATABASE granite_db;
+
+GRANT ALL PRIVILEGES ON DATABASE granite_db TO granite;
+```
+### MySQL
+```sql
+CREATE USER 'granite'@'localhost' IDENTIFIED BY 'password';
+
+CREATE DATABASE granite_db;
+
+GRANT ALL PRIVILEGES ON granite_db.* TO 'granite'@'localhost' WITH GRANT OPTION;
+```
+
+3. Export `.env` with `$ export .env`
+4. `$ crystal spec`
