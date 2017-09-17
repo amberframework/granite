@@ -193,11 +193,11 @@ describe Granite::Adapter::Mysql do
 
       post = Post.new
       post.name = "Test Post 1"
-      post.owner_id = owner.id
+      post.owner = owner
       post.save
       post = Post.new
       post.name = "Test Post 2"
-      post.owner_id = owner.id
+      post.owner = owner
       post.save
       post = Post.new
       post.name = "Test Post 3"
@@ -207,7 +207,7 @@ describe Granite::Adapter::Mysql do
     end
   end
 
-    describe "#has_many, through:" do
+  describe "#has_many, through:" do
     it "provides a method to retrieve children through another table" do
       owner = Owner.new
       owner.name = "Test Owner"
@@ -219,24 +219,23 @@ describe Granite::Adapter::Mysql do
 
       post = Post.new
       post.name = "Test Post 1"
-      post.owner_id = owner.id
-      post.group_id = group.id
+      post.owner = owner
+      post.group = group
       post.save
       post = Post.new
       post.name = "Test Post 2"
-      post.owner_id = owner.id
-      post.group_id = group.id
+      post.owner = owner
+      post.group = group
       post.save
       post = Post.new
       post.name = "Test Post 3"
-      post.owner_id = owner.id
+      post.owner = owner
       post.save
 
       owner.groups.size.should eq 2
       group.posts.size.should eq 2
     end
   end
-
 
   describe "#save" do
     it "creates a new post" do

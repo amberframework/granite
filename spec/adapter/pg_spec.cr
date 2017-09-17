@@ -5,6 +5,7 @@ class Parent < Granite::ORM::Base
   adapter pg
 
   has_many :users
+  has_many :childs, through: :users
 
   field name : String
   timestamps
@@ -14,12 +15,23 @@ class User < Granite::ORM::Base
   adapter pg
 
   belongs_to :parent
+  belongs_to :child
 
   field name : String
   field pass : String
   field total : Int32
   timestamps
 end
+
+class Child < Granite::ORM::Base
+  adapter pg
+
+  has_many :users
+  has_many :parents, through: :users
+
+  field name : String
+end
+
 
 class Role < Granite::ORM::Base
   adapter pg
@@ -43,6 +55,17 @@ User.exec("CREATE TABLE users (
   pass VARCHAR,
   total INT,
   parent_id BIGINT,
+  child_id BIGINT,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);
+")
+
+Child.exec("DROP TABLE IF EXISTS childs;")
+Child.exec("CREATE TABLE childs (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR,
+  user_id BIGINT,
   created_at TIMESTAMP,
   updated_at TIMESTAMP
 );
@@ -217,11 +240,11 @@ describe Granite::Adapter::Pg do
       user = User.new
       user.name = "Test User 1"
       user.pass = "password"
-      user.parent_id = parent.id
+      user.parent = parent
       user.save
       user = User.new
       user.name = "Test User 2"
-      user.parent_id = parent.id
+      user.parent = parent
       user.save
       user = User.new
       user.name = "Test User 3"
@@ -230,6 +253,38 @@ describe Granite::Adapter::Pg do
       parent.users.size.should eq 2
     end
   end
+
+  describe "#has_many, through:" do
+    it "provides a method to retrieve children through another table" do
+      parent = Parent.new
+      parent.name = "Parent 1"
+      parent.save
+
+      child = Child.new
+      child.name = "Test Child"
+      child.save
+
+      user = User.new
+      user.name = "Test User 1"
+      user.pass = "password"
+      user.parent = parent
+      user.child = child
+      user.save
+
+      user = User.new
+      user.name = "Test User 2"
+      user.parent = parent
+      user.child = child
+      user.save
+      user = User.new
+      user.name = "Test User 3"
+      user.save
+
+      parent.childs.size.should eq 2
+      child.parents.size.should eq 2
+    end
+  end
+
 
   describe "#save" do
     it "creates a new user" do

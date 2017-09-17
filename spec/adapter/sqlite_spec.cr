@@ -6,6 +6,7 @@ class CommentThread < Granite::ORM::Base
   table_name comment_threads
 
   has_many :comments
+  has_many :stars, through: :comments
 
   field name : String
 end
@@ -15,9 +16,19 @@ class Comment < Granite::ORM::Base
   table_name comments
 
   belongs_to :comment_thread
+  belongs_to :star
 
   field name : String
   field body : String
+end
+
+class Star < Granite::ORM::Base
+  adapter sqlite
+
+  has_many :comments
+  has_many :comment_threads, through: :comments
+
+  field name : String
 end
 
 class Reaction < Granite::ORM::Base
@@ -39,7 +50,15 @@ Comment.exec("CREATE TABLE comments (
   id INTEGER NOT NULL PRIMARY KEY,
   name VARCHAR,
   body VARCHAR,
-  comment_thread_id INTEGER
+  comment_thread_id INTEGER,
+  star_id INTEGER
+);
+")
+
+Star.exec("DROP TABLE IF EXISTS stars;")
+Star.exec("CREATE TABLE stars (
+  id INTEGER NOT NULL PRIMARY KEY,
+  name VARCHAR
 );
 ")
 
@@ -135,11 +154,11 @@ describe Granite::Adapter::Sqlite do
 
       comment = Comment.new
       comment.name = "Test Comment 1"
-      comment.comment_thread_id = comment_thread.id
+      comment.comment_thread = comment_thread
       comment.save
       comment = Comment.new
       comment.name = "Test Comment 2"
-      comment.comment_thread_id = comment_thread.id
+      comment.comment_thread = comment_thread
       comment.save
       comment = Comment.new
       comment.name = "Test Comment 3"
@@ -149,6 +168,35 @@ describe Granite::Adapter::Sqlite do
     end
   end
 
+  describe "#has_many, through:" do
+    it "provides a method to retrieve children through another table" do
+      comment_thread = CommentThread.new
+      comment_thread.name = "Test Thread"
+      comment_thread.save
+
+      star = Star.new
+      star.name = "Test Star"
+      star.save
+
+      comment = Comment.new
+      comment.name = "Test Comment 1"
+      comment.comment_thread = comment_thread
+      comment.star = star
+      comment.save
+      comment = Comment.new
+      comment.name = "Test Comment 2"
+      comment.comment_thread = comment_thread
+      comment.star = star
+      comment.save
+      comment = Comment.new
+      comment.name = "Test Comment 3"
+      comment.save
+
+      comment_thread.stars.size.should eq 2
+      star.comment_threads.size.should eq 2
+    end
+  end
+  
   describe "#save" do
     it "creates a new comment" do
       comment = Comment.new
