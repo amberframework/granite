@@ -4,8 +4,6 @@ services:
     build: .
     command: 'bash -c "cd /app/user && sleep 10 && crystal spec"'
     working_dir: /app/user
-    volumes:
-      - '.:/app/user'
     environment:
       PG_DATABASE_URL: 'postgres://postgres:@pg:5432/postgres'
       MYSQL_DATABASE_URL: 'mysql://user:pass@mysql:3306/test'
