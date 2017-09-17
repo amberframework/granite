@@ -47,7 +47,7 @@ module Granite::ORM::Querying
 
   # First adds a `LIMIT 1` clause to the query and returns the first result
   def first(clause = "", params = [] of DB::Any)
-    results = all([clause.strip, "LIMIT 1"].join(" "), params).first?
+    all([clause.strip, "LIMIT 1"].join(" "), params).first?
   end
 
   # find returns the row with the primary key specified.
