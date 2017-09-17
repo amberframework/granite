@@ -69,6 +69,30 @@ describe Granite::Adapter::Sqlite do
     end
   end
 
+  describe "#first" do
+    it "finds the first comment" do
+      comment1 = Comment.new
+      comment1.name = "Test Comment"
+      comment1.save
+      comment2 = Comment.new
+      comment2.name = "Test Comment 2"
+      comment2.save
+      comment = Comment.first
+      comment.not_nil!.id.should eq comment1.id
+    end
+
+    it "supports a SQL clause" do
+      comment1 = Comment.new
+      comment1.name = "Test Comment"
+      comment1.save
+      comment2 = Comment.new
+      comment2.name = "Test Comment 2"
+      comment2.save
+      comment = Comment.first("ORDER BY comments.name DESC")
+      comment.not_nil!.id.should eq comment2.id
+    end
+  end
+
   describe "#find" do
     it "finds the comment by id" do
       comment = Comment.new
