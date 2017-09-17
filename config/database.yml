@@ -1,8 +1,8 @@
 mysql:
-  database: "mysql://root@localhost:3306/granite"
+  database: "${MYSQL_DATABASE_URL}"
 
 pg:
-  database: "postgres://root@localhost:5432/granite"
+  database: "${PG_DATABASE_URL}"
 
 sqlite:
-  database: "sqlite:./db/granite.db"
+  database: "${SQLITE_DATABASE_URL}"
