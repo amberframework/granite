@@ -441,10 +441,46 @@ You can register callbacks for the following events:
 
 ## Running tests
 
+Granite ORM uses Crystal's built in test framework. The tests can be run with `$ crystal spec`.
+
+The test suite depends on access to a PostgreSQL, MySQL, and SQLite database to ensure the adapters work as intended.
+
+### Docker setup
+
+There is a self-contained testing environment provided via the `docker-compose.yml` file in this repository.
+
+After you have docker installed do the following to run tests:
+
+#### First run
+
+```
+$ docker-compose build spec
+$ docker-compose run spec
+```
+
+#### Subsequent runs
+
+```
+$ docker-compose run spec
+```
+
+#### Cleanup
+
+If you're done testing and you'd like to shut down and clean up the docker dependences run the following:
+
+```
+$ docker-compose down
+```
+
+### Local setup
+
+If you'd like to test without docker you can do so by following the instructions below:
+
 1. Install dependencies with `$ crystal deps`
 2. Update .env to use appropriate ENV variables, or create appropriate databases.
+3. Setup databases:
 
-### PostgreSQL
+#### PostgreSQL
 
 ```sql
 CREATE USER granite WITH PASSWORD 'password';
@@ -454,7 +490,7 @@ CREATE DATABASE granite_db;
 GRANT ALL PRIVILEGES ON DATABASE granite_db TO granite;
 ```
 
-### MySQL
+#### MySQL
 
 ```sql
 CREATE USER 'granite'@'localhost' IDENTIFIED BY 'password';
@@ -464,5 +500,5 @@ CREATE DATABASE granite_db;
 GRANT ALL PRIVILEGES ON granite_db.* TO 'granite'@'localhost' WITH GRANT OPTION;
 ```
 
-3. Export `.env` with `$ source .env`
-4. `$ crystal spec`
+4. Export `.env` with `$ source .env`
+5. `$ crystal spec`
