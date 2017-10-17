@@ -54,6 +54,35 @@ module Granite::ORM::Fields
       return parsed_params
     end
 
+    def to_h
+      fields = {} of String => Bool | Float32 | Float64 | Int32 | Int64 | String | Time | Nil
+
+      {% for name, type in FIELDS %}
+        {% if type.id == Time.id %}
+          fields["{{name}}"] = {{name.id}}.try(&.to_s("%F %X"))
+        {% elsif type.id == Slice.id %}
+          fields["{{name}}"] = {{name.id}}.try(&.to_s(""))
+        {% else %}
+          fields["{{name}}"] = {{name.id}}
+        {% end %}
+      {% end %}
+      {% if SETTINGS[:timestamps] %}
+        if created_at
+          fields["created_at"] = created_at.not_nil!.to_s("%F %X")
+        end
+
+        if updated_at
+          fields["updated_at"] = updated_at.not_nil!.to_s("%F %X")
+        end
+      {% end %}
+
+      return fields
+    end
+
+    def to_json
+      to_h.to_json
+    end
+
     # Cast params and set fields.
     private def cast_to_field(name, value : DB::Any)
       if !value.nil?
