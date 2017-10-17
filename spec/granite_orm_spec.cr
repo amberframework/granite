@@ -16,14 +16,14 @@ describe Granite::ORM::Base do
 
   it "should provide a to_h method" do
     t = Todo.new(name: "test todo", priority: 20)
-    result = { "name" => "test todo", "priority" => 20, "created_at" => "", "updated_at" => "" }
+    result = { "name" => "test todo", "priority" => 20, "created_at" => nil, "updated_at" => nil }
 
     t.to_h.should eq result
   end
 
   it "should provide a to_json method" do
     t = Todo.new(name: "test todo", priority: 20)
-    result = %({"name":"test todo","priority":20,"created_at":"","updated_at":""})
+    result = %({"name":"test todo","priority":20,"created_at":null,"updated_at":null})
 
     t.to_json.should eq result
   end

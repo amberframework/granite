@@ -67,8 +67,8 @@ module Granite::ORM::Fields
         {% end %}
       {% end %}
       {% if SETTINGS[:timestamps] %}
-        fields["created_at"] = created_at ? created_at.not_nil!.to_s("%F %X") : ""
-        fields["updated_at"] = updated_at ? updated_at.not_nil!.to_s("%F %X") : ""
+        fields["created_at"] = created_at.try(&.to_s("%F %X"))
+        fields["updated_at"] = updated_at.try(&.to_s("%F %X"))
       {% end %}
 
       return fields
