@@ -1,3 +1,5 @@
+require "json"
+
 module Granite::ORM::Fields
   macro included
     macro inherited
@@ -74,8 +76,24 @@ module Granite::ORM::Fields
       return fields
     end
 
-    def to_json
-      to_h.to_json
+    def to_json(json : JSON::Builder)
+      json.object do
+        {% for name, type in FIELDS %}
+          %field, %value = "{{name.id}}", {{name.id}}
+          {% if type.id == Time.id %}
+            json.field %field, %value.try(&.to_s(%F %X))
+          {% elsif type.id == Slice.id %}
+            json.field %field, %value.id.try(&.to_s(""))
+          {% else %}
+            json.field %field, %value
+          {% end %}
+        {% end %}
+
+        {% if SETTINGS[:timestamps] %}
+          json.field "created_at", created_at.try(&.to_s("%F %X"))
+          json.field "updated_at", updated_at.try(&.to_s("%F %X"))
+        {% end %}
+      end
     end
 
     # Cast params and set fields.
