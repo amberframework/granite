@@ -464,5 +464,5 @@ CREATE DATABASE granite_db;
 GRANT ALL PRIVILEGES ON granite_db.* TO 'granite'@'localhost' WITH GRANT OPTION;
 ```
 
-3. Export `.env` with `$ export .env`
+3. Export `.env` with `$ source .env`
 4. `$ crystal spec`
