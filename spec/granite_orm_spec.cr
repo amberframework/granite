@@ -16,15 +16,30 @@ describe Granite::ORM::Base do
 
   it "should provide a to_h method" do
     t = Todo.new(name: "test todo", priority: 20)
-    result = { "name" => "test todo", "priority" => 20, "created_at" => nil, "updated_at" => nil }
+    result = {"name" => "test todo", "priority" => 20, "created_at" => nil, "updated_at" => nil}
 
     t.to_h.should eq result
   end
 
-  it "should provide a to_json method" do
-    t = Todo.new(name: "test todo", priority: 20)
-    result = %({"name":"test todo","priority":20,"created_at":null,"updated_at":null})
+  describe "#to_json" do
+    it "converts object to json" do
+      t = Todo.new(name: "test todo", priority: 20)
+      result = %({"name":"test todo","priority":20,"created_at":null,"updated_at":null})
 
-    t.to_json.should eq result
+      t.to_json.should eq result
+    end
+
+    it "works with collections" do
+      todos = [
+        Todo.new(name: "todo 1", priority: 1),
+        Todo.new(name: "todo 2", priority: 2),
+        Todo.new(name: "todo 3", priority: 3),
+      ]
+
+      collection = JSON.parse todos.to_json
+      collection[0].should eq({"name" => "todo 1", "priority" => 1, "created_at" => nil, "updated_at" => nil})
+      collection[1].should eq({"name" => "todo 2", "priority" => 2, "created_at" => nil, "updated_at" => nil})
+      collection[2].should eq({"name" => "todo 3", "priority" => 3, "created_at" => nil, "updated_at" => nil})
+    end
   end
 end
