@@ -59,6 +59,8 @@ module Granite::ORM::Fields
     def to_h
       fields = {} of String => Bool | Float32 | Float64 | Int32 | Int64 | String | Time | Nil
 
+      fields["{{PRIMARY[:name]}}"] = {{PRIMARY[:name]}}
+
       {% for name, type in FIELDS %}
         {% if type.id == Time.id %}
           fields["{{name}}"] = {{name.id}}.try(&.to_s("%F %X"))
@@ -78,6 +80,8 @@ module Granite::ORM::Fields
 
     def to_json(json : JSON::Builder)
       json.object do
+        json.field "{{PRIMARY[:name]}}", {{PRIMARY[:name]}}
+
         {% for name, type in FIELDS %}
           %field, %value = "{{name.id}}", {{name.id}}
           {% if type.id == Time.id %}
