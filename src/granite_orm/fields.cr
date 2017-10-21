@@ -43,7 +43,7 @@ module Granite::ORM::Fields
 
     # keep a hash of the params that will be passed to the adapter.
     def params
-      parsed_params = [] of DB::Any
+      parsed_params = [] of Type
       {% for name, type in FIELDS %}
         {% if type.id == Time.id %}
           parsed_params << {{name.id}}.try(&.to_s("%F %X"))
@@ -103,7 +103,7 @@ module Granite::ORM::Fields
     end
 
     # Cast params and set fields.
-    private def cast_to_field(name, value : DB::Any)
+    private def cast_to_field(name, value : Type)
       if !value.nil?
         case name.to_s
           {% for _name, type in FIELDS %}
