@@ -1,6 +1,8 @@
 require "json"
 
 module Granite::ORM::Fields
+  alias Type = DB::Any | Hash(String, JSON::Type) | Array(JSON::Type)
+
   macro included
     macro inherited
       FIELDS = {} of Nil => Nil
@@ -57,7 +59,7 @@ module Granite::ORM::Fields
     end
 
     def to_h
-      fields = {} of String => Bool | Float32 | Float64 | Int32 | Int64 | String | Time | Nil
+      fields = {} of String => Type
 
       {% for name, type in FIELDS %}
         {% if type.id == Time.id %}
@@ -134,7 +136,7 @@ module Granite::ORM::Fields
     end
   end
 
-  def set_attributes(args : Hash(Symbol | String, DB::Any))
+  def set_attributes(args : Hash(Symbol | String, DB::Any | Type))
     args.each do |k, v|
       cast_to_field(k, v)
     end
