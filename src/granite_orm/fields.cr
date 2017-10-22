@@ -109,13 +109,13 @@ module Granite::ORM::Fields
           {% for _name, type in FIELDS %}
           when "{{_name.id}}"
             {% if type.id == Int32.id %}
-              @{{_name.id}} = value.to_i32
+              @{{_name.id}} = value.as(Int32).to_i32
             {% elsif type.id == Int64.id %}
-              @{{_name.id}} = value.to_i64
+              @{{_name.id}} = value.as(Int64).to_i64
             {% elsif type.id == Float32.id %}
-              @{{_name.id}} = value.to_f32{0.0}
+              @{{_name.id}} = value.as(Float32).to_f32{0.0}
             {% elsif type.id == Float64.id %}
-              @{{_name.id}} = value.to_f64{0.0}
+              @{{_name.id}} = value.as(Float64).to_f64{0.0}
             {% elsif type.id == Bool.id %}
               @{{_name.id}} = ["1", "yes", "true", true].includes?(value)
             {% elsif type.id == Time.id %}
@@ -140,7 +140,7 @@ module Granite::ORM::Fields
     end
   end
 
-  def set_attributes(args : Hash(Symbol | String, DB::Any | Type))
+  def set_attributes(args : Hash(Symbol | String, Type))
     args.each do |k, v|
       cast_to_field(k, v)
     end
