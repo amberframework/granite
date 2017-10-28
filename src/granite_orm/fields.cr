@@ -1,7 +1,7 @@
 require "json"
 
 module Granite::ORM::Fields
-  alias Type = DB::Any | JSON::Type
+  alias Type = DB::Any | JSON::Any
 
   macro included
     macro inherited
@@ -102,8 +102,8 @@ module Granite::ORM::Fields
       end
     end
 
-    # Cast params and set fields.
-    private def cast_to_field(name, value : Type)
+    # Cast params and set fields for String
+    private def cast_to_field(name, value : DB::Any)
       if !value.nil?
         case name.to_s
           {% for _name, type in FIELDS %}
@@ -138,9 +138,19 @@ module Granite::ORM::Fields
         end
       end
     end
+
+    # Sets params
+    private def cast_json_to_field(name, value : JSON::Type)
+    end
   end
 
-  def set_attributes(args : Hash(Symbol | String, Type))
+  def set_attributes(args : Hash(String | Symbol, JSON::Type))
+    args.each do |k, v|
+      cast_json_to_field(k, v.as(JSON::Type))
+    end
+  end
+
+  def set_attributes(args : Hash(Symbol | String, DB::Any))
     args.each do |k, v|
       cast_to_field(k, v)
     end

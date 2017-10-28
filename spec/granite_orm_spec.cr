@@ -8,6 +8,16 @@ class Todo < Granite::ORM::Base
   timestamps
 end
 
+class Post < Granite::ORM::Base
+  adapter pg
+  field name : String
+  field priority : Int32
+  field published : Bool
+  field upvotes : Int64
+  field sentiment : Float32
+  timestamps
+end
+
 class WebSite < Granite::ORM::Base
   adapter pg
   primary custom_id : Int32
@@ -18,6 +28,30 @@ describe Granite::ORM::Base do
   it "should create a new todo object with name set" do
     t = Todo.new(name: "Elorest")
     t.name.should eq "Elorest"
+  end
+
+  it "takes JSON::Type" do
+    tmp_hash = {} of String | Symbol => String | JSON::Type
+    body = %({
+      name: "Elias",
+      priotity: 333,
+      published: false,
+      upvotes: 9223372036854775807,
+      sentiment: 3.143333333333
+    })
+
+    case json = JSON.parse_raw(body)
+    when Hash
+      json.each do |key, value|
+        tmp_hash[key.as(String)] = value
+      end
+    when Array
+      tmp_hash["_json"] = json
+    end
+
+    todo = Post.new(tmp_hash)
+    todo.name.should eq "Elias"
+    todo.priority.should eq 333
   end
 
   describe "#to_h" do
