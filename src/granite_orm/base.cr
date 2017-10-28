@@ -33,7 +33,7 @@ class Granite::ORM::Base
     set_attributes(args.to_h)
   end
 
-  def initialize(args : Hash(Symbol | String, Type))
+  def initialize(args : Hash(Symbol | String, String | JSON::Type))
     set_attributes(args)
   end
 
