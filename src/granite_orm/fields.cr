@@ -171,7 +171,7 @@ module Granite::ORM::Fields
             {% elsif type.id == Float64.id %}
               @{{_name.id}} = value.as(Float64)
             {% elsif type.id == Bool.id %}
-              @{{_name.id}} = value.as(Bool)
+              @{{_name.id}} = ["1", "yes", "true", true].includes?(value)
             {% elsif type.id == Time.id %}
               if value.is_a?(Time)
                 @{{_name.id}} = value
