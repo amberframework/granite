@@ -1,7 +1,7 @@
 require "json"
 
 module Granite::ORM::Fields
-  alias Type = DB::Any | JSON::Any
+  alias Type = JSON::Type | DB::Any
   TIME_FORMAT_REGEX = /\d{4,}-\d{2,}-\d{2,}\s\d{2,}:\d{2,}:\d{2,}/
 
   macro included
@@ -44,7 +44,7 @@ module Granite::ORM::Fields
 
     # keep a hash of the params that will be passed to the adapter.
     def params
-      parsed_params = [] of Type
+      parsed_params = [] of DB::Any
       {% for name, type in FIELDS %}
         {% if type.id == Time.id %}
           parsed_params << {{name.id}}.try(&.to_s("%F %X"))
@@ -60,7 +60,7 @@ module Granite::ORM::Fields
     end
 
     def to_h
-      fields = {} of String => Type
+      fields = {} of String => DB::Any
 
       fields["{{PRIMARY[:name]}}"] = {{PRIMARY[:name]}}
 
@@ -103,15 +103,9 @@ module Granite::ORM::Fields
       end
     end
 
-    def set_attributes(args : Hash(String | Symbol, JSON::Type))
+    def set_attributes(args : Hash(String | Symbol, Type))
       args.each do |k, v|
-        cast_json_to_field(k, v.as(JSON::Type | Int32 | Float32 | Time))
-      end
-    end
-
-    def set_attributes(args : Hash(Symbol | String, DB::Any))
-      args.each do |k, v|
-        cast_to_field(k, v)
+        cast_to_field(k, v.as(Type))
       end
     end
 
@@ -119,77 +113,32 @@ module Granite::ORM::Fields
       set_attributes(args.to_h)
     end
 
-    # Cast params and set fields for String
-    private def cast_to_field(name, value : DB::Any)
-      if !value.nil?
-        case name.to_s
-          {% for _name, type in FIELDS %}
-          when "{{_name.id}}"
-            {% if type.id == Int32.id %}
-              @{{_name.id}} = value.to_i32
-            {% elsif type.id == Int64.id %}
-              @{{_name.id}} = value.to_i64
-            {% elsif type.id == Float32.id %}
-              @{{_name.id}} = value.to_f32{0.0}
-            {% elsif type.id == Float64.id %}
-              @{{_name.id}} = value.to_f64{0.0}
-            {% elsif type.id == Bool.id %}
-              @{{_name.id}} = ["1", "yes", "true", true].includes?(value)
-            {% elsif type.id == Time.id %}
-              if value.is_a?(Time)
-                @{{_name.id}} = value
-              elsif value.to_s =~ TIME_FORMAT_REGEX
-                @{{_name.id}} = Time.parse(value.to_s, "%F %X")
-              end
-            {% else %}
-              @{{_name.id}} = value.to_s
-            {% end %}
+    # Casts params and sets fields
+    private def cast_to_field(name, value : Type)
+      case name.to_s
+        {% for _name, type in FIELDS %}
+        when "{{_name.id}}"
+          return @{{_name.id}} = nil if value.nil?
+          {% if type.id == Int32.id %}
+            @{{_name.id}} = value.is_a?(String) ? value.to_i32 : value.is_a?(Int64) ? value.to_s.to_i32 : value.as(Int32)
+          {% elsif type.id == Int64.id %}
+            @{{_name.id}} = value.is_a?(String) ? value.to_i64 : value.as(Int64)
+          {% elsif type.id == Float32.id %}
+            @{{_name.id}} = value.is_a?(String) ? value.to_f32 : value.is_a?(Float64) ? value.to_s.to_f32 : value.as(Float32)
+          {% elsif type.id == Float64.id %}
+            @{{_name.id}} = value.is_a?(String) ? value.to_f64 : value.as(Float64)
+          {% elsif type.id == Bool.id %}
+            @{{_name.id}} = ["1", "yes", "true", true].includes?(value)
+          {% elsif type.id == Time.id %}
+            if value.is_a?(Time)
+               @{{_name.id}} = value
+             elsif value.to_s =~ TIME_FORMAT_REGEX
+               @{{_name.id}} = Time.parse(value.to_s, "%F %X")
+             end
+          {% else %}
+            @{{_name.id}} = value.to_s
           {% end %}
-        end
-      else
-        case name.to_s
-          {% for _name, type in FIELDS %}
-          when "{{_name.id}}"
-            @{{_name.id}} = nil
-          {% end %}
-        end
-      end
-    end
-
-    # Casts params and sets fields for JSON::Type
-    private def cast_json_to_field(name, value : JSON::Type | Int32 | Float32 | Time)
-       if !value.nil?
-        case name.to_s
-          {% for _name, type in FIELDS %}
-          when "{{_name.id}}"
-            {% if type.id == Int32.id %}
-              @{{_name.id}} = value.as(Int64).to_i32
-            {% elsif type.id == Int64.id %}
-              @{{_name.id}} = value.as(Int64)
-            {% elsif type.id == Float32.id %}
-              @{{_name.id}} = value.as(Float64).to_f32
-            {% elsif type.id == Float64.id %}
-              @{{_name.id}} = value.as(Float64)
-            {% elsif type.id == Bool.id %}
-              @{{_name.id}} = value.as(Bool)
-            {% elsif type.id == Time.id %}
-              if value.is_a?(Time)
-                @{{_name.id}} = value
-              elsif value.to_s =~ TIME_FORMAT_REGEX
-                @{{_name.id}} = Time.parse(value.to_s, "%F %X")
-              end
-            {% else %}
-              @{{_name.id}} = value.to_s
-            {% end %}
-          {% end %}
-        end
-      else
-        case name.to_s
-          {% for _name, type in FIELDS %}
-          when "{{_name.id}}"
-            @{{_name.id}} = nil
-          {% end %}
-        end
+        {% end %}
       end
     end
   end
