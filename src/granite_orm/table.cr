@@ -1,6 +1,7 @@
 module Granite::ORM::Table
   macro included
     macro inherited
+      SETTINGS = {} of Nil => Nil
       PRIMARY = {name: id, type: Int64}
     end
   end
@@ -8,7 +9,7 @@ module Granite::ORM::Table
   # specify the database adapter you will be using for this model.
   # mysql, pg, sqlite, etc.
   macro adapter(name)
-    @@adapter ||= Granite::Adapter::{{name.id.capitalize}}.new("{{name.id}}")
+    @@adapter = Granite::Adapter::{{name.id.capitalize}}.new("{{name.id}}")
 
     def self.adapter
       @@adapter

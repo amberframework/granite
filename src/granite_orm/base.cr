@@ -13,7 +13,6 @@ class Granite::ORM::Base
   include Associations
   include Callbacks
   include Fields
-  include Settings
   include Table
   include Transactions
   include Validators
