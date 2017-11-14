@@ -21,6 +21,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       stmt << fields.map { |name| "#{table_name}.#{name}" }.join(",")
       stmt << " FROM #{table_name} #{clause}"
     end
+
     open do |db|
       db.query statement, params do |rs|
         yield rs
@@ -36,6 +37,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       stmt << " FROM #{table_name}"
       stmt << " WHERE #{field}=$1 LIMIT 1"
     end
+
     open do |db|
       db.query_one? statement, id do |rs|
         yield rs
@@ -51,6 +53,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       stmt << fields.map { |name| "$#{fields.index(name).not_nil! + 1}" }.join(",")
       stmt << ")"
     end
+
     open do |db|
       db.exec statement, params
       return db.scalar(last_val()).as(Int64)
@@ -68,6 +71,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       stmt << fields.map { |name| "#{name}=$#{fields.index(name).not_nil! + 1}" }.join(",")
       stmt << " WHERE #{primary_name}=$#{fields.size + 1}"
     end
+
     open do |db|
       db.exec statement, params
     end
@@ -75,8 +79,10 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
 
   # This will delete a row from the database.
   def delete(table_name, primary_name, value)
+    statement = "DELETE FROM #{table_name} WHERE #{primary_name}=$1"
+
     open do |db|
-      db.exec "DELETE FROM #{table_name} WHERE #{primary_name}=$1", value
+      db.exec statement, value
     end
   end
 

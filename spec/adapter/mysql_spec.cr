@@ -99,6 +99,7 @@ describe Granite::Adapter::Mysql do
   Spec.before_each do
     Owner.clear
     Post.clear
+    Site.clear
   end
 
   describe "#all" do
@@ -189,6 +190,37 @@ describe Granite::Adapter::Mysql do
       slug = post.slug
       post = Post.find_by(:slug, slug)
       post.should_not be_nil
+    end
+  end
+
+  describe "#find_in_batches" do
+    it "finds records in batches and yields all the records" do
+      role_ids = (0...100).map do |i|
+        Site.new(name: "role_#{i}").tap {|r| r.save }
+      end.map(&.custom_id)
+
+      found_roles = [] of Int32 | Nil
+      Site.find_in_batches(batch_size: 10) do |batch|
+        batch.each { |record| found_roles << record.custom_id }
+        batch.size.should eq 10
+      end
+
+      found_roles.compact.sort.should eq role_ids.compact
+    end
+  end
+
+  describe "#find_each" do
+    it "finds all the records" do
+      role_ids = (0...100).map do |i|
+        Site.new(name: "role_#{i}").tap {|r| r.save }
+      end.map(&.custom_id)
+
+      found_roles = [] of Int32 | Nil
+      Site.find_each do |record|
+        found_roles << record.custom_id
+      end
+
+      found_roles.compact.sort.should eq role_ids.compact
     end
   end
 
@@ -307,10 +339,6 @@ describe Granite::Adapter::Mysql do
   end
 
   describe "Site model with custom primary key" do
-    Spec.before_each do
-      Site.clear
-    end
-
     describe "#find" do
       it "finds the site by custom_id" do
         site = Site.new

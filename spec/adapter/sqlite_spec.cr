@@ -142,6 +142,41 @@ describe Granite::Adapter::Sqlite do
     end
   end
 
+  describe "#find_in_batches" do
+    it "finds records in batches and yields all the records" do
+      Reaction.clear
+
+      role_ids = (0...100).map do |i|
+        Reaction.new(name: "role_#{i}").tap {|r| r.save }
+      end.map(&.custom_id)
+
+      found_roles = [] of Int64 | Nil
+      Reaction.find_in_batches(batch_size: 10) do |batch|
+        batch.each { |record| found_roles << record.custom_id }
+        batch.size.should eq 10
+      end
+
+      found_roles.compact.sort.should eq role_ids.compact
+    end
+  end
+
+  describe "#find_each" do
+    it "finds all the records" do
+      Reaction.clear
+
+      role_ids = (0...100).map do |i|
+        Reaction.new(name: "role_#{i}").tap {|r| r.save }
+      end.map(&.custom_id)
+
+      found_roles = [] of Int64 | Nil
+      Reaction.find_each do |record|
+        found_roles << record.custom_id
+      end
+
+      found_roles.compact.sort.should eq role_ids.compact
+    end
+  end
+
   describe "#belongs_to" do
     it "provides a method to retrieve parent" do
       comment_thread = CommentThread.new
