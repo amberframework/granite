@@ -386,4 +386,48 @@ describe Granite::Adapter::Pg do
       end
     end
   end
+
+  describe "timestamps" do
+    it "consistently uses UTC for created_at" do
+      role = Parent.new(name: "test").tap(&.save)
+      same_role = Parent.find(role.id).not_nil!
+
+      original_timestamp = role.created_at.not_nil!
+      read_timestamp = same_role.created_at.not_nil!
+
+      original_timestamp.kind.should eq Time::Kind::Utc
+      read_timestamp.kind.should eq Time::Kind::Utc
+    end
+
+    it "consistently uses UTC for updated_at" do
+      role = Parent.new(name: "test").tap(&.save)
+      same_role = Parent.find(role.id).not_nil!
+
+      original_timestamp = role.updated_at.not_nil!
+      read_timestamp = same_role.updated_at.not_nil!
+
+      original_timestamp.kind.should eq Time::Kind::Utc
+      read_timestamp.kind.should eq Time::Kind::Utc
+    end
+
+    it "truncates the subsecond parts of created_at" do
+      role = Parent.new(name: "test").tap(&.save)
+      same_role = Parent.find(role.id).not_nil!
+
+      original_timestamp = role.created_at.not_nil!
+      read_timestamp = same_role.created_at.not_nil!
+
+      original_timestamp.epoch_f.to_i.should eq read_timestamp.epoch
+    end
+
+    it "truncates the subsecond parts of updated_at" do
+      role = Parent.new(name: "test").tap(&.save)
+      same_role = Parent.find(role.id).not_nil!
+
+      original_timestamp = role.updated_at.not_nil!
+      read_timestamp = same_role.updated_at.not_nil!
+
+      original_timestamp.epoch_f.to_i.should eq read_timestamp.epoch
+    end
+  end
 end
