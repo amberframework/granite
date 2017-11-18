@@ -3,6 +3,9 @@ module Granite::ORM::Transactions
     {% primary_name = PRIMARY[:name] %}
     {% primary_type = PRIMARY[:type] %}
 
+    @updated_at : Time?
+    @created_at : Time?
+
     # The save method will check to see if the primary exists yet. If it does it
     # will call the update method, otherwise it will call the create method.
     # This will update the timestamps apropriately.
@@ -11,15 +14,15 @@ module Granite::ORM::Transactions
         __run_before_save
         if value = @{{primary_name}}
           __run_before_update
-          @updated_at = Time.now
+          @updated_at = Time.now.to_utc
           params_and_pk = params
           params_and_pk << value
           @@adapter.update @@table_name, @@primary_name, self.class.fields, params_and_pk
           __run_after_update
         else
           __run_before_create
-          @created_at = Time.now
-          @updated_at = Time.now
+          @created_at = Time.now.to_utc
+          @updated_at = Time.now.to_utc
           {% if primary_type.id == "Int32" %}
             @{{primary_name}} = @@adapter.insert(@@table_name, self.class.fields, params).to_i32
           {% else %}

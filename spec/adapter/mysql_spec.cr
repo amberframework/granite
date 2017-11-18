@@ -388,4 +388,50 @@ describe Granite::Adapter::Mysql do
       end
     end
   end
+
+  describe "timestamps" do
+    it "uses UTC for created_at" do
+      role = Owner.new(name: "test").tap(&.save)
+      same_role = Owner.find(role.id).not_nil!
+
+      original_timestamp = role.created_at.not_nil!
+      read_timestamp = same_role.created_at.not_nil!
+
+      original_timestamp.kind.should eq Time::Kind::Utc
+      read_timestamp.kind.should eq Time::Kind::Unspecified
+    end
+
+    it "uses UTC for updated_at" do
+      role = Owner.new(name: "test").tap(&.save)
+      same_role = Owner.find(role.id).not_nil!
+
+      original_timestamp = role.updated_at.not_nil!
+      read_timestamp = same_role.updated_at.not_nil!
+
+      original_timestamp.kind.should eq Time::Kind::Utc
+      read_timestamp.kind.should eq Time::Kind::Unspecified
+    end
+
+    it "truncates the subsecond parts of created_at" do
+      role = Owner.new(name: "test").tap(&.save)
+      same_role = Owner.find(role.id).not_nil!
+
+      original_timestamp = role.created_at.not_nil!
+      read_timestamp = same_role.created_at.not_nil!
+      hacked_timestamp = Time.new(read_timestamp.ticks, kind: Time::Kind::Utc)
+
+      original_timestamp.epoch_f.to_i.should eq hacked_timestamp.epoch
+    end
+
+    it "truncates the subsecond parts of updated_at" do
+      role = Owner.new(name: "test").tap(&.save)
+
+      original_timestamp = role.updated_at.not_nil!
+      same_role = Owner.find(role.id).not_nil!
+      read_timestamp = same_role.updated_at.not_nil!
+      hacked_timestamp = Time.new(read_timestamp.ticks, kind: Time::Kind::Utc)
+
+      original_timestamp.epoch_f.to_i.should eq hacked_timestamp.epoch
+    end
+  end
 end
