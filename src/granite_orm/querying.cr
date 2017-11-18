@@ -71,6 +71,27 @@ module Granite::ORM::Querying
     return row
   end
 
+  def find_each(clause = "", params = [] of DB::Any, batch_size limit = 100, offset = 0)
+    find_in_batches(clause, params, batch_size: limit, offset: offset) do |batch|
+      batch.each do |record|
+        yield record
+      end
+    end
+  end
+
+  def find_in_batches(clause = "", params = [] of DB::Any, batch_size limit = 100, offset = 0)
+    if limit < 1
+      raise ArgumentError.new("batch_size must be >= 1")
+    end
+
+    while true
+      results = all "#{clause} LIMIT ? OFFSET ?", params + [limit, offset]
+      break unless results.any?
+      yield results
+      offset += limit
+    end
+  end
+
   def exec(clause = "")
     @@adapter.open { |db| db.exec(clause) }
   end

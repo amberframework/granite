@@ -99,6 +99,7 @@ describe Granite::Adapter::Mysql do
   Spec.before_each do
     Owner.clear
     Post.clear
+    Site.clear
   end
 
   describe "#all" do
@@ -307,10 +308,6 @@ describe Granite::Adapter::Mysql do
   end
 
   describe "Site model with custom primary key" do
-    Spec.before_each do
-      Site.clear
-    end
-
     describe "#find" do
       it "finds the site by custom_id" do
         site = Site.new

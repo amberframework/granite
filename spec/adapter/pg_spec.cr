@@ -82,6 +82,7 @@ describe Granite::Adapter::Pg do
   Spec.before_each do
     Parent.clear
     User.clear
+    Role.clear
   end
 
   describe "#all" do
@@ -345,10 +346,6 @@ describe Granite::Adapter::Pg do
   end
 
   describe "Role model with custom primary key" do
-    Spec.before_each do
-      Role.clear
-    end
-
     describe "#find" do
       it "finds the role by custom_id" do
         role = Role.new

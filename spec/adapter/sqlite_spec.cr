@@ -142,6 +142,7 @@ describe Granite::Adapter::Sqlite do
     end
   end
 
+
   describe "#belongs_to" do
     it "provides a method to retrieve parent" do
       comment_thread = CommentThread.new
