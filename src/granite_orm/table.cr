@@ -1,6 +1,7 @@
 module Granite::ORM::Table
   macro included
     macro inherited
+      SETTINGS = {} of Nil => Nil
       PRIMARY = {name: id, type: Int64}
     end
   end

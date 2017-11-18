@@ -8,7 +8,7 @@ abstract class Granite::Adapter::Base
   property database : DB::Database
 
   def initialize(adapter : String)
-    if url = ENV["DATABASE_URL"]? || replace_env_vars(settings(adapter)["database"].to_s)
+    if url = ENV["DATABASE_URL"]? || Granite::ORM.settings.database_url || replace_env_vars(settings(adapter)["database"].to_s)
       @database = DB.open(url)
     else
       raise "database url needs to be set in the config/database.yml or DATABASE_URL environment variable"
