@@ -120,13 +120,13 @@ module Granite::ORM::Fields
         when "{{_name.id}}"
           return @{{_name.id}} = nil if value.nil?
           {% if type.id == Int32.id %}
-            @{{_name.id}} = value.is_a?(String) ? value.to_i32 : value.is_a?(Int64) ? value.to_s.to_i32 : value.as(Int32)
+            @{{_name.id}} = value.is_a?(String) ? value.to_i32(strict: false) : value.is_a?(Int64) ? value.to_i32 : value.as(Int32)
           {% elsif type.id == Int64.id %}
-            @{{_name.id}} = value.is_a?(String) ? value.to_i64 : value.as(Int64)
+            @{{_name.id}} = value.is_a?(String) ? value.to_i64(strict: false) : value.as(Int64)
           {% elsif type.id == Float32.id %}
-            @{{_name.id}} = value.is_a?(String) ? value.to_f32 : value.is_a?(Float64) ? value.to_s.to_f32 : value.as(Float32)
+            @{{_name.id}} = value.is_a?(String) ? value.to_f32(strict: false) : value.is_a?(Float64) ? value.to_f32 : value.as(Float32)
           {% elsif type.id == Float64.id %}
-            @{{_name.id}} = value.is_a?(String) ? value.to_f64 : value.as(Float64)
+            @{{_name.id}} = value.is_a?(String) ? value.to_f64(strict: false) : value.as(Float64)
           {% elsif type.id == Bool.id %}
             @{{_name.id}} = ["1", "yes", "true", true].includes?(value)
           {% elsif type.id == Time.id %}
