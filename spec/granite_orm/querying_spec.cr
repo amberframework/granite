@@ -1,46 +1,9 @@
 require "../spec_helper"
 
-{% for adapter in ["pg","mysql","sqlite"] %}
+{% for adapter in GraniteExample::ADAPTERS %}
+  {% model_constant = "GraniteExample::Parent#{adapter.camelcase.id}".id %}
 
-  {%
-   suffix = adapter.camelcase.id
-   adapter_literal = adapter.id
-
-   model_constant = "Parent#{suffix}".id
-   model_string = "Parent#{suffix}".underscore.id
-   model_table = model_string + "s"
-
-   if adapter == "pg"
-     primary_key_sql = "id SERIAL PRIMARY KEY".id
-   elsif adapter == "mysql"
-     primary_key_sql = "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY".id
-   elsif adapter == "sqlite"
-     primary_key_sql = "id INTEGER NOT NULL PRIMARY KEY".id
-   end
-  %}
-
-  require "../src/adapter/{{ adapter_literal }}"
-
-  class {{ model_constant }} < Granite::ORM::Base
-    primary id : Int32
-    adapter {{ adapter_literal }}
-    table_name {{ model_table }}
-
-    field name : String
-  end
-
-  {{ model_constant }}.exec("DROP TABLE IF EXISTS {{ model_table }};")
-  {{ model_constant }}.exec("CREATE TABLE {{ model_table }} (
-    {{ primary_key_sql }},
-    name VARCHAR(10)
-  );
-  ")
-
-  describe {{ adapter }} do
-    Spec.before_each do
-      {{ model_constant }}.clear
-    end
-
+  describe "Querying with {{ adapter.id }}" do
     describe "#find_in_batches" do
       it "finds records in batches and yields all the records" do
         model_ids = (0...100).map do |i|

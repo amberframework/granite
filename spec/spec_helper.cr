@@ -1,2 +1,19 @@
 require "spec"
-require "../src/granite_orm.cr"
+
+module GraniteExample
+  ADAPTERS = ["pg","mysql","sqlite"]
+  @@model_classes = [] of Granite::ORM::Base.class
+
+  extend self
+
+  def model_classes
+    @@model_classes
+  end
+end
+
+require "../src/granite_orm"
+require "./spec_models"
+
+GraniteExample.model_classes.each do |model|
+  model.drop_and_create
+end
