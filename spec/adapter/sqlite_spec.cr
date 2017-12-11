@@ -76,16 +76,6 @@ describe Granite::Adapter::Sqlite do
   end
 
   describe "#all" do
-    it "finds all the comments" do
-      comment = Comment.new
-      comment.name = "Test Comment"
-      comment.save
-      comment = Comment.new
-      comment.name = "Test Comment 2"
-      comment.save
-      comments = Comment.all
-      comments.size.should eq 2
-    end
   end
 
   describe "#first" do

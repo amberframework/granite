@@ -86,18 +86,6 @@ describe Granite::Adapter::Pg do
   end
 
   describe "#all" do
-    it "finds all the users" do
-      user = User.new
-      user.name = "Test User"
-      user.total = 10
-      user.save
-      user = User.new
-      user.name = "Test User 2"
-      user.save
-      users = User.all
-      users.size.should eq 2
-    end
-
     it "finds users matching clause using named substitution" do
       user = User.new
       user.name = "Bob"

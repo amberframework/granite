@@ -4,6 +4,18 @@ require "../spec_helper"
   {% model_constant = "GraniteExample::Parent#{adapter.camelcase.id}".id %}
 
   describe "Querying with {{ adapter.id }}" do
+    describe "#all" do
+      it "finds all the records" do
+        model_ids = (0...100).map do |i|
+          {{ model_constant }}.new(name: "model_#{i}").tap(&.save)
+        end.map(&.id)
+
+        all = {{ model_constant }}.all
+        all.size.should eq model_ids.size
+        all.map(&.id).compact.sort.should eq model_ids.compact
+      end
+    end
+
     describe "#find_in_batches" do
       it "finds records in batches and yields all the records" do
         model_ids = (0...100).map do |i|

@@ -103,18 +103,6 @@ describe Granite::Adapter::Mysql do
   end
 
   describe "#all" do
-    it "finds all the posts" do
-      post = Post.new
-      post.name = "Test Post"
-      post.total = 10
-      post.save
-      post = Post.new
-      post.name = "Test Post 2"
-      post.save
-      posts = Post.all
-      posts.size.should eq 2
-    end
-
     it "should get TEXT fields" do
       post = Post.new
       post.name = "Test Post"
