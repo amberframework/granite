@@ -23,11 +23,7 @@ module Granite::ORM::Transactions
           __run_before_create
           @created_at = Time.now.to_utc
           @updated_at = Time.now.to_utc
-          {% if primary_type.id == "Int32" %}
-            @{{primary_name}} = @@adapter.insert(@@table_name, self.class.fields, params).to_i32
-          {% else %}
-            @{{primary_name}} = @@adapter.insert(@@table_name, self.class.fields, params)
-          {% end %}
+          @{{primary_name}} = @@adapter.insert(@@table_name, @@primary_name, self.class.fields, params).as({{primary_type}})
           __run_after_create
         end
         __run_after_save

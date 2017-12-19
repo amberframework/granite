@@ -45,18 +45,19 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     end
   end
 
-  def insert(table_name, fields, params)
+  def insert(table_name, primary_name, fields, params)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{table_name} ("
       stmt << fields.map { |name| "#{name}" }.join(",")
       stmt << ") VALUES ("
       stmt << fields.map { |name| "$#{fields.index(name).not_nil! + 1}" }.join(",")
-      stmt << ")"
+      stmt << ") "
+      stmt << "RETURNING"
+      stmt << " #{primary_name}"
     end
 
     open do |db|
-      db.exec statement, params
-      return db.scalar(last_val()).as(Int64)
+      return db.scalar(statement, params)
     end
   end
 
