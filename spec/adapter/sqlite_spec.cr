@@ -154,32 +154,6 @@ describe Granite::Adapter::Sqlite do
     end
   end
   
-  describe "#save" do
-    it "creates a new comment" do
-      comment = Comment.new
-      comment.name = "Test Comment"
-      comment.body = "Test Comment"
-      comment.save
-      comment.id.should eq 1
-    end
-
-    it "updates an existing comment" do
-      comment = Comment.new
-      comment.name = "Test Comment"
-      comment.save
-      comment.name = "Test Comment 2"
-      comment.save
-      comments = Comment.all
-      comments.size.should eq 1
-      comment = Comment.find comments[0].id
-      if comment
-        comment.name.should eq "Test Comment 2"
-      else
-        raise "Comment should exist"
-      end
-    end
-  end
-
   describe "#destroy" do
     it "destroys a comment" do
       comment = Comment.new

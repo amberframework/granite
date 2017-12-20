@@ -169,29 +169,6 @@ describe Granite::Adapter::Pg do
     end
   end
 
-
-  describe "#save" do
-    it "creates a new user" do
-      user = User.new
-      user.name = "Test User"
-      user.pass = "Password"
-      user.save
-      user.id.should_not be_nil
-    end
-
-    it "updates an existing user" do
-      user = User.new
-      user.name = "Test User"
-      user.save
-      user.name = "Test User 2"
-      user.save
-      user = User.find 1
-      if user
-        user.name.should eq "Test User 2"
-      end
-    end
-  end
-
   describe "#destroy" do
     it "destroys a user" do
       user = User.new

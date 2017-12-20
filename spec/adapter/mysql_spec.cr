@@ -182,28 +182,6 @@ describe Granite::Adapter::Mysql do
     end
   end
 
-  describe "#save" do
-    it "creates a new post" do
-      post = Post.new
-      post.name = "Test Post"
-      post.body = "Test Post"
-      post.save
-      post.id.should eq 1
-    end
-
-    it "updates an existing post" do
-      post = Post.new
-      post.name = "Test Post"
-      post.save
-      post.name = "Test Post 2"
-      post.save
-      post = Post.find 1
-      if post
-        post.name.should eq "Test Post 2"
-      end
-    end
-  end
-
   describe "#destroy" do
     it "destroys a post" do
       post = Post.new
