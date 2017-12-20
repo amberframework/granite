@@ -85,29 +85,6 @@ describe Granite::Adapter::Pg do
     Role.clear
   end
 
-  describe "#has_many" do
-    it "provides a method to retrieve children" do
-      parent = Parent.new
-      parent.name = "Parent 1"
-      parent.save
-
-      user = User.new
-      user.name = "Test User 1"
-      user.pass = "password"
-      user.parent = parent
-      user.save
-      user = User.new
-      user.name = "Test User 2"
-      user.parent = parent
-      user.save
-      user = User.new
-      user.name = "Test User 3"
-      user.save
-
-      parent.users.size.should eq 2
-    end
-  end
-
   describe "#has_many, through:" do
     it "provides a method to retrieve children through another table" do
       parent = Parent.new

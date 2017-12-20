@@ -75,28 +75,6 @@ describe Granite::Adapter::Sqlite do
     Comment.clear
   end
 
-  describe "#has_many" do
-    it "provides a method to retrieve children" do
-      comment_thread = CommentThread.new
-      comment_thread.name = "Test Thread"
-      comment_thread.save
-
-      comment = Comment.new
-      comment.name = "Test Comment 1"
-      comment.comment_thread = comment_thread
-      comment.save
-      comment = Comment.new
-      comment.name = "Test Comment 2"
-      comment.comment_thread = comment_thread
-      comment.save
-      comment = Comment.new
-      comment.name = "Test Comment 3"
-      comment.save
-
-      comment_thread.comments.size.should eq 2
-    end
-  end
-
   describe "#has_many, through:" do
     it "provides a method to retrieve children through another table" do
       comment_thread = CommentThread.new

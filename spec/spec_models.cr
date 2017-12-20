@@ -58,7 +58,7 @@ end
 
       field name : String
 
-      has_many :klass_{{ adapter_literal }}
+      has_many :klass_{{ adapter_literal }}s
 
       def self.drop_and_create
         exec("DROP TABLE IF EXISTS {{ teacher_table }};")
