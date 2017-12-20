@@ -75,34 +75,6 @@ describe Granite::Adapter::Sqlite do
     Comment.clear
   end
 
-  describe "#belongs_to" do
-    it "provides a method to retrieve parent" do
-      comment_thread = CommentThread.new
-      comment_thread.name = "Test Thread"
-      comment_thread.save
-
-      comment = Comment.new
-      comment.name = "Test Comment"
-      comment.comment_thread_id = comment_thread.id
-      comment.save
-
-      comment.comment_thread.name.should eq "Test Thread"
-    end
-
-    it "provides a method to set parent" do
-      comment_thread = CommentThread.new
-      comment_thread.name = "Test Thread"
-      comment_thread.save
-
-      comment = Comment.new
-      comment.name = "Test Comment"
-      comment.comment_thread = comment_thread
-      comment.save
-
-      comment.comment_thread_id.should eq comment_thread.id
-    end
-  end
-
   describe "#has_many" do
     it "provides a method to retrieve children" do
       comment_thread = CommentThread.new

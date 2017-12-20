@@ -6,6 +6,7 @@ end
 {% for adapter in GraniteExample::ADAPTERS %}
   {%
     adapter_const_suffix = adapter.camelcase.id
+    adapter_suffix = "_#{adapter.id}".id
     adapter_literal = adapter.id
 
     parent_table = "parent_#{ adapter_literal }s".id
@@ -19,10 +20,10 @@ end
     teacher_class = "Teacher#{ adapter_const_suffix }".id
 
     if adapter == "pg"
-      primary_key_sql = "SERIAL PRIMARY KEY".id
+      primary_key_sql = "BIGSERIAL PRIMARY KEY".id
       foreign_key_sql = "BIGINT".id
     elsif adapter == "mysql"
-      primary_key_sql = "INT NOT NULL AUTO_INCREMENT PRIMARY KEY".id
+      primary_key_sql = "BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY".id
       foreign_key_sql = "BIGINT".id
     elsif adapter == "sqlite"
       primary_key_sql = "INTEGER NOT NULL PRIMARY KEY".id
@@ -34,7 +35,7 @@ end
 
   module GraniteExample
     class Parent{{ adapter_const_suffix }} < Granite::ORM::Base
-      primary id : Int32
+      primary id : Int64
       adapter {{ adapter_literal }}
       table_name "{{ parent_table }}"
 
@@ -51,7 +52,7 @@ end
     end
 
     class Teacher{{ adapter_const_suffix }} < Granite::ORM::Base
-      primary id : Int32
+      primary id : Int64
       adapter {{ adapter_literal }}
       table_name "{{ teacher_table }}"
 
@@ -70,7 +71,7 @@ end
     end
 
     class Student{{ adapter_const_suffix }} < Granite::ORM::Base
-      primary id : Int32
+      primary id : Int64
       adapter {{ adapter_literal }}
       table_name "{{ student_table }}"
 
@@ -83,14 +84,14 @@ end
         exec("CREATE TABLE {{ student_table }} (
           id {{ primary_key_sql }},
           name VARCHAR(100),
-          parent_id {{ foreign_key_sql }}
+          parent{{ adapter_suffix }}_id {{ foreign_key_sql }}
         );
         ")
       end
     end
 
     class Klass{{ adapter_const_suffix }} < Granite::ORM::Base
-      primary id : Int32
+      primary id : Int64
       adapter {{ adapter_literal }}
       table_name "{{ klass_table }}"
       field name : String
@@ -105,14 +106,14 @@ end
           CREATE TABLE {{ klass_table }} (
             id {{ primary_key_sql }},
             name VARCHAR(255),
-            teacher_id {{ foreign_key_sql }}
+            teacher{{ adapter_suffix }}_id {{ foreign_key_sql }}
           )
         SQL
       end
     end
 
     class Enrollment{{ adapter_const_suffix }} < Granite::ORM::Base
-      primary id : Int32
+      primary id : Int64
       adapter {{ adapter_literal }}
       table_name "{{ enrollment_table }}"
       field name : String
@@ -125,8 +126,8 @@ end
         exec <<-SQL
           CREATE TABLE {{ enrollment_table }} (
             id {{ primary_key_sql }},
-            student_id {{ foreign_key_sql }},
-            klass_id {{ foreign_key_sql }}
+            student{{ adapter_suffix }}_id {{ foreign_key_sql }},
+            klass{{ adapter_suffix }}_id {{ foreign_key_sql }}
           )
         SQL
       end

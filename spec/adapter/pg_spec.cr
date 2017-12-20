@@ -85,36 +85,6 @@ describe Granite::Adapter::Pg do
     Role.clear
   end
 
-  describe "#belongs_to" do
-    it "provides a method to retrieve parent" do
-      parent = Parent.new
-      parent.name = "Parent 1"
-      parent.save
-
-      user = User.new
-      user.name = "Test User"
-      user.pass = "password"
-      user.parent_id = parent.id
-      user.save
-
-      user.parent.name.should eq "Parent 1"
-    end
-
-    it "provides a method to set parent" do
-      parent = Parent.new
-      parent.name = "Parent 1"
-      parent.save
-
-      user = User.new
-      user.name = "Test User"
-      user.pass = "password"
-      user.parent = parent
-      user.save
-
-      user.parent_id.should eq parent.id
-    end
-  end
-
   describe "#has_many" do
     it "provides a method to retrieve children" do
       parent = Parent.new

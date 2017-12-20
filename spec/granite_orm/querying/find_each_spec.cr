@@ -10,7 +10,7 @@ require "../../spec_helper"
           {{ model_constant }}.new(name: "role_#{i}").tap {|r| r.save }
         end.map(&.id)
 
-        found_roles = [] of Int32 | Nil
+        found_roles = [] of Int64 | Nil
         {{ model_constant }}.find_each do |model|
           found_roles << model.id
         end
@@ -33,7 +33,7 @@ require "../../spec_helper"
         created_models.shift
         created_models.shift
 
-        found_models = [] of Int32 | Nil
+        found_models = [] of Int64 | Nil
 
         {{ model_constant }}.find_each(offset: 2) do |model|
           found_models << model.id
@@ -49,7 +49,7 @@ require "../../spec_helper"
 
         looking_for_ids = created_models[0...5]
 
-        found_models = [] of Int32 | Nil
+        found_models = [] of Int64 | Nil
         {{ model_constant }}.find_each("WHERE id IN(#{looking_for_ids.join(",")})") do |model|
           found_models << model.id
         end
