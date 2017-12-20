@@ -75,27 +75,6 @@ describe Granite::Adapter::Sqlite do
     Comment.clear
   end
 
-  describe "#find_by" do
-    it "finds the comment by field" do
-      comment = Comment.new
-      comment.name = "Test Comment"
-      comment.save
-      name = comment.name
-      comment = Comment.find_by("name", name)
-      comment.should_not be_nil
-    end
-
-    it "finds the comment by field using a symbol" do
-      comment = Comment.new
-      comment.name = "Test Comment"
-      comment.save
-      name = comment.name
-      comment = Comment.find_by(:name, name)
-      comment.should_not be_nil
-    end
-  end
-
-
   describe "#belongs_to" do
     it "provides a method to retrieve parent" do
       comment_thread = CommentThread.new
