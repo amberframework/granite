@@ -182,18 +182,6 @@ describe Granite::Adapter::Mysql do
     end
   end
 
-  describe "#destroy" do
-    it "destroys a post" do
-      post = Post.new
-      post.name = "Test Post"
-      post.save
-      id = post.id
-      post.destroy
-      post = Post.find id
-      post.should be_nil
-    end
-  end
-
   describe "Site model with custom primary key" do
     describe "#find" do
       it "finds the site by custom_id" do

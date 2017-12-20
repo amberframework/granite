@@ -169,18 +169,6 @@ describe Granite::Adapter::Pg do
     end
   end
 
-  describe "#destroy" do
-    it "destroys a user" do
-      user = User.new
-      user.name = "Test User"
-      user.save
-      id = user.id
-      user.destroy
-      user = User.find id
-      user.should be_nil
-    end
-  end
-
   describe "Role model with custom primary key" do
     describe "#find" do
       it "finds the role by custom_id" do

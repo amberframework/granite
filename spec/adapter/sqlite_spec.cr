@@ -153,18 +153,6 @@ describe Granite::Adapter::Sqlite do
       star.comment_threads.size.should eq 2
     end
   end
-  
-  describe "#destroy" do
-    it "destroys a comment" do
-      comment = Comment.new
-      comment.name = "Test Comment"
-      comment.save
-      id = comment.id
-      comment.destroy
-      comment = Comment.find id
-      comment.should be_nil
-    end
-  end
 
   describe "Reaction model with custom primary key" do
     Spec.before_each do
