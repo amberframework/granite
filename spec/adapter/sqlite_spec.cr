@@ -75,19 +75,6 @@ describe Granite::Adapter::Sqlite do
     Comment.clear
   end
 
-  describe "#all" do
-  end
-
-  describe "#find" do
-    it "finds the comment by id" do
-      comment = Comment.new
-      comment.name = "Test Comment"
-      comment.save
-      comment = Comment.find comment.id
-      comment.should_not be_nil
-    end
-  end
-
   describe "#find_by" do
     it "finds the comment by field" do
       comment = Comment.new

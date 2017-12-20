@@ -159,17 +159,6 @@ describe Granite::Adapter::Pg do
     end
   end
 
-  describe "#find" do
-    it "finds the user by id" do
-      user = User.new
-      user.name = "Test User"
-      user.save
-      id = user.id
-      user = User.find id
-      user.should_not be_nil
-    end
-  end
-
   describe "#find_by" do
     it "finds the user by field" do
       user = User.new

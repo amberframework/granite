@@ -102,17 +102,6 @@ describe Granite::Adapter::Mysql do
     Site.clear
   end
 
-  describe "#find" do
-    it "finds the post by id" do
-      post = Post.new
-      post.name = "Test Post"
-      post.save
-      id = post.id
-      post = Post.find id
-      post.should_not be_nil
-    end
-  end
-
   describe "#find_by" do
     it "finds the post by field" do
       post = Post.new
