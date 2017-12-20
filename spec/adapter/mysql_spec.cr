@@ -102,54 +102,6 @@ describe Granite::Adapter::Mysql do
     Site.clear
   end
 
-  describe "#all" do
-    it "should get TEXT fields" do
-      post = Post.new
-      post.name = "Test Post"
-      post.body = "Post Body"
-      post.save
-
-      posts = Post.all
-      p1 = posts.first
-      p1.body.should eq "Post Body"
-    end
-  end
-
-  describe "#first" do
-    it "finds the first post" do
-      post1 = Post.new
-      post1.name = "Test Post"
-      post1.total = 10
-      post1.save
-      post2 = Post.new
-      post2.name = "Test Post 2"
-      post2.save
-      post = Post.first
-      post.not_nil!.id.should eq post1.id
-    end
-
-    it "supports a SQL clause" do
-      post1 = Post.new
-      post1.name = "Test Post"
-      post1.total = 10
-      post1.save
-      post2 = Post.new
-      post2.name = "Test Post 2"
-      post2.save
-      post = Post.first("ORDER BY posts.name DESC")
-      post.not_nil!.id.should eq post2.id
-    end
-
-    it "returns nil if no result" do
-      post1 = Post.new
-      post1.name = "Test Post"
-      post1.save
-      post = Post.first("WHERE posts.name = 'Test Post 2'")
-      post.should be nil
-    end
-    
-  end
-
   describe "#find" do
     it "finds the post by id" do
       post = Post.new

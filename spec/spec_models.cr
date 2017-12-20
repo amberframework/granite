@@ -44,7 +44,7 @@ end
         exec("DROP TABLE IF EXISTS {{ parent_table }};")
         exec("CREATE TABLE {{ parent_table }} (
           id {{ primary_key_sql }},
-          name VARCHAR(10)
+          name VARCHAR(100)
         );
         ")
       end
@@ -63,7 +63,7 @@ end
         exec("DROP TABLE IF EXISTS {{ teacher_table }};")
         exec("CREATE TABLE {{ teacher_table }} (
           id {{ primary_key_sql }},
-          name VARCHAR(10)
+          name VARCHAR(100)
         );
         ")
       end
@@ -82,7 +82,7 @@ end
         exec("DROP TABLE IF EXISTS {{ student_table }};")
         exec("CREATE TABLE {{ student_table }} (
           id {{ primary_key_sql }},
-          name VARCHAR(10),
+          name VARCHAR(100),
           parent_id {{ foreign_key_sql }}
         );
         ")
