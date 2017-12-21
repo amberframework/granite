@@ -86,17 +86,6 @@ describe Granite::Adapter::Pg do
   end
 
   describe "Role model with custom primary key" do
-    describe "#find" do
-      it "finds the role by custom_id" do
-        role = Role.new
-        role.name = "Test Role"
-        role.save
-        pk = role.custom_id
-        role = Role.find pk
-        role.should_not be_nil
-      end
-    end
-
     describe "#save" do
       it "updates an existing role" do
         role = Role.new

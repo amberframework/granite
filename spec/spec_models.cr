@@ -14,10 +14,7 @@ end
     teacher_table = "teacher_#{ adapter_literal }s".id
     klass_table = "klass_#{ adapter_literal }s".id
     enrollment_table = "enrollment_#{ adapter_literal }s".id
-
-    parent_class = "Parent#{ adapter_const_suffix }".id
-    student_class = "Student#{ adapter_const_suffix }".id
-    teacher_class = "Teacher#{ adapter_const_suffix }".id
+    school_table = "school_#{ adapter_literal }s".id
 
     if adapter == "pg"
       primary_key_sql = "BIGSERIAL PRIMARY KEY".id
@@ -136,11 +133,30 @@ end
       end
     end
 
+    class School{{ adapter_const_suffix }} < Granite::ORM::Base
+      adapter {{ adapter_literal }}
+      primary custom_id : Int64
+      field name : String
+
+      table_name "{{ school_table }}"
+
+      def self.drop_and_create
+        exec "DROP TABLE IF EXISTS {{ school_table }}"
+        exec <<-SQL
+          CREATE TABLE {{ school_table }} (
+            custom_id {{ primary_key_sql }},
+            name VARCHAR(255)
+          )
+        SQL
+      end
+    end
+
     @@model_classes << Parent{{ adapter_const_suffix }}
     @@model_classes << Teacher{{ adapter_const_suffix }}
     @@model_classes << Student{{ adapter_const_suffix }}
     @@model_classes << Klass{{ adapter_const_suffix }}
     @@model_classes << Enrollment{{ adapter_const_suffix }}
+    @@model_classes << School{{ adapter_const_suffix }}
 
     Spec.before_each do
       Parent{{ adapter_const_suffix }}.clear
@@ -148,6 +164,7 @@ end
       Student{{ adapter_const_suffix }}.clear
       Klass{{ adapter_const_suffix }}.clear
       Enrollment{{ adapter_const_suffix }}.clear
+      School{{ adapter_const_suffix }}.clear
     end
   end
 

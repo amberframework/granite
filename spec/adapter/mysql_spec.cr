@@ -103,17 +103,6 @@ describe Granite::Adapter::Mysql do
   end
 
   describe "Site model with custom primary key" do
-    describe "#find" do
-      it "finds the site by custom_id" do
-        site = Site.new
-        site.name = "Test Site"
-        site.save
-        pk = site.custom_id
-        site = Site.find pk
-        site.should_not be_nil
-      end
-    end
-
     describe "#save" do
       it "updates an existing site" do
         site = Site.new

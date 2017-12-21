@@ -80,17 +80,6 @@ describe Granite::Adapter::Sqlite do
       Reaction.clear
     end
 
-    describe "#find" do
-      it "finds the reaction by custom_id" do
-        reaction = Reaction.new
-        reaction.emote = ":test:"
-        reaction.save
-        pk = reaction.custom_id
-        reaction = Reaction.find pk
-        reaction.should_not be_nil
-      end
-    end
-
     describe "#save" do
       it "updates an existing reaction" do
         reaction = Reaction.new
