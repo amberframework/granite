@@ -86,20 +86,6 @@ describe Granite::Adapter::Pg do
   end
 
   describe "Role model with custom primary key" do
-    describe "#save" do
-      it "updates an existing role" do
-        role = Role.new
-        role.name = "Test Role"
-        role.save
-        role.name = "Test Role 2"
-        role.save
-        role = Role.find 1
-        if role
-          role.name.should eq "Test Role 2"
-        end
-      end
-    end
-
     describe "#destroy" do
       it "destroys a role" do
         role = Role.new

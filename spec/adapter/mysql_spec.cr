@@ -103,20 +103,6 @@ describe Granite::Adapter::Mysql do
   end
 
   describe "Site model with custom primary key" do
-    describe "#save" do
-      it "updates an existing site" do
-        site = Site.new
-        site.name = "Test Site"
-        site.save
-        site.name = "Test Site 2"
-        site.save
-        site = Site.find 1
-        if site
-          site.name.should eq "Test Site 2"
-        end
-      end
-    end
-
     describe "#destroy" do
       it "destroys a site" do
         site = Site.new

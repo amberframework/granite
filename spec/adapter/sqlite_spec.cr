@@ -80,20 +80,6 @@ describe Granite::Adapter::Sqlite do
       Reaction.clear
     end
 
-    describe "#save" do
-      it "updates an existing reaction" do
-        reaction = Reaction.new
-        reaction.emote = ":test:"
-        reaction.save
-        reaction.emote = ":test2:"
-        reaction.save
-        reaction = Reaction.find 1
-        if reaction
-          reaction.emote.should eq ":test2:"
-        end
-      end
-    end
-
     describe "#destroy" do
       it "destroys a reaction" do
         reaction = Reaction.new
