@@ -9,7 +9,7 @@ require "../../spec_helper"
         model = {{ model_constant }}.new
         model.name = "Test Comment"
         model.save
-        model.id.should eq 1
+        model.id.should_not be_nil
       end
 
       it "updates an existing object" do
