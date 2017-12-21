@@ -3,7 +3,7 @@ require "../../spec_helper"
 # TODO sqlite support for timestamps
 {% for adapter in ["pg", "mysql"] %}
   {%
-    parent_constant = "GraniteExample::Parent#{adapter.camelcase.id}".id
+    parent_constant = "Parent#{adapter.camelcase.id}".id
 
     # TODO mysql timestamp support should work better
     if adapter == "pg"

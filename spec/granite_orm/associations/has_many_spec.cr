@@ -2,10 +2,10 @@ require "../../spec_helper"
 
 {% for adapter in GraniteExample::ADAPTERS %}
   {%
-    teacher_constant    = "GraniteExample::Teacher#{adapter.camelcase.id}".id
-    klass_constant      = "GraniteExample::Klass#{adapter.camelcase.id}".id
-    student_constant    = "GraniteExample::Student#{adapter.camelcase.id}".id
-    enrollment_constant = "GraniteExample::Enrollment#{adapter.camelcase.id}".id
+    teacher_constant    = "Teacher#{adapter.camelcase.id}".id
+    klass_constant      = "Klass#{adapter.camelcase.id}".id
+    student_constant    = "Student#{adapter.camelcase.id}".id
+    enrollment_constant = "Enrollment#{adapter.camelcase.id}".id
 
     adapter_suffix = "_#{adapter.id}".id
   %}

@@ -1,7 +1,7 @@
 require "../../spec_helper"
 
 {% for adapter in GraniteExample::ADAPTERS %}
-  {% model_constant = "GraniteExample::Parent#{adapter.camelcase.id}".id %}
+  {% model_constant = "Parent#{adapter.camelcase.id}".id %}
 
   describe "{{ adapter.id }} #first" do
     it "finds the first object" do

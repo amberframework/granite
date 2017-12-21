@@ -2,9 +2,9 @@ require "../../spec_helper"
 
 {% for adapter in GraniteExample::ADAPTERS %}
   {%
-    parent_constant = "GraniteExample::Parent#{adapter.camelcase.id}".id
-    school_constant = "GraniteExample::School#{adapter.camelcase.id}".id
-    nation_county_constant = "GraniteExample::Nation::County#{adapter.camelcase.id}".id
+    parent_constant = "Parent#{adapter.camelcase.id}".id
+    school_constant = "School#{adapter.camelcase.id}".id
+    nation_county_constant = "Nation::County#{adapter.camelcase.id}".id
   %}
 
   describe "{{ adapter.id }} #destroy" do

@@ -22,29 +22,31 @@ end
       foreign_key_sql = "BIGINT".id
       created_at_sql = "created_at TIMESTAMP,".id
       updated_at_sql = "updated_at TIMESTAMP,".id
+      timestamp_fields = "timestamps".id
     elsif adapter == "mysql"
       primary_key_sql = "BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY".id
       foreign_key_sql = "BIGINT".id
       created_at_sql  = "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,".id
       updated_at_sql  = "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,".id
+      timestamp_fields = "timestamps".id
     elsif adapter == "sqlite"
       primary_key_sql = "INTEGER NOT NULL PRIMARY KEY".id
       foreign_key_sql = "INTEGER".id
       created_at_sql = "".id
       updated_at_sql = "".id
+      timestamp_fields = "".id
     end
   %}
 
   require "../src/adapter/{{ adapter_literal }}"
 
-  module GraniteExample
     class Parent{{ adapter_const_suffix }} < Granite::ORM::Base
       primary id : Int64
       adapter {{ adapter_literal }}
       table_name "{{ parent_table }}"
 
       field name : String
-      timestamps
+      {{ timestamp_fields }}
 
       has_many :student_{{ adapter_literal }}s
 
@@ -179,13 +181,15 @@ end
       end
     end
 
-    @@model_classes << Parent{{ adapter_const_suffix }}
-    @@model_classes << Teacher{{ adapter_const_suffix }}
-    @@model_classes << Student{{ adapter_const_suffix }}
-    @@model_classes << Klass{{ adapter_const_suffix }}
-    @@model_classes << Enrollment{{ adapter_const_suffix }}
-    @@model_classes << School{{ adapter_const_suffix }}
-    @@model_classes << Nation::County{{ adapter_const_suffix }}
+    module GraniteExample
+      @@model_classes << Parent{{ adapter_const_suffix }}
+      @@model_classes << Teacher{{ adapter_const_suffix }}
+      @@model_classes << Student{{ adapter_const_suffix }}
+      @@model_classes << Klass{{ adapter_const_suffix }}
+      @@model_classes << Enrollment{{ adapter_const_suffix }}
+      @@model_classes << School{{ adapter_const_suffix }}
+      @@model_classes << Nation::County{{ adapter_const_suffix }}
+    end
 
     Spec.before_each do
       Parent{{ adapter_const_suffix }}.clear
@@ -196,6 +200,5 @@ end
       School{{ adapter_const_suffix }}.clear
       Nation::County{{ adapter_const_suffix }}.clear
     end
-  end
 
 {% end %}
