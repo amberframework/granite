@@ -85,20 +85,6 @@ describe Granite::Adapter::Pg do
     Role.clear
   end
 
-  describe "Role model with custom primary key" do
-    describe "#destroy" do
-      it "destroys a role" do
-        role = Role.new
-        role.name = "Test Role"
-        role.save
-        pk = role.custom_id
-        role.destroy
-        role = Role.find pk
-        role.should be_nil
-      end
-    end
-  end
-
   describe "timestamps" do
     it "consistently uses UTC for created_at" do
       role = Parent.new(name: "test").tap(&.save)

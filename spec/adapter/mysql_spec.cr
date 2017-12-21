@@ -102,20 +102,6 @@ describe Granite::Adapter::Mysql do
     Site.clear
   end
 
-  describe "Site model with custom primary key" do
-    describe "#destroy" do
-      it "destroys a site" do
-        site = Site.new
-        site.name = "Test Site"
-        site.save
-        pk = site.custom_id
-        site.destroy
-        site = Site.find pk
-        site.should be_nil
-      end
-    end
-  end
-
   describe "Chat::Room using module" do
     Spec.before_each do
       Chat::Room.clear
