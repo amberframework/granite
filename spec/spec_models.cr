@@ -20,12 +20,18 @@ end
     if adapter == "pg"
       primary_key_sql = "BIGSERIAL PRIMARY KEY".id
       foreign_key_sql = "BIGINT".id
+      created_at_sql = "created_at TIMESTAMP,".id
+      updated_at_sql = "updated_at TIMESTAMP,".id
     elsif adapter == "mysql"
       primary_key_sql = "BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY".id
       foreign_key_sql = "BIGINT".id
+      created_at_sql  = "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,".id
+      updated_at_sql  = "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,".id
     elsif adapter == "sqlite"
       primary_key_sql = "INTEGER NOT NULL PRIMARY KEY".id
       foreign_key_sql = "INTEGER".id
+      created_at_sql = "".id
+      updated_at_sql = "".id
     end
   %}
 
@@ -38,6 +44,7 @@ end
       table_name "{{ parent_table }}"
 
       field name : String
+      timestamps
 
       has_many :student_{{ adapter_literal }}s
 
@@ -45,6 +52,8 @@ end
         exec("DROP TABLE IF EXISTS {{ parent_table }};")
         exec("CREATE TABLE {{ parent_table }} (
           id {{ primary_key_sql }},
+          {{ created_at_sql }}
+          {{ updated_at_sql }}
           name VARCHAR(100)
         );
         ")
