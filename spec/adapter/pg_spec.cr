@@ -85,37 +85,6 @@ describe Granite::Adapter::Pg do
     Role.clear
   end
 
-  describe "#has_many, through:" do
-    it "provides a method to retrieve children through another table" do
-      parent = Parent.new
-      parent.name = "Parent 1"
-      parent.save
-
-      child = Child.new
-      child.name = "Test Child"
-      child.save
-
-      user = User.new
-      user.name = "Test User 1"
-      user.pass = "password"
-      user.parent = parent
-      user.child = child
-      user.save
-
-      user = User.new
-      user.name = "Test User 2"
-      user.parent = parent
-      user.child = child
-      user.save
-      user = User.new
-      user.name = "Test User 3"
-      user.save
-
-      parent.childs.size.should eq 2
-      child.parents.size.should eq 2
-    end
-  end
-
   describe "Role model with custom primary key" do
     describe "#find" do
       it "finds the role by custom_id" do

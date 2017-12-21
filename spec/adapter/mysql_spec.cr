@@ -102,36 +102,6 @@ describe Granite::Adapter::Mysql do
     Site.clear
   end
 
-  describe "#has_many, through:" do
-    it "provides a method to retrieve children through another table" do
-      owner = Owner.new
-      owner.name = "Test Owner"
-      owner.save
-
-      group = Group.new
-      group.name = "Test Group"
-      group.save
-
-      post = Post.new
-      post.name = "Test Post 1"
-      post.owner = owner
-      post.group = group
-      post.save
-      post = Post.new
-      post.name = "Test Post 2"
-      post.owner = owner
-      post.group = group
-      post.save
-      post = Post.new
-      post.name = "Test Post 3"
-      post.owner = owner
-      post.save
-
-      owner.groups.size.should eq 2
-      group.posts.size.should eq 2
-    end
-  end
-
   describe "Site model with custom primary key" do
     describe "#find" do
       it "finds the site by custom_id" do

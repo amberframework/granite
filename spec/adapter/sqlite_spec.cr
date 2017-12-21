@@ -75,35 +75,6 @@ describe Granite::Adapter::Sqlite do
     Comment.clear
   end
 
-  describe "#has_many, through:" do
-    it "provides a method to retrieve children through another table" do
-      comment_thread = CommentThread.new
-      comment_thread.name = "Test Thread"
-      comment_thread.save
-
-      star = Star.new
-      star.name = "Test Star"
-      star.save
-
-      comment = Comment.new
-      comment.name = "Test Comment 1"
-      comment.comment_thread = comment_thread
-      comment.star = star
-      comment.save
-      comment = Comment.new
-      comment.name = "Test Comment 2"
-      comment.comment_thread = comment_thread
-      comment.star = star
-      comment.save
-      comment = Comment.new
-      comment.name = "Test Comment 3"
-      comment.save
-
-      comment_thread.stars.size.should eq 2
-      star.comment_threads.size.should eq 2
-    end
-  end
-
   describe "Reaction model with custom primary key" do
     Spec.before_each do
       Reaction.clear

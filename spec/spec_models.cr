@@ -41,6 +41,8 @@ end
 
       field name : String
 
+      has_many :student_{{ adapter_literal }}s
+
       def self.drop_and_create
         exec("DROP TABLE IF EXISTS {{ parent_table }};")
         exec("CREATE TABLE {{ parent_table }} (
@@ -77,7 +79,8 @@ end
 
       field name : String
 
-      has_many :enrollment_{{ adapter_literal }}
+      has_many :enrollment_{{ adapter_literal }}s
+      has_many :klass_{{ adapter_literal }}s, through: :enrollment_{{ adapter_literal }}s
 
       def self.drop_and_create
         exec("DROP TABLE IF EXISTS {{ student_table }};")
@@ -98,7 +101,8 @@ end
 
       belongs_to :teacher_{{ adapter_literal }}
 
-      has_many :enrollment_{{ adapter_literal }}
+      has_many :enrollment_{{ adapter_literal }}s
+      has_many :student_{{ adapter_literal }}s, through: :enrollment_{{ adapter_literal }}s
 
       def self.drop_and_create
         exec "DROP TABLE IF EXISTS {{ klass_table }}"
@@ -116,7 +120,6 @@ end
       primary id : Int64
       adapter {{ adapter_literal }}
       table_name "{{ enrollment_table }}"
-      field name : String
 
       belongs_to :student_{{ adapter_literal }}
       belongs_to :klass_{{ adapter_literal }}
