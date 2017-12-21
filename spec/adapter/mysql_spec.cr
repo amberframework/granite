@@ -102,24 +102,6 @@ describe Granite::Adapter::Mysql do
     Site.clear
   end
 
-  describe "Chat::Room using module" do
-    Spec.before_each do
-      Chat::Room.clear
-    end
-
-    describe "#destroy" do
-      it "destroys a Chat::Room" do
-        chat_room = Chat::Room.new
-        chat_room.name = "Test Site"
-        chat_room.save
-        pk = chat_room.id
-        chat_room.destroy
-        chat_room = Site.find pk
-        chat_room.should be_nil
-      end
-    end
-  end
-
   describe "timestamps" do
     it "uses UTC for created_at" do
       role = Owner.new(name: "test").tap(&.save)

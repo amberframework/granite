@@ -4,6 +4,7 @@ require "../../spec_helper"
   {%
     parent_constant = "GraniteExample::Parent#{adapter.camelcase.id}".id
     school_constant = "GraniteExample::School#{adapter.camelcase.id}".id
+    nation_county_constant = "GraniteExample::Nation::County#{adapter.camelcase.id}".id
   %}
 
   describe "{{ adapter.id }} #destroy" do
@@ -28,6 +29,19 @@ require "../../spec_helper"
 
         found_school = {{ school_constant }}.find primary_key
         found_school.should be_nil
+      end
+    end
+
+    describe "with a modulized model" do
+      it "destroys an object" do
+        county = {{ nation_county_constant }}.new
+        county.name = "Test County"
+        county.save
+        primary_key = county.id
+        county.destroy
+
+        found_county = {{ nation_county_constant }}.find primary_key
+        found_county.should be_nil
       end
     end
   end
