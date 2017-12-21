@@ -8,7 +8,7 @@ require "../../spec_helper"
     adapter_suffix = "_#{adapter.id}".id
   %}
 
-  describe "Belongs_to with {{ adapter.id }}" do
+  describe "{{ adapter.id }} belongs_to" do
     it "provides a getter for the foreign entity" do
       teacher = {{ teacher_constant }}.new
       teacher.name = "Test teacher"

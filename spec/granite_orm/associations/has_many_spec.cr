@@ -10,7 +10,7 @@ require "../../spec_helper"
     adapter_suffix = "_#{adapter.id}".id
   %}
 
-  describe "has_many with {{ adapter.id }}" do
+  describe "{{ adapter.id }} has_many" do
     it "provides a method to retrieve associated objects" do
       teacher = {{ teacher_constant }}.new
       teacher.name = "test teacher"
