@@ -107,17 +107,6 @@ describe Granite::Adapter::Mysql do
       Chat::Room.clear
     end
 
-    describe "#find" do
-      it "finds the Chat::Room" do
-        chat_room = Chat::Room.new
-        chat_room.name = "Test Room"
-        chat_room.save
-        pk = chat_room.id
-        chat_room = Chat::Room.find pk
-        chat_room.should_not be_nil
-      end
-    end
-
     describe "#save" do
       it "updates an existing Chat::Room" do
         chat_room = Chat::Room.new
