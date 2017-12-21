@@ -107,20 +107,6 @@ describe Granite::Adapter::Mysql do
       Chat::Room.clear
     end
 
-    describe "#save" do
-      it "updates an existing Chat::Room" do
-        chat_room = Chat::Room.new
-        chat_room.name = "Test Site"
-        chat_room.save
-        chat_room.name = "Test Site 2"
-        chat_room.save
-        chat_room = Chat::Room.find 1
-        if chat_room
-          chat_room.name.should eq "Test Site 2"
-        end
-      end
-    end
-
     describe "#destroy" do
       it "destroys a Chat::Room" do
         chat_room = Chat::Room.new

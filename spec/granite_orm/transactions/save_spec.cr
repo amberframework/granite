@@ -4,6 +4,7 @@ require "../../spec_helper"
   {%
     parent_constant = "GraniteExample::Parent#{adapter.camelcase.id}".id
     school_constant = "GraniteExample::School#{adapter.camelcase.id}".id
+    nation_county_constant = "GraniteExample::Nation::County#{adapter.camelcase.id}".id
   %}
 
   describe "{{ adapter.id }} #save" do
@@ -52,6 +53,32 @@ require "../../spec_helper"
         found_school = {{ school_constant }}.find primary_key
         found_school.not_nil!.custom_id.should eq primary_key
         found_school.not_nil!.name.should eq new_name
+      end
+    end
+
+    describe "with a modulized model" do
+      it "creates a new object" do
+        county = {{ nation_county_constant }}.new
+        county.name = "Test School"
+        county.save
+        county.id.should_not be_nil
+      end
+
+      it "updates an existing object" do
+        old_name = "Test County 1"
+        new_name = "Test County 2"
+
+        county = {{ nation_county_constant }}.new
+        county.name = old_name
+        county.save
+
+        primary_key = county.id
+
+        county.name = new_name
+        county.save
+
+        found_county = {{ nation_county_constant }}.find primary_key
+        found_county.not_nil!.name.should eq new_name
       end
     end
   end
