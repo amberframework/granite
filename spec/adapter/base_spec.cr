@@ -1,5 +1,4 @@
 require "../spec_helper"
-require "../src/adapter/base"
 
 describe Granite::Adapter::Base do
   describe "#env" do
