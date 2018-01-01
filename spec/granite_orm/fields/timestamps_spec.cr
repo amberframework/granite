@@ -43,11 +43,7 @@ require "../../spec_helper"
       original_timestamp = parent.created_at.not_nil!
       read_timestamp = found_parent.created_at.not_nil!
 
-      {% if adapter == "mysql" %}
-        read_timestamp = Time.new read_timestamp.ticks, kind: Time::Kind::Utc
-      {% end %}
-
-      original_timestamp.epoch_f.to_i.should eq read_timestamp.epoch
+      original_timestamp.epoch.should eq read_timestamp.epoch
     end
 
     it "truncates the subsecond parts of updated_at" do
@@ -57,11 +53,7 @@ require "../../spec_helper"
       original_timestamp = parent.updated_at.not_nil!
       read_timestamp = found_parent.updated_at.not_nil!
 
-      {% if adapter == "mysql" %}
-        read_timestamp = Time.new read_timestamp.ticks, kind: Time::Kind::Utc
-      {% end %}
-
-      original_timestamp.epoch_f.to_i.should eq read_timestamp.epoch
+      original_timestamp.epoch.should eq read_timestamp.epoch
     end
   end
 {% end %}
