@@ -88,7 +88,7 @@ module Granite::ORM::Fields
         {% for name, type in FIELDS %}
           %field, %value = "{{name.id}}", {{name.id}}
           {% if type.id == Time.id %}
-            json.field %field, %value.try(&.to_s(%F %X))
+            json.field %field, %value.try(&.to_s("%F %X"))
           {% elsif type.id == Slice.id %}
             json.field %field, %value.id.try(&.to_s(""))
           {% else %}
