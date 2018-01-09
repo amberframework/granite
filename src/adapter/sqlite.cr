@@ -5,8 +5,12 @@ require "sqlite3"
 class Granite::Adapter::Sqlite < Granite::Adapter::Base
   # remove all rows from a table and reset the counter on the id.
   def clear(table_name)
+    statement = "DELETE FROM #{table_name}"
+
+    log statement
+
     open do |db|
-      db.exec "DELETE FROM #{table_name}"
+      db.exec statement
     end
   end
 
@@ -16,9 +20,12 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
   def select(table_name, fields, clause = "", params = [] of DB::Any, &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map { |name| "#{table_name}.#{name}" }.join(",")
+      stmt << fields.map { |name| "#{table_name}.#{name}" }.join(", ")
       stmt << " FROM #{table_name} #{clause}"
     end
+
+    log statement, params
+
     open do |db|
       db.query statement, params do |rs|
         yield rs
@@ -30,10 +37,13 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
   def select_one(table_name, fields, field, id, &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map { |name| "#{table_name}.#{name}" }.join(",")
+      stmt << fields.map { |name| "#{table_name}.#{name}" }.join(", ")
       stmt << " FROM #{table_name}"
       stmt << " WHERE #{field}=:id LIMIT 1"
     end
+
+    log statement, id
+
     open do |db|
       db.query_one? statement, id do |rs|
         yield rs
@@ -44,11 +54,14 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
   def insert(table_name, fields, params)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{table_name} ("
-      stmt << fields.map { |name| "#{name}" }.join(",")
+      stmt << fields.map { |name| "#{name}" }.join(", ")
       stmt << ") VALUES ("
-      stmt << fields.map { |name| "?" }.join(",")
+      stmt << fields.map { |name| "?" }.join(", ")
       stmt << ")"
     end
+
+    log statement, params
+
     open do |db|
       db.exec statement, params
       return db.scalar(last_val()).as(Int64)
@@ -63,9 +76,12 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
   def update(table_name, primary_name, fields, params)
     statement = String.build do |stmt|
       stmt << "UPDATE #{table_name} SET "
-      stmt << fields.map { |name| "#{name}=?" }.join(",")
+      stmt << fields.map { |name| "#{name}=?" }.join(", ")
       stmt << " WHERE #{primary_name}=?"
     end
+
+    log statement, params
+
     open do |db|
       db.exec statement, params
     end
@@ -73,8 +89,12 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
 
   # This will delete a row from the database.
   def delete(table_name, primary_name, value)
+    statement = "DELETE FROM #{table_name} WHERE #{primary_name}=?"
+
+    log statement, value
+
     open do |db|
-      db.exec "DELETE FROM #{table_name} WHERE #{primary_name}=?", value
+      db.exec statement, value
     end
   end
 end
