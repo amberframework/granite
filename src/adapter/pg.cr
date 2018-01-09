@@ -6,7 +6,9 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
   # remove all rows from a table and reset the counter on the id.
   def clear(table_name)
     statement = "DELETE FROM #{table_name}"
+
     log statement
+
     open do |db|
       db.exec statement
     end
@@ -24,7 +26,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       stmt << " FROM #{table_name} #{clause}"
     end
 
-    log statement
+    log statement, params
 
     open do |db|
       db.query statement, params do |rs|
@@ -42,7 +44,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       stmt << " WHERE #{field}=$1 LIMIT 1"
     end
 
-    log statement
+    log statement, id
 
     open do |db|
       db.query_one? statement, id do |rs|
@@ -54,7 +56,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
   def insert(table_name, fields, params)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{table_name} ("
-      stmt << fields.map { |name| "#{name}" }.join(",")
+      stmt << fields.map { |name| "#{name}" }.join(", ")
       stmt << ") VALUES ("
       stmt << fields.map { |name| "$#{fields.index(name).not_nil! + 1}" }.join(", ")
       stmt << ")"
@@ -91,7 +93,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
   def delete(table_name, primary_name, value)
     statement = "DELETE FROM #{table_name} WHERE #{primary_name}=$1"
 
-    log statement
+    log statement, value
 
     open do |db|
       db.exec statement, value
