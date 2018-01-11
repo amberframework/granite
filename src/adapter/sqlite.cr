@@ -41,7 +41,7 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
     end
   end
 
-  def insert(table_name, fields, params)
+  def insert(table_name, primary_name, fields, params)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{table_name} ("
       stmt << fields.map { |name| "#{name}" }.join(",")
