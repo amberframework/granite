@@ -31,6 +31,10 @@ abstract class Granite::Adapter::Base
     yield @database
   end
 
+  def log(query : String, params = [] of String) : Nil
+    Granite::ORM.settings.logger.info "#{query}: #{params}"
+  end
+
   # remove all rows from a table and reset the counter on the id.
   abstract def clear(table_name)
 

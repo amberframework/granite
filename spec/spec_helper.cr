@@ -14,6 +14,8 @@ end
 require "../src/granite_orm"
 require "./spec_models"
 
+Granite::ORM.settings.logger = ::Logger.new(nil)
+
 GraniteExample.model_classes.each do |model|
   model.drop_and_create
 end
