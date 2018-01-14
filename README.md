@@ -3,8 +3,12 @@
 [Amber](https://github.com/Amber-Crystal/amber) is a web framework written in
 the [Crystal](https://github.com/manastech/crystal) language.
 
-This project is to provide an ORM Model in Crystal.
+This project is to provide an ORM in Crystal.
 
+  <p align="center">
+    <a href="https://travis-ci.org/amberframework/granite-orm"><img src="https://img.shields.io/travis/amberframework/granite-orm.svg?maxAge=360"></a>
+  </p>
+  
 ## Installation
 
 Add this library to your projects dependencies along with the driver in
