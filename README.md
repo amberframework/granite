@@ -5,10 +5,8 @@ the [Crystal](https://github.com/manastech/crystal) language.
 
 This project is to provide an ORM in Crystal.
 
-  <p align="center">
-    <a href="https://travis-ci.org/amberframework/granite-orm"><img src="https://img.shields.io/travis/amberframework/granite-orm.svg?maxAge=360"></a>
-  </p>
-  
+[![Build Status](https://img.shields.io/travis/amberframework/granite-orm.svg?maxAge=360)](https://travis-ci.org/amberframework/granite-orm)
+
 ## Installation
 
 Add this library to your projects dependencies along with the driver in
