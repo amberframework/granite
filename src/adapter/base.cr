@@ -1,3 +1,4 @@
+require "colorize"
 require "../granite_orm"
 require "db"
 
@@ -5,6 +6,12 @@ require "db"
 # objects to perform actions against a specific database.  Each adapter needs
 # to implement these methods.
 abstract class Granite::Adapter::Base
+  DATABASE_YML = "config/database.yml"
+  SQL_KEYWORDS_REGEX = %r(SELECT|FROM|WHERE|LIMIT|INNER|VALUES|ORDER|UPDATE|INSERT|DELETE|DROP|
+  LEFT|RIGHT|GROUP|HAVING|GROUP|BY|CREATE|EXISTS)
+
+  Colorize.enabled = Granite::ORM.settings.colorize?
+
   property database : DB::Database
 
   def initialize(adapter : String)
@@ -14,8 +21,6 @@ abstract class Granite::Adapter::Base
       raise "database url needs to be set in the config/database.yml or DATABASE_URL environment variable"
     end
   end
-
-  DATABASE_YML = "config/database.yml"
 
   def settings(adapter : String)
     if File.exists?(DATABASE_YML) &&
@@ -32,7 +37,8 @@ abstract class Granite::Adapter::Base
   end
 
   def log(query : String, params = [] of String) : Nil
-    Granite::ORM.settings.logger.info "#{query}: #{params}"
+    Granite::ORM.settings.logger.info query.gsub(SQL_KEYWORDS_REGEX, "\\0".colorize(:white).mode(:bold).to_s )
+    Granite::ORM.settings.logger.info params
   end
 
   # remove all rows from a table and reset the counter on the id.
