@@ -113,7 +113,7 @@ describe Granite::ORM::Base do
   describe "validating fields" do
     context "without a name" do
       it "is not valid" do
-        s = Website.new(name: "")
+        s = WebSite.new(name: "")
 
         s.valid?.should eq false
         s.errors.should contain "Name cannot be blank"
