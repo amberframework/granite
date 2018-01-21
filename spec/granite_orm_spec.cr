@@ -128,7 +128,7 @@ describe Granite::ORM::Base do
 
     it "empty errors" do
       s = WebSite.new(name: "Hacker News")
-      s.errors.should eq []
+      s.errors.empty?.should eq true
     end
   end
 end
