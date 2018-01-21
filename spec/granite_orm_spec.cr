@@ -110,7 +110,7 @@ describe Granite::ORM::Base do
     end
   end
 
-  describe "validating fields"
+  describe "validating fields" do
     context "without a name" do
       it "is not valid" do
         s = Website.new(name: "")
