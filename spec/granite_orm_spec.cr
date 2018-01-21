@@ -108,6 +108,7 @@ describe Granite::ORM::Base do
       s.custom_id = 3
       s.to_json.should eq %({"custom_id":3,"name":"Hacker News"})
     end
+  end
 
   describe "validate fields" do
     it "invalid field" do
