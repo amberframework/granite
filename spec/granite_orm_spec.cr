@@ -25,7 +25,7 @@ class WebSite < Granite::ORM::Base
   field name : String
 
   validate :name, "Name cannot be blank" do
-    name.blank?
+    !name.blank?
   end
 end
 
@@ -128,7 +128,7 @@ describe Granite::ORM::Base do
 
     it "empty errors" do
       s = WebSite.new(name: "Hacker News")
-      s.errors.should eq [""]
+      s.errors.should eq []
     end
   end
 end
