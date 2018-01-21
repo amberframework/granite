@@ -25,7 +25,7 @@ class WebSite < Granite::ORM::Base
   field name : String
 
   validate :name, "Name cannot be blank" do
-    @name.blank?
+    name.blank?
   end
 end
 
