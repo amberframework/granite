@@ -6,10 +6,8 @@ module Granite::ORM::Validators
   macro included
     macro inherited
       @@validators = Array({field: Symbol, message: String, block: Proc(Bool)}).new
+      def validate!;end
     end
-  end
-
-  def validate!
   end
 
   macro validate(message)
