@@ -10,14 +10,24 @@ module Granite::ORM::Validators
   end
 
   macro validate(message)
-    @@validators << {field: :base, message: {{message}}, block: ->(s : self){{{yield}}}}
+    def validate!
+      previous_def
+      @@validators << {field: :base, message: {{message}}, block: ->(s : self){{{yield}}}}
+    end
   end
 
   macro validate(field, message)
-    @@validators << {field: {{field}}, message: {{message}}, block: ->(s : self){{{yield}}}}
+    def validate!
+      previous_def
+      @@validators << {field: {{field}}, message: {{message}}, block: ->(s : self){{{yield}}}}
+    end
+  end
+
+  def validate!
   end
 
   def valid?
+    validate!
     @@validators.each do |validator|
       unless validator[:block].call(self)
         errors << Error.new(validator[:field], validator[:message])
