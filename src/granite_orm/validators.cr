@@ -9,6 +9,9 @@ module Granite::ORM::Validators
     end
   end
 
+  def validate!
+  end
+
   macro validate(message)
     def validate!
       previous_def
@@ -21,9 +24,6 @@ module Granite::ORM::Validators
       previous_def
       @@validators << {field: {{field}}, message: {{message}}, block: ->{{{yield}}}}
     end
-  end
-
-  def validate!
   end
 
   def valid?
