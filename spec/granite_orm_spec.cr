@@ -25,7 +25,7 @@ class WebSite < Granite::ORM::Base
   field name : String
 
   validate :name, "Name cannot be blank" do
-    !name.not_nil!.blank?
+    !name.nil? && name != ""
   end
 end
 
@@ -123,7 +123,7 @@ describe Granite::ORM::Base do
     context "when name is present" do
       it "is valid" do
         s = WebSite.new(name: "Hacker News")
-        
+
         s.valid?.should eq true
         s.errors.empty?.should eq true
       end
