@@ -116,7 +116,7 @@ describe Granite::ORM::Base do
         s = WebSite.new(name: "")
 
         s.valid?.should eq false
-        s.errors.first.should contain "Name cannot be blank"
+        s.errors.first.message.should eq "Name cannot be blank"
       end 
     end
 
