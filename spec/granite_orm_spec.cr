@@ -24,10 +24,8 @@ class WebSite < Granite::ORM::Base
   primary custom_id : Int32
   field name : String
 
-  def initialize
-    validate :name, "Name cannot be blank" do
-      !name.blank?
-    end
+  validate :name, "Name cannot be blank" do
+    !@name.blank?
   end
 end
 
