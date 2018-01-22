@@ -10,11 +10,11 @@ module Granite::ORM::Validators
   end
 
   macro validate(message)
-    @@validators << {field: :base, message: {{message}}, block: ->(s : self){{{yield}}}}
+    @@validators << {field: :base, message: {{message}}, block: ->(s : self){{{yield self}}}}
   end
 
   macro validate(field, message)
-    @@validators << {field: {{field}}, message: {{message}}, block: ->(s : self){{{yield}}}}
+    @@validators << {field: {{field}}, message: {{message}}, block: ->(s : self){{{yield self}}}}
   end
 
   def valid?
