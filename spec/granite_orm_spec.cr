@@ -24,8 +24,8 @@ class WebSite < Granite::ORM::Base
   primary custom_id : Int32
   field name : String
 
-  validate :name, "Name cannot be blank" do
-    !name.blank?
+  validate :name, "Name cannot be blank" do |website|
+    !website.name.blank?
   end
 end
 
