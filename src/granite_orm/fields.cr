@@ -11,8 +11,9 @@ module Granite::ORM::Fields
   end
 
   # specify the fields you want to define and types
-  macro field(decl)
-    {% FIELDS[decl.var] = decl.type %}
+  macro field(decl, **options)
+    {% FIELDS[decl.var] = options || {} of Nil => Nil %}
+    {% FIELDS[decl.var][:type] = decl.type %}
   end
 
   # include created_at and updated_at that will automatically be updated
@@ -22,8 +23,8 @@ module Granite::ORM::Fields
 
   macro __process_fields
     # Create the properties
-    {% for name, type in FIELDS %}
-      property {{name.id}} : Union({{type.id}} | Nil)
+    {% for name, options in FIELDS %}
+      property {{name.id}} : Union({{options[:type].id}} | Nil)
     {% end %}
     {% if SETTINGS[:timestamps] %}
       property created_at : Time?
@@ -32,7 +33,7 @@ module Granite::ORM::Fields
 
     # keep a hash of the fields to be used for mapping
     def self.fields(fields = [] of String)
-      {% for name, type in FIELDS %}
+      {% for name, options in FIELDS %}
         fields << "{{name.id}}"
       {% end %}
       {% if SETTINGS[:timestamps] %}
@@ -45,8 +46,8 @@ module Granite::ORM::Fields
     # keep a hash of the params that will be passed to the adapter.
     def params
       parsed_params = [] of DB::Any
-      {% for name, type in FIELDS %}
-        {% if type.id == Time.id %}
+      {% for name, options in FIELDS %}
+        {% if options[:type].id == Time.id %}
           parsed_params << {{name.id}}.try(&.to_s("%F %X"))
         {% else %}
           parsed_params << {{name.id}}
@@ -64,7 +65,8 @@ module Granite::ORM::Fields
 
       fields["{{PRIMARY[:name]}}"] = {{PRIMARY[:name]}}
 
-      {% for name, type in FIELDS %}
+      {% for name, options in FIELDS %}
+        {% type = options[:type] %}
         {% if type.id == Time.id %}
           fields["{{name}}"] = {{name.id}}.try(&.to_s("%F %X"))
         {% elsif type.id == Slice.id %}
@@ -85,13 +87,20 @@ module Granite::ORM::Fields
       json.object do
         json.field "{{PRIMARY[:name]}}", {{PRIMARY[:name]}}
 
-        {% for name, type in FIELDS %}
-          %field, %value = "{{name.id}}", {{name.id}}
-          {% if type.id == Time.id %}
-            json.field %field, %value.try(&.to_s("%F %X"))
-          {% elsif type.id == Slice.id %}
-            json.field %field, %value.id.try(&.to_s(""))
-          {% else %}
+        {% for name, options in FIELDS %}
+          {% json_options = options[:json] || {} of Nil => Nil %}
+          {% type = options[:type] %}
+          {% unless json_options[:hidden] %}
+            %field = "{{(json_options[:as] || name).id}}"
+            %value = {% if (filter = json_options[:filter]) && filter.is_a? ProcLiteral %}
+                       {{filter}}.call({{name.id}})
+                     {% elsif type.id == Time.id %}
+                       {{name.id}}.try(&.to_s("%F %X"))
+                     {% elsif type.id == Slice.id %}
+                       {{name.id}}.try(&.to_s(""))
+                     {% else %}
+                       {{name.id}}
+                     {% end %}
             json.field %field, %value
           {% end %}
         {% end %}
@@ -116,7 +125,8 @@ module Granite::ORM::Fields
     # Casts params and sets fields
     private def cast_to_field(name, value : Type)
       case name.to_s
-        {% for _name, type in FIELDS %}
+        {% for _name, options in FIELDS %}
+          {% type = options[:type] %}
         when "{{_name.id}}"
           return @{{_name.id}} = nil if value.nil?
           {% if type.id == Int32.id %}

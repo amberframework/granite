@@ -10,13 +10,13 @@ end
 
 class Review < Granite::ORM::Base
   adapter pg
-  field name : String
-  field user_id : Int32
+  field name : String, json: {filter: ->(name : String?) { name.try &.upcase }}
+  field user_id : Int32, json: {as: author_id}
   field upvotes : Int64
-  field sentiment : Float32
+  field sentiment : Float32, json: {filter: ->(sentiment : Float32?) { sentiment.to_s }}
   field interest : Float64
-  field published : Bool
-  field created_at : Time
+  field published : Bool, json: {hidden: true}
+  field created_at : Time, json: {hidden: true}
 end
 
 class WebSite < Granite::ORM::Base
@@ -107,6 +107,13 @@ describe Granite::ORM::Base do
       s = WebSite.new(name: "Hacker News")
       s.custom_id = 3
       s.to_json.should eq %({"custom_id":3,"name":"Hacker News"})
+    end
+
+    it "provides some options" do
+      r = Review.new(name: "Author", user_id: 7, upvotes: 1_i64, sentiment: 1.62, interest: 2.72, published: true, created_at: Time.now)
+      result = %({"id":null,"name":"AUTHOR","author_id":7,"upvotes":1,"sentiment":"1.62","interest":2.72})
+
+      r.to_json.should eq result
     end
   end
 
