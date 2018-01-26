@@ -1,7 +1,7 @@
 require "spec"
 
 module GraniteExample
-  ADAPTERS = ["pg","mysql","sqlite"]
+  ADAPTERS = ["pg", "mysql", "sqlite"]
   @@model_classes = [] of Granite::ORM::Base.class
 
   extend self

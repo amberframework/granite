@@ -10,8 +10,8 @@ module Granite::ORM::Querying
 
         model.\{{primary_name}} = result.read(\{{primary_type}})
 
-        \{% for name, type in FIELDS %}
-          model.\{{name.id}} = result.read(Union(\{{type.id}} | Nil))
+        \{% for name, options in FIELDS %}
+          model.\{{name.id}} = result.read(Union(\{{options[:type].id}} | Nil))
         \{% end %}
 
         \{% if SETTINGS[:timestamps] %}
