@@ -9,13 +9,13 @@ end
     adapter_suffix = "_#{adapter.id}".id
     adapter_literal = adapter.id
 
-    parent_table = "parent_#{ adapter_literal }s".id
-    student_table = "student_#{ adapter_literal }s".id
-    teacher_table = "teacher_#{ adapter_literal }s".id
-    klass_table = "klass_#{ adapter_literal }s".id
-    enrollment_table = "enrollment_#{ adapter_literal }s".id
-    school_table = "school_#{ adapter_literal }s".id
-    nation_county_table = "nation_county_#{ adapter_literal }s".id
+    parent_table = "parent_#{adapter_literal}s".id
+    student_table = "student_#{adapter_literal}s".id
+    teacher_table = "teacher_#{adapter_literal}s".id
+    klass_table = "klass_#{adapter_literal}s".id
+    enrollment_table = "enrollment_#{adapter_literal}s".id
+    school_table = "school_#{adapter_literal}s".id
+    nation_county_table = "nation_county_#{adapter_literal}s".id
 
     if adapter == "pg"
       primary_key_sql = "BIGSERIAL PRIMARY KEY".id
@@ -26,8 +26,8 @@ end
     elsif adapter == "mysql"
       primary_key_sql = "BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY".id
       foreign_key_sql = "BIGINT".id
-      created_at_sql  = "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,".id
-      updated_at_sql  = "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,".id
+      created_at_sql = "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,".id
+      updated_at_sql = "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,".id
       timestamp_fields = "timestamps".id
     elsif adapter == "sqlite"
       primary_key_sql = "INTEGER NOT NULL PRIMARY KEY".id
