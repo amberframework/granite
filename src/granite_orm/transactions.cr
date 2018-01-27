@@ -34,7 +34,7 @@ module Granite::ORM::Transactions
         return true
       rescue ex : DB::Error
         if message = ex.message
-          puts "Save Exception: #{message}"
+          Granite::ORM.settings.logger.error "Save Exception: #{message}"
           errors << Granite::ORM::Error.new(:base, message)
         end
         return false
@@ -50,7 +50,7 @@ module Granite::ORM::Transactions
         return true
       rescue ex : DB::Error
         if message = ex.message
-          puts "Destroy Exception: #{message}"
+          Granite::ORM.settings.logger.error "Destroy Exception: #{message}"
           errors << Granite::ORM::Error.new(:base, message)
         end
         return false
