@@ -1,13 +1,3 @@
-# class Review{{ adapter_const_suffix }} < Granite::ORM::Base
-#   field name : String
-#   field downvotes : Int32
-#   field upvotes : Int64
-#   field sentiment : Float32
-#   field interest : Float64
-#   field published : Bool
-#   field created_at : Time
-# end
-
 {% for adapter in GraniteExample::ADAPTERS %}
   {% model_constant = "Review#{adapter.camelcase.id}".id %}
 
