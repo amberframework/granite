@@ -34,7 +34,17 @@ module Granite::ORM::Table
     {% primary_type = PRIMARY[:type] %}
     # Table Name
     @@table_name = "{{table_name}}"
+    
+    def self.table_name
+      @@table_name
+    end
+
     @@primary_name = "{{primary_name}}"
+
+    def self.primary_name
+      @@primary_name
+    end
+
     # Create the primary key
     property {{primary_name}} : Union({{primary_type.id}} | Nil)
   end
