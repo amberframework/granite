@@ -17,6 +17,7 @@ end
     school_table = "school_#{adapter_literal}s".id
     nation_county_table = "nation_county_#{adapter_literal}s".id
     review_table = "review_#{adapter_literal}s".id
+    empty_table = "empty_#{adapter_literal}s".id
 
     if adapter == "pg"
       primary_key_sql = "BIGSERIAL PRIMARY KEY".id
@@ -210,6 +211,21 @@ end
       end
     end
 
+    class Empty{{ adapter_const_suffix }} < Granite::ORM::Base
+      adapter {{ adapter_literal }}
+      table_name "{{ empty_table }}"
+      primary id : Int64
+
+      def self.drop_and_create
+        exec "DROP TABLE IF EXISTS {{ empty_table }}"
+        exec <<-SQL
+          CREATE TABLE {{ empty_table }} (
+            id {{ primary_key_sql }}
+          )
+        SQL
+      end
+    end
+
     module GraniteExample
       @@model_classes << Parent{{ adapter_const_suffix }}
       @@model_classes << Teacher{{ adapter_const_suffix }}
@@ -219,6 +235,7 @@ end
       @@model_classes << School{{ adapter_const_suffix }}
       @@model_classes << Nation::County{{ adapter_const_suffix }}
       @@model_classes << Review{{ adapter_const_suffix }}
+      @@model_classes << Empty{{ adapter_const_suffix }}
     end
 
     Spec.before_each do
@@ -230,6 +247,7 @@ end
       School{{ adapter_const_suffix }}.clear
       Nation::County{{ adapter_const_suffix }}.clear
       Review{{ adapter_const_suffix }}.clear
+      Empty{{ adapter_const_suffix }}.clear
     end
 
 {% end %}
