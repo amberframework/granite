@@ -32,9 +32,9 @@ module Granite::ORM::Transactions
         end
         __run_after_save
         return true
-      rescue ex
+      rescue ex : DB::Error
         if message = ex.message
-          puts "Save Exception: #{message}"
+          Granite::ORM.settings.logger.error "Save Exception: #{message}"
           errors << Granite::ORM::Error.new(:base, message)
         end
         return false
@@ -48,9 +48,9 @@ module Granite::ORM::Transactions
         @@adapter.delete(@@table_name, @@primary_name, {{primary_name}})
         __run_after_destroy
         return true
-      rescue ex
+      rescue ex : DB::Error
         if message = ex.message
-          puts "Destroy Exception: #{message}"
+          Granite::ORM.settings.logger.error "Destroy Exception: #{message}"
           errors << Granite::ORM::Error.new(:base, message)
         end
         return false
