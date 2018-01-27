@@ -52,6 +52,10 @@ end
 
       has_many :student_{{ adapter_literal }}s
 
+      validate :name, "Name cannot be blank" do
+        !(name.not_nil!.blank?)
+      end
+
       def self.drop_and_create
         exec("DROP TABLE IF EXISTS {{ parent_table }};")
         exec("CREATE TABLE {{ parent_table }} (

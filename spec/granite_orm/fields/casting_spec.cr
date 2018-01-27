@@ -15,7 +15,7 @@
 
     it "compiles with empty fields" do
       model = {{ empty_model_constant }}.new
-      model.should_not eq nil
+      model.should_not be_nil
     end
   end
 {% end %}

@@ -15,6 +15,13 @@ require "../../spec_helper"
       parent.id.should_not be_nil
     end
 
+    it "does not create an invalid object" do
+      parent = {{ parent_constant }}.new
+      parent.name = ""
+      parent.save
+      parent.id.should be_nil
+    end
+
     it "updates an existing object" do
       parent = {{ parent_constant }}.new
       parent.name = "Test Parent"
@@ -27,6 +34,16 @@ require "../../spec_helper"
 
       found = {{ parent_constant }}.first
       found.not_nil!.name.should eq parent.name
+    end
+
+    it "does not update an invalid object" do
+      parent = {{ parent_constant }}.new
+      parent.name = "Test Parent"
+      parent.save
+      parent.name = ""
+      parent.save
+      parent = {{ parent_constant }}.find parent.id
+      parent.not_nil!.name.should eq "Test Parent"
     end
 
     describe "with a custom primary key" do
