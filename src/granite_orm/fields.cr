@@ -140,7 +140,7 @@ module Granite::ORM::Fields
               @{{_name.id}} = value.to_s
             {% end %}
           {% end %}
-        {% end %}
+        end
       {% end %}
     rescue ex
       errors << Granite::ORM::Error.new(name, ex.message)
