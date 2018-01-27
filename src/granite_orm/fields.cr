@@ -140,6 +140,8 @@ module Granite::ORM::Fields
           {% end %}
         {% end %}
       end
+    rescue ex
+      errors << Granite::ORM::Error.new(name, ex.message)
     end
   end
 end

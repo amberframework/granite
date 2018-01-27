@@ -1,7 +1,7 @@
 class Granite::ORM::Error
   property field, message
 
-  def initialize(@field : Symbol, @message : String)
+  def initialize(@field : (String | Symbol), @message : String? = "")
   end
 
   def to_s
