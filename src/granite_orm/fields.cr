@@ -115,31 +115,33 @@ module Granite::ORM::Fields
 
     # Casts params and sets fields
     private def cast_to_field(name, value : Type)
-      case name.to_s
-        {% for _name, type in FIELDS %}
-        when "{{_name.id}}"
-          return @{{_name.id}} = nil if value.nil?
-          {% if type.id == Int32.id %}
-            @{{_name.id}} = value.is_a?(String) ? value.to_i32(strict: false) : value.is_a?(Int64) ? value.to_i32 : value.as(Int32)
-          {% elsif type.id == Int64.id %}
-            @{{_name.id}} = value.is_a?(String) ? value.to_i64(strict: false) : value.as(Int64)
-          {% elsif type.id == Float32.id %}
-            @{{_name.id}} = value.is_a?(String) ? value.to_f32(strict: false) : value.is_a?(Float64) ? value.to_f32 : value.as(Float32)
-          {% elsif type.id == Float64.id %}
-            @{{_name.id}} = value.is_a?(String) ? value.to_f64(strict: false) : value.as(Float64)
-          {% elsif type.id == Bool.id %}
-            @{{_name.id}} = ["1", "yes", "true", true].includes?(value)
-          {% elsif type.id == Time.id %}
-            if value.is_a?(Time)
-               @{{_name.id}} = value
-             elsif value.to_s =~ TIME_FORMAT_REGEX
-               @{{_name.id}} = Time.parse(value.to_s, "%F %X")
-             end
-          {% else %}
-            @{{_name.id}} = value.to_s
+      {% unless FIELDS.empty %}
+        case name.to_s
+          {% for _name, type in FIELDS %}
+          when "{{_name.id}}"
+            return @{{_name.id}} = nil if value.nil?
+            {% if type.id == Int32.id %}
+              @{{_name.id}} = value.is_a?(String) ? value.to_i32(strict: false) : value.is_a?(Int64) ? value.to_i32 : value.as(Int32)
+            {% elsif type.id == Int64.id %}
+              @{{_name.id}} = value.is_a?(String) ? value.to_i64(strict: false) : value.as(Int64)
+            {% elsif type.id == Float32.id %}
+              @{{_name.id}} = value.is_a?(String) ? value.to_f32(strict: false) : value.is_a?(Float64) ? value.to_f32 : value.as(Float32)
+            {% elsif type.id == Float64.id %}
+              @{{_name.id}} = value.is_a?(String) ? value.to_f64(strict: false) : value.as(Float64)
+            {% elsif type.id == Bool.id %}
+              @{{_name.id}} = ["1", "yes", "true", true].includes?(value)
+            {% elsif type.id == Time.id %}
+              if value.is_a?(Time)
+                 @{{_name.id}} = value
+               elsif value.to_s =~ TIME_FORMAT_REGEX
+                 @{{_name.id}} = Time.parse(value.to_s, "%F %X")
+               end
+            {% else %}
+              @{{_name.id}} = value.to_s
+            {% end %}
           {% end %}
         {% end %}
-      end
+      {% end %}
     rescue ex
       errors << Granite::ORM::Error.new(name, ex.message)
     end
