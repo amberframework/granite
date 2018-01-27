@@ -115,7 +115,7 @@ module Granite::ORM::Fields
 
     # Casts params and sets fields
     private def cast_to_field(name, value : Type)
-      {% unless FIELDS.empty %}
+      {% unless FIELDS.empty? %}
         case name.to_s
           {% for _name, type in FIELDS %}
           when "{{_name.id}}"
