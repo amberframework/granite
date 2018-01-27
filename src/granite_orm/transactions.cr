@@ -10,6 +10,8 @@ module Granite::ORM::Transactions
     # will call the update method, otherwise it will call the create method.
     # This will update the timestamps apropriately.
     def save
+      return false unless valid?
+
       begin
         __run_before_save
         if value = @{{primary_name}}
