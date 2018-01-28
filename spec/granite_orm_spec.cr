@@ -6,6 +6,10 @@ class Todo < Granite::ORM::Base
   field name : String
   field priority : Int32
   timestamps
+
+  validate :name, "Name cannot be blank", ->(todo : Todo) do
+    !todo.name.to_s.blank?
+  end
 end
 
 class Review < Granite::ORM::Base
@@ -25,7 +29,7 @@ class WebSite < Granite::ORM::Base
   field name : String
 
   validate :name, "Name cannot be blank" do
-    !(name.not_nil!.blank?)
+    !name.to_s.blank?
   end
 end
 
@@ -111,7 +115,23 @@ describe Granite::ORM::Base do
   end
 
   describe "validating fields" do
-    context "without a name" do
+    context "using validate procs" do
+      it "is not valid" do
+        t = Todo.new(name: "", priority: 0)
+
+        t.valid?.should eq false
+        t.errors.first.message.should eq "Name cannot be blank"
+      end
+
+      it "is valid" do
+        t = Todo.new(name: "Fix issues", priority: 0)
+
+        t.valid?.should eq true
+        t.errors.empty?.should eq true
+      end
+    end
+
+    context "using validate blocks" do
       it "is not valid" do
         s = WebSite.new(name: "")
 
