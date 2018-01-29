@@ -24,8 +24,8 @@ class WebSite < Granite::ORM::Base
   primary custom_id : Int32
   field name : String
 
-  validate :name, "Name cannot be blank" do
-    !(name.not_nil!.blank?)
+  validate :name, "Name cannot be blank", ->(s : WebSite) do
+    !s.name.to_s.blank?
   end
 end
 
@@ -114,7 +114,6 @@ describe Granite::ORM::Base do
     context "without a name" do
       it "is not valid" do
         s = WebSite.new(name: "")
-
         s.valid?.should eq false
         s.errors.first.message.should eq "Name cannot be blank"
       end
