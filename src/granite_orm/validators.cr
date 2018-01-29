@@ -52,7 +52,7 @@ module Granite::ORM::Validators
   def valid?
     @@validators.each do |validator|
       unless validator[:block].call(self)
-        error << Error.new(validator[:field], validator[:message])
+        errors << Error.new(validator[:field], validator[:message])
       end
     end
     validate!
