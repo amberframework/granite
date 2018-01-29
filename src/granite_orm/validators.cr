@@ -17,7 +17,7 @@ require "./error"
 # ```
 module Granite::ORM::Validators
   getter errors = [] of Error
-  
+
   macro included
     macro inherited
       @@validators = Array({field: String, message: String, block: Proc(self, Bool)}).new
