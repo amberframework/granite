@@ -52,8 +52,8 @@ end
 
       has_many :student_{{ adapter_literal }}s
 
-      validate :name, "Name cannot be blank" do
-        !(name.not_nil!.blank?)
+      validate :name, "Name cannot be blank" do |parent| 
+        !parent.name.to_s.blank?
       end
 
       def self.drop_and_create
