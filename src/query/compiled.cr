@@ -11,8 +11,8 @@ class Query::Compiled(T)
   @primary_key : String
 
   def initialize(@builder : Builder(T))
-    @primary_key = builder.model.primary_name
-    @table = builder.model.table_name
+    @primary_key = T.primary_name
+    @table = T.table_name
     @where = ""
     @limit = ""
     @order = ""
@@ -26,7 +26,7 @@ class Query::Compiled(T)
 
   private def build_where
     parameter_count = 0
-    @where, fields, data = @builder.build_where(parameter_count)
+    @where, fields, data = @builder.build_where(0)
     parameter_count += data.size
     @fields += fields
     @data += data

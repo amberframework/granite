@@ -1,7 +1,7 @@
 # Query runner which finalizes a query and runs it.
 # This will likely require adapter specific subclassing :[.
 class Query::Runner(T)
-  def initialize(@query : Compiled(T), @adapter : Granite::Adapter::Base)
+  def initialize(@query : Compiled(T))
   end
 
   def log(*args)
@@ -18,7 +18,7 @@ class Query::Runner(T)
     log sql, @query.data
     count = 0_i64
 
-    @adapter.open do |db|
+    T.adapter.open do |db|
       db.query_one sql, @query.data do |record_set|
         count = record_set.read Int64
       end
@@ -27,19 +27,19 @@ class Query::Runner(T)
     count
   end
 
-  def first
+  def first(n : Int32 = 1) : Array(T)
     sql = <<-SQL
       SELECT
           #{@query.field_list}
         FROM #{@query.table}
        WHERE #{@query.where}
-       LIMIT 1
+       LIMIT #{n}
     SQL
 
     log sql, @query.data
     results = [] of T
 
-    @adapter.open do |db|
+    T.adapter.open do |db|
       db.query sql, @query.data do |record_set|
         record_set.each do
           results << T.from_sql record_set
@@ -47,6 +47,6 @@ class Query::Runner(T)
       end
     end
 
-    results.first?
+    results
   end
 end
