@@ -102,4 +102,8 @@ class Query::Builder(T)
   def any? : Bool
     ! first.nil?
   end
+
+  def delete
+    runner.delete
+  end
 end

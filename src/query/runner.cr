@@ -5,7 +5,9 @@ class Query::Runner(T)
   end
 
   def log(*args)
+    puts
     puts *args
+    puts
   end
 
   def count : Int64
@@ -49,5 +51,18 @@ class Query::Runner(T)
     end
 
     results
+  end
+
+  def delete
+    sql = <<-SQL
+       DELETE
+         FROM #{@query.table}
+        WHERE #{@query.where}
+    SQL
+
+    log sql, @query.data
+    T.adapter.open do |db|
+      db.exec sql, @query.data
+    end
   end
 end
