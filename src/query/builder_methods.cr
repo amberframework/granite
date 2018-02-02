@@ -17,7 +17,7 @@ module Query::BuilderMethods
     __builder.where **match_data
   end
 
-  def first : self
+  def first : self?
     __builder.first
   end
 
