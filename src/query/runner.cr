@@ -10,9 +10,10 @@ class Query::Runner(T)
 
   def count : Int64
     sql = <<-SQL
-    SELECT COUNT(*)
-      FROM #{@query.table}
-     WHERE #{@query.where}
+      SELECT COUNT(*)
+        FROM #{@query.table}
+       WHERE #{@query.where}
+    ORDER BY #{@query.order}
     SQL
 
     log sql, @query.data
@@ -29,11 +30,11 @@ class Query::Runner(T)
 
   def first(n : Int32 = 1) : Array(T)
     sql = <<-SQL
-      SELECT
-          #{@query.field_list}
-        FROM #{@query.table}
-       WHERE #{@query.where}
-       LIMIT #{n}
+        SELECT #{@query.field_list}
+          FROM #{@query.table}
+         WHERE #{@query.where}
+      ORDER BY #{@query.order}
+         LIMIT #{n}
     SQL
 
     log sql, @query.data

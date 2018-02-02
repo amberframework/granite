@@ -61,6 +61,7 @@ class Query::Compiled(T)
   end
 
   private def build_order
+    @order = @builder._build_order
   end
 
   def order?
