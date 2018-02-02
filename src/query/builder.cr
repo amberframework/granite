@@ -40,12 +40,13 @@ class Query::Builder(T)
   end
 
   # TODO maybe move this logic into the Runner(?)
-  def build_where(parameter_count = 1) : { String, Array(FieldName), Array(FieldData) }
+  def _build_where(parameter_count = 1) : { String, Array(FieldName), Array(FieldData) }
     data = [] of FieldData
-    parameter_count += 1
     clause = @fields.map do |field, value|
       data << value
-      "#{field} = $#{parameter_count}"
+      "#{field} = $#{parameter_count}".tap do
+        parameter_count += 1
+      end
     end.join " AND "
 
     { clause, T.fields, data }
