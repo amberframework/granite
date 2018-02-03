@@ -15,8 +15,15 @@ module Granite::ORM::Querying
         \{% end %}
 
         \{% if SETTINGS[:timestamps] %}
-          model.created_at = result.read(Union(Time | Nil))
-          model.updated_at = result.read(Union(Time | Nil))
+         if @@adapter.class.name == "Granite::Adapter::Sqlite"
+            # sqlite3 does not have timestamp type - timestamps are stored as strings
+            # will break for null timestamps
+            model.created_at = Time.parse(result.read(String), "%F %X" )
+            model.updated_at = Time.parse(result.read(String), "%F %X" )
+          else
+            model.created_at = result.read(Union(Time | Nil))
+            model.updated_at = result.read(Union(Time | Nil))
+          end
         \{% end %}
         return model
       end
