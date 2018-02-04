@@ -34,9 +34,9 @@ end
     elsif adapter == "sqlite"
       primary_key_sql = "INTEGER NOT NULL PRIMARY KEY".id
       foreign_key_sql = "INTEGER".id
-      created_at_sql = "".id
-      updated_at_sql = "".id
-      timestamp_fields = "".id
+      created_at_sql = "created_at VARCHAR,".id
+      updated_at_sql = "updated_at VARCHAR,".id
+      timestamp_fields = "timestamps".id
     end
   %}
 
@@ -52,7 +52,7 @@ end
 
       has_many :student_{{ adapter_literal }}s
 
-      validate :name, "Name cannot be blank" do |parent| 
+      validate :name, "Name cannot be blank" do |parent|
         !parent.name.to_s.blank?
       end
 
@@ -209,7 +209,8 @@ end
             sentiment FLOAT,
             interest REAL,
             published BOOL,
-            created_at TIMESTAMP
+            {{ created_at_sql }}
+            {{ updated_at_sql }}
           )
         SQL
       end
