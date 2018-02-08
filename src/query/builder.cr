@@ -19,84 +19,68 @@ class Query::Builder(T)
   alias FieldName = String
   alias FieldData = DB::Any
 
+  enum Sort
+    Ascending
+    Descending
+  end
+
+  getter where_fields
+  getter order_fields
+
   def initialize(@boolean_operator = :and)
-    @fields = {} of FieldName => FieldData
-    @order  = [] of NamedTuple(field: String, direction: String)
+    @where_fields = {} of FieldName => FieldData
+    @order_fields  = [] of NamedTuple(field: String, direction: Sort)
   end
 
-  def compile
-    Compiled(T).new self
-  end
-
-  def runner
-    Runner(T).new compile
+  def assembler
+    # when adapter.postgresql?
+    Assembler::Postgresql(T).new self
+    # when adapter.mysql?
+    # etc
   end
 
   def where(**matches)
     matches.each do |field, data|
-      @fields[field.to_s] = data
+      @where_fields[field.to_s] = data
     end
 
     self
   end
 
   def order(field : Symbol)
-    @order << { field: field, direction: :ascending }
+    @order_fields << { field: field, direction: :ascending }
 
     self
   end
 
   def order(**dsl)
     dsl.each do |field, dsl_direction|
-      direction = "ASC"
+      direction = Sort::Ascending
 
       if dsl_direction == "desc" || dsl_direction == :desc
-        direction = "DESC"
+        direction = Sort::Descending
       end
 
-      @order << { field: field.to_s, direction: direction }
+      @order_fields << { field: field.to_s, direction: direction }
     end
 
     self
   end
 
-  def _build_order
-    if @order.none?
-      default_order
-    end
-
-    @order.map do |expression|
-      "#{expression[:field]} #{expression[:direction]}"
-    end.join ", "
+  def raw_sql
+    assembler.select.raw_sql
   end
 
-  def default_order
-    @order = [{ field: T.primary_name, direction: "ASC" }]
-  end
-
-  # TODO maybe move this logic into the Runner(?)
-  def _build_where(parameter_count = 1) : { String, Array(FieldName), Array(FieldData) }
-    data = [] of FieldData
-    clause = @fields.map do |field, value|
-      data << value
-      "#{field} = $#{parameter_count}".tap do
-        parameter_count += 1
-      end
-    end.join " AND "
-
-    { clause, T.fields, data }
-  end
-
-  def count : Int64
-    runner.count
+  def count : Executor(T, Int32)
+    assembler.count
   end
 
   def first : T?
     first(1).first?
   end
 
-  def first(n : Int32) : Array(T)
-    runner.first(n)
+  def first(n : Int32) : Executor(T, Array(T))
+    assembler.first(n)
   end
 
   def any? : Bool
@@ -104,6 +88,6 @@ class Query::Builder(T)
   end
 
   def delete
-    runner.delete
+    assembler.delete
   end
 end
