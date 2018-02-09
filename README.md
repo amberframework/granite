@@ -285,7 +285,7 @@ CREATE TABLE posts (
   updated_at TIMESTAMP
 );
 
-CREATE INDEX 'user_id_idx' ON TABLE posts (user_id);
+CREATE INDEX 'user_id_idx' ON posts (user_id);
 ```
 
 #### Many to Many
