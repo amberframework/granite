@@ -3,9 +3,11 @@ require "pg"
 
 # PostgreSQL implementation of the Adapter
 class Granite::Adapter::Pg < Granite::Adapter::Base
+  QUOTING_CHAR = '"'
+
   # remove all rows from a table and reset the counter on the id.
   def clear(table_name)
-    statement = "DELETE FROM #{table_name}"
+    statement = "DELETE FROM #{quote(table_name)}"
 
     log statement
 
@@ -22,8 +24,8 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
 
     statement = String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map { |name| "#{table_name}.#{name}" }.join(", ")
-      stmt << " FROM #{table_name} #{clause}"
+      stmt << fields.map { |name| "#{quote(table_name)}.#{quote(name)}" }.join(", ")
+      stmt << " FROM #{quote(table_name)} #{clause}"
     end
 
     log statement, params
@@ -39,9 +41,9 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
   def select_one(table_name, fields, field, id, &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map { |name| "#{table_name}.#{name}" }.join(", ")
-      stmt << " FROM #{table_name}"
-      stmt << " WHERE #{field}=$1 LIMIT 1"
+      stmt << fields.map { |name| "#{quote(table_name)}.#{quote(name)}" }.join(", ")
+      stmt << " FROM #{quote(table_name)}"
+      stmt << " WHERE #{quote(field)}=$1 LIMIT 1"
     end
 
     log statement, id
@@ -55,8 +57,8 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
 
   def insert(table_name, fields, params)
     statement = String.build do |stmt|
-      stmt << "INSERT INTO #{table_name} ("
-      stmt << fields.map { |name| "#{name}" }.join(", ")
+      stmt << "INSERT INTO #{quote(table_name)} ("
+      stmt << fields.map { |name| "#{quote(name)}" }.join(", ")
       stmt << ") VALUES ("
       stmt << fields.map { |name| "$#{fields.index(name).not_nil! + 1}" }.join(", ")
       stmt << ")"
@@ -77,9 +79,9 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
   # This will update a row in the database.
   def update(table_name, primary_name, fields, params)
     statement = String.build do |stmt|
-      stmt << "UPDATE #{table_name} SET "
-      stmt << fields.map { |name| "#{name}=$#{fields.index(name).not_nil! + 1}" }.join(", ")
-      stmt << " WHERE #{primary_name}=$#{fields.size + 1}"
+      stmt << "UPDATE #{quote(table_name)} SET "
+      stmt << fields.map { |name| "#{quote(name)}=$#{fields.index(name).not_nil! + 1}" }.join(", ")
+      stmt << " WHERE #{quote(primary_name)}=$#{fields.size + 1}"
     end
 
     log statement, params
@@ -91,7 +93,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
 
   # This will delete a row from the database.
   def delete(table_name, primary_name, value)
-    statement = "DELETE FROM #{table_name} WHERE #{primary_name}=$1"
+    statement = "DELETE FROM #{quote(table_name)} WHERE #{quote(primary_name)}=$1"
 
     log statement, value
 

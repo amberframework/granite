@@ -3,9 +3,11 @@ require "mysql"
 
 # Mysql implementation of the Adapter
 class Granite::Adapter::Mysql < Granite::Adapter::Base
+  QUOTING_CHAR = '`'
+
   # Using TRUNCATE instead of DELETE so the id column resets to 0
   def clear(table_name)
-    statement = "TRUNCATE #{table_name}"
+    statement = "TRUNCATE #{quote(table_name)}"
 
     log statement
 
@@ -20,8 +22,8 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
   def select(table_name, fields, clause = "", params = [] of DB::Any, &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map { |name| "#{table_name}.#{name}" }.join(", ")
-      stmt << " FROM #{table_name} #{clause}"
+      stmt << fields.map { |name| "#{quote(table_name)}.#{quote(name)}" }.join(", ")
+      stmt << " FROM #{quote(table_name)} #{clause}"
     end
 
     log statement, params
@@ -39,9 +41,9 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
   def select_one(table_name, fields, field, id, &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map { |name| "#{table_name}.#{name}" }.join(", ")
-      stmt << " FROM #{table_name}"
-      stmt << " WHERE #{field}=? LIMIT 1"
+      stmt << fields.map { |name| "#{quote(table_name)}.#{quote(name)}" }.join(", ")
+      stmt << " FROM #{quote(table_name)}"
+      stmt << " WHERE #{quote(field)}=? LIMIT 1"
     end
 
     log statement, id
@@ -55,8 +57,8 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
 
   def insert(table_name, fields, params)
     statement = String.build do |stmt|
-      stmt << "INSERT INTO #{table_name} ("
-      stmt << fields.map { |name| "#{name}" }.join(", ")
+      stmt << "INSERT INTO #{quote(table_name)} ("
+      stmt << fields.map { |name| "#{quote(name)}" }.join(", ")
       stmt << ") VALUES ("
       stmt << fields.map { |name| "?" }.join(", ")
       stmt << ")"
@@ -77,9 +79,9 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
   # This will update a row in the database.
   def update(table_name, primary_name, fields, params)
     statement = String.build do |stmt|
-      stmt << "UPDATE #{table_name} SET "
-      stmt << fields.map { |name| "#{name}=?" }.join(", ")
-      stmt << " WHERE #{primary_name}=?"
+      stmt << "UPDATE #{quote(table_name)} SET "
+      stmt << fields.map { |name| "#{quote(name)}=?" }.join(", ")
+      stmt << " WHERE #{quote(primary_name)}=?"
     end
 
     log statement, params
@@ -91,7 +93,7 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
 
   # This will delete a row from the database.
   def delete(table_name, primary_name, value)
-    statement = "DELETE FROM #{table_name} WHERE #{primary_name}=?"
+    statement = "DELETE FROM #{quote(table_name)} WHERE #{quote(primary_name)}=?"
 
     log statement, value
 
