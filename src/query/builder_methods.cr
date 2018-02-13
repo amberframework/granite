@@ -9,7 +9,7 @@ module Query::BuilderMethods
     Builder(self).new
   end
 
-  def count : Executor(self, Int32)
+  def count : Executor::Value(self, Int64)
     __builder.count
   end
 
@@ -21,7 +21,7 @@ module Query::BuilderMethods
     __builder.first
   end
 
-  def first(n : Int32) : Executor
+  def first(n : Int32) : Executor::List(self)
     __builder.first n
   end
 end

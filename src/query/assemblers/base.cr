@@ -1,6 +1,6 @@
 module Query::Assembler
-  abstract class Base(T)
-    def initialize(@query : Builder(T))
+  abstract class Base(Model)
+    def initialize(@query : Builder(Model))
       @numbered_parameters = [] of DB::Any
       @aggregate_fields = [] of String
     end
@@ -19,15 +19,15 @@ module Query::Assembler
     end
 
     def table_name
-      T.table_name
+      Model.table_name
     end
 
     def field_list
-      [T.primary_name, T.fields].flatten.join ", "
+      [Model.primary_name, Model.fields].flatten.join ", "
     end
 
     abstract def count : Int64
-    abstract def first(n : Int32 = 1) : Array(T)
+    abstract def first(n : Int32 = 1) : Array(Model)
     abstract def delete
   end
 end

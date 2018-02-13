@@ -1,7 +1,7 @@
 # Query runner which finalizes a query and runs it.
 # This will likely require adapter specific subclassing :[.
 module Query::Assembler
-  class Postgresql(T) < Base(T)
+  class Postgresql(Model) < Base(Model)
     def build_where
       clauses = @query.where_fields.map do |field, value|
         add_aggregate_field field
@@ -41,14 +41,14 @@ module Query::Assembler
     end
 
     def default_order
-      [{ field: T.primary_name, direction: "ASC" }]
+      [{ field: Model.primary_name, direction: "ASC" }]
     end
 
     def build_group_by
       "GROUP BY #{@aggregate_fields.join ", "}"
     end
 
-    def count : Executor(T, Int32)
+    def count : Executor::Value(Model, Int64)
       where = build_where
       order = build_order(use_default_order = false)
       group = build_group_by
@@ -61,10 +61,10 @@ module Query::Assembler
          #{order}
       SQL
 
-      Executor(T, Int32).value sql, numbered_parameters
+      Executor::Value(Model, Int64).new sql, numbered_parameters, default: 0_i64
     end
 
-    def first(n : Int32 = 1) : Executor(T, Array(T))
+    def first(n : Int32 = 1) : Executor::List(Model)
       sql = <<-SQL
           SELECT #{field_list}
             FROM #{table_name}
@@ -73,7 +73,7 @@ module Query::Assembler
            LIMIT #{n}
       SQL
 
-      Executor(T, Array(T)).query sql, numbered_parameters
+      Executor::List(Model).new sql, numbered_parameters
     end
 
     def delete
@@ -84,7 +84,7 @@ module Query::Assembler
       SQL
 
       log sql, numbered_parameters
-      T.adapter.open do |db|
+      Model.adapter.open do |db|
         db.exec sql, numbered_parameters
       end
     end
@@ -97,7 +97,7 @@ module Query::Assembler
           #{build_order}
       SQL
 
-      Executor(T, Array(T)).query sql, numbered_parameters
+      Executor::List(Model).new sql, numbered_parameters
     end
   end
 end
