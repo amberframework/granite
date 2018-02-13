@@ -45,7 +45,11 @@ module Query::Assembler
     end
 
     def build_group_by
-      "GROUP BY #{@aggregate_fields.join ", "}"
+      if @aggregate_fields.any?
+        "GROUP BY #{@aggregate_fields.join ", "}"
+      else
+        ""
+      end
     end
 
     def count : Executor::Value(Model, Int64)
