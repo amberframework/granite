@@ -5,7 +5,13 @@ module Query::Assembler
     def build_where
       clauses = @query.where_fields.map do |field, value|
         add_aggregate_field field
-        "#{field} = #{add_parameter value}"
+
+        # TODO value is an array
+        if value.nil?
+          "#{field} IS NULL"
+        else
+          "#{field} = #{add_parameter value}"
+        end
       end
 
       return "" if clauses.none?
