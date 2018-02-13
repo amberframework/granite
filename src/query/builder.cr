@@ -98,4 +98,12 @@ class Query::Builder(Model)
   def delete
     assembler.delete
   end
+
+  def each(&block)
+    assembler.select.tap do |record_set|
+      record_set.each do |record|
+        yield record
+      end
+    end
+  end
 end
