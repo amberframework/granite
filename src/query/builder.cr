@@ -48,7 +48,15 @@ class Query::Builder(Model)
   end
 
   def order(field : Symbol)
-    @order_fields << { field: field, direction: :ascending }
+    @order_fields << { field: field.to_s, direction: Sort::Ascending }
+
+    self
+  end
+
+  def order(fields : Array(Symbol))
+    fields.each do |field|
+      order field
+    end
 
     self
   end
