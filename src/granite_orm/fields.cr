@@ -127,6 +127,11 @@ module Granite::ORM::Fields
     private def cast_to_field(name, value : Type)
       {% unless FIELDS.empty? %}
         case name.to_s
+          when "{{PRIMARY[:name]}}"
+            {% if !PRIMARY[:auto] %}
+              @{{PRIMARY[:name]}} = value.as({{PRIMARY[:type]}})
+            {% end %}
+          
           {% for _name, type in FIELDS %}
           when "{{_name.id}}"
             return @{{_name.id}} = nil if value.nil?
