@@ -14,6 +14,21 @@ module {{adapter.capitalize.id}}
       found.should be_nil
     end
 
+    it "updates states of destroyed and persisted" do
+      parent = Parent.new
+      parent.destroyed?.should be_false
+      parent.persisted?.should be_false
+
+      parent.name = "Test Parent"
+      parent.save
+      parent.destroyed?.should be_false
+      parent.persisted?.should be_true
+
+      parent.destroy
+      parent.destroyed?.should be_true
+      parent.persisted?.should be_false
+    end
+
     describe "with a custom primary key" do
       it "destroys an object" do
         school = School.new

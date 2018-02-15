@@ -42,6 +42,17 @@ module {{adapter.capitalize.id}}
       parent.name.should eq "Test Parent"
     end
 
+    it "does not update when the conflicted primary key is given to the new record" do
+      parent1 = Parent.new
+      parent1.name = "Test Parent"
+      parent1.save.should be_true
+
+      parent2 = Parent.new
+      parent2.id = parent1.id
+      parent2.name = "Test Parent2"
+      parent2.save.should be_false
+    end
+
     describe "with a custom primary key" do
       it "creates a new object" do
         school = School.new
@@ -66,6 +77,17 @@ module {{adapter.capitalize.id}}
         found_school = School.find primary_key
         found_school.custom_id.should eq primary_key
         found_school.name.should eq new_name
+      end
+
+      it "updates states of new_record and persisted" do
+        parent = Parent.new
+        parent.new_record?.should be_true
+        parent.persisted?.should be_false
+
+        parent.name = "Test Parent"
+        parent.save
+        parent.new_record?.should be_false
+        parent.persisted?.should be_true
       end
     end
 
