@@ -18,6 +18,7 @@ end
     nation_county_table = "nation_county_#{adapter_literal}s".id
     review_table = "review_#{adapter_literal}s".id
     empty_table = "empty_#{adapter_literal}s".id
+    reserved_word_table = "select".id
 
     if adapter == "pg"
       primary_key_sql = "BIGSERIAL PRIMARY KEY".id
@@ -230,6 +231,22 @@ end
       end
     end
 
+    class ReservedWord{{ adapter_const_suffix }} < Granite::ORM::Base
+      adapter {{ adapter_literal }}
+      table_name "{{ reserved_word_table }}"
+      field all : String
+
+      def self.drop_and_create
+        exec "DROP TABLE IF EXISTS #{quoted_table_name}"
+        exec <<-SQL
+          CREATE TABLE #{quoted_table_name} (
+            id {{ primary_key_sql }},
+            #{quote("all")} VARCHAR(255)
+          )
+        SQL
+      end
+    end
+
     module GraniteExample
       @@model_classes << Parent{{ adapter_const_suffix }}
       @@model_classes << Teacher{{ adapter_const_suffix }}
@@ -240,6 +257,7 @@ end
       @@model_classes << Nation::County{{ adapter_const_suffix }}
       @@model_classes << Review{{ adapter_const_suffix }}
       @@model_classes << Empty{{ adapter_const_suffix }}
+      @@model_classes << ReservedWord{{ adapter_const_suffix }}
     end
 
     Spec.before_each do
@@ -252,6 +270,7 @@ end
       Nation::County{{ adapter_const_suffix }}.clear
       Review{{ adapter_const_suffix }}.clear
       Empty{{ adapter_const_suffix }}.clear
+      ReservedWord{{ adapter_const_suffix }}.clear
     end
 
 {% end %}

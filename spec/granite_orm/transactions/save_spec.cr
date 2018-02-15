@@ -5,6 +5,7 @@ require "../../spec_helper"
     parent_constant = "Parent#{adapter.camelcase.id}".id
     school_constant = "School#{adapter.camelcase.id}".id
     nation_county_constant = "Nation::County#{adapter.camelcase.id}".id
+    reserved_word_constant = "ReservedWord#{adapter.camelcase.id}".id
   %}
 
   describe "{{ adapter.id }} #save" do
@@ -96,6 +97,21 @@ require "../../spec_helper"
 
         found_county = {{ nation_county_constant }}.find primary_key
         found_county.not_nil!.name.should eq new_name
+      end
+    end
+
+    describe "using a reserved word as a column name" do
+      # `all` is a reserved word in almost RDB like MySQL, PostgreSQL
+      it "creates and updates" do
+        reserved_word = {{ reserved_word_constant }}.new
+        reserved_word.all = "foo"
+        reserved_word.save
+        reserved_word.errors.empty?.should be_true
+
+        reserved_word.all = "bar"
+        reserved_word.save
+        reserved_word.errors.empty?.should be_true
+        reserved_word.all.should eq("bar")
       end
     end
   end

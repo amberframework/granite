@@ -60,6 +60,15 @@ abstract class Granite::Adapter::Base
     Granite::Adapter::Base.env(url)
   end
 
+  # Use macro in order to read a constant defined in each subclasses.
+  macro inherited
+    # quotes table and column names
+    def quote(name : String) : String
+      char = QUOTING_CHAR
+      char + name.gsub(char, "#{char}#{char}") + char
+    end
+  end
+
   # class level method so we can test it
   def self.env(url)
     regex = /\$\{(.*?)\}/

@@ -94,7 +94,7 @@ module Granite::ORM::Querying
 
   # count returns a count of all the records
   def count : Int32
-    scalar "select count(*) from #{@@table_name}", &.to_s.to_i
+    scalar "SELECT COUNT(*) FROM #{quoted_table_name}", &.to_s.to_i
   end
 
   def exec(clause = "")

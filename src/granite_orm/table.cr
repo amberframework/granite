@@ -45,5 +45,13 @@ module Granite::ORM::Table
     def self.primary_name
       @@primary_name
     end
+
+    def self.quoted_table_name
+      @@adapter.quote(table_name)
+    end
+
+    def self.quote(column_name)
+      @@adapter.quote(column_name)
+    end
   end
 end
