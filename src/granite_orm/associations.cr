@@ -1,7 +1,11 @@
 module Granite::ORM::Associations
   # define getter and setter for parent relationship
   macro belongs_to(model_name)
-    field {{model_name.id}}_id : Int64
+    belongs_to {{model_name}}, {{model_name.id}}_id : Int64
+  end
+
+  macro belongs_to(model_name, decl)
+    field {{decl.var}} : {{decl.type}}
 
     # retrieve the parent relationship
     def {{model_name.id}}
