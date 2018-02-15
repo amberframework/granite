@@ -20,7 +20,7 @@ require "../../spec_helper"
       parent = {{ parent_constant }}.new
       parent.name = ""
       parent.save
-      parent.id.should be_nil
+      parent.id?.should be_nil
     end
 
     it "updates an existing object" do
