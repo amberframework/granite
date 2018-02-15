@@ -36,7 +36,12 @@ module Granite::ORM::Table
     @@table_name = "{{table_name}}"
     @@primary_name = "{{primary_name}}"
 
-    property {{primary_name}} : Union({{primary_type.id}} | Nil)
+    property? {{primary_name}} : Union({{primary_type.id}} | Nil)
+
+    def {{primary_name}}
+      raise {{@type.name.stringify}} + "#" + {{primary_name.stringify}} + " cannot be nil" if @{{primary_name}}.nil?
+      @{{primary_name}}.not_nil!
+    end
 
     def self.table_name
       @@table_name
