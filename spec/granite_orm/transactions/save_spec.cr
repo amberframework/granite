@@ -28,7 +28,7 @@ module {{adapter.capitalize.id}}
       parents.size.should eq 1
 
       found = Parent.first
-      found.not_nil!.name.should eq parent.name
+      found.name.should eq parent.name
     end
 
     it "does not update an invalid object" do
@@ -38,7 +38,7 @@ module {{adapter.capitalize.id}}
       parent.name = ""
       parent.save
       parent = Parent.find parent.id
-      parent.not_nil!.name.should eq "Test Parent"
+      parent.name.should eq "Test Parent"
     end
 
     describe "with a custom primary key" do
@@ -63,8 +63,8 @@ module {{adapter.capitalize.id}}
         school.save
 
         found_school = School.find primary_key
-        found_school.not_nil!.custom_id.should eq primary_key
-        found_school.not_nil!.name.should eq new_name
+        found_school.custom_id.should eq primary_key
+        found_school.name.should eq new_name
       end
     end
 
@@ -90,7 +90,7 @@ module {{adapter.capitalize.id}}
         county.save
 
         found_county = Nation::County.find primary_key
-        found_county.not_nil!.name.should eq new_name
+        found_county.name.should eq new_name
       end
     end
 

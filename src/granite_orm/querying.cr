@@ -1,4 +1,7 @@
 module Granite::ORM::Querying
+  class NotFound < Exception
+  end  
+
   macro extended
     macro __process_querying
       \{% primary_name = PRIMARY[:name] %}
@@ -46,29 +49,36 @@ module Granite::ORM::Querying
   end
 
   # First adds a `LIMIT 1` clause to the query and returns the first result
-  def first(clause = "", params = [] of DB::Any)
+  def first?(clause = "", params = [] of DB::Any)
     all([clause.strip, "LIMIT 1"].join(" "), params).first?
+  end
+
+  def first(clause = "", params = [] of DB::Any)
+    first?(clause, params) || raise NotFound.new("Couldn't find " + {{@type.name.stringify}} + " with first(#{clause})")
   end
 
   # find returns the row with the primary key specified.
   # it checks by primary by default, but one can pass
   # another field for comparison
+  def find?(value)
+    return find_by?(@@primary_name, value)
+  end
+
   def find(value)
     return find_by(@@primary_name, value)
   end
 
-  # find_by using symbol for field name.
-  def find_by(field : Symbol, value)
-    find_by(field.to_s, value)
-  end
-
   # find_by returns the first row found where the field maches the value
-  def find_by(field : String, value)
+  def find_by?(field : String | Symbol, value)
     row = nil
-    @@adapter.select_one(@@table_name, fields([@@primary_name]), field, value) do |result|
+    @@adapter.select_one(@@table_name, fields([@@primary_name]), field.to_s, value) do |result|
       row = from_sql(result) if result
     end
     return row
+  end
+
+  def find_by(field : String | Symbol, value)
+    find_by?(field, value) || raise NotFound.new("Couldn't find " + {{@type.name.stringify}} + " with #{field}=#{value}")
   end
 
   def find_each(clause = "", params = [] of DB::Any, batch_size limit = 100, offset = 0)
