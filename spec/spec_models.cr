@@ -5,20 +5,7 @@ end
 
 {% for adapter in GraniteExample::ADAPTERS %}
   {%
-    adapter_const_suffix = adapter.camelcase.id
-    adapter_suffix = "_#{adapter.id}".id
     adapter_literal = adapter.id
-
-    parent_table = "parent_#{adapter_literal}s".id
-    student_table = "student_#{adapter_literal}s".id
-    teacher_table = "teacher_#{adapter_literal}s".id
-    klass_table = "klass_#{adapter_literal}s".id
-    enrollment_table = "enrollment_#{adapter_literal}s".id
-    school_table = "school_#{adapter_literal}s".id
-    nation_county_table = "nation_county_#{adapter_literal}s".id
-    review_table = "review_#{adapter_literal}s".id
-    empty_table = "empty_#{adapter_literal}s".id
-    reserved_word_table = "select".id
 
     if adapter == "pg"
       primary_key_sql = "BIGSERIAL PRIMARY KEY".id
@@ -43,23 +30,24 @@ end
 
   require "../src/adapter/{{ adapter_literal }}"
 
-    class Parent{{ adapter_const_suffix }} < Granite::ORM::Base
+  module {{adapter.capitalize.id}}
+    class Parent < Granite::ORM::Base
       primary id : Int64
       adapter {{ adapter_literal }}
-      table_name "{{ parent_table }}"
+      table_name parents
 
       field name : String
       {{ timestamp_fields }}
 
-      has_many :student_{{ adapter_literal }}s
+      has_many :students
 
       validate :name, "Name cannot be blank" do |parent| 
         !parent.name.to_s.blank?
       end
 
       def self.drop_and_create
-        exec("DROP TABLE IF EXISTS {{ parent_table }};")
-        exec("CREATE TABLE {{ parent_table }} (
+        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
+        exec("CREATE TABLE #{ quoted_table_name } (
           id {{ primary_key_sql }},
           {{ created_at_sql }}
           {{ updated_at_sql }}
@@ -69,18 +57,18 @@ end
       end
     end
 
-    class Teacher{{ adapter_const_suffix }} < Granite::ORM::Base
+    class Teacher < Granite::ORM::Base
       primary id : Int64
       adapter {{ adapter_literal }}
-      table_name "{{ teacher_table }}"
+      table_name teachers
 
       field name : String
 
-      has_many :klass_{{ adapter_literal }}s
+      has_many :klasss
 
       def self.drop_and_create
-        exec("DROP TABLE IF EXISTS {{ teacher_table }};")
-        exec("CREATE TABLE {{ teacher_table }} (
+        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
+        exec("CREATE TABLE #{ quoted_table_name } (
           id {{ primary_key_sql }},
           name VARCHAR(100)
         );
@@ -88,81 +76,81 @@ end
       end
     end
 
-    class Student{{ adapter_const_suffix }} < Granite::ORM::Base
+    class Student < Granite::ORM::Base
       primary id : Int64
       adapter {{ adapter_literal }}
-      table_name "{{ student_table }}"
+      table_name students
 
       field name : String
 
-      has_many :enrollment_{{ adapter_literal }}s
-      has_many :klass_{{ adapter_literal }}s, through: :enrollment_{{ adapter_literal }}s
+      has_many :enrollments
+      has_many :klasss, through: :enrollments
 
       def self.drop_and_create
-        exec("DROP TABLE IF EXISTS {{ student_table }};")
-        exec("CREATE TABLE {{ student_table }} (
+        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
+        exec("CREATE TABLE #{ quoted_table_name } (
           id {{ primary_key_sql }},
           name VARCHAR(100),
-          parent{{ adapter_suffix }}_id {{ foreign_key_sql }}
+          parent_id {{ foreign_key_sql }}
         );
         ")
       end
     end
 
-    class Klass{{ adapter_const_suffix }} < Granite::ORM::Base
+    class Klass < Granite::ORM::Base
       primary id : Int64
       adapter {{ adapter_literal }}
-      table_name "{{ klass_table }}"
+      table_name klasss
       field name : String
 
-      belongs_to :teacher_{{ adapter_literal }}
+      belongs_to :teacher
 
-      has_many :enrollment_{{ adapter_literal }}s
-      has_many :student_{{ adapter_literal }}s, through: :enrollment_{{ adapter_literal }}s
+      has_many :enrollments
+      has_many :students, through: :enrollments
 
       def self.drop_and_create
-        exec "DROP TABLE IF EXISTS {{ klass_table }}"
+        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
         exec <<-SQL
-          CREATE TABLE {{ klass_table }} (
+          CREATE TABLE #{ quoted_table_name } (
             id {{ primary_key_sql }},
             name VARCHAR(255),
-            teacher{{ adapter_suffix }}_id {{ foreign_key_sql }}
+            teacher_id {{ foreign_key_sql }}
           )
         SQL
       end
     end
 
-    class Enrollment{{ adapter_const_suffix }} < Granite::ORM::Base
+    class Enrollment < Granite::ORM::Base
       primary id : Int64
       adapter {{ adapter_literal }}
-      table_name "{{ enrollment_table }}"
+      table_name enrollments
 
-      belongs_to :student_{{ adapter_literal }}
-      belongs_to :klass_{{ adapter_literal }}
+      belongs_to :student
+      belongs_to :klass
 
       def self.drop_and_create
-        exec "DROP TABLE IF EXISTS {{ enrollment_table }}"
+        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
         exec <<-SQL
-          CREATE TABLE {{ enrollment_table }} (
+          CREATE TABLE #{ quoted_table_name } (
             id {{ primary_key_sql }},
-            student{{ adapter_suffix }}_id {{ foreign_key_sql }},
-            klass{{ adapter_suffix }}_id {{ foreign_key_sql }}
+            student_id {{ foreign_key_sql }},
+            klass_id {{ foreign_key_sql }}
           )
         SQL
       end
     end
 
-    class School{{ adapter_const_suffix }} < Granite::ORM::Base
+    class School < Granite::ORM::Base
       adapter {{ adapter_literal }}
       primary custom_id : Int64
       field name : String
 
-      table_name "{{ school_table }}"
+      table_name schools
 
       def self.drop_and_create
-        exec "DROP TABLE IF EXISTS {{ school_table }}"
+        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
         exec <<-SQL
-          CREATE TABLE {{ school_table }} (
+          CREATE TABLE #{ quoted_table_name } (
             custom_id {{ primary_key_sql }},
             name VARCHAR(255)
           )
@@ -170,17 +158,17 @@ end
       end
     end
 
-    class Nation::County{{ adapter_const_suffix }} < Granite::ORM::Base
+    class Nation::County < Granite::ORM::Base
       adapter {{ adapter_literal }}
       primary id : Int64
-      table_name "{{ nation_county_table }}"
+      table_name nation_countys
 
       field name : String
 
       def self.drop_and_create
-        exec "DROP TABLE IF EXISTS {{ nation_county_table }}"
+        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
         exec <<-SQL
-          CREATE TABLE {{ nation_county_table }} (
+          CREATE TABLE #{ quoted_table_name } (
             id {{ primary_key_sql }},
             name VARCHAR(255)
           )
@@ -188,9 +176,9 @@ end
       end
     end
 
-    class Review{{ adapter_const_suffix }} < Granite::ORM::Base
+    class Review < Granite::ORM::Base
       adapter {{ adapter_literal }}
-      table_name "{{ review_table }}"
+      table_name reviews
       field name : String
       field downvotes : Int32
       field upvotes : Int64
@@ -200,9 +188,9 @@ end
       field created_at : Time
 
       def self.drop_and_create
-        exec "DROP TABLE IF EXISTS {{ review_table }}"
+        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
         exec <<-SQL
-          CREATE TABLE {{ review_table }} (
+          CREATE TABLE #{ quoted_table_name } (
             id {{ primary_key_sql }},
             name VARCHAR(255),
             downvotes INT,
@@ -216,30 +204,30 @@ end
       end
     end
 
-    class Empty{{ adapter_const_suffix }} < Granite::ORM::Base
+    class Empty < Granite::ORM::Base
       adapter {{ adapter_literal }}
-      table_name "{{ empty_table }}"
+      table_name emptys
       primary id : Int64
 
       def self.drop_and_create
-        exec "DROP TABLE IF EXISTS {{ empty_table }}"
+        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
         exec <<-SQL
-          CREATE TABLE {{ empty_table }} (
+          CREATE TABLE #{ quoted_table_name } (
             id {{ primary_key_sql }}
           )
         SQL
       end
     end
 
-    class ReservedWord{{ adapter_const_suffix }} < Granite::ORM::Base
+    class ReservedWord < Granite::ORM::Base
       adapter {{ adapter_literal }}
-      table_name "{{ reserved_word_table }}"
+      table_name "select"
       field all : String
 
       def self.drop_and_create
-        exec "DROP TABLE IF EXISTS #{quoted_table_name}"
+        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
         exec <<-SQL
-          CREATE TABLE #{quoted_table_name} (
+          CREATE TABLE #{ quoted_table_name } (
             id {{ primary_key_sql }},
             #{quote("all")} VARCHAR(255)
           )
@@ -247,30 +235,28 @@ end
       end
     end
 
-    module GraniteExample
-      @@model_classes << Parent{{ adapter_const_suffix }}
-      @@model_classes << Teacher{{ adapter_const_suffix }}
-      @@model_classes << Student{{ adapter_const_suffix }}
-      @@model_classes << Klass{{ adapter_const_suffix }}
-      @@model_classes << Enrollment{{ adapter_const_suffix }}
-      @@model_classes << School{{ adapter_const_suffix }}
-      @@model_classes << Nation::County{{ adapter_const_suffix }}
-      @@model_classes << Review{{ adapter_const_suffix }}
-      @@model_classes << Empty{{ adapter_const_suffix }}
-      @@model_classes << ReservedWord{{ adapter_const_suffix }}
-    end
+    Parent.drop_and_create
+    Teacher.drop_and_create
+    Student.drop_and_create
+    Klass.drop_and_create
+    Enrollment.drop_and_create
+    School.drop_and_create
+    Nation::County.drop_and_create
+    Review.drop_and_create
+    Empty.drop_and_create
+    ReservedWord.drop_and_create
 
     Spec.before_each do
-      Parent{{ adapter_const_suffix }}.clear
-      Teacher{{ adapter_const_suffix }}.clear
-      Student{{ adapter_const_suffix }}.clear
-      Klass{{ adapter_const_suffix }}.clear
-      Enrollment{{ adapter_const_suffix }}.clear
-      School{{ adapter_const_suffix }}.clear
-      Nation::County{{ adapter_const_suffix }}.clear
-      Review{{ adapter_const_suffix }}.clear
-      Empty{{ adapter_const_suffix }}.clear
-      ReservedWord{{ adapter_const_suffix }}.clear
+      Parent.clear
+      Teacher.clear
+      Student.clear
+      Klass.clear
+      Enrollment.clear
+      School.clear
+      Nation::County.clear
+      Review.clear
+      Empty.clear
+      ReservedWord.clear
     end
-
+  end
 {% end %}
