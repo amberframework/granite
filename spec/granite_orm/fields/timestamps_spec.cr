@@ -17,7 +17,7 @@ module {{adapter.capitalize.id}}
   describe "{{ adapter.id }} timestamps" do
     it "consistently uses UTC for created_at" do
       parent = Parent.new(name: "parent").tap(&.save)
-      found_parent = Parent.find(parent.id).not_nil!
+      found_parent = Parent.find(parent.id)
 
       original_timestamp = parent.created_at
       read_timestamp = found_parent.created_at
@@ -28,7 +28,7 @@ module {{adapter.capitalize.id}}
 
     it "consistently uses UTC for updated_at" do
       parent = Parent.new(name: "parent").tap(&.save)
-      found_parent = Parent.find(parent.id).not_nil!
+      found_parent = Parent.find(parent.id)
 
       original_timestamp = parent.updated_at
       read_timestamp = found_parent.updated_at
@@ -39,7 +39,7 @@ module {{adapter.capitalize.id}}
 
     it "truncates the subsecond parts of created_at" do
       parent = Parent.new(name: "parent").tap(&.save)
-      found_parent = Parent.find(parent.id).not_nil!
+      found_parent = Parent.find(parent.id)
 
       original_timestamp = parent.created_at
       read_timestamp = found_parent.created_at
@@ -49,7 +49,7 @@ module {{adapter.capitalize.id}}
 
     it "truncates the subsecond parts of updated_at" do
       parent = Parent.new(name: "parent").tap(&.save)
-      found_parent = Parent.find(parent.id).not_nil!
+      found_parent = Parent.find(parent.id)
 
       original_timestamp = parent.updated_at
       read_timestamp = found_parent.updated_at
