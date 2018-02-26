@@ -18,6 +18,7 @@ module {{adapter.capitalize.id}}
     end
 
     it "updates an existing object" do
+      Parent.clear
       parent = Parent.new
       parent.name = "Test Parent"
       parent.save

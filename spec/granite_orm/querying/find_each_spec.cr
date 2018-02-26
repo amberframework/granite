@@ -4,6 +4,7 @@ require "../../spec_helper"
 module {{adapter.capitalize.id}}
   describe "{{ adapter.id }} #find_each" do
     it "finds all the records" do
+      Parent.clear
       model_ids = (0...100).map do |i|
         Parent.new(name: "role_#{i}").tap {|r| r.save }
       end.map(&.id)
@@ -17,12 +18,14 @@ module {{adapter.capitalize.id}}
     end
 
     it "doesnt yield when no records are found" do
+      Parent.clear
       Parent.find_each do |model|
         fail "did yield"
       end
     end
 
     it "can start from an offset" do
+      Parent.clear
       created_models = (0...10).map do |i|
         Parent.new(name: "model_#{i}").tap(&.save)
       end.map(&.id)
@@ -41,6 +44,7 @@ module {{adapter.capitalize.id}}
     end
 
     it "doesnt obliterate a parameterized query" do
+      Parent.clear
       created_models = (0...10).map do |i|
         Parent.new(name: "model_#{i}").tap(&.save)
       end.map(&.id)
