@@ -235,6 +235,32 @@ end
       end
     end
 
+    class Callback < Granite::ORM::Base
+      adapter {{ adapter_literal }}
+      table_name callbacks
+      primary id : Int64
+      field name : String
+
+      property history : IO::Memory = IO::Memory.new
+
+      {% for name in Granite::ORM::Callbacks::CALLBACK_NAMES %}
+        {{name.id}} _{{name.id}}
+        private def _{{name.id}}
+          history << "{{name.id}}\n"
+        end
+      {% end %}
+
+      def self.drop_and_create
+        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
+        exec <<-SQL
+          CREATE TABLE #{ quoted_table_name } (
+            id {{ primary_key_sql }},
+            name VARCHAR(100) NOT NULL
+          )
+        SQL
+      end
+    end
+
     Parent.drop_and_create
     Teacher.drop_and_create
     Student.drop_and_create
@@ -245,6 +271,7 @@ end
     Review.drop_and_create
     Empty.drop_and_create
     ReservedWord.drop_and_create
+    Callback.drop_and_create
 
     Spec.before_each do
       Parent.clear
@@ -257,6 +284,7 @@ end
       Review.clear
       Empty.clear
       ReservedWord.clear
+      Callback.clear
     end
   end
 {% end %}
