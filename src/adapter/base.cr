@@ -47,7 +47,7 @@ abstract class Granite::Adapter::Base
   # abstract def select_one(table_name, fields, field, id, &block)
 
   # This will insert a row in the database and return the id generated.
-  abstract def insert(table_name, fields, params) : Int64
+  abstract def insert(table_name, primary_name, fields, params)
 
   # This will update a row in the database.
   abstract def update(table_name, primary_name, fields, params)
