@@ -77,15 +77,17 @@ module Granite::ORM::Transactions
     end
   end
 
-  def create(**args)
-    create(args.to_h)
-  end
+  module ClassMethods 
+    def create(**args)
+      create(args.to_h)
+    end
 
-  def create(args : Hash(Symbol | String, DB::Any))
-    instance = new
-    instance.set_attributes(args)
-    instance.save
-    instance
+    def create(args : Hash(Symbol | String, DB::Any))
+      instance = new
+      instance.set_attributes(args)
+      instance.save
+      instance
+    end
   end
 
   # Returns true if this object hasn't been saved yet.

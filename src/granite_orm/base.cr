@@ -18,6 +18,7 @@ class Granite::ORM::Base
   include Validators
 
   extend Querying
+  extend Transactions::ClassMethods
 
   macro inherited
     macro finished
