@@ -4,6 +4,7 @@ require "../../spec_helper"
 module {{adapter.capitalize.id}}
   describe "{{ adapter.id }} #all" do
     it "finds all the records" do
+      Parent.clear
       model_ids = (0...100).map do |i|
         Parent.new(name: "model_#{i}").tap(&.save)
       end.map(&.id)

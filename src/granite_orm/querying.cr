@@ -10,18 +10,24 @@ module Granite::ORM::Querying
       # Create the from_sql method
       def self.from_sql(result)
         model = \{{@type.name.id}}.new
+        model.set_attributes(result)
+        model
+      end
 
-        model.\{{primary_name}} = result.read(\{{primary_type}})
+      def set_attributes(result : DB::ResultSet)
+        # Loading from DB means existing records.
+        @new_record = false
+        self.\{{primary_name}} = result.read(\{{primary_type}})
 
         \{% for name, type in FIELDS %}
-          model.\{{name.id}} = result.read(Union(\{{type.id}} | Nil))
+          self.\{{name.id}} = result.read(Union(\{{type.id}} | Nil))
         \{% end %}
 
         \{% if SETTINGS[:timestamps] %}
-          model.created_at = result.read(Union(Time | Nil))
-          model.updated_at = result.read(Union(Time | Nil))
+          self.created_at = result.read(Union(Time | Nil))
+          self.updated_at = result.read(Union(Time | Nil))
         \{% end %}
-        return model
+        return self
       end
     end
   end

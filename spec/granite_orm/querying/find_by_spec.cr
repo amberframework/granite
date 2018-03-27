@@ -4,6 +4,7 @@ require "../../spec_helper"
 module {{adapter.capitalize.id}}
   describe "{{ adapter.id }} #find_by?, #find_by" do
     it "finds an object with a string field" do
+      Parent.clear
       name = "robinson"
 
       model = Parent.new
@@ -18,6 +19,7 @@ module {{adapter.capitalize.id}}
     end
 
     it "finds an object with a symbol field" do
+      Parent.clear
       name = "robinson"
 
       model = Parent.new
@@ -32,6 +34,7 @@ module {{adapter.capitalize.id}}
     end
 
     it "also works with reserved words" do
+      Parent.clear
       value = "robinson"
 
       model = ReservedWord.new
@@ -46,6 +49,7 @@ module {{adapter.capitalize.id}}
     end
 
     it "returns nil or raises if no result" do
+      Parent.clear
       found = Parent.find_by?("name", "xxx")
       found.should be_nil
 

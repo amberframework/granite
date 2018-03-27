@@ -272,19 +272,5 @@ end
     Empty.drop_and_create
     ReservedWord.drop_and_create
     Callback.drop_and_create
-
-    Spec.before_each do
-      Parent.clear
-      Teacher.clear
-      Student.clear
-      Klass.clear
-      Enrollment.clear
-      School.clear
-      Nation::County.clear
-      Review.clear
-      Empty.clear
-      ReservedWord.clear
-      Callback.clear
-    end
   end
 {% end %}

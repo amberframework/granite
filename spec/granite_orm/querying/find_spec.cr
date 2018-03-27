@@ -16,6 +16,17 @@ module {{adapter.capitalize.id}}
       found.id.should eq model.id
     end
 
+    it "updates states of new_record and persisted" do
+      model = Parent.new
+      model.name = "Test Comment"
+      model.save
+      model_id = model.id
+
+      model = Parent.find(model_id)
+      model.new_record?.should be_false
+      model.persisted?.should be_true
+    end
+
     describe "with a custom primary key" do
       it "finds the object" do
         school = School.new

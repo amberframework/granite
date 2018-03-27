@@ -4,6 +4,7 @@ require "../../spec_helper"
 module {{adapter.capitalize.id}}
   describe "{{ adapter.id }} #first?, #first" do
     it "finds the first object" do
+      Parent.clear
       first = Parent.new.tap do |model|
         model.name = "Test 1"
         model.save
@@ -22,6 +23,7 @@ module {{adapter.capitalize.id}}
     end
 
     it "supports a SQL clause" do
+      Parent.clear
       first = Parent.new.tap do |model|
         model.name = "Test 1"
         model.save
@@ -40,6 +42,7 @@ module {{adapter.capitalize.id}}
     end
 
     it "returns nil or raises if no result" do
+      Parent.clear
       first = Parent.new.tap do |model|
         model.name = "Test 1"
         model.save

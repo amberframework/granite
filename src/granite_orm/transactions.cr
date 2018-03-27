@@ -14,24 +14,40 @@ module Granite::ORM::Transactions
 
       begin
         __run_before_save
-        if value = @{{primary_name}}
+        now = Time.now.to_utc
+
+        if (value = @{{primary_name}}) && !new_record?
           __run_before_update
-          @updated_at = Time.now.to_utc
+          @updated_at = now
           params_and_pk = params
           params_and_pk << value
-          @@adapter.update @@table_name, @@primary_name, self.class.fields, params_and_pk
+          begin
+            @@adapter.update @@table_name, @@primary_name, self.class.fields, params_and_pk
+          rescue err
+            raise DB::Error.new(err.message)
+          end
           __run_after_update
         else
           __run_before_create
-          @created_at = Time.now.to_utc
-          @updated_at = Time.now.to_utc
-          {% if primary_type.id == "Int32" %}
-            @{{primary_name}} = @@adapter.insert(@@table_name, self.class.fields, params).to_i32
-          {% else %}
-            @{{primary_name}} = @@adapter.insert(@@table_name, self.class.fields, params)
-          {% end %}
+          @created_at = @updated_at = now
+          params = params()
+          fields = self.class.fields
+          if value = @{{primary_name}}
+            fields << "{{primary_name}}"
+            params << value
+          end
+          begin
+            {% if primary_type.id == "Int32" %}
+              @{{primary_name}} = @@adapter.insert(@@table_name, fields, params).to_i32
+            {% else %}
+              @{{primary_name}} = @@adapter.insert(@@table_name, fields, params)
+            {% end %}
+          rescue err
+            raise DB::Error.new(err.message)
+          end
           __run_after_create
         end
+        @new_record = false
         __run_after_save
         return true
       rescue ex : DB::Error
@@ -49,6 +65,7 @@ module Granite::ORM::Transactions
         __run_before_destroy
         @@adapter.delete(@@table_name, @@primary_name, {{primary_name}})
         __run_after_destroy
+        @destroyed = true
         return true
       rescue ex : DB::Error
         if message = ex.message
@@ -69,5 +86,16 @@ module Granite::ORM::Transactions
     instance.set_attributes(args)
     instance.save
     instance
+  end
+
+  # Returns true if this object hasn't been saved yet.
+  getter? new_record : Bool = true
+
+  # Returns true if this object has been destroyed.
+  getter? destroyed : Bool = false
+
+  # Returns true if the record is persisted.
+  def persisted?
+    !(new_record? || destroyed?)
   end
 end
