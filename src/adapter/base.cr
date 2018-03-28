@@ -65,7 +65,7 @@ abstract class Granite::Adapter::Base
     # quotes table and column names
     def quote(name : String) : String
       char = QUOTING_CHAR
-      char + name.gsub(char, "#{char}#{char}") + char
+      char + name.delete(char).gsub(".", "#{char}.#{char}") + char
     end
   end
 
