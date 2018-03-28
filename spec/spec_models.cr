@@ -41,7 +41,7 @@ end
 
       has_many :students
 
-      validate :name, "Name cannot be blank" do |parent| 
+      validate :name, "Name cannot be blank" do |parent|
         !parent.name.to_s.blank?
       end
 
@@ -278,6 +278,41 @@ end
       end
     end
 
+    class Tool < Granite::ORM::Base
+      adapter pg
+      has_many :tool_reviews
+
+      primary id : Int32
+      field name : String
+
+      def self.drop_and_create
+        exec("DROP TABLE IF EXISTS tools;")
+        exec("CREATE TABLE tools (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(100)
+          );
+        ")
+      end
+    end
+
+    class ToolReview < Granite::ORM::Base
+      adapter pg
+      belongs_to :tool, tool_id : Int32
+
+      primary id : Int32
+      field body : String
+
+      def self.drop_and_create
+        exec("DROP TABLE IF EXISTS tool_reviews;")
+        exec("CREATE TABLE tool_reviews (
+            id SERIAL PRIMARY KEY,
+            tool_id INTEGER,
+            body VARCHAR(100)
+          );
+        ")
+      end
+    end
+
     Parent.drop_and_create
     Teacher.drop_and_create
     Student.drop_and_create
@@ -290,5 +325,7 @@ end
     ReservedWord.drop_and_create
     Callback.drop_and_create
     Kvs.drop_and_create
+    Tool.drop_and_create
+    ToolReview.drop_and_create
   end
 {% end %}
