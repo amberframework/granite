@@ -261,6 +261,23 @@ end
       end
     end
 
+    class Kvs < Granite::ORM::Base
+      adapter {{ adapter_literal }}
+      table_name kvss
+      primary k : String, auto: false
+      field v : String
+
+      def self.drop_and_create
+        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
+        exec <<-SQL
+          CREATE TABLE #{ quoted_table_name } (
+            k VARCHAR(255),
+            v VARCHAR(255)
+          )
+        SQL
+      end
+    end
+
     Parent.drop_and_create
     Teacher.drop_and_create
     Student.drop_and_create
@@ -272,5 +289,6 @@ end
     Empty.drop_and_create
     ReservedWord.drop_and_create
     Callback.drop_and_create
+    Kvs.drop_and_create
   end
 {% end %}

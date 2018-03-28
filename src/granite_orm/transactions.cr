@@ -2,6 +2,7 @@ module Granite::ORM::Transactions
   macro __process_transactions
     {% primary_name = PRIMARY[:name] %}
     {% primary_type = PRIMARY[:type] %}
+    {% primary_auto = PRIMARY[:auto] %}
 
     @updated_at : Time?
     @created_at : Time?
@@ -38,10 +39,22 @@ module Granite::ORM::Transactions
           end
           begin
             {% if primary_type.id == "Int32" %}
-              @{{primary_name}} = @@adapter.insert(@@table_name, fields, params).to_i32
+              @{{primary_name}} = @@adapter.insert(@@table_name, fields, params, lastval: true).to_i32
+            {% elsif primary_type.id == "Int64" %}
+              @{{primary_name}} = @@adapter.insert(@@table_name, fields, params, lastval: true)
+            {% elsif primary_auto == true %}
+              {% raise "Failed to define #{@type.name}#save: Primary key must be Int(32|64), or set `auto: false` for natural keys.\n\n  primary #{primary_name} : #{primary_type}, auto: false\n" %}
             {% else %}
-              @{{primary_name}} = @@adapter.insert(@@table_name, fields, params)
+              if @{{primary_name}}
+                @@adapter.insert(@@table_name, fields, params, lastval: false)
+              else
+                message = "Primary key('{{primary_name}}') cannot be null"
+                errors << Granite::ORM::Error.new("{{primary_name}}", message)
+                raise DB::Error.new
+              end
             {% end %}
+          rescue err : DB::Error
+            raise err
           rescue err
             raise DB::Error.new(err.message)
           end
@@ -88,6 +101,17 @@ module Granite::ORM::Transactions
       instance.save
       instance
     end
+  end
+
+  # Returns true if this object hasn't been saved yet.
+  getter? new_record : Bool = true
+
+  # Returns true if this object has been destroyed.
+  getter? destroyed : Bool = false
+
+  # Returns true if the record is persisted.
+  def persisted?
+    !(new_record? || destroyed?)
   end
 
   # Returns true if this object hasn't been saved yet.

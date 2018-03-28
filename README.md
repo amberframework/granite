@@ -104,6 +104,18 @@ end
 
 This will override the default primary key of `id : Int64`.
 
+### Natural Key
+
+For natural keys, you can set `auto: false` option to disable auto increment insert.
+
+```crystal
+class Site < Granite::ORM::Base
+  adapter mysql
+  primary code : String, auto: false
+  field name : String
+end
+```
+
 ### SQL
 
 To clear all the rows in the database:

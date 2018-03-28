@@ -55,7 +55,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     end
   end
 
-  def insert(table_name, fields, params)
+  def insert(table_name, fields, params, lastval)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{quote(table_name)} ("
       stmt << fields.map { |name| "#{quote(name)}" }.join(", ")
@@ -68,7 +68,11 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
 
     open do |db|
       db.exec statement, params
-      return db.scalar(last_val()).as(Int64)
+      if lastval
+        return db.scalar(last_val()).as(Int64)
+      else
+        return -1_i64
+      end
     end
   end
 
