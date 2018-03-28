@@ -10,18 +10,24 @@ end
     if adapter == "pg"
       primary_key_sql = "BIGSERIAL PRIMARY KEY".id
       foreign_key_sql = "BIGINT".id
+      custom_primary_key_sql = "SERIAL PRIMARY KEY".id
+      custom_foreign_key_sql = "INT".id
       created_at_sql = "created_at TIMESTAMP".id
       updated_at_sql = "updated_at TIMESTAMP".id
       timestamp_fields = "timestamps".id
     elsif adapter == "mysql"
       primary_key_sql = "BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY".id
       foreign_key_sql = "BIGINT".id
+      custom_primary_key_sql = "INT NOT NULL AUTO_INCREMENT PRIMARY KEY".id
+      custom_foreign_key_sql = "INT".id
       created_at_sql = "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP".id
       updated_at_sql = "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP".id
       timestamp_fields = "timestamps".id
     elsif adapter == "sqlite"
       primary_key_sql = "INTEGER NOT NULL PRIMARY KEY".id
       foreign_key_sql = "INTEGER".id
+      custom_primary_key_sql = "INTEGER NOT NULL PRIMARY KEY".id
+      custom_foreign_key_sql = "INTEGER".id
       created_at_sql = "created_at VARCHAR".id
       updated_at_sql = "updated_at VARCHAR".id
       timestamp_fields = "timestamps".id
@@ -279,6 +285,45 @@ end
       end
     end
 
+    class Book < Granite::ORM::Base
+      adapter {{ adapter_literal }}
+      table_name books
+      has_many :book_reviews
+
+      primary id : Int32
+      field name : String
+
+      def self.drop_and_create
+        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
+        exec <<-SQL
+          CREATE TABLE #{ quoted_table_name } (
+            id {{ custom_primary_key_sql }},
+            name VARCHAR(255)
+          )
+        SQL
+      end
+    end
+
+    class BookReview < Granite::ORM::Base
+      adapter {{ adapter_literal }}
+      table_name book_reviews
+      belongs_to :book, book_id : Int32
+
+      primary id : Int32
+      field body : String
+
+      def self.drop_and_create
+        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
+        exec <<-SQL
+          CREATE TABLE #{ quoted_table_name } (
+            id {{ custom_primary_key_sql }},
+            book_id {{ custom_foreign_key_sql }},
+            body VARCHAR(255)
+          )
+        SQL
+      end
+    end
+
     Parent.drop_and_create
     Teacher.drop_and_create
     Student.drop_and_create
@@ -291,5 +336,7 @@ end
     ReservedWord.drop_and_create
     Callback.drop_and_create
     Kvs.drop_and_create
+    Book.drop_and_create
+    BookReview.drop_and_create
   end
 {% end %}
