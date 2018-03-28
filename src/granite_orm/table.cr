@@ -2,7 +2,7 @@ module Granite::ORM::Table
   macro included
     macro inherited
       SETTINGS = {} of Nil => Nil
-      PRIMARY = {name: id, type: Int64}
+      PRIMARY = {name: id, type: Int64, auto: true}
     end
   end
 
@@ -27,16 +27,30 @@ module Granite::ORM::Table
     {% PRIMARY[:type] = decl.type %}
   end
 
+  # specify the primary key column and type and auto_increment
+  macro primary(decl, auto)
+    {% PRIMARY[:name] = decl.var %}
+    {% PRIMARY[:type] = decl.type %}
+    {% PRIMARY[:auto] = auto %}
+  end
+
   macro __process_table
     {% name_space = @type.name.gsub(/::/, "_").underscore.id %}
     {% table_name = SETTINGS[:table_name] || name_space + "s" %}
     {% primary_name = PRIMARY[:name] %}
     {% primary_type = PRIMARY[:type] %}
+    {% primary_auto = PRIMARY[:auto] %}
 
     @@table_name = "{{table_name}}"
     @@primary_name = "{{primary_name}}"
+    @@primary_auto = "{{primary_auto}}"
 
-    property {{primary_name}} : Union({{primary_type.id}} | Nil)
+    property? {{primary_name}} : Union({{primary_type.id}} | Nil)
+
+    def {{primary_name}}
+      raise {{@type.name.stringify}} + "#" + {{primary_name.stringify}} + " cannot be nil" if @{{primary_name}}.nil?
+      @{{primary_name}}.not_nil!
+    end
 
     def self.table_name
       @@table_name
@@ -44,6 +58,18 @@ module Granite::ORM::Table
 
     def self.primary_name
       @@primary_name
+    end
+
+    def self.primary_auto
+      @@primary_auto
+    end
+
+    def self.quoted_table_name
+      @@adapter.quote(table_name)
+    end
+
+    def self.quote(column_name)
+      @@adapter.quote(column_name)
     end
   end
 end

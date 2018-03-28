@@ -2,6 +2,7 @@ module Granite::ORM::Transactions
   macro __process_transactions
     {% primary_name = PRIMARY[:name] %}
     {% primary_type = PRIMARY[:type] %}
+    {% primary_auto = PRIMARY[:auto] %}
 
     @updated_at : Time?
     @created_at : Time?
@@ -14,24 +15,52 @@ module Granite::ORM::Transactions
 
       begin
         __run_before_save
-        if value = @{{primary_name}}
+        now = Time.now.to_utc
+
+        if (value = @{{primary_name}}) && !new_record?
           __run_before_update
-          @updated_at = Time.now.to_utc
+          @updated_at = now
           params_and_pk = params
           params_and_pk << value
-          @@adapter.update @@table_name, @@primary_name, self.class.fields, params_and_pk
+          begin
+            @@adapter.update @@table_name, @@primary_name, self.class.fields, params_and_pk
+          rescue err
+            raise DB::Error.new(err.message)
+          end
           __run_after_update
         else
           __run_before_create
-          @created_at = Time.now.to_utc
-          @updated_at = Time.now.to_utc
-          {% if primary_type.id == "Int32" %}
-            @{{primary_name}} = @@adapter.insert(@@table_name, self.class.fields, params).to_i32
-          {% else %}
-            @{{primary_name}} = @@adapter.insert(@@table_name, self.class.fields, params)
-          {% end %}
+          @created_at = @updated_at = now
+          params = params()
+          fields = self.class.fields
+          if value = @{{primary_name}}
+            fields << "{{primary_name}}"
+            params << value
+          end
+          begin
+            {% if primary_type.id == "Int32" %}
+              @{{primary_name}} = @@adapter.insert(@@table_name, fields, params, lastval: true).to_i32
+            {% elsif primary_type.id == "Int64" %}
+              @{{primary_name}} = @@adapter.insert(@@table_name, fields, params, lastval: true)
+            {% elsif primary_auto == true %}
+              {% raise "Failed to define #{@type.name}#save: Primary key must be Int(32|64), or set `auto: false` for natural keys.\n\n  primary #{primary_name} : #{primary_type}, auto: false\n" %}
+            {% else %}
+              if @{{primary_name}}
+                @@adapter.insert(@@table_name, fields, params, lastval: false)
+              else
+                message = "Primary key('{{primary_name}}') cannot be null"
+                errors << Granite::ORM::Error.new("{{primary_name}}", message)
+                raise DB::Error.new
+              end
+            {% end %}
+          rescue err : DB::Error
+            raise err
+          rescue err
+            raise DB::Error.new(err.message)
+          end
           __run_after_create
         end
+        @new_record = false
         __run_after_save
         return true
       rescue ex : DB::Error
@@ -49,6 +78,7 @@ module Granite::ORM::Transactions
         __run_before_destroy
         @@adapter.delete(@@table_name, @@primary_name, {{primary_name}})
         __run_after_destroy
+        @destroyed = true
         return true
       rescue ex : DB::Error
         if message = ex.message
@@ -60,14 +90,38 @@ module Granite::ORM::Transactions
     end
   end
 
-  def create(**args)
-    create(args.to_h)
+  module ClassMethods 
+    def create(**args)
+      create(args.to_h)
+    end
+
+    def create(args : Hash(Symbol | String, DB::Any))
+      instance = new
+      instance.set_attributes(args)
+      instance.save
+      instance
+    end
   end
 
-  def create(args : Hash(Symbol | String, DB::Any))
-    instance = new
-    instance.set_attributes(args)
-    instance.save
-    instance
+  # Returns true if this object hasn't been saved yet.
+  getter? new_record : Bool = true
+
+  # Returns true if this object has been destroyed.
+  getter? destroyed : Bool = false
+
+  # Returns true if the record is persisted.
+  def persisted?
+    !(new_record? || destroyed?)
+  end
+
+  # Returns true if this object hasn't been saved yet.
+  getter? new_record : Bool = true
+
+  # Returns true if this object has been destroyed.
+  getter? destroyed : Bool = false
+
+  # Returns true if the record is persisted.
+  def persisted?
+    !(new_record? || destroyed?)
   end
 end

@@ -1,4 +1,7 @@
 module Granite::ORM::Querying
+  class NotFound < Exception
+  end  
+
   macro extended
     macro __process_querying
       \{% primary_name = PRIMARY[:name] %}
@@ -7,25 +10,31 @@ module Granite::ORM::Querying
       # Create the from_sql method
       def self.from_sql(result)
         model = \{{@type.name.id}}.new
+        model.set_attributes(result)
+        model
+      end
 
-        model.\{{primary_name}} = result.read(\{{primary_type}})
+      def set_attributes(result : DB::ResultSet)
+        # Loading from DB means existing records.
+        @new_record = false
+        self.\{{primary_name}} = result.read(\{{primary_type}})
 
         \{% for name, type in FIELDS %}
-          model.\{{name.id}} = result.read(Union(\{{type.id}} | Nil))
+          self.\{{name.id}} = result.read(Union(\{{type.id}} | Nil))
         \{% end %}
 
         \{% if SETTINGS[:timestamps] %}
          if @@adapter.class.name == "Granite::Adapter::Sqlite"
             # sqlite3 does not have timestamp type - timestamps are stored as strings
             # will break for null timestamps
-            model.created_at = Time.parse(result.read(String), "%F %X" )
-            model.updated_at = Time.parse(result.read(String), "%F %X" )
+            self.created_at = Time.parse(result.read(String), "%F %X" )
+            self.updated_at = Time.parse(result.read(String), "%F %X" )
           else
-            model.created_at = result.read(Union(Time | Nil))
-            model.updated_at = result.read(Union(Time | Nil))
+            self.created_at = result.read(Union(Time | Nil))
+            self.updated_at = result.read(Union(Time | Nil))
           end
         \{% end %}
-        return model
+        return self
       end
     end
   end
@@ -53,29 +62,36 @@ module Granite::ORM::Querying
   end
 
   # First adds a `LIMIT 1` clause to the query and returns the first result
-  def first(clause = "", params = [] of DB::Any)
+  def first?(clause = "", params = [] of DB::Any)
     all([clause.strip, "LIMIT 1"].join(" "), params).first?
+  end
+
+  def first(clause = "", params = [] of DB::Any)
+    first?(clause, params) || raise NotFound.new("Couldn't find " + {{@type.name.stringify}} + " with first(#{clause})")
   end
 
   # find returns the row with the primary key specified.
   # it checks by primary by default, but one can pass
   # another field for comparison
+  def find?(value)
+    return find_by?(@@primary_name, value)
+  end
+
   def find(value)
     return find_by(@@primary_name, value)
   end
 
-  # find_by using symbol for field name.
-  def find_by(field : Symbol, value)
-    find_by(field.to_s, value)
-  end
-
   # find_by returns the first row found where the field maches the value
-  def find_by(field : String, value)
+  def find_by?(field : String | Symbol, value)
     row = nil
-    @@adapter.select_one(@@table_name, fields([@@primary_name]), field, value) do |result|
+    @@adapter.select_one(@@table_name, fields([@@primary_name]), field.to_s, value) do |result|
       row = from_sql(result) if result
     end
     return row
+  end
+
+  def find_by(field : String | Symbol, value)
+    find_by?(field, value) || raise NotFound.new("Couldn't find " + {{@type.name.stringify}} + " with #{field}=#{value}")
   end
 
   def find_each(clause = "", params = [] of DB::Any, batch_size limit = 100, offset = 0)
@@ -97,6 +113,11 @@ module Granite::ORM::Querying
       yield results
       offset += limit
     end
+  end
+
+  # count returns a count of all the records
+  def count : Int32
+    scalar "SELECT COUNT(*) FROM #{quoted_table_name}", &.to_s.to_i
   end
 
   def exec(clause = "")

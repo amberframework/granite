@@ -47,7 +47,7 @@ abstract class Granite::Adapter::Base
   # abstract def select_one(table_name, fields, field, id, &block)
 
   # This will insert a row in the database and return the id generated.
-  abstract def insert(table_name, fields, params) : Int64
+  abstract def insert(table_name, fields, params, lastval) : Int64
 
   # This will update a row in the database.
   abstract def update(table_name, primary_name, fields, params)
@@ -58,6 +58,15 @@ abstract class Granite::Adapter::Base
   # method used to replace the environment variable if exists
   private def replace_env_vars(url)
     Granite::Adapter::Base.env(url)
+  end
+
+  # Use macro in order to read a constant defined in each subclasses.
+  macro inherited
+    # quotes table and column names
+    def quote(name : String) : String
+      char = QUOTING_CHAR
+      char + name.gsub(char, "#{char}#{char}") + char
+    end
   end
 
   # class level method so we can test it
