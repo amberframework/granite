@@ -10,21 +10,21 @@ end
     if adapter == "pg"
       primary_key_sql = "BIGSERIAL PRIMARY KEY".id
       foreign_key_sql = "BIGINT".id
-      created_at_sql = "created_at TIMESTAMP,".id
-      updated_at_sql = "updated_at TIMESTAMP,".id
+      created_at_sql = "created_at TIMESTAMP".id
+      updated_at_sql = "updated_at TIMESTAMP".id
       timestamp_fields = "timestamps".id
     elsif adapter == "mysql"
       primary_key_sql = "BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY".id
       foreign_key_sql = "BIGINT".id
-      created_at_sql = "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,".id
-      updated_at_sql = "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,".id
+      created_at_sql = "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP".id
+      updated_at_sql = "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP".id
       timestamp_fields = "timestamps".id
     elsif adapter == "sqlite"
       primary_key_sql = "INTEGER NOT NULL PRIMARY KEY".id
       foreign_key_sql = "INTEGER".id
-      created_at_sql = "".id
-      updated_at_sql = "".id
-      timestamp_fields = "".id
+      created_at_sql = "created_at VARCHAR".id
+      updated_at_sql = "updated_at VARCHAR".id
+      timestamp_fields = "timestamps".id
     end
   %}
 
@@ -41,7 +41,7 @@ end
 
       has_many :students
 
-      validate :name, "Name cannot be blank" do |parent| 
+      validate :name, "Name cannot be blank" do |parent|
         !parent.name.to_s.blank?
       end
 
@@ -49,9 +49,9 @@ end
         exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
         exec("CREATE TABLE #{ quoted_table_name } (
           id {{ primary_key_sql }},
-          {{ created_at_sql }}
+          name VARCHAR(100),
+          {{ created_at_sql }},
           {{ updated_at_sql }}
-          name VARCHAR(100)
         );
         ")
       end
@@ -198,7 +198,8 @@ end
             sentiment FLOAT,
             interest REAL,
             published BOOL,
-            created_at TIMESTAMP
+            {{ created_at_sql }},
+            {{ updated_at_sql }}
           )
         SQL
       end
