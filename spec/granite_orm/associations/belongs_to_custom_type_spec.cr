@@ -4,16 +4,16 @@ require "../../spec_helper"
 module {{adapter.capitalize.id}}
   describe "{{ adapter.id }} belongs_to" do
     it "supports custom types for the join" do
-      tool = Tool.new
-      tool.name = "Screw driver"
-      tool.save
+      book = Book.new
+      book.name = "Screw driver"
+      book.save
 
-      review = ToolReview.new
-      review.tool = tool
-      review.body = "Best tool ever!"
+      review = BookReview.new
+      review.book = book
+      review.body = "Best book ever!"
       review.save
 
-      review.tool.name.should eq "Screw driver"
+      review.book.name.should eq "Screw driver"
     end
   end
 end

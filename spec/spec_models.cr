@@ -10,18 +10,24 @@ end
     if adapter == "pg"
       primary_key_sql = "BIGSERIAL PRIMARY KEY".id
       foreign_key_sql = "BIGINT".id
+      custom_primary_key_sql = "SERIAL PRIMARY KEY".id
+      custom_foreign_key_sql = "INT".id
       created_at_sql = "created_at TIMESTAMP,".id
       updated_at_sql = "updated_at TIMESTAMP,".id
       timestamp_fields = "timestamps".id
     elsif adapter == "mysql"
       primary_key_sql = "BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY".id
       foreign_key_sql = "BIGINT".id
+      custom_primary_key_sql = "INT NOT NULL AUTO_INCREMENT PRIMARY KEY".id
+      custom_foreign_key_sql = "INT".id
       created_at_sql = "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,".id
       updated_at_sql = "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,".id
       timestamp_fields = "timestamps".id
     elsif adapter == "sqlite"
       primary_key_sql = "INTEGER NOT NULL PRIMARY KEY".id
       foreign_key_sql = "INTEGER".id
+      custom_primary_key_sql = "INTEGER NOT NULL PRIMARY KEY".id
+      custom_foreign_key_sql = "INTEGER".id
       created_at_sql = "".id
       updated_at_sql = "".id
       timestamp_fields = "".id
@@ -278,38 +284,42 @@ end
       end
     end
 
-    class Tool < Granite::ORM::Base
-      adapter pg
-      has_many :tool_reviews
+    class Book < Granite::ORM::Base
+      adapter {{ adapter_literal }}
+      table_name books
+      has_many :book_reviews
 
       primary id : Int32
       field name : String
 
       def self.drop_and_create
-        exec("DROP TABLE IF EXISTS tools;")
-        exec("CREATE TABLE tools (
-            id SERIAL PRIMARY KEY,
-            name VARCHAR(100)
-          );
-        ")
+        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
+        exec <<-SQL
+          CREATE TABLE #{ quoted_table_name } (
+            id {{ custom_primary_key_sql }},
+            name VARCHAR(255)
+          )
+        SQL
       end
     end
 
-    class ToolReview < Granite::ORM::Base
-      adapter pg
-      belongs_to :tool, tool_id : Int32
+    class BookReview < Granite::ORM::Base
+      adapter {{ adapter_literal }}
+      table_name book_reviews
+      belongs_to :book, book_id : Int32
 
       primary id : Int32
       field body : String
 
       def self.drop_and_create
-        exec("DROP TABLE IF EXISTS tool_reviews;")
-        exec("CREATE TABLE tool_reviews (
-            id SERIAL PRIMARY KEY,
-            tool_id INTEGER,
-            body VARCHAR(100)
-          );
-        ")
+        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
+        exec <<-SQL
+          CREATE TABLE #{ quoted_table_name } (
+            id {{ custom_primary_key_sql }},
+            book_id {{ custom_foreign_key_sql }},
+            body VARCHAR(255)
+          )
+        SQL
       end
     end
 
@@ -325,7 +335,7 @@ end
     ReservedWord.drop_and_create
     Callback.drop_and_create
     Kvs.drop_and_create
-    Tool.drop_and_create
-    ToolReview.drop_and_create
+    Book.drop_and_create
+    BookReview.drop_and_create
   end
 {% end %}
