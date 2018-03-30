@@ -10,8 +10,7 @@ module Granite::ORM::Transactions
     # The import class method will run a batch INSERT statement for each model in the array
     # the array must contain only one model class
     # invalid model records will be skipped
-    def self.import(model_array)
-      raise ArgumentError.new("Model class mismatch:  expected array of only #{self} models.") unless model_array.all? { |model| model.class == self }
+    def self.import(model_array : Array(self))
       begin
        @@adapter.import(table_name, primary_name, {{primary_auto}}, fields, model_array)
       rescue err

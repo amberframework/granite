@@ -76,28 +76,29 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     end
   end
 
-  def import(table_name, primary_name, primary_auto, fields, model_array)
-  statement = String.build do |stmt|
-    stmt << "INSERT INTO #{quote(table_name)} ("
-    stmt << "#{quote(primary_name)}, " unless primary_auto
-    stmt << fields.map { |field| quote(field) }.join(", ")
-    stmt << ") VALUES "
+  def import(table_name : String, primary_name : String, primary_auto : Bool, fields, model_array)
+   params = [] of DB::Any
+    statement = String.build do |stmt|
+      stmt << "INSERT INTO #{quote(table_name)} ("
+      stmt << "#{quote(primary_name)}, " unless primary_auto
+      stmt << fields.map { |field| quote(field) }.join(", ")
+      stmt << ") VALUES "
 
-    model_array.each do |model|
-      if model.responds_to? :to_h
+      model_array.each do |model|
         next unless model.valid?
-        stmt << "("
-        stmt << model.to_h[primary_name].to_s + ", " unless primary_auto
-        stmt << fields.map { |field| model.to_h[field].is_a?(String) ? "'" + model.to_h[field].to_s + "'" : model.to_h[field] }.join(", ")
+        stmt << '('
+        stmt << "?," unless primary_auto
+        stmt << Array.new(fields.size, '?').join(',')
+        params << model.to_h[primary_name] unless primary_auto
+        params.concat fields.map { |field| model.to_h[field] }
         stmt << "),"
       end
-    end
-  end.chomp(",")
+    end.chomp(',')
 
-    log statement
+    log statement, params
 
     open do |db|
-      db.exec statement
+      db.exec statement, params
     end
   end
 
