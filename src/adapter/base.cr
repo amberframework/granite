@@ -49,6 +49,9 @@ abstract class Granite::Adapter::Base
   # This will insert a row in the database and return the id generated.
   abstract def insert(table_name, fields, params, lastval) : Int64
 
+  # This will insert an array of models as one insert statement
+  abstract def import(table_name, primary_name, primary_auto, fields, model_array)
+
   # This will update a row in the database.
   abstract def update(table_name, primary_name, fields, params)
 

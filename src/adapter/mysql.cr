@@ -76,6 +76,31 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     end
   end
 
+  def import(table_name, primary_name, primary_auto, fields, model_array)
+  statement = String.build do |stmt|
+    stmt << "INSERT INTO #{quote(table_name)} ("
+    stmt << "#{quote(primary_name)}, " unless primary_auto
+    stmt << fields.map { |field| quote(field) }.join(", ")
+    stmt << ") VALUES "
+
+    model_array.each do |model|
+      if model.responds_to? :to_h
+        next unless model.valid?
+        stmt << "("
+        stmt << model.to_h[primary_name].to_s + ", " unless primary_auto
+        stmt << fields.map { |field| model.to_h[field].is_a?(String) ? "'" + model.to_h[field].to_s + "'" : model.to_h[field] }.join(", ")
+        stmt << "),"
+      end
+    end
+  end.chomp(",")
+
+    log statement
+
+    open do |db|
+      db.exec statement
+    end
+  end
+
   private def last_val
     return "SELECT LAST_INSERT_ID()"
   end

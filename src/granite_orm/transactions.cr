@@ -7,9 +7,21 @@ module Granite::ORM::Transactions
     @updated_at : Time?
     @created_at : Time?
 
+    # The import class method will run a batch INSERT statement for each model in the array
+    # the array must contain only one model class
+    # invalid model records will be skipped
+    def self.import(model_array)
+      raise ArgumentError.new("Model class mismatch:  expected array of only #{self} models.") unless model_array.all? { |model| model.class == self }
+      begin
+       @@adapter.import(table_name, primary_name, {{primary_auto}}, fields, model_array)
+      rescue err
+        raise DB::Error.new(err.message)
+      end
+    end
+
     # The save method will check to see if the primary exists yet. If it does it
     # will call the update method, otherwise it will call the create method.
-    # This will update the timestamps apropriately.
+    # This will update the timestamps appropriately.
     def save
       return false unless valid?
 
