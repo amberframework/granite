@@ -6,21 +6,29 @@ module Granite::ORM::Fields
 
   macro included
     macro inherited
+      CONTENT_FIELDS = {} of Nil => Nil
       FIELDS = {} of Nil => Nil
     end
   end
 
   # specify the fields you want to define and types
   macro field(decl)
-    {% FIELDS[decl.var] = decl.type %}
+    {% CONTENT_FIELDS[decl.var] = decl.type %}
   end
 
   # include created_at and updated_at that will automatically be updated
   macro timestamps
-    {% SETTINGS[:timestamps] = true %}
+    field created_at : Time
+    field updated_at : Time
   end
 
   macro __process_fields
+    # merge PK and CONTENT_FIELDS into FIELDS
+    {% FIELDS[PRIMARY[:name]] = PRIMARY[:type] %}
+    {% for name, type in CONTENT_FIELDS %}
+      {% FIELDS[name] = type %}
+    {% end %}
+
     # Create the properties
     {% for name, type in FIELDS %}
       property? {{name.id}} : Union({{type.id}} | Nil)
@@ -29,50 +37,31 @@ module Granite::ORM::Fields
         @{{name.id}}.not_nil!
       end
     {% end %}
-    {% if SETTINGS[:timestamps] %}
-      property? created_at : Time?
-      property? updated_at : Time?
-      {% for name in %w( created_at updated_at ) %}
-        def {{name.id}}
-          raise {{@type.name.stringify}} + "#" + {{name.stringify}} + " cannot be nil" if @{{name.id}}.nil?
-          @{{name.id}}.not_nil!
-        end
-      {% end %}
-    {% end %}
 
     # keep a hash of the fields to be used for mapping
-    def self.fields(fields = [] of String)
-      {% for name, type in FIELDS %}
-        fields << "{{name.id}}"
-      {% end %}
-      {% if SETTINGS[:timestamps] %}
-        fields << "created_at"
-        fields << "updated_at"
-      {% end %}
-      return fields
+    def self.fields : Array(String)
+      @@fields ||= {{ FIELDS.empty? ? "[] of String".id : FIELDS.keys.map(&.id.stringify) }}
+    end
+
+    def self.content_fields : Array(String)
+      @@content_fields ||= {{ CONTENT_FIELDS.empty? ? "[] of String".id : CONTENT_FIELDS.keys.map(&.id.stringify) }}
     end
 
     # keep a hash of the params that will be passed to the adapter.
-    def params
+    def content_values
       parsed_params = [] of DB::Any
-      {% for name, type in FIELDS %}
+      {% for name, type in CONTENT_FIELDS %}
         {% if type.id == Time.id %}
           parsed_params << {{name.id}}?.try(&.to_s("%F %X"))
         {% else %}
           parsed_params << {{name.id}}?
         {% end %}
       {% end %}
-      {% if SETTINGS[:timestamps] %}
-        parsed_params << created_at.to_s("%F %X")
-        parsed_params << updated_at.to_s("%F %X")
-      {% end %}
       return parsed_params
     end
 
     def to_h
       fields = {} of String => DB::Any
-
-      fields["{{PRIMARY[:name]}}"] = {{PRIMARY[:name]}}?
 
       {% for name, type in FIELDS %}
         {% if type.id == Time.id %}
@@ -83,18 +72,12 @@ module Granite::ORM::Fields
           fields["{{name}}"] = {{name.id}}?
         {% end %}
       {% end %}
-      {% if SETTINGS[:timestamps] %}
-        fields["created_at"] = created_at?.try(&.to_s("%F %X"))
-        fields["updated_at"] = updated_at?.try(&.to_s("%F %X"))
-      {% end %}
 
       return fields
     end
 
     def to_json(json : JSON::Builder)
       json.object do
-        json.field "{{PRIMARY[:name]}}", {{PRIMARY[:name]}}?
-
         {% for name, type in FIELDS %}
           %field, %value = "{{name.id}}", {{name.id}}?
           {% if type.id == Time.id %}
@@ -104,11 +87,6 @@ module Granite::ORM::Fields
           {% else %}
             json.field %field, %value
           {% end %}
-        {% end %}
-
-        {% if SETTINGS[:timestamps] %}
-          json.field "created_at", created_at?.try(&.to_s("%F %X"))
-          json.field "updated_at", updated_at?.try(&.to_s("%F %X"))
         {% end %}
       end
     end
@@ -127,13 +105,15 @@ module Granite::ORM::Fields
     private def cast_to_field(name, value : Type)
       {% unless FIELDS.empty? %}
         case name.to_s
-          when "{{PRIMARY[:name]}}"
-            {% if !PRIMARY[:auto] %}
-              @{{PRIMARY[:name]}} = value.as({{PRIMARY[:type]}})
-            {% end %}
-          
           {% for _name, type in FIELDS %}
           when "{{_name.id}}"
+            if "{{_name.id}}" == "{{PRIMARY[:name]}}"
+              {% if !PRIMARY[:auto] %}
+                @{{PRIMARY[:name]}} = value.as({{PRIMARY[:type]}})
+              {% end %}
+              return
+            end
+
             return @{{_name.id}} = nil if value.nil?
             {% if type.id == Int32.id %}
               @{{_name.id}} = value.is_a?(String) ? value.to_i32(strict: false) : value.is_a?(Int64) ? value.to_i32 : value.as(Int32)
