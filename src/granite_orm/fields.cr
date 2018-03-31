@@ -31,8 +31,8 @@ module Granite::ORM::Fields
 
     # Create the properties
     {% for name, type in FIELDS %}
-      property? {{name.id}} : Union({{type.id}} | Nil)
-      def {{name.id}}
+      property {{name.id}} : Union({{type.id}} | Nil)
+      def {{name.id}}!
         raise {{@type.name.stringify}} + "#" + {{name.stringify}} + " cannot be nil" if @{{name.id}}.nil?
         @{{name.id}}.not_nil!
       end
@@ -52,9 +52,9 @@ module Granite::ORM::Fields
       parsed_params = [] of DB::Any
       {% for name, type in CONTENT_FIELDS %}
         {% if type.id == Time.id %}
-          parsed_params << {{name.id}}?.try(&.to_s("%F %X"))
+          parsed_params << {{name.id}}.try(&.to_s("%F %X"))
         {% else %}
-          parsed_params << {{name.id}}?
+          parsed_params << {{name.id}}
         {% end %}
       {% end %}
       return parsed_params
@@ -65,11 +65,11 @@ module Granite::ORM::Fields
 
       {% for name, type in FIELDS %}
         {% if type.id == Time.id %}
-          fields["{{name}}"] = {{name.id}}?.try(&.to_s("%F %X"))
+          fields["{{name}}"] = {{name.id}}.try(&.to_s("%F %X"))
         {% elsif type.id == Slice.id %}
-          fields["{{name}}"] = {{name.id}}?.try(&.to_s(""))
+          fields["{{name}}"] = {{name.id}}.try(&.to_s(""))
         {% else %}
-          fields["{{name}}"] = {{name.id}}?
+          fields["{{name}}"] = {{name.id}}
         {% end %}
       {% end %}
 
@@ -79,7 +79,7 @@ module Granite::ORM::Fields
     def to_json(json : JSON::Builder)
       json.object do
         {% for name, type in FIELDS %}
-          %field, %value = "{{name.id}}", {{name.id}}?
+          %field, %value = "{{name.id}}", {{name.id}}
           {% if type.id == Time.id %}
             json.field %field, %value.try(&.to_s("%F %X"))
           {% elsif type.id == Slice.id %}

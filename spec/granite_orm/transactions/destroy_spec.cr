@@ -10,7 +10,7 @@ module {{adapter.capitalize.id}}
 
       id = parent.id
       parent.destroy
-      found = Parent.find? id
+      found = Parent.find id
       found.should be_nil
     end
 
@@ -37,7 +37,7 @@ module {{adapter.capitalize.id}}
         primary_key = school.custom_id
         school.destroy
 
-        found_school = School.find? primary_key
+        found_school = School.find primary_key
         found_school.should be_nil
       end
     end
@@ -50,7 +50,7 @@ module {{adapter.capitalize.id}}
         primary_key = county.id
         county.destroy
 
-        found_county = Nation::County.find? primary_key
+        found_county = Nation::County.find primary_key
         found_county.should be_nil
       end
     end

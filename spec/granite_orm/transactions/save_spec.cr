@@ -14,7 +14,7 @@ module {{adapter.capitalize.id}}
       parent = Parent.new
       parent.name = ""
       parent.save
-      parent.id?.should be_nil
+      parent.id.should be_nil
     end
 
     it "updates an existing object" do
@@ -28,7 +28,7 @@ module {{adapter.capitalize.id}}
       parents = Parent.all
       parents.size.should eq 1
 
-      found = Parent.first
+      found = Parent.first!
       found.name.should eq parent.name
     end
 
@@ -38,7 +38,7 @@ module {{adapter.capitalize.id}}
       parent.save
       parent.name = ""
       parent.save
-      parent = Parent.find parent.id
+      parent = Parent.find! parent.id
       parent.name.should eq "Test Parent"
     end
 
@@ -74,7 +74,7 @@ module {{adapter.capitalize.id}}
         school.name = new_name
         school.save
 
-        found_school = School.find primary_key
+        found_school = School.find! primary_key
         found_school.custom_id.should eq primary_key
         found_school.name.should eq new_name
       end
@@ -112,7 +112,7 @@ module {{adapter.capitalize.id}}
         county.name = new_name
         county.save
 
-        found_county = Nation::County.find primary_key
+        found_county = Nation::County.find! primary_key
         found_county.name.should eq new_name
       end
     end
