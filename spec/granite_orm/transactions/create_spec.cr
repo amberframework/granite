@@ -11,7 +11,7 @@ module {{adapter.capitalize.id}}
 
     it "does not create an invalid object" do
       parent = Parent.create(name: "")
-      parent.id?.should be_nil
+      parent.id.should be_nil
     end
 
     describe "with a custom primary key" do

@@ -2,7 +2,7 @@ require "../../spec_helper"
 
 {% for adapter in GraniteExample::ADAPTERS %}
 module {{adapter.capitalize.id}}
-  describe "{{ adapter.id }} #first?, #first" do
+  describe "{{ adapter.id }} #first, #first!" do
     it "finds the first object" do
       Parent.clear
       first = Parent.new.tap do |model|
@@ -15,10 +15,10 @@ module {{adapter.capitalize.id}}
         model.save
       end
 
-      found = Parent.first?
+      found = Parent.first
       found.not_nil!.id.should eq first.id
 
-      found = Parent.first
+      found = Parent.first!
       found.id.should eq first.id
     end
 
@@ -34,10 +34,10 @@ module {{adapter.capitalize.id}}
         model.save
       end
 
-      found = Parent.first?("ORDER BY id DESC")
+      found = Parent.first("ORDER BY id DESC")
       found.not_nil!.id.should eq second.id
 
-      found = Parent.first("ORDER BY id DESC")
+      found = Parent.first!("ORDER BY id DESC")
       found.id.should eq second.id
     end
 
@@ -48,11 +48,11 @@ module {{adapter.capitalize.id}}
         model.save
       end
 
-      found = Parent.first?("WHERE name = 'Test 2'")
+      found = Parent.first("WHERE name = 'Test 2'")
       found.should be nil
 
       expect_raises(Granite::ORM::Querying::NotFound, /Couldn't find .*Parent.* with first\(WHERE name = 'Test 2'\)/) do
-        Parent.first("WHERE name = 'Test 2'")
+        Parent.first!("WHERE name = 'Test 2'")
       end
     end
   end

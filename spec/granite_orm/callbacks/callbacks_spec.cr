@@ -20,7 +20,7 @@ module {{adapter.capitalize.id}}
     describe "#save" do
       it "runs before_save, before_update, after_update, after_save" do
         Callback.new(name: "foo").save
-        callback = Callback.first
+        callback = Callback.first!
         callback.save
 
         callback.history.to_s.strip.should eq <<-EOF
@@ -35,7 +35,7 @@ module {{adapter.capitalize.id}}
     describe "#destroy" do
       it "runs before_destroy, after_destroy" do
         Callback.new(name: "foo").save
-        callback = Callback.first
+        callback = Callback.first!
         callback.destroy
 
         callback.history.to_s.strip.should eq <<-EOF
