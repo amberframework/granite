@@ -100,8 +100,9 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     if update_keys = options["on_duplicate_key_update"]?
       statement += " ON DUPLICATE KEY UPDATE "
       update_keys.each do |key|
-        statement += "#{quote(key)}=VALUES(#{quote(key)})"
+        statement += "#{quote(key)}=VALUES(#{quote(key)}), "
       end
+      statement = statement.chomp(", ")
     end
 
    log statement, params
