@@ -31,10 +31,11 @@ module Granite::ORM::Transactions
         if (value = @{{primary_name}}) && !new_record?
           __run_before_update
           @updated_at = now
-          params_and_pk = params
-          params_and_pk << value
+          fields = self.class.content_fields
+          params = content_values + [value]
+
           begin
-            @@adapter.update @@table_name, @@primary_name, self.class.fields, params_and_pk
+            @@adapter.update @@table_name, @@primary_name, fields, params
           rescue err
             raise DB::Error.new(err.message)
           end
@@ -42,8 +43,8 @@ module Granite::ORM::Transactions
         else
           __run_before_create
           @created_at = @updated_at = now
-          params = params()
-          fields = self.class.fields
+          fields = self.class.content_fields.dup
+          params = content_values
           if value = @{{primary_name}}
             fields << "{{primary_name}}"
             params << value

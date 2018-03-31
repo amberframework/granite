@@ -17,22 +17,18 @@ module Granite::ORM::Querying
       def set_attributes(result : DB::ResultSet)
         # Loading from DB means existing records.
         @new_record = false
-        self.\{{primary_name}} = result.read(\{{primary_type}})
-
         \{% for name, type in FIELDS %}
-          self.\{{name.id}} = result.read(Union(\{{type.id}} | Nil))
-        \{% end %}
-
-        \{% if SETTINGS[:timestamps] %}
-         if @@adapter.class.name == "Granite::Adapter::Sqlite"
-            # sqlite3 does not have timestamp type - timestamps are stored as strings
-            # will break for null timestamps
-            self.created_at = Time.parse(result.read(String), "%F %X" )
-            self.updated_at = Time.parse(result.read(String), "%F %X" )
-          else
-            self.created_at = result.read(Union(Time | Nil))
-            self.updated_at = result.read(Union(Time | Nil))
-          end
+          \{% if type.id.stringify == "Time" %}
+            if @@adapter.class.name == "Granite::Adapter::Sqlite"
+              # sqlite3 does not have timestamp type - timestamps are stored as str
+              # will break for null timestamps
+              self.\{{name.id}} = Time.parse(result.read(String), "%F %X" )
+            else
+              self.\{{name.id}} = result.read(Union(\{{type.id}} | Nil))
+            end
+          \{% else %}
+            self.\{{name.id}} = result.read(Union(\{{type.id}} | Nil))
+          \{% end %}
         \{% end %}
         return self
       end
@@ -53,7 +49,7 @@ module Granite::ORM::Querying
   # DSL.
   def all(clause = "", params = [] of DB::Any)
     rows = [] of self
-    @@adapter.select(@@table_name, fields([@@primary_name]), clause, params) do |results|
+    @@adapter.select(@@table_name, fields, clause, params) do |results|
       results.each do
         rows << from_sql(results)
       end
@@ -84,7 +80,7 @@ module Granite::ORM::Querying
   # find_by returns the first row found where the field maches the value
   def find_by?(field : String | Symbol, value)
     row = nil
-    @@adapter.select_one(@@table_name, fields([@@primary_name]), field.to_s, value) do |result|
+    @@adapter.select_one(@@table_name, fields, field.to_s, value) do |result|
       row = from_sql(result) if result
     end
     return row
