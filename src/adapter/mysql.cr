@@ -76,22 +76,19 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     end
   end
 
-  def import(table_name : String, primary_name : String, primary_auto : Bool, fields, model_array, **options)
+  def import(table_name : String, primary_name : String, fields, model_array, **options)
    params = [] of DB::Any
     statement = String.build do |stmt|
       stmt << "INSERT"
       stmt << " IGNORE" if options["on_duplicate_key_ignore"]?
       stmt << " INTO #{quote(table_name)} ("
-      stmt << "#{quote(primary_name)}, " unless primary_auto
       stmt << fields.map { |field| quote(field) }.join(", ")
       stmt << ") VALUES "
 
       model_array.each do |model|
         next unless model.valid?
         stmt << '('
-        stmt << "?," unless primary_auto
         stmt << Array.new(fields.size, '?').join(',')
-        params << model.to_h[primary_name] unless primary_auto
         params.concat fields.map { |field| model.to_h[field] }
         stmt << "),"
       end
