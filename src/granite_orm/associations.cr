@@ -33,7 +33,7 @@ module Granite::ORM::Associations
       {{children_class}}.all(query, id)
     end
   end
-  
+
   # define getter for related children
   macro has_many(children_table, through)
     def {{children_table.id}}

@@ -102,7 +102,7 @@ module Granite::ORM::Transactions
     end
   end
 
-  module ClassMethods 
+  module ClassMethods
     def create(**args)
       create(args.to_h)
     end

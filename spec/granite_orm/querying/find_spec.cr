@@ -60,7 +60,7 @@ module {{adapter.capitalize.id}}
     it "returns nil or raises if no result" do
       found = Parent.find? 0
       found.should be_nil
-      
+
       expect_raises(Granite::ORM::Querying::NotFound, /Couldn't find .*Parent.* with id=0/) do
         Parent.find 0
       end

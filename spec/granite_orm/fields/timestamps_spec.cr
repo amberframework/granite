@@ -5,7 +5,7 @@ require "../../spec_helper"
 module {{adapter.capitalize.id}}
   {%
     avoid_macro_bug = 1 # https://github.com/crystal-lang/crystal/issues/5724
-    
+
     # TODO mysql timestamp support should work better
     if adapter == "pg"
       time_kind_on_read = "Time::Kind::Utc".id

@@ -78,7 +78,10 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
 
   def import(table_name : String, primary_name : String, fields, model_array, **options)
     params = [] of DB::Any
+    now = Time.now.to_utc
+    fields.reject! { |field| field === "id" } if primary_name === "id"
     index = 0
+
     statement = String.build do |stmt|
       stmt << "INSERT"
       stmt << " INTO #{quote(table_name)} ("
@@ -86,9 +89,11 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       stmt << ") VALUES "
 
       model_array.each do |model|
+        model.updated_at = now if model.responds_to? :updated_at
+        model.created_at = now if model.responds_to? :created_at
         next unless model.valid?
         stmt << '('
-        stmt << fields.map_with_index { |_f, idx| "$#{index+idx+1}" }.join(',')
+        stmt << fields.map_with_index { |_f, idx| "$#{index + idx + 1}" }.join(',')
         params.concat fields.map { |field| model.to_h[field] }
         stmt << "),"
         index += fields.size
@@ -105,10 +110,10 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       statement += " ON CONFLICT DO NOTHING"
     end
 
-   log statement, params
+    log statement, params
 
     open do |db|
-     db.exec statement, params
+      db.exec statement, params
     end
   end
 

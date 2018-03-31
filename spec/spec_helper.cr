@@ -1,7 +1,7 @@
 require "spec"
 
 module GraniteExample
-  ADAPTERS = ["pg","mysql","sqlite"]
+  ADAPTERS = ["pg", "mysql", "sqlite"]
 end
 
 require "../src/granite_orm"

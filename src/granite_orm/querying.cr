@@ -1,6 +1,6 @@
 module Granite::ORM::Querying
   class NotFound < Exception
-  end  
+  end
 
   macro extended
     macro __process_querying

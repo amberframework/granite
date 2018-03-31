@@ -8,7 +8,7 @@ require "./error"
 #   !user.name.to_s.blank?
 # end
 #
-# validate :name, "can't be blank", -> (user : User) do
+# validate :name, "can't be blank", ->(user : User) do
 #   !user.name.to_s.blank?
 # end
 #
