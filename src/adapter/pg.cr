@@ -98,7 +98,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     if update_keys = options["on_duplicate_key_update"]?
       statement += " ON CONFLICT (#{quote(primary_name)}) DO UPDATE SET "
       update_keys.each do |key|
-        statement += "#{quote(key)}=EXCLUDED.#{key}, "
+        statement += "#{quote(key)}=EXCLUDED.#{quote(key)}, "
       end
       statement = statement.chomp(", ")
     elsif options["on_duplicate_key_ignore"]?
