@@ -50,7 +50,7 @@ abstract class Granite::Adapter::Base
   abstract def insert(table_name, fields, params, lastval) : Int64
 
   # This will insert an array of models as one insert statement
-  abstract def import(table_name, primary_name, primary_auto, fields, model_array)
+  abstract def import(table_name : String, primary_name : String, primary_auto : Bool, fields, model_array, **options)
 
   # This will update a row in the database.
   abstract def update(table_name, primary_name, fields, params)

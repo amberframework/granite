@@ -76,10 +76,12 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     end
   end
 
-  def import(table_name : String, primary_name : String, primary_auto : Bool, fields, model_array)
+  def import(table_name : String, primary_name : String, primary_auto : Bool, fields, model_array, **options)
    params = [] of DB::Any
     statement = String.build do |stmt|
-      stmt << "INSERT INTO #{quote(table_name)} ("
+      stmt << "INSERT"
+      stmt << " IGNORE" if options["on_duplicate_key_ignore"]?
+      stmt << " INTO #{quote(table_name)} ("
       stmt << "#{quote(primary_name)}, " unless primary_auto
       stmt << fields.map { |field| quote(field) }.join(", ")
       stmt << ") VALUES "
@@ -95,7 +97,14 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
       end
     end.chomp(',')
 
-    log statement, params
+    if update_keys = options["on_duplicate_key_update"]?
+      statement += " ON DUPLICATE KEY UPDATE "
+      update_keys.each do |key|
+        statement += "#{quote(key)}=VALUES(#{quote(key)})"
+      end
+    end
+
+   log statement, params
 
     open do |db|
       db.exec statement, params
