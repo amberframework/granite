@@ -76,6 +76,42 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     end
   end
 
+  def import(table_name : String, primary_name : String, fields, model_array, **options)
+    params = [] of DB::Any
+    index = 0
+    statement = String.build do |stmt|
+      stmt << "INSERT"
+      stmt << " INTO #{quote(table_name)} ("
+      stmt << fields.map { |field| quote(field) }.join(", ")
+      stmt << ") VALUES "
+
+      model_array.each do |model|
+        next unless model.valid?
+        stmt << '('
+        stmt << fields.map_with_index { |_f, idx| "$#{index+idx+1}" }.join(',')
+        params.concat fields.map { |field| model.to_h[field] }
+        stmt << "),"
+        index += fields.size
+      end
+    end.chomp(',')
+
+    if update_keys = options["on_duplicate_key_update"]?
+      statement += " ON CONFLICT (#{quote(primary_name)}) DO UPDATE SET "
+      update_keys.each do |key|
+        statement += "#{quote(key)}=EXCLUDED.#{key}, "
+      end
+      statement = statement.chomp(", ")
+    elsif options["on_duplicate_key_ignore"]?
+      statement += " ON CONFLICT DO NOTHING"
+    end
+
+   log statement, params
+
+    open do |db|
+     db.exec statement, params
+    end
+  end
+
   private def last_val
     return "SELECT LASTVAL()"
   end
