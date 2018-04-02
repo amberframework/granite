@@ -16,7 +16,7 @@ with kemal or any other framework as well.
 
 ```yaml
 dependencies:
-  granite:
+  granite_orm:
     github: amberframework/granite
 
   # Pick your database
@@ -50,9 +50,9 @@ Or you can set the `DATABASE_URL` environment variable.  This will override the 
 Here is an example using Granite Model
 
 ```crystal
-require "granite/adapter/mysql"
+require "granite_orm/adapter/mysql"
 
-class Post < Granite::Base
+class Post < Granite::ORM::Base
   adapter mysql
   field name : String
   field body : String
@@ -63,9 +63,9 @@ end
 You can disable the timestamps for SqlLite since TIMESTAMP is not supported for this database:
 
 ```crystal
-require "granite/adapter/sqlite"
+require "granite_orm/adapter/sqlite"
 
-class Comment < Granite::Base
+class Comment < Granite::ORM::Base
   adapter sqlite
   table_name post_comments
   field name : String
@@ -95,7 +95,7 @@ For legacy database mappings, you may already have a table and the primary key i
 We have a macro called `primary` to help you out:
 
 ```crystal
-class Site < Granite::Base
+class Site < Granite::ORM::Base
   adapter mysql
   primary custom_id : Int32
   field name : String
@@ -109,7 +109,7 @@ This will override the default primary key of `id : Int64`.
 For natural keys, you can set `auto: false` option to disable auto increment insert.
 
 ```crystal
-class Site < Granite::Base
+class Site < Granite::ORM::Base
   adapter mysql
   primary code : String, auto: false
   field name : String
@@ -251,7 +251,7 @@ post = Post.all("ORDER BY posts.name DESC LIMIT 1").first
 `belongs_to` and `has_many` macros provide a rails like mapping between Objects.
 
 ```crystal
-class User < Granite::Base
+class User < Granite::ORM::Base
   adapter mysql
 
   has_many :posts
@@ -265,7 +265,7 @@ end
 This will add a `posts` instance method to the user which returns an array of posts.
 
 ```crystal
-class Post < Granite::Base
+class Post < Granite::ORM::Base
   adapter mysql
 
   belongs_to :user
@@ -313,18 +313,18 @@ Instead of using a hidden many-to-many table, Granite recommends always creating
 Then you can use the `belongs_to` and `has_many` relationships going both ways.
 
 ```crystal
-class User < Granite::Base
+class User < Granite::ORM::Base
   has_many :participants
 
   field name : String
 end
 
-class Participant < Granite::Base
+class Participant < Granite::ORM::Base
   belongs_to :user
   belongs_to :room
 end
 
-class Room < Granite::Base
+class Room < Granite::ORM::Base
   has_many :participants
 
   field name : String
@@ -353,19 +353,19 @@ CREATE INDEX 'room_id_idx' ON TABLE participants (room_id);
 As a convenience, we provide a `through:` clause to simplify accessing the many-to-many relationship:
 
 ```crystal
-class User < Granite::Base
+class User < Granite::ORM::Base
   has_many :participants
   has_many :rooms, through: participants
 
   field name : String
 end
 
-class Participant < Granite::Base
+class Participant < Granite::ORM::Base
   belongs_to :user
   belongs_to :room
 end
 
-class Room < Granite::Base
+class Room < Granite::ORM::Base
   has_many :participants
   has_many :users, through: participants
 
@@ -408,9 +408,9 @@ There is support for callbacks on certain events.
 Here is an example:
 
 ```crystal
-require "granite/adapter/pg"
+require "granite_orm/adapter/pg"
 
-class Post < Granite::Base
+class Post < Granite::ORM::Base
   adapter pg
 
   before_save :upcase_title
