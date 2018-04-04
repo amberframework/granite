@@ -1,11 +1,11 @@
-# Granite::ORM
+# Granite
 
 [Amber](https://github.com/Amber-Crystal/amber) is a web framework written in
-the [Crystal](https://github.com/manastech/crystal) language.
+the [Crystal](https://github.com/crystal-lang/crystal) language.
 
 This project is to provide an ORM in Crystal.
 
-[![Build Status](https://img.shields.io/travis/amberframework/granite-orm.svg?maxAge=360)](https://travis-ci.org/amberframework/granite-orm)
+[![Build Status](https://img.shields.io/travis/amberframework/granite.svg?maxAge=360)](https://travis-ci.org/amberframework/granite)
 
 ## Installation
 
@@ -16,8 +16,8 @@ with kemal or any other framework as well.
 
 ```yaml
 dependencies:
-  granite_orm:
-    github: amberframework/granite-orm
+  granite:
+    github: amberframework/granite
 
   # Pick your database
   mysql:
@@ -47,12 +47,12 @@ Or you can set the `DATABASE_URL` environment variable.  This will override the 
 
 ## Usage
 
-Here is an example using Granite ORM Model
+Here is an example using Granite Model
 
 ```crystal
-require "granite_orm/adapter/mysql"
+require "granite/adapter/mysql"
 
-class Post < Granite::ORM::Base
+class Post < Granite::Base
   adapter mysql
   field name : String
   field body : String
@@ -63,9 +63,9 @@ end
 You can disable the timestamps for SqlLite since TIMESTAMP is not supported for this database:
 
 ```crystal
-require "granite_orm/adapter/sqlite"
+require "granite/adapter/sqlite"
 
-class Comment < Granite::ORM::Base
+class Comment < Granite::Base
   adapter sqlite
   table_name post_comments
   field name : String
@@ -95,7 +95,7 @@ For legacy database mappings, you may already have a table and the primary key i
 We have a macro called `primary` to help you out:
 
 ```crystal
-class Site < Granite::ORM::Base
+class Site < Granite::Base
   adapter mysql
   primary custom_id : Int32
   field name : String
@@ -109,7 +109,7 @@ This will override the default primary key of `id : Int64`.
 For natural keys, you can set `auto: false` option to disable auto increment insert.
 
 ```crystal
-class Site < Granite::ORM::Base
+class Site < Granite::Base
   adapter mysql
   primary code : String, auto: false
   field name : String
@@ -138,41 +138,41 @@ end
 #### Find First
 
 ```crystal
-post = Post.first?
+post = Post.first
 if post
   puts post.name
 end
 
-post = Post.first # raises when no records exist
+post = Post.first! # raises when no records exist
 ```
 
 #### Find
 
 ```crystal
-post = Post.find? 1
+post = Post.find 1
 if post
   puts post.name
 end
 
-post = Post.find 1 # raises when no records found
+post = Post.find! 1 # raises when no records found
 ```
 
 #### Find By
 
 ```crystal
-post = Post.find_by? :slug, "example_slug"
+post = Post.find_by :slug, "example_slug"
 if post
   puts post.name
 end
 
-post = Post.find_by :slug, "foo" # raises when no records found
+post = Post.find_by! :slug, "foo" # raises when no records found
 ```
 
 #### Insert
 
 ```crystal
 post = Post.new
-post.name = "Granite ORM Rocks!"
+post.name = "Granite Rocks!"
 post.body = "Check this out."
 post.save
 ```
@@ -251,7 +251,7 @@ post = Post.all("ORDER BY posts.name DESC LIMIT 1").first
 `belongs_to` and `has_many` macros provide a rails like mapping between Objects.
 
 ```crystal
-class User < Granite::ORM::Base
+class User < Granite::Base
   adapter mysql
 
   has_many :posts
@@ -265,7 +265,7 @@ end
 This will add a `posts` instance method to the user which returns an array of posts.
 
 ```crystal
-class Post < Granite::ORM::Base
+class Post < Granite::Base
   adapter mysql
 
   belongs_to :user
@@ -313,18 +313,18 @@ Instead of using a hidden many-to-many table, Granite recommends always creating
 Then you can use the `belongs_to` and `has_many` relationships going both ways.
 
 ```crystal
-class User < Granite::ORM::Base
+class User < Granite::Base
   has_many :participants
 
   field name : String
 end
 
-class Participant < Granite::ORM::Base
+class Participant < Granite::Base
   belongs_to :user
   belongs_to :room
 end
 
-class Room < Granite::ORM::Base
+class Room < Granite::Base
   has_many :participants
 
   field name : String
@@ -353,19 +353,19 @@ CREATE INDEX 'room_id_idx' ON TABLE participants (room_id);
 As a convenience, we provide a `through:` clause to simplify accessing the many-to-many relationship:
 
 ```crystal
-class User < Granite::ORM::Base
+class User < Granite::Base
   has_many :participants
   has_many :rooms, through: participants
 
   field name : String
 end
 
-class Participant < Granite::ORM::Base
+class Participant < Granite::Base
   belongs_to :user
   belongs_to :room
 end
 
-class Room < Granite::ORM::Base
+class Room < Granite::Base
   has_many :participants
   has_many :users, through: participants
 
@@ -393,7 +393,7 @@ end
 
 ### Errors
 
-All database errors are added to the `errors` array used by Granite::ORM::Validators with the symbol ':base'
+All database errors are added to the `errors` array used by Granite::Validators with the symbol ':base'
 
 ```crystal
 post = Post.new
@@ -408,9 +408,9 @@ There is support for callbacks on certain events.
 Here is an example:
 
 ```crystal
-require "granite_orm/adapter/pg"
+require "granite/adapter/pg"
 
-class Post < Granite::ORM
+class Post < Granite::Base
   adapter pg
 
   before_save :upcase_title
@@ -453,7 +453,7 @@ You can register callbacks for the following events:
 
 ## Contributing
 
-1. Fork it ( https://github.com/amberframework/granite-orm/fork )
+1. Fork it ( https://github.com/amberframework/granite/fork )
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)
@@ -461,7 +461,7 @@ You can register callbacks for the following events:
 
 ## Running tests
 
-Granite ORM uses Crystal's built in test framework. The tests can be run with `$ crystal spec`.
+Granite uses Crystal's built in test framework. The tests can be run with `$ crystal spec`.
 
 The test suite depends on access to a PostgreSQL, MySQL, and SQLite database to ensure the adapters work as intended.
 
