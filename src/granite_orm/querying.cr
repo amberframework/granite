@@ -47,7 +47,7 @@ module Granite::ORM::Querying
   # your Model class.  This allows you to take full advantage of the database
   # that you are using so you are not restricted or dummied down to support a
   # DSL.
-  def all(clause = "", params = [] of DB::Any)
+  def raw_all(clause = "", params = [] of DB::Any)
     rows = [] of self
     @@adapter.select(@@table_name, fields, clause, params) do |results|
       results.each do
@@ -55,6 +55,10 @@ module Granite::ORM::Querying
       end
     end
     return rows
+  end
+
+  def all(clause = "", params = [] of DB::Any)
+    Collection(self).new(-> { raw_all(clause, params) })
   end
 
   # First adds a `LIMIT 1` clause to the query and returns the first result
