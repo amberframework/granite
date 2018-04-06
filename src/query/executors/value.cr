@@ -22,6 +22,6 @@ module Query::Executor
     end
 
     delegate :<, :>, :<=, :>=, to: :run
-    delegate :to_s, to: :run
+    delegate :to_i, :to_s, to: :run
   end
 end

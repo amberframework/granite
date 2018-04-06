@@ -21,7 +21,7 @@ module Query::Executor
       results
     end
 
-    delegate :[], :first?, :first, :each, to: :run
+    delegate :[], :first?, :first, :each, :group_by, to: :run
     delegate :to_s, to: :run
   end
 end

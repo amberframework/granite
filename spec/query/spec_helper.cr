@@ -17,7 +17,7 @@ class Model
 end
 
 def query_fields
-  [Model.primary_name, Model.fields].flatten.join ", "
+  Model.fields.join ", "
 end
 
 def builder

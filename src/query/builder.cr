@@ -99,11 +99,31 @@ class Query::Builder(Model)
     assembler.delete
   end
 
+  def select
+    assembler.select.run
+  end
+
+  def size
+    count
+  end
+
+  def reject(&block)
+    assembler.select.run.reject do |record|
+      yield record
+    end
+  end
+
   def each(&block)
     assembler.select.tap do |record_set|
       record_set.each do |record|
         yield record
       end
+    end
+  end
+
+  def map(&block)
+    assembler.select.run.map do |record|
+      yield record
     end
   end
 end
