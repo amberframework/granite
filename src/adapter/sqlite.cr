@@ -81,7 +81,11 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
 
     statement = String.build do |stmt|
       stmt << "INSERT"
-      stmt << " IGNORE" if options["on_duplicate_key_ignore"]?
+      if options["on_duplicate_key_update"]?
+        stmt << " OR REPLACE "
+      elsif options["on_duplicate_key_ignore"]?
+        stmt << " OR IGNORE "
+      end
       stmt << " INTO #{quote(table_name)} ("
       stmt << fields.map { |field| quote(field) }.join(", ")
       stmt << ") VALUES "
@@ -96,14 +100,6 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
         stmt << "),"
       end
     end.chomp(',')
-
-    if update_keys = options["on_duplicate_key_update"]?
-      statement += " ON DUPLICATE KEY UPDATE "
-      update_keys.each do |key|
-        statement += "#{quote(key)}=VALUES(#{quote(key)}), "
-      end
-      statement = statement.chomp(", ")
-    end
 
     log statement, params
 
