@@ -12,7 +12,7 @@ module Granite::ORM::Transactions
     # invalid model records will be skipped
     def self.import(model_array : Array(self), **options)
       begin
-      @@adapter.import(table_name, primary_name, fields, model_array, **options)
+      @@adapter.import(table_name, primary_name, fields.dup, model_array, **options)
       rescue err
         raise DB::Error.new(err.message)
       end
