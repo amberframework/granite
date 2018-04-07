@@ -11,7 +11,7 @@ module {{adapter.capitalize.id}}
       ]
       Parent.import(to_import)
       Parent.all("WHERE name LIKE ?", ["Import%"]).size.should eq 3
-		end
+    end
 
     it "should work with on_duplicate_key_update" do
       to_import = [
@@ -30,9 +30,9 @@ module {{adapter.capitalize.id}}
 
       if parent = Parent.find 112
         parent.name.should be "ImportParent112"
-				parent.id.should eq 112
-			end
-		end
+        parent.id.should eq 112
+      end
+    end
 
     it "should work with on_duplicate_key_ignore" do
       to_import = [
@@ -51,9 +51,9 @@ module {{adapter.capitalize.id}}
 
       if parent = Parent.find 113
         parent.name.should be "ImportParent3"
-				parent.id.should eq 113
+        parent.id.should eq 113
       end
     end
-	end
+  end
 end
 {% end %}
