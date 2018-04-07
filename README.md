@@ -116,6 +116,69 @@ class Site < Granite::Base
 end
 ```
 
+### Bulk Insertions
+
+#### Import
+
+Each model has an `import` class level method to import an array of models in one bulk insert statement.
+```Crystal
+models [
+  Model.new(id: 1, name: "Fred", age: 14),
+  Model.new(i1: 2, name: "Joe", age 25),
+  Model.new(id: 3, name: "John", 30),
+]
+
+Model.import(models)
+```
+
+#### on_duplicate_key_update
+
+The `import` method has an optional `on_duplicate_key_update` param allows you to specify fields (as an array of strings) to be updated should a primary constraint is violated.
+```Crystal
+models [
+  Model.new(id: 1, name: "Fred", age: 14),
+  Model.new(i1: 2, name: "Joe", age 25),
+  Model.new(id: 3, name: "John", 30),
+]
+
+Model.import(models)
+
+Model.find!(1).name # => Fred
+
+models [
+  Model.new(id: 1, name: "George", age: 14),
+]
+
+Model.import(models, on_duplicate_key_update: %w(name))
+
+Model.find!(1).name # => George
+```
+
+##### NOTE:  If using PostgreSQL you must have version 9.5+ to have the on_duplicate_key_update feature.
+
+#### on_duplicate_key_ignore
+
+the `import` method has an optional `on_duplicate_key_ignore` param, that takes a boolean, which will skip records if the primary constraint is violated.
+```Crystal
+models [
+  Model.new(id: 1, name: "Fred", age: 14),
+  Model.new(i1: 2, name: "Joe", age 25),
+  Model.new(id: 3, name: "John", 30),
+]
+
+Model.import(models)
+
+Model.find!(1).name # => Fred
+
+models [
+  Model.new(id: 1, name: "George", age: 14),
+]
+
+Model.import(models, on_duplicate_key_ignore: true)
+
+Model.find!(1).name # => Fred
+```
+
 ### SQL
 
 To clear all the rows in the database:
