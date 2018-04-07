@@ -124,8 +124,8 @@ Each model has an `import` class level method to import an array of models in on
 ```Crystal
 models [
   Model.new(id: 1, name: "Fred", age: 14),
-  Model.new(i1: 2, name: "Joe", age 25),
-  Model.new(id: 3, name: "John", 30),
+  Model.new(id: 2, name: "Joe", age: 25),
+  Model.new(id: 3, name: "John", age: 30),
 ]
 
 Model.import(models)
@@ -137,8 +137,8 @@ The `import` method has an optional `on_duplicate_key_update` param allows you t
 ```Crystal
 models [
   Model.new(id: 1, name: "Fred", age: 14),
-  Model.new(i1: 2, name: "Joe", age 25),
-  Model.new(id: 3, name: "John", 30),
+  Model.new(id: 2, name: "Joe", age: 25),
+  Model.new(id: 3, name: "John", age: 30),
 ]
 
 Model.import(models)
@@ -162,8 +162,8 @@ the `import` method has an optional `on_duplicate_key_ignore` param, that takes 
 ```Crystal
 models [
   Model.new(id: 1, name: "Fred", age: 14),
-  Model.new(i1: 2, name: "Joe", age 25),
-  Model.new(id: 3, name: "John", 30),
+  Model.new(id: 2, name: "Joe", age: 25),
+  Model.new(id: 3, name: "John", age: 30),
 ]
 
 Model.import(models)
