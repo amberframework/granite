@@ -41,12 +41,6 @@ module Granite::ORM::Querying
     @@adapter.clear @@table_name
   end
 
-  # All will return all rows in the database. The clause allows you to specify
-  # a WHERE, JOIN, GROUP BY, ORDER BY and any other SQL92 compatible query to
-  # your table.  The results will be an array of instantiated instances of
-  # your Model class.  This allows you to take full advantage of the database
-  # that you are using so you are not restricted or dummied down to support a
-  # DSL.
   def raw_all(clause = "", params = [] of DB::Any)
     rows = [] of self
     @@adapter.select(@@table_name, fields, clause, params) do |results|
@@ -57,6 +51,14 @@ module Granite::ORM::Querying
     return rows
   end
 
+  # All will return all rows in the database. The clause allows you to specify
+  # a WHERE, JOIN, GROUP BY, ORDER BY and any other SQL92 compatible query to
+  # your table. The result will be a Collection(Model) object which lazy loads
+  # an array of instantiated instances of your Model class.
+  # This allows you to take full advantage of the database
+  # that you are using so you are not restricted or dummied down to support a
+  # DSL.
+  # Lazy load prevent running unnecessary queries from unused variables.
   def all(clause = "", params = [] of DB::Any)
     Collection(self).new(-> { raw_all(clause, params) })
   end

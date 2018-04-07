@@ -18,6 +18,21 @@ class Granite::ORM::AssociationCollection(Owner, Target)
     )
   end
 
+  def find_by!(field : String | Symbol, value)
+    find_by(field, value) ||
+      raise Granite::ORM::Querying::NotFound.new(
+        "Couldn't find #{Target.name} with #{field}=#{value}"
+      )
+  end
+
+  def find(value)
+    find_by(Target.primary_name, value)
+  end
+
+  def find!(value)
+    find_by!(Target.primary_name, value)
+  end
+
   private getter owner
   private getter through
 
@@ -27,10 +42,10 @@ class Granite::ORM::AssociationCollection(Owner, Target)
 
   private def query
     if through.nil?
-      query = "WHERE #{foreign_key} = ?"
+      "WHERE #{foreign_key} = ?"
     else
-      query = "JOIN #{through} ON #{through}.#{Target.table_name[0...-1]}_id = #{Target.table_name}.id "
-      query = query + "WHERE #{through}.#{Owner.table_name[0...-1]}_id = ?"
+      "JOIN #{through} ON #{through}.#{Target.table_name[0...-1]}_id = #{Target.table_name}.id " \
+        "WHERE #{through}.#{Owner.table_name[0...-1]}_id = ?"
     end
   end
 end
