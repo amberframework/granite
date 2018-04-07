@@ -80,13 +80,13 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
     fields.reject! { |field| field === "id" } if primary_name === "id"
 
     statement = String.build do |stmt|
-      stmt << "INSERT"
+      stmt << "INSERT "
       if options["on_duplicate_key_update"]?
-        stmt << " OR REPLACE "
+        stmt << "OR REPLACE "
       elsif options["on_duplicate_key_ignore"]?
-        stmt << " OR IGNORE "
+        stmt << "OR IGNORE "
       end
-      stmt << " INTO #{quote(table_name)} ("
+      stmt << "INTO #{quote(table_name)} ("
       stmt << fields.map { |field| quote(field) }.join(", ")
       stmt << ") VALUES "
 
