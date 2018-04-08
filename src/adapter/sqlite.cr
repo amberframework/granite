@@ -81,9 +81,9 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
 
     statement = String.build do |stmt|
       stmt << "INSERT "
-      if options["on_duplicate_key_update"]?
+      if options["update_on_duplicate"]?
         stmt << "OR REPLACE "
-      elsif options["on_duplicate_key_ignore"]?
+      elsif options["ignore_on_duplicate"]?
         stmt << "OR IGNORE "
       end
       stmt << "INTO #{quote(table_name)} ("

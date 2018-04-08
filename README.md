@@ -131,9 +131,9 @@ models [
 Model.import(models)
 ```
 
-#### on_duplicate_key_update
+#### update_on_duplicate
 
-The `import` method has an optional `on_duplicate_key_update` param allows you to specify fields (as an array of strings) to be updated should a primary constraint is violated.
+The `import` method has an optional `update_on_duplicate`  + `columns` params that allows you to specify the columns (as an array of strings) that should be updated if primary constraint is violated.
 ```Crystal
 models [
   Model.new(id: 1, name: "Fred", age: 14),
@@ -149,16 +149,16 @@ models [
   Model.new(id: 1, name: "George", age: 14),
 ]
 
-Model.import(models, on_duplicate_key_update: %w(name))
+Model.import(models, update_on_duplicate: true, columns: %w(name))
 
 Model.find!(1).name # => George
 ```
 
 ##### NOTE:  If using PostgreSQL you must have version 9.5+ to have the on_duplicate_key_update feature.
 
-#### on_duplicate_key_ignore
+#### ignore_on_duplicate
 
-the `import` method has an optional `on_duplicate_key_ignore` param, that takes a boolean, which will skip records if the primary constraint is violated.
+the `import` method has an optional `ignore_on_duplicate` param, that takes a boolean, which will skip records if the primary constraint is violated.
 ```Crystal
 models [
   Model.new(id: 1, name: "Fred", age: 14),
@@ -174,7 +174,7 @@ models [
   Model.new(id: 1, name: "George", age: 14),
 ]
 
-Model.import(models, on_duplicate_key_ignore: true)
+Model.import(models, ignore_on_duplicate: true)
 
 Model.find!(1).name # => Fred
 ```

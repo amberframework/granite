@@ -26,7 +26,7 @@ module {{adapter.capitalize.id}}
          Parent.new(id: 112, name: "ImportParent112"),
       ]
 
-      Parent.import(to_import, on_duplicate_key_update: ["name"])
+      Parent.import(to_import, update_on_duplicate: true, columns: ["name"])
 
       if parent = Parent.find 112
         parent.name.should be "ImportParent112"
@@ -47,7 +47,7 @@ module {{adapter.capitalize.id}}
          Parent.new(id: 113, name: "ImportParent113"),
       ]
 
-      Parent.import(to_import, on_duplicate_key_ignore: true)
+      Parent.import(to_import, ignore_on_duplicate: true)
 
       if parent = Parent.find 113
         parent.name.should be "ImportParent3"

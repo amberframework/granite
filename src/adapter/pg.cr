@@ -100,13 +100,15 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       end
     end.chomp(',')
 
-    if update_keys = options["on_duplicate_key_update"]?
-      statement += " ON CONFLICT (#{quote(primary_name)}) DO UPDATE SET "
-      update_keys.each do |key|
-        statement += "#{quote(key)}=EXCLUDED.#{quote(key)}, "
+    if options["update_on_duplicate"]?
+      if columns = options["columns"]?
+        statement += " ON CONFLICT (#{quote(primary_name)}) DO UPDATE SET "
+        columns.each do |key|
+          statement += "#{quote(key)}=EXCLUDED.#{quote(key)}, "
+        end
       end
       statement = statement.chomp(", ")
-    elsif options["on_duplicate_key_ignore"]?
+    elsif options["ignore_on_duplicate"]?
       statement += " ON CONFLICT DO NOTHING"
     end
 

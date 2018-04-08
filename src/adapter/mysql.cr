@@ -83,7 +83,7 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
 
     statement = String.build do |stmt|
       stmt << "INSERT"
-      stmt << " IGNORE" if options["on_duplicate_key_ignore"]?
+      stmt << " IGNORE" if options["ignore_on_duplicate"]?
       stmt << " INTO #{quote(table_name)} ("
       stmt << fields.map { |field| quote(field) }.join(", ")
       stmt << ") VALUES "
@@ -99,12 +99,14 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
       end
     end.chomp(',')
 
-    if update_keys = options["on_duplicate_key_update"]?
-      statement += " ON DUPLICATE KEY UPDATE "
-      update_keys.each do |key|
-        statement += "#{quote(key)}=VALUES(#{quote(key)}), "
+    if options["update_on_duplicate"]?
+      if columns = options["columns"]?
+        statement += " ON DUPLICATE KEY UPDATE "
+        columns.each do |key|
+          statement += "#{quote(key)}=VALUES(#{quote(key)}), "
+        end
+        statement = statement.chomp(", ")
       end
-      statement = statement.chomp(", ")
     end
 
     log statement, params

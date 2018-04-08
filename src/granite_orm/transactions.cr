@@ -10,9 +10,25 @@ module Granite::ORM::Transactions
     # The import class method will run a batch INSERT statement for each model in the array
     # the array must contain only one model class
     # invalid model records will be skipped
-    def self.import(model_array : Array(self), **options)
+    def self.import(model_array : Array(self))
       begin
-        @@adapter.import(table_name, primary_name, fields.dup, model_array, **options)
+        @@adapter.import(table_name, primary_name, fields.dup, model_array)
+      rescue err
+        raise DB::Error.new(err.message)
+      end
+    end
+
+    def self.import(model_array : Array(self), update_on_duplicate : Bool, columns : Array(String))
+      begin
+        @@adapter.import(table_name, primary_name, fields.dup, model_array, update_on_duplicate: update_on_duplicate, columns: columns)
+      rescue err
+        raise DB::Error.new(err.message)
+      end
+    end
+
+    def self.import(model_array : Array(self), ignore_on_duplicate : Bool)
+      begin
+        @@adapter.import(table_name, primary_name, fields.dup, model_array, ignore_on_duplicate: ignore_on_duplicate)
       rescue err
         raise DB::Error.new(err.message)
       end
