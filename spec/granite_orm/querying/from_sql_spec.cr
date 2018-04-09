@@ -14,12 +14,12 @@ macro build_review_emitter(driver)
       [
         8_i64,
         "name",
-        nil,        # downvotes
-        nil,        # upvotes
-        nil,        # sentiment
-        nil,        # interest
-        true,       # published
-        {{ timestamp}}   # created_at
+        nil,   # downvotes
+        nil,   # upvotes
+        nil,   # sentiment
+        nil,   # interest
+        true,  # published
+        {{ timestamp }} # created_at
       ]
     )
   end
@@ -33,7 +33,6 @@ end
   module {{ adapter.capitalize.id }}
     describe "{{ adapter.id }} #from_sql" do
       it "Builds a model from a resultset" do
-        puts "running from_sql test"
         model = Review.from_sql build_review_emitter({{ adapter }})
         model.class.should eq Review
       end

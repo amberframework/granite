@@ -38,11 +38,14 @@ class FakeConnection < DB::Connection
   end
 end
 
+# FieldEmitter emulates the subtle and uninformed way that
+# DB::ResultSet emits data. To be used in testing interactions
+# with raw data sets.
 class FieldEmitter < DB::ResultSet
   # 1. Override `#move_next` to move to the next row.
   # 2. Override `#read` returning the next value in the row.
   # 3. (Optional) Override `#read(t)` for some types `t` for which custom logic other than a simple cast is needed.
-# 4. Override `#column_count`, `#column_name`.
+  # 4. Override `#column_count`, `#column_name`.
 
   @position = 0
   @field_position = 0
