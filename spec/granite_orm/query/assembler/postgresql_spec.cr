@@ -6,7 +6,7 @@ def ignore_whitespace(expected : String)
   Regex.new compiled, Regex::Options::IGNORE_CASE ^ Regex::Options::MULTILINE
 end
 
-describe Query::Assembler::Postgresql(Model) do
+describe Granite::Query::Assembler::Postgresql(Model) do
   context "count" do
     it "adds group_by fields for where/count queries" do
       sql = "select count(*) from table where name = $1 group by name"

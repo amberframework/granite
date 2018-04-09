@@ -1,6 +1,6 @@
 require "spec"
 require "db"
-require "../../../../src/ext/query_builder"
+require "../../../src/query_builder"
 
 class Model
   def self.table_name
@@ -21,9 +21,9 @@ def query_fields
 end
 
 def builder
-  builder = Query::Builder(Model).new
+  builder = Granite::Query::Builder(Model).new
 end
 
 def assembler
-  Query::Assembler::Postgresql(Model).new builder
+  Granite::Query::Assembler::Postgresql(Model).new builder
 end

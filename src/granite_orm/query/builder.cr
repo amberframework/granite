@@ -15,7 +15,7 @@
 # - Model.where(field: value).or( Model.where(field3: value3) )
 # or
 # - Model.where(field: value).or { whehre(field3: value3) }
-class Query::Builder(Model)
+class Granite::Query::Builder(Model)
   alias FieldName = String
   alias FieldData = DB::Any
 

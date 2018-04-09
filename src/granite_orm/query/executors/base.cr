@@ -1,4 +1,4 @@
-module Query::Executor
+module Granite::Query::Executor
   module Shared
     def raw_sql : String
       @sql

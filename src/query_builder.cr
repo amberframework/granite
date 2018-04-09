@@ -1,5 +1,5 @@
-module Query
+module Granite::Query
 end
 
-require "./query/executors/base"
-require "./query/**"
+require "./granite_orm/query/executors/base"
+require "./granite_orm/query/**"

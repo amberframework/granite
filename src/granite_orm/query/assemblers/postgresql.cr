@@ -1,6 +1,6 @@
 # Query runner which finalizes a query and runs it.
 # This will likely require adapter specific subclassing :[.
-module Query::Assembler
+module Granite::Query::Assembler
   class Postgresql(Model) < Base(Model)
     def build_where
       clauses = @query.where_fields.map do |field, value|

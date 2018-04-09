@@ -1,4 +1,4 @@
-module Query::Executor
+module Granite::Query::Executor
   class List(Model)
     include Shared
 

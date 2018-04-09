@@ -4,7 +4,7 @@
 # class Model < Granite::ORM::Base
 #   include Query::BuilderMethods
 # end
-module Query::BuilderMethods
+module Granite::Query::BuilderMethods
   def __builder
     Builder(self).new
   end

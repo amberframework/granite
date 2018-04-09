@@ -1,4 +1,4 @@
-module Query::Executor
+module Granite::Query::Executor
   class Value(Model, Scalar)
     include Shared
 

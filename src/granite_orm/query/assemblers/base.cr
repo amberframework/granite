@@ -1,4 +1,4 @@
-module Query::Assembler
+module Granite::Query::Assembler
   abstract class Base(Model)
     def initialize(@query : Builder(Model))
       @numbered_parameters = [] of DB::Any
