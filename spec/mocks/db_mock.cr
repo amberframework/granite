@@ -1,5 +1,5 @@
 class FakeStatement < DB::Statement
-  protected def perform_query(args : Enumerable) : ResultSet
+  protected def perform_query(args : Enumerable) : DB::ResultSet
     FieldEmitter.new
   end
 
