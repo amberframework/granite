@@ -12,8 +12,14 @@ module Granite::ORM::Fields
   end
 
   # specify the fields you want to define and types
-  macro field(decl)
-    {% CONTENT_FIELDS[decl.var] = decl.type %}
+  macro field(decl, **options)
+    {% CONTENT_FIELDS[decl.var] = options || {} of Nil => Nil %}
+    {% CONTENT_FIELDS[decl.var][:type] = decl.type %}
+  end
+
+  # specify the raise-on-nil fields you want to define and types
+  macro field!(decl, **options)
+    field {{decl}}, {{options.double_splat(", ")}}raise_on_nil: true
   end
 
   # include created_at and updated_at that will automatically be updated
@@ -24,15 +30,17 @@ module Granite::ORM::Fields
 
   macro __process_fields
     # merge PK and CONTENT_FIELDS into FIELDS
-    {% FIELDS[PRIMARY[:name]] = PRIMARY[:type] %}
-    {% for name, type in CONTENT_FIELDS %}
-      {% FIELDS[name] = type %}
+    {% FIELDS[PRIMARY[:name]] = PRIMARY %}
+    {% for name, options in CONTENT_FIELDS %}
+      {% FIELDS[name] = options %}
     {% end %}
 
     # Create the properties
-    {% for name, type in FIELDS %}
-      property {{name.id}} : Union({{type.id}} | Nil)
-      def {{name.id}}!
+    {% for name, options in FIELDS %}
+      {% type = options[:type] %}
+      {% suffixes = options[:raise_on_nil] ? ["?", ""] : ["", "!"] %}
+      property{{suffixes[0].id}} {{name.id}} : Union({{type.id}} | Nil)
+      def {{name.id}}{{suffixes[1].id}}
         raise {{@type.name.stringify}} + "#" + {{name.stringify}} + " cannot be nil" if @{{name.id}}.nil?
         @{{name.id}}.not_nil!
       end
@@ -50,8 +58,8 @@ module Granite::ORM::Fields
     # keep a hash of the params that will be passed to the adapter.
     def content_values
       parsed_params = [] of DB::Any
-      {% for name, type in CONTENT_FIELDS %}
-        {% if type.id == Time.id %}
+      {% for name, options in CONTENT_FIELDS %}
+        {% if options[:type].id == Time.id %}
           parsed_params << {{name.id}}.try(&.to_s("%F %X"))
         {% else %}
           parsed_params << {{name.id}}
@@ -63,7 +71,8 @@ module Granite::ORM::Fields
     def to_h
       fields = {} of String => DB::Any
 
-      {% for name, type in FIELDS %}
+      {% for name, options in FIELDS %}
+        {% type = options[:type] %}
         {% if type.id == Time.id %}
           fields["{{name}}"] = {{name.id}}.try(&.to_s("%F %X"))
         {% elsif type.id == Slice.id %}
@@ -78,7 +87,8 @@ module Granite::ORM::Fields
 
     def to_json(json : JSON::Builder)
       json.object do
-        {% for name, type in FIELDS %}
+        {% for name, options in FIELDS %}
+          {% type = options[:type] %}
           %field, %value = "{{name.id}}", {{name.id}}
           {% if type.id == Time.id %}
             json.field %field, %value.try(&.to_s("%F %X"))
@@ -105,7 +115,8 @@ module Granite::ORM::Fields
     private def cast_to_field(name, value : Type)
       {% unless FIELDS.empty? %}
         case name.to_s
-          {% for _name, type in FIELDS %}
+          {% for _name, options in FIELDS %}
+            {% type = options[:type] %}
           when "{{_name.id}}"
             if "{{_name.id}}" == "{{PRIMARY[:name]}}"
               {% if !PRIMARY[:auto] %}
