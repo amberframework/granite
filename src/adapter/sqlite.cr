@@ -5,6 +5,17 @@ require "sqlite3"
 class Granite::Adapter::Sqlite < Granite::Adapter::Base
   QUOTING_CHAR = '"'
 
+  module Schema
+    TYPES = {
+      "AUTO_Int32" => "INTEGER NOT NULL PRIMARY KEY",
+      "AUTO_Int64" => "INTEGER NOT NULL PRIMARY KEY",
+      "Int32"      => "INTEGER",
+      "Int64"      => "INTEGER",
+      "created_at" => "VARCHAR",
+      "updated_at" => "VARCHAR",
+    }
+  end
+
   # remove all rows from a table and reset the counter on the id.
   def clear(table_name)
     statement = "DELETE FROM #{quote(table_name)}"

@@ -6,6 +6,7 @@ require "./settings"
 require "./table"
 require "./transactions"
 require "./validators"
+require "./migrator"
 require "./version"
 
 # Granite::ORM::Base is the base class for your model objects.
@@ -16,6 +17,7 @@ class Granite::ORM::Base
   include Table
   include Transactions
   include Validators
+  include Migrator
 
   extend Querying
   extend Transactions::ClassMethods
@@ -26,6 +28,7 @@ class Granite::ORM::Base
       __process_fields
       __process_querying
       __process_transactions
+      __process_migrator
     end
   end
 

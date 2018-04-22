@@ -451,6 +451,24 @@ You can register callbacks for the following events:
 - **destroy**
 - after_destroy
 
+### Migration
+
+- `migrator` provides `drop`, `create` and `drop_and_create` methods
+
+```crystal
+class User < Granite::ORM::Base
+  adapter mysql
+  field name : String
+end
+
+User.migrator.drop_and_create
+# => "DROP TABLE IF EXISTS `users`;"
+# => "CREATE TABLE `users` (id BIGSERIAL PRIMARY KEY, name VARCHAR(255));"
+
+User.migrator(table_options: "ENGINE=InnoDB DEFAULT CHARSET=utf8").create
+# => "CREATE TABLE ... ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+```
+
 ## Contributing
 
 1. Fork it ( https://github.com/amberframework/granite/fork )
