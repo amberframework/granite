@@ -17,8 +17,10 @@ module Granite::ORM::Callbacks
   end
 
   {% for name in CALLBACK_NAMES %}
-    macro {{name.id}}(callback)
-      \{% CALLBACKS[{{name}}] << callback.id %}
+    macro {{name.id}}(*callbacks)
+      \{% for callback in callbacks %}
+        \{% CALLBACKS[{{name}}] << callback.id %}
+      \{% end %}
     end
 
     macro __run_{{name.id}}
