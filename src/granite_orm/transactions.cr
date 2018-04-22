@@ -64,7 +64,7 @@ module Granite::ORM::Transactions
         @new_record = false
         __run_after_save
         return true
-      rescue ex : DB::Error
+      rescue ex : DB::Error | Granite::ORM::Callbacks::Abort
         if message = ex.message
           Granite::ORM.settings.logger.error "Save Exception: #{message}"
           errors << Granite::ORM::Error.new(:base, message)
@@ -81,7 +81,7 @@ module Granite::ORM::Transactions
         __run_after_destroy
         @destroyed = true
         return true
-      rescue ex : DB::Error
+      rescue ex : DB::Error | Granite::ORM::Callbacks::Abort
         if message = ex.message
           Granite::ORM.settings.logger.error "Destroy Exception: #{message}"
           errors << Granite::ORM::Error.new(:base, message)
