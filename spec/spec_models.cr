@@ -268,6 +268,32 @@ end
       end
     end
 
+    class CallbackWithAbort < Granite::ORM::Base
+      adapter {{ adapter_literal }}
+      table_name callbacks_with_abort
+      primary abort_at : String, auto: false
+      field do_abort : Bool
+
+      property history : IO::Memory = IO::Memory.new
+
+      {% for name in Granite::ORM::Callbacks::CALLBACK_NAMES %}
+        {{name.id}} do
+          abort! if do_abort && abort_at == "{{name.id}}"
+          history << "{{name.id}}\n"
+        end
+      {% end %}
+
+      def self.drop_and_create
+        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
+        exec <<-SQL
+          CREATE TABLE #{ quoted_table_name } (
+            abort_at VARCHAR(31),
+            do_abort BOOL
+          )
+        SQL
+      end
+    end
+
     class Kvs < Granite::ORM::Base
       adapter {{ adapter_literal }}
       table_name kvss
@@ -335,6 +361,7 @@ end
     Empty.drop_and_create
     ReservedWord.drop_and_create
     Callback.drop_and_create
+    CallbackWithAbort.drop_and_create
     Kvs.drop_and_create
     Book.drop_and_create
     BookReview.drop_and_create
