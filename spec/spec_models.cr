@@ -204,8 +204,7 @@ end
             sentiment FLOAT,
             interest REAL,
             published BOOL,
-            {{ created_at_sql }},
-            {{ updated_at_sql }}
+            {{ created_at_sql }}
           )
         SQL
       end
