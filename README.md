@@ -120,6 +120,8 @@ end
 
 #### Import
 
+**Note:  As of now imports do not trigger callbacks.**
+
 Each model has an `import` class level method to import an array of models in one bulk insert statement.
 ```Crystal
 models = [
