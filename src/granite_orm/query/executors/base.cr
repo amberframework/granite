@@ -4,10 +4,8 @@ module Granite::Query::Executor
       @sql
     end
 
-    def log(*stuff)
-      puts
-      puts *stuff
-      puts
+    def log(*messages)
+      Granite::Logger.log messages
     end
   end
 end
