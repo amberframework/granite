@@ -59,12 +59,12 @@ module Granite::ORM::Transactions
           rescue err
             raise DB::Error.new(err.message)
           end
+          @new_record = false
           __run_after_create
         end
-        @new_record = false
         __run_after_save
         return true
-      rescue ex : DB::Error
+      rescue ex : DB::Error | Granite::ORM::Callbacks::Abort
         if message = ex.message
           Granite::ORM.settings.logger.error "Save Exception: #{message}"
           errors << Granite::ORM::Error.new(:base, message)
@@ -78,10 +78,10 @@ module Granite::ORM::Transactions
       begin
         __run_before_destroy
         @@adapter.delete(@@table_name, @@primary_name, {{primary_name}})
-        __run_after_destroy
         @destroyed = true
+        __run_after_destroy
         return true
-      rescue ex : DB::Error
+      rescue ex : DB::Error | Granite::ORM::Callbacks::Abort
         if message = ex.message
           Granite::ORM.settings.logger.error "Destroy Exception: #{message}"
           errors << Granite::ORM::Error.new(:base, message)
@@ -102,17 +102,6 @@ module Granite::ORM::Transactions
       instance.save
       instance
     end
-  end
-
-  # Returns true if this object hasn't been saved yet.
-  getter? new_record : Bool = true
-
-  # Returns true if this object has been destroyed.
-  getter? destroyed : Bool = false
-
-  # Returns true if the record is persisted.
-  def persisted?
-    !(new_record? || destroyed?)
   end
 
   # Returns true if this object hasn't been saved yet.
