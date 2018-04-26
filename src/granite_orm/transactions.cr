@@ -7,9 +7,36 @@ module Granite::ORM::Transactions
     @updated_at : Time?
     @created_at : Time?
 
+    # The import class method will run a batch INSERT statement for each model in the array
+    # the array must contain only one model class
+    # invalid model records will be skipped
+    def self.import(model_array : Array(self))
+      begin
+        @@adapter.import(table_name, primary_name, fields.dup, model_array)
+      rescue err
+        raise DB::Error.new(err.message)
+      end
+    end
+
+    def self.import(model_array : Array(self), update_on_duplicate : Bool, columns : Array(String))
+      begin
+        @@adapter.import(table_name, primary_name, fields.dup, model_array, update_on_duplicate: update_on_duplicate, columns: columns)
+      rescue err
+        raise DB::Error.new(err.message)
+      end
+    end
+
+    def self.import(model_array : Array(self), ignore_on_duplicate : Bool)
+      begin
+        @@adapter.import(table_name, primary_name, fields.dup, model_array, ignore_on_duplicate: ignore_on_duplicate)
+      rescue err
+        raise DB::Error.new(err.message)
+      end
+    end
+
     # The save method will check to see if the primary exists yet. If it does it
     # will call the update method, otherwise it will call the create method.
-    # This will update the timestamps apropriately.
+    # This will update the timestamps appropriately.
     def save
       return false unless valid?
 
@@ -91,7 +118,7 @@ module Granite::ORM::Transactions
     end
   end
 
-  module ClassMethods 
+  module ClassMethods
     def create(**args)
       create(args.to_h)
     end
