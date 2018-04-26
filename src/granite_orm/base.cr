@@ -1,3 +1,5 @@
+require "./collection"
+require "./association_collection"
 require "./associations"
 require "./callbacks"
 require "./fields"
