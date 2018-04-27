@@ -1,4 +1,17 @@
 module Granite::ORM::Transactions
+  module ClassMethods
+    def create(**args)
+      create(args.to_h)
+    end
+
+    def create(args : Hash(Symbol | String, DB::Any))
+      instance = new
+      instance.set_attributes(args)
+      instance.save
+      instance
+    end
+  end
+
   macro __process_transactions
     {% primary_name = PRIMARY[:name] %}
     {% primary_type = PRIMARY[:type] %}
@@ -34,6 +47,77 @@ module Granite::ORM::Transactions
       end
     end
 
+    private def __run_create
+      @created_at = @updated_at = Time.now.to_utc
+      fields = self.class.content_fields.dup
+      params = content_values
+      if value = @{{primary_name}}
+        fields << "{{primary_name}}"
+        params << value
+      end
+      begin
+        {% if primary_type.id == "Int32" %}
+          @{{primary_name}} = @@adapter.insert(@@table_name, fields, params, lastval: true).to_i32
+        {% elsif primary_type.id == "Int64" %}
+          @{{primary_name}} = @@adapter.insert(@@table_name, fields, params, lastval: true)
+        {% elsif primary_auto == true %}
+          {% raise "Failed to define #{@type.name}#save: Primary key must be Int(32|64), or set `auto: false` for natural keys.\n\n  primary #{primary_name} : #{primary_type}, auto: false\n" %}
+        {% else %}
+          if @{{primary_name}}
+            @@adapter.insert(@@table_name, fields, params, lastval: false)
+          else
+            message = "Primary key('{{primary_name}}') cannot be null"
+            errors << Granite::ORM::Error.new("{{primary_name}}", message)
+            raise DB::Error.new
+          end
+        {% end %}
+      rescue err : DB::Error
+        raise err
+      rescue err
+        raise DB::Error.new(err.message)
+      end
+      @new_record = false
+    end
+
+    private def __run_update
+      @updated_at = Time.now.to_utc
+      fields = self.class.content_fields
+      params = content_values + [@{{primary_name}}]
+
+      begin
+        @@adapter.update @@table_name, @@primary_name, fields, params
+      rescue err
+        raise DB::Error.new(err.message)
+      end
+    end
+
+    private def __run_destroy
+      @@adapter.delete(@@table_name, @@primary_name, @{{primary_name}})
+      @destroyed = true
+    end
+
+    private def __create
+      __run_before_save
+      __run_before_create
+      __run_create
+      __run_after_create
+      __run_after_save
+    end
+
+    private def __update
+      __run_before_save
+      __run_before_update
+      __run_update
+      __run_after_update
+      __run_after_save
+    end
+
+    private def __destroy
+      __run_before_destroy
+      __run_destroy
+      __run_after_destroy
+    end
+
     # The save method will check to see if the primary exists yet. If it does it
     # will call the update method, otherwise it will call the create method.
     # This will update the timestamps appropriately.
@@ -41,56 +125,11 @@ module Granite::ORM::Transactions
       return false unless valid?
 
       begin
-        __run_before_save
-        now = Time.now.to_utc
-
-        if (value = @{{primary_name}}) && !new_record?
-          __run_before_update
-          @updated_at = now
-          fields = self.class.content_fields
-          params = content_values + [value]
-
-          begin
-            @@adapter.update @@table_name, @@primary_name, fields, params
-          rescue err
-            raise DB::Error.new(err.message)
-          end
-          __run_after_update
+        if @{{primary_name}} && !new_record?
+          __update
         else
-          __run_before_create
-          @created_at = @updated_at = now
-          fields = self.class.content_fields.dup
-          params = content_values
-          if value = @{{primary_name}}
-            fields << "{{primary_name}}"
-            params << value
-          end
-          begin
-            {% if primary_type.id == "Int32" %}
-              @{{primary_name}} = @@adapter.insert(@@table_name, fields, params, lastval: true).to_i32
-            {% elsif primary_type.id == "Int64" %}
-              @{{primary_name}} = @@adapter.insert(@@table_name, fields, params, lastval: true)
-            {% elsif primary_auto == true %}
-              {% raise "Failed to define #{@type.name}#save: Primary key must be Int(32|64), or set `auto: false` for natural keys.\n\n  primary #{primary_name} : #{primary_type}, auto: false\n" %}
-            {% else %}
-              if @{{primary_name}}
-                @@adapter.insert(@@table_name, fields, params, lastval: false)
-              else
-                message = "Primary key('{{primary_name}}') cannot be null"
-                errors << Granite::ORM::Error.new("{{primary_name}}", message)
-                raise DB::Error.new
-              end
-            {% end %}
-          rescue err : DB::Error
-            raise err
-          rescue err
-            raise DB::Error.new(err.message)
-          end
-          @new_record = false
-          __run_after_create
+          __create
         end
-        __run_after_save
-        return true
       rescue ex : DB::Error | Granite::ORM::Callbacks::Abort
         if message = ex.message
           Granite::ORM.settings.logger.error "Save Exception: #{message}"
@@ -98,16 +137,13 @@ module Granite::ORM::Transactions
         end
         return false
       end
+      true
     end
 
     # Destroy will remove this from the database.
     def destroy
       begin
-        __run_before_destroy
-        @@adapter.delete(@@table_name, @@primary_name, {{primary_name}})
-        @destroyed = true
-        __run_after_destroy
-        return true
+        __destroy
       rescue ex : DB::Error | Granite::ORM::Callbacks::Abort
         if message = ex.message
           Granite::ORM.settings.logger.error "Destroy Exception: #{message}"
@@ -115,19 +151,7 @@ module Granite::ORM::Transactions
         end
         return false
       end
-    end
-  end
-
-  module ClassMethods
-    def create(**args)
-      create(args.to_h)
-    end
-
-    def create(args : Hash(Symbol | String, DB::Any))
-      instance = new
-      instance.set_attributes(args)
-      instance.save
-      instance
+      true
     end
   end
 
