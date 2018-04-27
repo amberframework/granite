@@ -76,6 +76,49 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     end
   end
 
+  def import(table_name : String, primary_name : String, fields, model_array, **options)
+    params = [] of DB::Any
+    now = Time.now.to_utc
+    fields.reject! { |field| field === "id" } if primary_name === "id"
+    index = 0
+
+    statement = String.build do |stmt|
+      stmt << "INSERT"
+      stmt << " INTO #{quote(table_name)} ("
+      stmt << fields.map { |field| quote(field) }.join(", ")
+      stmt << ") VALUES "
+
+      model_array.each do |model|
+        model.updated_at = now if model.responds_to? :updated_at
+        model.created_at = now if model.responds_to? :created_at
+        next unless model.valid?
+        stmt << '('
+        stmt << fields.map_with_index { |_f, idx| "$#{index + idx + 1}" }.join(',')
+        params.concat fields.map { |field| model.to_h[field] }
+        stmt << "),"
+        index += fields.size
+      end
+    end.chomp(',')
+
+    if options["update_on_duplicate"]?
+      if columns = options["columns"]?
+        statement += " ON CONFLICT (#{quote(primary_name)}) DO UPDATE SET "
+        columns.each do |key|
+          statement += "#{quote(key)}=EXCLUDED.#{quote(key)}, "
+        end
+      end
+      statement = statement.chomp(", ")
+    elsif options["ignore_on_duplicate"]?
+      statement += " ON CONFLICT DO NOTHING"
+    end
+
+    log statement, params
+
+    open do |db|
+      db.exec statement, params
+    end
+  end
+
   private def last_val
     return "SELECT LASTVAL()"
   end
