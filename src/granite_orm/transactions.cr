@@ -7,38 +7,38 @@ module Granite::ORM::Transactions
     @updated_at : Time?
     @created_at : Time?
 
-  # The import class method will run a batch INSERT statement for each model in the array
-  # the array must contain only one model class
-  # invalid model records will be skipped
-  def self.import(model_array : Array(self), batch_size : Int32 = model_array.size)
-    begin
-      model_array.each_slice(batch_size, true) do |slice|
-        @@adapter.import(table_name, primary_name, fields.dup, slice)
+    # The import class method will run a batch INSERT statement for each model in the array
+    # the array must contain only one model class
+    # invalid model records will be skipped
+    def self.import(model_array : Array(self), batch_size : Int32 = model_array.size)
+      begin
+        model_array.each_slice(batch_size, true) do |slice|
+          @@adapter.import(table_name, primary_name, fields.dup, slice)
+        end
+      rescue err
+        raise DB::Error.new(err.message)
       end
-    rescue err
-      raise DB::Error.new(err.message)
     end
-  end
 
-  def self.import(model_array : Array(self), update_on_duplicate : Bool, columns : Array(String), batch_size : Int32 = model_array.size)
-    begin
-      model_array.each_slice(batch_size, true) do |slice|
-        @@adapter.import(table_name, primary_name, fields.dup, slice)
+    def self.import(model_array : Array(self), update_on_duplicate : Bool, columns : Array(String), batch_size : Int32 = model_array.size)
+      begin
+        model_array.each_slice(batch_size, true) do |slice|
+          @@adapter.import(table_name, primary_name, fields.dup, slice)
+        end
+      rescue err
+        raise DB::Error.new(err.message)
       end
-    rescue err
-      raise DB::Error.new(err.message)
     end
-  end
 
-  def self.import(model_array : Array(self), ignore_on_duplicate : Bool, batch_size : Int32 = model_array.size)
-    begin
-      model_array.each_slice(batch_size, true) do |slice|
-        @@adapter.import(table_name, primary_name, fields.dup, slice)
+    def self.import(model_array : Array(self), ignore_on_duplicate : Bool, batch_size : Int32 = model_array.size)
+      begin
+        model_array.each_slice(batch_size, true) do |slice|
+          @@adapter.import(table_name, primary_name, fields.dup, slice)
+        end
+      rescue err
+        raise DB::Error.new(err.message)
       end
-    rescue err
-      raise DB::Error.new(err.message)
     end
-  end
 
     # The save method will check to see if the primary exists yet. If it does it
     # will call the update method, otherwise it will call the create method.
