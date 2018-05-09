@@ -3,6 +3,8 @@ class Granite::ORM::Base
   end
 end
 
+require "uuid"
+
 {% for adapter in GraniteExample::ADAPTERS %}
   {%
     adapter_literal = adapter.id
@@ -349,6 +351,30 @@ end
       end
     end
 
+  class Item < Granite::ORM::Base
+    adapter {{ adapter_literal }}
+    table_name items
+
+    primary item_id : String, auto: false
+    field item_name : String
+
+    before_create :generate_uuid
+
+    def generate_uuid
+      @item_id = UUID.random.to_s
+    end
+
+    def self.drop_and_create
+      exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
+      exec <<-SQL
+            CREATE TABLE #{ quoted_table_name } (
+              item_id VARCHAR(255) PRIMARY KEY,
+              item_name VARCHAR(255)
+            )
+      SQL
+    end
+  end
+
     Parent.drop_and_create
     Teacher.drop_and_create
     Student.drop_and_create
@@ -364,5 +390,6 @@ end
     Kvs.drop_and_create
     Book.drop_and_create
     BookReview.drop_and_create
+    Item.drop_and_create
   end
 {% end %}

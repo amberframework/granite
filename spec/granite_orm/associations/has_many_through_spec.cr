@@ -125,7 +125,7 @@ module {{adapter.capitalize.id}}
         klass.name.should eq "Test class with different name"
 
         expect_raises(
-          Granite::ORM::Querying::NotFound, 
+          Granite::ORM::Querying::NotFound,
           "Couldn't find #{Klass.name} with name=not_found"
         ) do
           klass = student.klasss.find_by!(:name, "not_found")
@@ -188,7 +188,7 @@ module {{adapter.capitalize.id}}
         id = klass3.id.as(Int64) + 42
 
         expect_raises(
-          Granite::ORM::Querying::NotFound, 
+          Granite::ORM::Querying::NotFound,
           "Couldn't find #{Klass.name} with id=#{id}"
         ) do
           student.klasss.find!(id)

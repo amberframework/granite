@@ -20,6 +20,7 @@ class FakeContext
   end
 
   def discard(connection); end
+
   def release(connection); end
 end
 
@@ -72,7 +73,6 @@ class FieldEmitter < DB::ResultSet
       raise "Overread"
     end
 
-
     @values[@position].tap do |v|
       @position += 1
     end
@@ -86,4 +86,3 @@ class FieldEmitter < DB::ResultSet
     "Column #{index}"
   end
 end
-

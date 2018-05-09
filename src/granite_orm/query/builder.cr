@@ -48,7 +48,7 @@ class Granite::Query::Builder(Model)
   end
 
   def order(field : Symbol)
-    @order_fields << { field: field.to_s, direction: Sort::Ascending }
+    @order_fields << {field: field.to_s, direction: Sort::Ascending}
 
     self
   end
@@ -69,7 +69,7 @@ class Granite::Query::Builder(Model)
         direction = Sort::Descending
       end
 
-      @order_fields << { field: field.to_s, direction: direction }
+      @order_fields << {field: field.to_s, direction: direction}
     end
 
     self
@@ -92,7 +92,7 @@ class Granite::Query::Builder(Model)
   end
 
   def any? : Bool
-    ! first.nil?
+    !first.nil?
   end
 
   def delete
