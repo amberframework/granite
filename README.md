@@ -118,7 +118,7 @@ end
 
 #### UUIDs
 
-For databases that utilize UUIDs as the primary key, the `primary` macro can be used again with the `auto: false` option.  A `before_create` callback can be added to the model to randomly generate and set a secure UUID on the record before it saved to the database.
+For databases that utilize UUIDs as the primary key, the `primary` macro can be used again with the `auto: false` option.  A `before_create` callback can be added to the model to randomly generate and set a secure UUID on the record before it is saved to the database.
 
 ```crystal
 class Book < Granite::ORM::Base
