@@ -54,6 +54,19 @@ module {{adapter.capitalize.id}}
         parent.id.should eq 113
       end
     end
+
+    it "should work with batch_size" do
+      to_import = [
+         Book.new(id: 111, name: "ImportBook1"),
+         Book.new(id: 112, name: "ImportBook2"),
+         Book.new(id: 113, name: "ImportBook3"),
+         Book.new(id: 114, name: "ImportBook4"),
+      ]
+
+      Book.import(to_import, batch_size: 2)
+
+      Book.all("WHERE name LIKE ?", ["Import%"]).size.should eq 4
+    end
   end
 end
 {% end %}

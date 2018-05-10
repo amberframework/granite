@@ -10,25 +10,34 @@ module Granite::ORM::Transactions
     # The import class method will run a batch INSERT statement for each model in the array
     # the array must contain only one model class
     # invalid model records will be skipped
-    def self.import(model_array : Array(self))
+    def self.import(model_array : Array(self), batch_size : Int32 = model_array.size)
       begin
-        @@adapter.import(table_name, primary_name, fields.dup, model_array)
+        fields_duplicate = fields.dup
+        model_array.each_slice(batch_size, true) do |slice|
+          @@adapter.import(table_name, primary_name, fields_duplicate, slice)
+        end
       rescue err
         raise DB::Error.new(err.message)
       end
     end
 
-    def self.import(model_array : Array(self), update_on_duplicate : Bool, columns : Array(String))
+    def self.import(model_array : Array(self), update_on_duplicate : Bool, columns : Array(String), batch_size : Int32 = model_array.size)
       begin
-        @@adapter.import(table_name, primary_name, fields.dup, model_array, update_on_duplicate: update_on_duplicate, columns: columns)
+        fields_duplicate = fields.dup
+        model_array.each_slice(batch_size, true) do |slice|
+          @@adapter.import(table_name, primary_name, fields_duplicate, slice)
+        end
       rescue err
         raise DB::Error.new(err.message)
       end
     end
 
-    def self.import(model_array : Array(self), ignore_on_duplicate : Bool)
+    def self.import(model_array : Array(self), ignore_on_duplicate : Bool, batch_size : Int32 = model_array.size)
       begin
-        @@adapter.import(table_name, primary_name, fields.dup, model_array, ignore_on_duplicate: ignore_on_duplicate)
+        fields_duplicate = fields.dup
+        model_array.each_slice(batch_size, true) do |slice|
+          @@adapter.import(table_name, primary_name, fields_duplicate, slice)
+        end
       rescue err
         raise DB::Error.new(err.message)
       end
