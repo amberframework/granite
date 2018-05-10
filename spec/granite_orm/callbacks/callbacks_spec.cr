@@ -56,6 +56,35 @@ module {{adapter.capitalize.id}}
         end
       end
     end
+
+    describe "manually triggered" do
+      context "on a single model" do
+        it "should successfully trigger the callback" do
+          item = Item.new(item_name: "item1")
+          item.item_id.should be_nil
+
+          item.before_create
+
+          item.item_id.should be_a(String)
+        end
+      end
+
+      context "on an array of models" do
+        it "should successfully trigger the callback" do
+          items = [] of Item
+          items << Item.new(item_name: "item1")
+          items << Item.new(item_name: "item2")
+          items << Item.new(item_name: "item3")
+          items << Item.new(item_name: "item4")
+
+          items.all? { |item| item.item_id.nil? }.should be_true
+
+          items.each(&.before_create)
+
+          items.all? { |item| item.item_id.is_a?(String) }.should be_true
+        end
+      end
+    end
   end
 end
 {% end %}

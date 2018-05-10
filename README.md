@@ -104,7 +104,7 @@ end
 
 This will override the default primary key of `id : Int64`.
 
-### Natural Key
+#### Natural Keys
 
 For natural keys, you can set `auto: false` option to disable auto increment insert.
 
@@ -113,6 +113,25 @@ class Site < Granite::ORM::Base
   adapter mysql
   primary code : String, auto: false
   field name : String
+end
+```
+
+#### UUIDs
+
+For databases that utilize UUIDs as the primary key, the `primary` macro can be used again with the `auto: false` option.  A `before_create` callback can be added to the model to randomly generate and set a secure UUID on the record before it is saved to the database.
+
+```crystal
+class Book < Granite::ORM::Base
+  require "uuid"
+  adapter mysql
+  primary ISBN : String, auto: false
+  field name : String
+
+  before_create :assign_isbn
+
+  def assign_isbn
+    @ISBN = UUID.random.to_s
+  end
 end
 ```
 
@@ -179,6 +198,22 @@ models = [
 Model.import(models, ignore_on_duplicate: true)
 
 Model.find!(1).name # => Fred
+```
+
+#### batch_size
+
+the `import` method has an optional `batch_size` param, that takes an integer.  The batch_size determines the number of models to import in each INSERT statement.  This defaults to the size of the models array, i.e. only 1 INSERT statement.
+```Crystal
+models = [
+  Model.new(id: 1, name: "Fred", age: 14),
+  Model.new(id: 2, name: "Joe", age: 25),
+  Model.new(id: 3, name: "John", age: 30),
+  Model.new(id: 3, name: "Bill", age: 66),
+]
+
+Model.import(models, batch_size: 2)
+# => First SQL INSERT statement imports Fred and Joe
+# => Second SQL INSERT statement imports John and Bill
 ```
 
 ### SQL

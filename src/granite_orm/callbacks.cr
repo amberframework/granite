@@ -13,6 +13,11 @@ module Granite::ORM::Callbacks
           {{name.id}}: [] of Nil,
         {% end %}
       }
+      {% for name in CALLBACK_NAMES %}
+        def {{name.id}}
+          __run_{{name.id}}
+        end
+      {% end %}
     end
   end
 

@@ -2,11 +2,11 @@ require "../../spec_helper"
 
 macro build_review_emitter(driver)
   {%
-  timestamp = if driver == "sqlite"
-    "2018-04-09 13:33:46"
-  else
-    "Time.now".id
-  end
+    timestamp = if driver == "sqlite"
+                  "2018-04-09 13:33:46"
+                else
+                  "Time.now".id
+                end
   %}
 
   FieldEmitter.new.tap do |e|
