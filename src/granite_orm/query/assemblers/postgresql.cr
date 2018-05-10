@@ -47,7 +47,7 @@ module Granite::Query::Assembler
     end
 
     def default_order
-      [{ field: Model.primary_name, direction: "ASC" }]
+      [{field: Model.primary_name, direction: "ASC"}]
     end
 
     def build_group_by

@@ -11,7 +11,7 @@ describe Granite::Query::Builder(Model) do
     query = builder.order(name: :desc).order(age: :asc)
     expected = [
       {field: "name", direction: Granite::Query::Builder::Sort::Descending},
-      {field: "age", direction: Granite::Query::Builder::Sort::Ascending}
+      {field: "age", direction: Granite::Query::Builder::Sort::Ascending},
     ]
     query.order_fields.should eq expected
   end

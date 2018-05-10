@@ -2,7 +2,7 @@ require "../spec_helper"
 
 def ignore_whitespace(expected : String)
   whitespace = "\\s+"
-  compiled = expected.split(/\s/).map {|s| Regex.escape s }.join(whitespace)
+  compiled = expected.split(/\s/).map { |s| Regex.escape s }.join(whitespace)
   Regex.new compiled, Regex::Options::IGNORE_CASE ^ Regex::Options::MULTILINE
 end
 

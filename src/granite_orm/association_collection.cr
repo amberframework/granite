@@ -6,7 +6,7 @@ class Granite::ORM::AssociationCollection(Owner, Target)
 
   def all(clause = "", params = [] of DB::Any)
     Target.all(
-      [query, clause].join(" "), 
+      [query, clause].join(" "),
       [owner.id] + params
     )
   end
@@ -45,7 +45,7 @@ class Granite::ORM::AssociationCollection(Owner, Target)
       "WHERE #{foreign_key} = ?"
     else
       "JOIN #{through} ON #{through}.#{Target.table_name[0...-1]}_id = #{Target.table_name}.id " \
-        "WHERE #{through}.#{Owner.table_name[0...-1]}_id = ?"
+      "WHERE #{through}.#{Owner.table_name[0...-1]}_id = ?"
     end
   end
 end

@@ -104,7 +104,7 @@ end
 
 This will override the default primary key of `id : Int64`.
 
-### Natural Key
+#### Natural Keys
 
 For natural keys, you can set `auto: false` option to disable auto increment insert.
 
@@ -113,6 +113,25 @@ class Site < Granite::ORM::Base
   adapter mysql
   primary code : String, auto: false
   field name : String
+end
+```
+
+#### UUIDs
+
+For databases that utilize UUIDs as the primary key, the `primary` macro can be used again with the `auto: false` option.  A `before_create` callback can be added to the model to randomly generate and set a secure UUID on the record before it is saved to the database.
+
+```crystal
+class Book < Granite::ORM::Base
+  require "uuid"
+  adapter mysql
+  primary ISBN : String, auto: false
+  field name : String
+
+  before_create :assign_isbn
+
+  def assign_isbn
+    @ISBN = UUID.random.to_s
+  end
 end
 ```
 
