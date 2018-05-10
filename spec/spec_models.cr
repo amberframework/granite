@@ -312,10 +312,26 @@ require "uuid"
       end
     end
 
-    class Book < Granite::ORM::Base
+    class Person < Granite::ORM::Base
       adapter {{ adapter_literal }}
-      table_name books
-      has_many :book_reviews
+      table_name people
+
+      field name : String
+
+      def self.drop_and_create
+        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
+        exec <<-SQL
+          CREATE TABLE #{ quoted_table_name } (
+            id {{ primary_key_sql }},
+            name VARCHAR(255)
+          )
+        SQL
+      end
+    end
+
+    class Company < Granite::ORM::Base
+      adapter {{ adapter_literal }}
+      table_name companies
 
       primary id : Int32
       field name : String
@@ -331,10 +347,33 @@ require "uuid"
       end
     end
 
+    class Book < Granite::ORM::Base
+      adapter {{ adapter_literal }}
+      table_name books
+      has_many :book_reviews
+      belongs_to author : Person
+      belongs_to publisher : Company, foreign_key: publisher_id : Int32
+
+      primary id : Int32
+      field name : String
+
+      def self.drop_and_create
+        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
+        exec <<-SQL
+          CREATE TABLE #{ quoted_table_name } (
+            id {{ custom_primary_key_sql }},
+            name VARCHAR(255),
+            author_id BIGINT,
+            publisher_id INT
+          )
+        SQL
+      end
+    end
+
     class BookReview < Granite::ORM::Base
       adapter {{ adapter_literal }}
       table_name book_reviews
-      belongs_to :book, book_id : Int32
+      belongs_to :book, foreign_key: book_id : Int32
 
       primary id : Int32
       field body : String
@@ -388,6 +427,8 @@ require "uuid"
     Callback.drop_and_create
     CallbackWithAbort.drop_and_create
     Kvs.drop_and_create
+    Person.drop_and_create
+    Company.drop_and_create
     Book.drop_and_create
     BookReview.drop_and_create
     Item.drop_and_create
