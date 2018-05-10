@@ -10,33 +10,33 @@ module Granite::ORM::Transactions
     # The import class method will run a batch INSERT statement for each model in the array
     # the array must contain only one model class
     # invalid model records will be skipped
-    def self.import(model_array : Array(self), batch_size : Int32 = model_array.size)
+    def self.import(model_array : Array(self) | Granite::ORM::Collection(self), batch_size : Int32 = model_array.size)
       begin
         fields_duplicate = fields.dup
         model_array.each_slice(batch_size, true) do |slice|
-          @@adapter.import(table_name, primary_name, fields_duplicate, slice)
+          @@adapter.import(table_name, primary_name, primary_auto, fields_duplicate, slice)
         end
       rescue err
         raise DB::Error.new(err.message)
       end
     end
 
-    def self.import(model_array : Array(self), update_on_duplicate : Bool, columns : Array(String), batch_size : Int32 = model_array.size)
+    def self.import(model_array : Array(self) | Granite::ORM::Collection(self), update_on_duplicate : Bool, columns : Array(String), batch_size : Int32 = model_array.size)
       begin
         fields_duplicate = fields.dup
         model_array.each_slice(batch_size, true) do |slice|
-          @@adapter.import(table_name, primary_name, fields_duplicate, slice)
+          @@adapter.import(table_name, primary_name, primary_auto, fields_duplicate, slice, update_on_duplicate: update_on_duplicate, columns: columns)
         end
       rescue err
         raise DB::Error.new(err.message)
       end
     end
 
-    def self.import(model_array : Array(self), ignore_on_duplicate : Bool, batch_size : Int32 = model_array.size)
+    def self.import(model_array : Array(self) | Granite::ORM::Collection(self), ignore_on_duplicate : Bool, batch_size : Int32 = model_array.size)
       begin
         fields_duplicate = fields.dup
         model_array.each_slice(batch_size, true) do |slice|
-          @@adapter.import(table_name, primary_name, fields_duplicate, slice)
+          @@adapter.import(table_name, primary_name, primary_auto, fields_duplicate, slice, ignore_on_duplicate: ignore_on_duplicate)
         end
       rescue err
         raise DB::Error.new(err.message)

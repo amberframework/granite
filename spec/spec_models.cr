@@ -11,6 +11,7 @@ require "uuid"
 
     if adapter == "pg"
       primary_key_sql = "BIGSERIAL PRIMARY KEY".id
+      primary_key_non_auto_increment_sql = "BIGINT PRIMARY KEY".id
       foreign_key_sql = "BIGINT".id
       custom_primary_key_sql = "SERIAL PRIMARY KEY".id
       custom_foreign_key_sql = "INT".id
@@ -19,6 +20,7 @@ require "uuid"
       timestamp_fields = "timestamps".id
     elsif adapter == "mysql"
       primary_key_sql = "BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY".id
+      primary_key_non_auto_increment_sql = "BIGINT NOT NULL PRIMARY KEY".id
       foreign_key_sql = "BIGINT".id
       custom_primary_key_sql = "INT NOT NULL AUTO_INCREMENT PRIMARY KEY".id
       custom_foreign_key_sql = "INT".id
@@ -27,6 +29,7 @@ require "uuid"
       timestamp_fields = "timestamps".id
     elsif adapter == "sqlite"
       primary_key_sql = "INTEGER NOT NULL PRIMARY KEY".id
+      primary_key_non_auto_increment_sql = "INTEGER NOT NULL PRIMARY KEY".id
       foreign_key_sql = "INTEGER".id
       custom_primary_key_sql = "INTEGER NOT NULL PRIMARY KEY".id
       custom_foreign_key_sql = "INTEGER".id
@@ -414,6 +417,42 @@ require "uuid"
     end
   end
 
+  class NonAutoDefaultPK < Granite::ORM::Base
+    adapter {{ adapter_literal }}
+    table_name non_auto_default_pk
+
+    primary id : Int64, auto: false
+    field name : String
+
+    def self.drop_and_create
+      exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
+      exec <<-SQL
+        CREATE TABLE #{ quoted_table_name } (
+          id {{ primary_key_non_auto_increment_sql }},
+          name VARCHAR(255)
+        )
+      SQL
+    end
+  end
+
+  class NonAutoCustomPK < Granite::ORM::Base
+    adapter {{ adapter_literal }}
+    table_name non_auto_custom_pk
+
+    primary custom_id : Int64, auto: false
+    field name : String
+
+    def self.drop_and_create
+      exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
+      exec <<-SQL
+        CREATE TABLE #{ quoted_table_name } (
+          custom_id {{ primary_key_non_auto_increment_sql }},
+          name VARCHAR(255)
+        )
+      SQL
+    end
+  end
+
     Parent.drop_and_create
     Teacher.drop_and_create
     Student.drop_and_create
@@ -432,5 +471,7 @@ require "uuid"
     Book.drop_and_create
     BookReview.drop_and_create
     Item.drop_and_create
+    NonAutoDefaultPK.drop_and_create
+    NonAutoCustomPK.drop_and_create
   end
 {% end %}
