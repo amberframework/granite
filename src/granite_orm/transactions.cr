@@ -12,8 +12,9 @@ module Granite::ORM::Transactions
     # invalid model records will be skipped
     def self.import(model_array : Array(self), batch_size : Int32 = model_array.size)
       begin
+        fields_duplicate = fields.dup
         model_array.each_slice(batch_size, true) do |slice|
-          @@adapter.import(table_name, primary_name, fields.dup, slice)
+          @@adapter.import(table_name, primary_name, fields_duplicate, slice)
         end
       rescue err
         raise DB::Error.new(err.message)
@@ -22,8 +23,9 @@ module Granite::ORM::Transactions
 
     def self.import(model_array : Array(self), update_on_duplicate : Bool, columns : Array(String), batch_size : Int32 = model_array.size)
       begin
+        fields_duplicate = fields.dup
         model_array.each_slice(batch_size, true) do |slice|
-          @@adapter.import(table_name, primary_name, fields.dup, slice)
+          @@adapter.import(table_name, primary_name, fields_duplicate, slice)
         end
       rescue err
         raise DB::Error.new(err.message)
@@ -32,8 +34,9 @@ module Granite::ORM::Transactions
 
     def self.import(model_array : Array(self), ignore_on_duplicate : Bool, batch_size : Int32 = model_array.size)
       begin
+        fields_duplicate = fields.dup
         model_array.each_slice(batch_size, true) do |slice|
-          @@adapter.import(table_name, primary_name, fields.dup, slice)
+          @@adapter.import(table_name, primary_name, fields_duplicate, slice)
         end
       rescue err
         raise DB::Error.new(err.message)
