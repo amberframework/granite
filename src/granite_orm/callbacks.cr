@@ -14,7 +14,7 @@ module Granite::ORM::Callbacks
         {% end %}
       }
       {% for name in CALLBACK_NAMES %}
-        def run_{{name.id}}
+        def {{name.id}}
           __run_{{name.id}}
         end
       {% end %}

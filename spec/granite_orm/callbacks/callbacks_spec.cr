@@ -63,7 +63,7 @@ module {{adapter.capitalize.id}}
           item = Item.new(item_name: "item1")
           item.item_id.should be_nil
 
-          item.run_before_create
+          item.before_create
 
           item.item_id.should be_a(String)
         end
@@ -79,7 +79,7 @@ module {{adapter.capitalize.id}}
 
           items.all? { |item| item.item_id.nil? }.should be_true
 
-          items.each(&.run_before_create)
+          items.each(&.before_create)
 
           items.all? { |item| item.item_id.is_a?(String) }.should be_true
         end
