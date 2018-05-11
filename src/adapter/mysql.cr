@@ -78,7 +78,7 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
 
   def import(table_name : String, primary_name : String, auto : String, fields, model_array, **options)
     params = [] of DB::Any
-    now = Time.now.to_utc
+    now = Time.utc_now
 
     statement = String.build do |stmt|
       stmt << "INSERT"

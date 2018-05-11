@@ -56,6 +56,29 @@ module {{adapter.capitalize.id}}
 
       original_timestamp.epoch.should eq read_timestamp.epoch
     end
+
+    it "works with bulk imports" do
+      to_import = [
+        Parent.new(name: "ParentImport1"),
+        Parent.new(name: "ParentImport2"),
+        Parent.new(name: "ParentImport3"),
+      ]
+
+      grandma = Parent.new(name: "grandma").tap(&.save)
+      found_grandma = Parent.find! grandma.id
+      Parent.import(to_import)
+
+      parents = Parent.all("WHERE name LIKE ?", ["ParentImport%"])
+
+      parents.size.should eq 3
+
+      parents.each do |parent|
+        parent.updated_at.not_nil!.kind.should eq {{ time_kind_on_read }}
+        parent.created_at.not_nil!.kind.should eq {{ time_kind_on_read }}
+        found_grandma.updated_at.not_nil!.epoch.should eq parent.updated_at.not_nil!.epoch
+        found_grandma.created_at.not_nil!.epoch.should eq parent.created_at.not_nil!.epoch
+      end
+    end
   end
 end
 {% end %}
