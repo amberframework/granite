@@ -56,7 +56,7 @@ module Granite::ORM::Transactions
       end
     end
 
-    private def __run_create
+    private def __create
       @created_at = @updated_at = Time.now.to_utc
       fields = self.class.content_fields.dup
       params = content_values
@@ -88,7 +88,7 @@ module Granite::ORM::Transactions
       @new_record = false
     end
 
-    private def __run_update
+    private def __update
       @updated_at = Time.now.to_utc
       fields = self.class.content_fields
       params = content_values + [@{{primary_name}}]
@@ -100,31 +100,9 @@ module Granite::ORM::Transactions
       end
     end
 
-    private def __run_destroy
+    private def __destroy
       @@adapter.delete(@@table_name, @@primary_name, @{{primary_name}})
       @destroyed = true
-    end
-
-    private def __create
-      __run_before_save
-      __run_before_create
-      __run_create
-      __run_after_create
-      __run_after_save
-    end
-
-    private def __update
-      __run_before_save
-      __run_before_update
-      __run_update
-      __run_after_update
-      __run_after_save
-    end
-
-    private def __destroy
-      __run_before_destroy
-      __run_destroy
-      __run_after_destroy
     end
 
     # The save method will check to see if the primary exists yet. If it does it
@@ -134,11 +112,17 @@ module Granite::ORM::Transactions
       return false unless valid?
 
       begin
+        __before_save
         if @{{primary_name}} && !new_record?
+          __before_update
           __update
+          __after_update
         else
+          __before_create
           __create
+          __after_create
         end
+        __after_save
       rescue ex : DB::Error | Granite::ORM::Callbacks::Abort
         if message = ex.message
           Granite::ORM.settings.logger.error "Save Exception: #{message}"
@@ -152,7 +136,9 @@ module Granite::ORM::Transactions
     # Destroy will remove this from the database.
     def destroy
       begin
+        __before_destroy
         __destroy
+        __after_destroy
       rescue ex : DB::Error | Granite::ORM::Callbacks::Abort
         if message = ex.message
           Granite::ORM.settings.logger.error "Destroy Exception: #{message}"
