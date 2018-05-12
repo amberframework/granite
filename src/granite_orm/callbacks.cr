@@ -15,7 +15,7 @@ module Granite::ORM::Callbacks
       }
       {% for name in CALLBACK_NAMES %}
         def {{name.id}}
-          __run_{{name.id}}
+          __{{name.id}}
         end
       {% end %}
     end
@@ -31,7 +31,7 @@ module Granite::ORM::Callbacks
       \{% end %}
     end
 
-    macro __run_{{name.id}}
+    macro __{{name.id}}
       @_current_callback = {{name}}
       \{% for callback in CALLBACKS[{{name}}] %}
         \{% if callback.is_a? Block %}
