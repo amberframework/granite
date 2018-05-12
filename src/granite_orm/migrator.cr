@@ -63,7 +63,7 @@ module Granite::ORM::Migrator
             {% else %}
               resolve.call("{{primary_type.id}}")
             {% end %}
-          s.print "#{k} #{v}"
+          s.print "#{k} #{v} PRIMARY KEY"
 
           # content fields
           {% for name, options in CONTENT_FIELDS %}

@@ -20,13 +20,13 @@ module {{adapter.capitalize.id}}
 
     it "updates an existing object" do
       kv = Kvs.new
-      kv.k = "foo"
+      kv.k = "foo2"
       kv.v = "1"
       kv.save.should be_true
 
       kv.v = "2"
       kv.save.should be_true
-      kv.k.should eq("foo")
+      kv.k.should eq("foo2")
       kv.v.should eq("2")
     end
   end
@@ -57,24 +57,6 @@ module {{adapter.capitalize.id}}
       ## Delete
       port.destroy.should be_true
       Kvs.count.should eq(0)
-    end
-
-    it "creates a new record twice" do
-      Kvs.clear
-
-      # create a new record
-      port = Kvs.new(k: "mysql_port", v: "3306")
-      port.new_record?.should be_true
-      port.save.should be_true
-      port.v.should eq("3306")
-      Kvs.count.should eq(1)
-
-      # create a new record again
-      port = Kvs.new(k: "mysql_port", v: "3306")
-      port.new_record?.should be_true
-      port.save.should be_true
-      port.v.should eq("3306")
-      Kvs.count.should eq(2)
     end
   end
 end
