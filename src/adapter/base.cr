@@ -63,12 +63,29 @@ abstract class Granite::Adapter::Base
     Granite::Adapter::Base.env(url)
   end
 
+  module Schema
+    TYPES = {
+      "Bool"    => "BOOL",
+      "Float32" => "FLOAT",
+      "Float64" => "REAL",
+      "Int32"   => "INT",
+      "Int64"   => "BIGINT",
+      "String"  => "VARCHAR(255)",
+      "Time"    => "TIMESTAMP",
+    }
+  end
+
   # Use macro in order to read a constant defined in each subclasses.
   macro inherited
     # quotes table and column names
     def quote(name : String) : String
       char = QUOTING_CHAR
       char + name.gsub(char, "#{char}#{char}") + char
+    end
+
+    # converts the crystal class to database type of this adapter
+    def self.schema_type?(key : String)
+      Schema::TYPES[key]? || Granite::Adapter::Base::Schema::TYPES[key]?
     end
   end
 
