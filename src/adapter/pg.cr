@@ -105,6 +105,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     if options["update_on_duplicate"]?
       if columns = options["columns"]?
         statement += " ON CONFLICT (#{quote(primary_name)}) DO UPDATE SET "
+        columns << "updated_at" if fields.includes? "updated_at"
         columns.each do |key|
           statement += "#{quote(key)}=EXCLUDED.#{quote(key)}, "
         end

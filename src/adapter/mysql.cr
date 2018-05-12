@@ -101,6 +101,7 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     if options["update_on_duplicate"]?
       if columns = options["columns"]?
         statement += " ON DUPLICATE KEY UPDATE "
+        columns << "updated_at" if fields.includes? "updated_at"
         columns.each do |key|
           statement += "#{quote(key)}=VALUES(#{quote(key)}), "
         end
