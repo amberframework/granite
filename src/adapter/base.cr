@@ -1,4 +1,4 @@
-require "../granite_orm"
+require "../granite"
 require "db"
 
 # The Base Adapter specifies the interface that will be used by the model
@@ -8,7 +8,7 @@ abstract class Granite::Adapter::Base
   property database : DB::Database
 
   def initialize(adapter : String)
-    if url = ENV["DATABASE_URL"]? || Granite::ORM.settings.database_url || replace_env_vars(settings(adapter)["database"].to_s)
+    if url = ENV["DATABASE_URL"]? || Granite.settings.database_url || replace_env_vars(settings(adapter)["database"].to_s)
       @database = DB.open(url)
     else
       raise "database url needs to be set in the config/database.yml or DATABASE_URL environment variable"
@@ -32,7 +32,7 @@ abstract class Granite::Adapter::Base
   end
 
   def log(query : String, params = [] of String) : Nil
-    Granite::ORM.settings.logger.info "#{query}: #{params}"
+    Granite.settings.logger.info "#{query}: #{params}"
   end
 
   # remove all rows from a table and reset the counter on the id.

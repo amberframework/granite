@@ -1,4 +1,4 @@
-class Granite::ORM::Base
+class Granite::Base
   def self.drop_and_create
   end
 end
@@ -10,7 +10,7 @@ require "uuid"
   require "../src/adapter/{{ adapter_literal }}"
 
   module {{adapter.capitalize.id}}
-    class Parent < Granite::ORM::Base
+    class Parent < Granite::Base
       primary id : Int64
       adapter {{ adapter_literal }}
       table_name parents
@@ -25,7 +25,7 @@ require "uuid"
       end
     end
 
-    class Teacher < Granite::ORM::Base
+    class Teacher < Granite::Base
       primary id : Int64
       adapter {{ adapter_literal }}
       table_name teachers
@@ -35,7 +35,7 @@ require "uuid"
       has_many :klasss
     end
 
-    class Student < Granite::ORM::Base
+    class Student < Granite::Base
       primary id : Int64
       adapter {{ adapter_literal }}
       table_name students
@@ -46,7 +46,7 @@ require "uuid"
       has_many :klasss, through: :enrollments
     end
 
-    class Klass < Granite::ORM::Base
+    class Klass < Granite::Base
       primary id : Int64
       adapter {{ adapter_literal }}
       table_name klasss
@@ -58,7 +58,7 @@ require "uuid"
       has_many :students, through: :enrollments
     end
 
-    class Enrollment < Granite::ORM::Base
+    class Enrollment < Granite::Base
       primary id : Int64
       adapter {{ adapter_literal }}
       table_name enrollments
@@ -67,7 +67,7 @@ require "uuid"
       belongs_to :klass
     end
 
-    class School < Granite::ORM::Base
+    class School < Granite::Base
       adapter {{ adapter_literal }}
       primary custom_id : Int64
       field name : String
@@ -75,7 +75,7 @@ require "uuid"
       table_name schools
     end
 
-    class Nation::County < Granite::ORM::Base
+    class Nation::County < Granite::Base
       adapter {{ adapter_literal }}
       primary id : Int64
       table_name nation_countys
@@ -83,7 +83,7 @@ require "uuid"
       field name : String
     end
 
-    class Review < Granite::ORM::Base
+    class Review < Granite::Base
       adapter {{ adapter_literal }}
       table_name reviews
       field name : String
@@ -95,19 +95,19 @@ require "uuid"
       field created_at : Time
     end
 
-    class Empty < Granite::ORM::Base
+    class Empty < Granite::Base
       adapter {{ adapter_literal }}
       table_name emptys
       primary id : Int64
     end
 
-    class ReservedWord < Granite::ORM::Base
+    class ReservedWord < Granite::Base
       adapter {{ adapter_literal }}
       table_name "select"
       field all : String
     end
 
-    class Callback < Granite::ORM::Base
+    class Callback < Granite::Base
       adapter {{ adapter_literal }}
       table_name callbacks
       primary id : Int64
@@ -115,7 +115,7 @@ require "uuid"
 
       property history : IO::Memory = IO::Memory.new
 
-      {% for name in Granite::ORM::Callbacks::CALLBACK_NAMES %}
+      {% for name in Granite::Callbacks::CALLBACK_NAMES %}
         {{name.id}} _{{name.id}}
         private def _{{name.id}}
           history << "{{name.id}}\n"
@@ -123,7 +123,7 @@ require "uuid"
       {% end %}
     end
 
-    class CallbackWithAbort < Granite::ORM::Base
+    class CallbackWithAbort < Granite::Base
       adapter {{ adapter_literal }}
       table_name callbacks_with_abort
       primary abort_at : String, auto: false
@@ -131,7 +131,7 @@ require "uuid"
 
       property history : IO::Memory = IO::Memory.new
 
-      {% for name in Granite::ORM::Callbacks::CALLBACK_NAMES %}
+      {% for name in Granite::Callbacks::CALLBACK_NAMES %}
         {{name.id}} do
           abort! if do_abort && abort_at == "{{name.id}}"
           history << "{{name.id}}\n"
@@ -139,21 +139,21 @@ require "uuid"
       {% end %}
     end
 
-    class Kvs < Granite::ORM::Base
+    class Kvs < Granite::Base
       adapter {{ adapter_literal }}
       table_name kvss
       primary k : String, auto: false
       field v : String
     end
 
-    class Person < Granite::ORM::Base
+    class Person < Granite::Base
       adapter {{ adapter_literal }}
       table_name people
 
       field name : String
     end
 
-    class Company < Granite::ORM::Base
+    class Company < Granite::Base
       adapter {{ adapter_literal }}
       table_name companies
 
@@ -161,7 +161,7 @@ require "uuid"
       field name : String
     end
 
-    class Book < Granite::ORM::Base
+    class Book < Granite::Base
       adapter {{ adapter_literal }}
       table_name books
       has_many :book_reviews
@@ -172,7 +172,7 @@ require "uuid"
       field name : String
     end
 
-    class BookReview < Granite::ORM::Base
+    class BookReview < Granite::Base
       adapter {{ adapter_literal }}
       table_name book_reviews
       belongs_to :book, foreign_key: book_id : Int32
@@ -181,7 +181,7 @@ require "uuid"
       field body : String
     end
 
-    class Item < Granite::ORM::Base
+    class Item < Granite::Base
       adapter {{ adapter_literal }}
       table_name items
 
@@ -195,7 +195,7 @@ require "uuid"
       end
     end
 
-    class NonAutoDefaultPK < Granite::ORM::Base
+    class NonAutoDefaultPK < Granite::Base
       adapter {{ adapter_literal }}
       table_name non_auto_default_pk
 
@@ -203,7 +203,7 @@ require "uuid"
       field name : String
     end
 
-    class NonAutoCustomPK < Granite::ORM::Base
+    class NonAutoCustomPK < Granite::Base
       adapter {{ adapter_literal }}
       table_name non_auto_custom_pk
 

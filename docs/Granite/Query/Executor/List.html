@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta id="repository-name" content="github.com/Amber-Crystal/granite-orm">
+  <link href="../../../css/style.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="../../../js/doc.js"></script>
+  <title>Granite::Query::Executor::List(Model) - github.com/Amber-Crystal/granite-orm</title>
+</head>
+<body>
+
+<div id="types-list">
+  <div id="search-box">
+    <input type="search" id="search-input" placeholder="Search...">
+  </div>
+
+  <ul>
+    <li><a href="../../../index.html">README</a></li>
+  </ul>
+
+  <ul>
+  
+  <li class="parent open current" data-id="github.com/Amber-Crystal/granite-orm/Granite" data-name="granite">
+      <a href="../../../Granite.html">Granite</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/AssociationCollection" data-name="granite::associationcollection(owner, target)">
+      <a href="../../../Granite/AssociationCollection.html">AssociationCollection</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Associations" data-name="granite::associations">
+      <a href="../../../Granite/Associations.html">Associations</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Base" data-name="granite::base">
+      <a href="../../../Granite/Base.html">Base</a>
+      
+    </li>
+  
+  <li class="parent " data-id="github.com/Amber-Crystal/granite-orm/Granite/Callbacks" data-name="granite::callbacks">
+      <a href="../../../Granite/Callbacks.html">Callbacks</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Callbacks/Abort" data-name="granite::callbacks::abort">
+      <a href="../../../Granite/Callbacks/Abort.html">Abort</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Collection" data-name="granite::collection(m)">
+      <a href="../../../Granite/Collection.html">Collection</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Error" data-name="granite::error">
+      <a href="../../../Granite/Error.html">Error</a>
+      
+    </li>
+  
+  <li class="parent " data-id="github.com/Amber-Crystal/granite-orm/Granite/Fields" data-name="granite::fields">
+      <a href="../../../Granite/Fields.html">Fields</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Fields/Type" data-name="granite::fields::type">
+      <a href="../../../Granite/Fields/Type.html">Type</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="github.com/Amber-Crystal/granite-orm/Granite/Migrator" data-name="granite::migrator">
+      <a href="../../../Granite/Migrator.html">Migrator</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Migrator/Base" data-name="granite::migrator::base">
+      <a href="../../../Granite/Migrator/Base.html">Base</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent open current" data-id="github.com/Amber-Crystal/granite-orm/Granite/Query" data-name="granite::query">
+      <a href="../../../Granite/Query.html">Query</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="github.com/Amber-Crystal/granite-orm/Granite/Query/Assembler" data-name="granite::query::assembler">
+      <a href="../../../Granite/Query/Assembler.html">Assembler</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Query/Assembler/Base" data-name="granite::query::assembler::base(model)">
+      <a href="../../../Granite/Query/Assembler/Base.html">Base</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Query/Assembler/Postgresql" data-name="granite::query::assembler::postgresql(model)">
+      <a href="../../../Granite/Query/Assembler/Postgresql.html">Postgresql</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="github.com/Amber-Crystal/granite-orm/Granite/Query/Builder" data-name="granite::query::builder(model)">
+      <a href="../../../Granite/Query/Builder.html">Builder</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Query/Builder/FieldData" data-name="granite::query::builder::fielddata">
+      <a href="../../../Granite/Query/Builder/FieldData.html">FieldData</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Query/Builder/FieldName" data-name="granite::query::builder::fieldname">
+      <a href="../../../Granite/Query/Builder/FieldName.html">FieldName</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Query/Builder/Sort" data-name="granite::query::builder::sort">
+      <a href="../../../Granite/Query/Builder/Sort.html">Sort</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Query/BuilderMethods" data-name="granite::query::buildermethods">
+      <a href="../../../Granite/Query/BuilderMethods.html">BuilderMethods</a>
+      
+    </li>
+  
+  <li class="parent open current" data-id="github.com/Amber-Crystal/granite-orm/Granite/Query/Executor" data-name="granite::query::executor">
+      <a href="../../../Granite/Query/Executor.html">Executor</a>
+      
+        <ul>
+  
+  <li class=" current" data-id="github.com/Amber-Crystal/granite-orm/Granite/Query/Executor/List" data-name="granite::query::executor::list(model)">
+      <a href="../../../Granite/Query/Executor/List.html">List</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Query/Executor/Shared" data-name="granite::query::executor::shared">
+      <a href="../../../Granite/Query/Executor/Shared.html">Shared</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Query/Executor/Value" data-name="granite::query::executor::value(model, scalar)">
+      <a href="../../../Granite/Query/Executor/Value.html">Value</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="github.com/Amber-Crystal/granite-orm/Granite/Querying" data-name="granite::querying">
+      <a href="../../../Granite/Querying.html">Querying</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Querying/NotFound" data-name="granite::querying::notfound">
+      <a href="../../../Granite/Querying/NotFound.html">NotFound</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Settings" data-name="granite::settings">
+      <a href="../../../Granite/Settings.html">Settings</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Table" data-name="granite::table">
+      <a href="../../../Granite/Table.html">Table</a>
+      
+    </li>
+  
+  <li class="parent " data-id="github.com/Amber-Crystal/granite-orm/Granite/Transactions" data-name="granite::transactions">
+      <a href="../../../Granite/Transactions.html">Transactions</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Transactions/ClassMethods" data-name="granite::transactions::classmethods">
+      <a href="../../../Granite/Transactions/ClassMethods.html">ClassMethods</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="github.com/Amber-Crystal/granite-orm/Granite/Validators" data-name="granite::validators">
+      <a href="../../../Granite/Validators.html">Validators</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+</div>
+
+<div id="main-content">
+<h1 class="type-name">
+
+  <span class="kind">class</span> Granite::Query::Executor::List(Model)
+
+</h1>
+
+
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../../../Granite/Query/Executor/List.html">Granite::Query::Executor::List(Model)</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+
+
+
+
+
+
+
+
+  <h2>Included Modules</h2>
+  <ul class="other-types-list">
+  
+    <li class="other-type"><a href="../../../Granite/Query/Executor/Shared.html">Granite::Query::Executor::Shared</a></li>
+  
+  </ul>
+
+
+
+
+
+
+
+
+
+
+  <h2>Defined in:</h2>
+  
+    
+      <a href="https://github.com/Amber-Crystal/granite-orm/blob/30ec77fcef1f89a8da9045be6696365d51ff1f66/src/granite/query/executors/list.cr#L2" target="_blank">granite/query/executors/list.cr</a>
+    
+    <br/>
+  
+
+
+
+
+
+  <h2>Constructors</h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#new%28sql%3AString%2Cargs%3D%5B%5DofDB%3A%3AAny%29-class-method" class="signature"><strong>.new</strong>(sql : String, args = <span class="o">[]</span> <span class="k">of</span> <span class="t">DB</span><span class="t">::</span><span class="t">Any</span>)</a>
+        
+      </li>
+    
+  </ul>
+
+
+
+
+
+  <h2>Instance Method Summary</h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#%5B%5D%28%2Aargs%2C%2A%2Aoptions%29-instance-method" class="signature"><strong>#[]</strong>(*args, **options)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#%5B%5D%28%2Aargs%2C%2A%2Aoptions%2C%26block%29-instance-method" class="signature"><strong>#[]</strong>(*args, **options, &block)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#each%28%2Aargs%2C%2A%2Aoptions%29-instance-method" class="signature"><strong>#each</strong>(*args, **options)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#each%28%2Aargs%2C%2A%2Aoptions%2C%26block%29-instance-method" class="signature"><strong>#each</strong>(*args, **options, &block)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#first%28%2Aargs%2C%2A%2Aoptions%29-instance-method" class="signature"><strong>#first</strong>(*args, **options)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#first%28%2Aargs%2C%2A%2Aoptions%2C%26block%29-instance-method" class="signature"><strong>#first</strong>(*args, **options, &block)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#first%3F%28%2Aargs%2C%2A%2Aoptions%29-instance-method" class="signature"><strong>#first?</strong>(*args, **options)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#first%3F%28%2Aargs%2C%2A%2Aoptions%2C%26block%29-instance-method" class="signature"><strong>#first?</strong>(*args, **options, &block)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#group_by%28%2Aargs%2C%2A%2Aoptions%29-instance-method" class="signature"><strong>#group_by</strong>(*args, **options)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#group_by%28%2Aargs%2C%2A%2Aoptions%2C%26block%29-instance-method" class="signature"><strong>#group_by</strong>(*args, **options, &block)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#run%3AArray%28Model%29-instance-method" class="signature"><strong>#run</strong> : Array(Model)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#to_s%28%2Aargs%2C%2A%2Aoptions%29-instance-method" class="signature"><strong>#to_s</strong>(*args, **options)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#to_s%28%2Aargs%2C%2A%2Aoptions%2C%26block%29-instance-method" class="signature"><strong>#to_s</strong>(*args, **options, &block)</a>
+        
+      </li>
+    
+  </ul>
+
+
+
+
+
+<div class="methods-inherited">
+  
+    
+
+  <h3>Instance methods inherited from module <code><a href="../../../Granite/Query/Executor/Shared.html">Granite::Query::Executor::Shared</a></code></h3>
+  
+  
+    <a href="../../../Granite/Query/Executor/Shared.html#log%28%2Amessages%29-instance-method" class="tooltip">
+      <span>log(*messages)</span>
+    log</a>, 
+    
+  
+    <a href="../../../Granite/Query/Executor/Shared.html#raw_sql%3AString-instance-method" class="tooltip">
+      <span>raw_sql : String</span>
+    raw_sql</a>
+    
+  
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+</div>
+
+
+  <h2>Constructor Detail</h2>
+  
+    <div class="entry-detail" id="new(sql:String,args=[]ofDB::Any)-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(sql : String, args = <span class="o">[]</span> <span class="k">of</span> <span class="t">DB</span><span class="t">::</span><span class="t">Any</span>)
+
+        <a class="method-permalink" href="#new%28sql%3AString%2Cargs%3D%5B%5DofDB%3A%3AAny%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/30ec77fcef1f89a8da9045be6696365d51ff1f66/src/granite/query/executors/list.cr#L5" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+
+
+  <h2>Instance Method Detail</h2>
+  
+    <div class="entry-detail" id="[](*args,**options)-instance-method">
+      <div class="signature">
+        
+        def <strong>[]</strong>(*args, **options)
+
+        <a class="method-permalink" href="#%5B%5D%28%2Aargs%2C%2A%2Aoptions%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/30ec77fcef1f89a8da9045be6696365d51ff1f66/src/granite/query/executors/list.cr#L24" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="[](*args,**options,&amp;block)-instance-method">
+      <div class="signature">
+        
+        def <strong>[]</strong>(*args, **options, &block)
+
+        <a class="method-permalink" href="#%5B%5D%28%2Aargs%2C%2A%2Aoptions%2C%26block%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/30ec77fcef1f89a8da9045be6696365d51ff1f66/src/granite/query/executors/list.cr#L24" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="each(*args,**options)-instance-method">
+      <div class="signature">
+        
+        def <strong>each</strong>(*args, **options)
+
+        <a class="method-permalink" href="#each%28%2Aargs%2C%2A%2Aoptions%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/30ec77fcef1f89a8da9045be6696365d51ff1f66/src/granite/query/executors/list.cr#L24" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="each(*args,**options,&amp;block)-instance-method">
+      <div class="signature">
+        
+        def <strong>each</strong>(*args, **options, &block)
+
+        <a class="method-permalink" href="#each%28%2Aargs%2C%2A%2Aoptions%2C%26block%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/30ec77fcef1f89a8da9045be6696365d51ff1f66/src/granite/query/executors/list.cr#L24" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="first(*args,**options)-instance-method">
+      <div class="signature">
+        
+        def <strong>first</strong>(*args, **options)
+
+        <a class="method-permalink" href="#first%28%2Aargs%2C%2A%2Aoptions%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/30ec77fcef1f89a8da9045be6696365d51ff1f66/src/granite/query/executors/list.cr#L24" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="first(*args,**options,&amp;block)-instance-method">
+      <div class="signature">
+        
+        def <strong>first</strong>(*args, **options, &block)
+
+        <a class="method-permalink" href="#first%28%2Aargs%2C%2A%2Aoptions%2C%26block%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/30ec77fcef1f89a8da9045be6696365d51ff1f66/src/granite/query/executors/list.cr#L24" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="first?(*args,**options)-instance-method">
+      <div class="signature">
+        
+        def <strong>first?</strong>(*args, **options)
+
+        <a class="method-permalink" href="#first%3F%28%2Aargs%2C%2A%2Aoptions%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/30ec77fcef1f89a8da9045be6696365d51ff1f66/src/granite/query/executors/list.cr#L24" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="first?(*args,**options,&amp;block)-instance-method">
+      <div class="signature">
+        
+        def <strong>first?</strong>(*args, **options, &block)
+
+        <a class="method-permalink" href="#first%3F%28%2Aargs%2C%2A%2Aoptions%2C%26block%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/30ec77fcef1f89a8da9045be6696365d51ff1f66/src/granite/query/executors/list.cr#L24" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="group_by(*args,**options)-instance-method">
+      <div class="signature">
+        
+        def <strong>group_by</strong>(*args, **options)
+
+        <a class="method-permalink" href="#group_by%28%2Aargs%2C%2A%2Aoptions%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/30ec77fcef1f89a8da9045be6696365d51ff1f66/src/granite/query/executors/list.cr#L24" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="group_by(*args,**options,&amp;block)-instance-method">
+      <div class="signature">
+        
+        def <strong>group_by</strong>(*args, **options, &block)
+
+        <a class="method-permalink" href="#group_by%28%2Aargs%2C%2A%2Aoptions%2C%26block%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/30ec77fcef1f89a8da9045be6696365d51ff1f66/src/granite/query/executors/list.cr#L24" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="run:Array(Model)-instance-method">
+      <div class="signature">
+        
+        def <strong>run</strong> : Array(Model)
+
+        <a class="method-permalink" href="#run%3AArray%28Model%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/30ec77fcef1f89a8da9045be6696365d51ff1f66/src/granite/query/executors/list.cr#L8" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="to_s(*args,**options)-instance-method">
+      <div class="signature">
+        
+        def <strong>to_s</strong>(*args, **options)
+
+        <a class="method-permalink" href="#to_s%28%2Aargs%2C%2A%2Aoptions%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/30ec77fcef1f89a8da9045be6696365d51ff1f66/src/granite/query/executors/list.cr#L25" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="to_s(*args,**options,&amp;block)-instance-method">
+      <div class="signature">
+        
+        def <strong>to_s</strong>(*args, **options, &block)
+
+        <a class="method-permalink" href="#to_s%28%2Aargs%2C%2A%2Aoptions%2C%26block%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/Amber-Crystal/granite-orm/blob/30ec77fcef1f89a8da9045be6696365d51ff1f66/src/granite/query/executors/list.cr#L25" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+
+</div>
+
+</body>
+</html>
