@@ -5,6 +5,15 @@ require "pg"
 class Granite::Adapter::Pg < Granite::Adapter::Base
   QUOTING_CHAR = '"'
 
+  module Schema
+    TYPES = {
+      "AUTO_Int32" => "SERIAL PRIMARY KEY",
+      "AUTO_Int64" => "BIGSERIAL PRIMARY KEY",
+      "created_at" => "TIMESTAMP",
+      "updated_at" => "TIMESTAMP",
+    }
+  end  
+
   # remove all rows from a table and reset the counter on the id.
   def clear(table_name)
     statement = "DELETE FROM #{quote(table_name)}"
