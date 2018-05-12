@@ -112,19 +112,17 @@ module Granite::ORM::Transactions
       return false unless valid?
 
       begin
+        __before_save
         if @{{primary_name}} && !new_record?
-          __before_save
           __before_update
           __update
           __after_update
-          __after_save
         else
-          __before_save
           __before_create
           __create
           __after_create
-          __after_save
         end
+        __after_save
       rescue ex : DB::Error | Granite::ORM::Callbacks::Abort
         if message = ex.message
           Granite::ORM.settings.logger.error "Save Exception: #{message}"
