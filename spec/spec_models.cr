@@ -6,36 +6,7 @@ end
 require "uuid"
 
 {% for adapter in GraniteExample::ADAPTERS %}
-  {%
-    adapter_literal = adapter.id
-
-    if adapter == "pg"
-      primary_key_sql = "BIGSERIAL PRIMARY KEY".id
-      foreign_key_sql = "BIGINT".id
-      custom_primary_key_sql = "SERIAL PRIMARY KEY".id
-      custom_foreign_key_sql = "INT".id
-      created_at_sql = "created_at TIMESTAMP".id
-      updated_at_sql = "updated_at TIMESTAMP".id
-      timestamp_fields = "timestamps".id
-    elsif adapter == "mysql"
-      primary_key_sql = "BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY".id
-      foreign_key_sql = "BIGINT".id
-      custom_primary_key_sql = "INT NOT NULL AUTO_INCREMENT PRIMARY KEY".id
-      custom_foreign_key_sql = "INT".id
-      created_at_sql = "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP".id
-      updated_at_sql = "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP".id
-      timestamp_fields = "timestamps".id
-    elsif adapter == "sqlite"
-      primary_key_sql = "INTEGER NOT NULL PRIMARY KEY".id
-      foreign_key_sql = "INTEGER".id
-      custom_primary_key_sql = "INTEGER NOT NULL PRIMARY KEY".id
-      custom_foreign_key_sql = "INTEGER".id
-      created_at_sql = "created_at VARCHAR".id
-      updated_at_sql = "updated_at VARCHAR".id
-      timestamp_fields = "timestamps".id
-    end
-  %}
-
+  {% adapter_literal = adapter.id %}
   require "../src/adapter/{{ adapter_literal }}"
 
   module {{adapter.capitalize.id}}
@@ -45,23 +16,12 @@ require "uuid"
       table_name parents
 
       field name : String
-      {{ timestamp_fields }}
+      timestamps
 
       has_many :students
 
       validate :name, "Name cannot be blank" do |parent|
         !parent.name.to_s.blank?
-      end
-
-      def self.drop_and_create
-        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
-        exec("CREATE TABLE #{ quoted_table_name } (
-          id {{ primary_key_sql }},
-          name VARCHAR(100),
-          {{ created_at_sql }},
-          {{ updated_at_sql }}
-        );
-        ")
       end
     end
 
@@ -73,15 +33,6 @@ require "uuid"
       field name : String
 
       has_many :klasss
-
-      def self.drop_and_create
-        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
-        exec("CREATE TABLE #{ quoted_table_name } (
-          id {{ primary_key_sql }},
-          name VARCHAR(100)
-        );
-        ")
-      end
     end
 
     class Student < Granite::ORM::Base
@@ -93,16 +44,6 @@ require "uuid"
 
       has_many :enrollments
       has_many :klasss, through: :enrollments
-
-      def self.drop_and_create
-        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
-        exec("CREATE TABLE #{ quoted_table_name } (
-          id {{ primary_key_sql }},
-          name VARCHAR(100),
-          parent_id {{ foreign_key_sql }}
-        );
-        ")
-      end
     end
 
     class Klass < Granite::ORM::Base
@@ -115,17 +56,6 @@ require "uuid"
 
       has_many :enrollments
       has_many :students, through: :enrollments
-
-      def self.drop_and_create
-        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            id {{ primary_key_sql }},
-            name VARCHAR(255),
-            teacher_id {{ foreign_key_sql }}
-          )
-        SQL
-      end
     end
 
     class Enrollment < Granite::ORM::Base
@@ -135,17 +65,6 @@ require "uuid"
 
       belongs_to :student
       belongs_to :klass
-
-      def self.drop_and_create
-        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            id {{ primary_key_sql }},
-            student_id {{ foreign_key_sql }},
-            klass_id {{ foreign_key_sql }}
-          )
-        SQL
-      end
     end
 
     class School < Granite::ORM::Base
@@ -154,16 +73,6 @@ require "uuid"
       field name : String
 
       table_name schools
-
-      def self.drop_and_create
-        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            custom_id {{ primary_key_sql }},
-            name VARCHAR(255)
-          )
-        SQL
-      end
     end
 
     class Nation::County < Granite::ORM::Base
@@ -172,16 +81,6 @@ require "uuid"
       table_name nation_countys
 
       field name : String
-
-      def self.drop_and_create
-        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            id {{ primary_key_sql }},
-            name VARCHAR(255)
-          )
-        SQL
-      end
     end
 
     class Review < Granite::ORM::Base
@@ -194,53 +93,18 @@ require "uuid"
       field interest : Float64
       field published : Bool
       field created_at : Time
-
-      def self.drop_and_create
-        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            id {{ primary_key_sql }},
-            name VARCHAR(255),
-            downvotes INT,
-            upvotes BIGINT,
-            sentiment FLOAT,
-            interest REAL,
-            published BOOL,
-            {{ created_at_sql }}
-          )
-        SQL
-      end
     end
 
     class Empty < Granite::ORM::Base
       adapter {{ adapter_literal }}
       table_name emptys
       primary id : Int64
-
-      def self.drop_and_create
-        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            id {{ primary_key_sql }}
-          )
-        SQL
-      end
     end
 
     class ReservedWord < Granite::ORM::Base
       adapter {{ adapter_literal }}
       table_name "select"
       field all : String
-
-      def self.drop_and_create
-        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            id {{ primary_key_sql }},
-            #{quote("all")} VARCHAR(255)
-          )
-        SQL
-      end
     end
 
     class Callback < Granite::ORM::Base
@@ -257,16 +121,6 @@ require "uuid"
           history << "{{name.id}}\n"
         end
       {% end %}
-
-      def self.drop_and_create
-        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            id {{ primary_key_sql }},
-            name VARCHAR(100) NOT NULL
-          )
-        SQL
-      end
     end
 
     class CallbackWithAbort < Granite::ORM::Base
@@ -283,16 +137,6 @@ require "uuid"
           history << "{{name.id}}\n"
         end
       {% end %}
-
-      def self.drop_and_create
-        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            abort_at VARCHAR(31),
-            do_abort BOOL
-          )
-        SQL
-      end
     end
 
     class Kvs < Granite::ORM::Base
@@ -300,16 +144,6 @@ require "uuid"
       table_name kvss
       primary k : String, auto: false
       field v : String
-
-      def self.drop_and_create
-        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            k VARCHAR(255),
-            v VARCHAR(255)
-          )
-        SQL
-      end
     end
 
     class Person < Granite::ORM::Base
@@ -317,16 +151,6 @@ require "uuid"
       table_name people
 
       field name : String
-
-      def self.drop_and_create
-        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            id {{ primary_key_sql }},
-            name VARCHAR(255)
-          )
-        SQL
-      end
     end
 
     class Company < Granite::ORM::Base
@@ -335,16 +159,6 @@ require "uuid"
 
       primary id : Int32
       field name : String
-
-      def self.drop_and_create
-        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            id {{ custom_primary_key_sql }},
-            name VARCHAR(255)
-          )
-        SQL
-      end
     end
 
     class Book < Granite::ORM::Base
@@ -356,18 +170,6 @@ require "uuid"
 
       primary id : Int32
       field name : String
-
-      def self.drop_and_create
-        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            id {{ custom_primary_key_sql }},
-            name VARCHAR(255),
-            author_id BIGINT,
-            publisher_id INT
-          )
-        SQL
-      end
     end
 
     class BookReview < Granite::ORM::Base
@@ -377,60 +179,39 @@ require "uuid"
 
       primary id : Int32
       field body : String
+    end
 
-      def self.drop_and_create
-        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            id {{ custom_primary_key_sql }},
-            book_id {{ custom_foreign_key_sql }},
-            body VARCHAR(255)
-          )
-        SQL
+    class Item < Granite::ORM::Base
+      adapter {{ adapter_literal }}
+      table_name items
+
+      primary item_id : String, auto: false
+      field item_name : String
+
+      before_create :generate_uuid
+
+      def generate_uuid
+        @item_id = UUID.random.to_s
       end
     end
 
-  class Item < Granite::ORM::Base
-    adapter {{ adapter_literal }}
-    table_name items
-
-    primary item_id : String, auto: false
-    field item_name : String
-
-    before_create :generate_uuid
-
-    def generate_uuid
-      @item_id = UUID.random.to_s
-    end
-
-    def self.drop_and_create
-      exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
-      exec <<-SQL
-            CREATE TABLE #{ quoted_table_name } (
-              item_id VARCHAR(255) PRIMARY KEY,
-              item_name VARCHAR(255)
-            )
-      SQL
-    end
-  end
-
-    Parent.drop_and_create
-    Teacher.drop_and_create
-    Student.drop_and_create
-    Klass.drop_and_create
-    Enrollment.drop_and_create
-    School.drop_and_create
-    Nation::County.drop_and_create
-    Review.drop_and_create
-    Empty.drop_and_create
-    ReservedWord.drop_and_create
-    Callback.drop_and_create
-    CallbackWithAbort.drop_and_create
-    Kvs.drop_and_create
-    Person.drop_and_create
-    Company.drop_and_create
-    Book.drop_and_create
-    BookReview.drop_and_create
-    Item.drop_and_create
+    Parent.migrator.drop_and_create
+    Teacher.migrator.drop_and_create
+    Student.migrator.drop_and_create
+    Klass.migrator.drop_and_create
+    Enrollment.migrator.drop_and_create
+    School.migrator.drop_and_create
+    Nation::County.migrator.drop_and_create
+    Review.migrator.drop_and_create
+    Empty.migrator.drop_and_create
+    ReservedWord.migrator.drop_and_create
+    Callback.migrator.drop_and_create
+    CallbackWithAbort.migrator.drop_and_create
+    Kvs.migrator.drop_and_create
+    Person.migrator.drop_and_create
+    Company.migrator.drop_and_create
+    Book.migrator.drop_and_create
+    BookReview.migrator.drop_and_create
+    Item.migrator.drop_and_create
   end
 {% end %}
