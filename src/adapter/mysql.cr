@@ -7,13 +7,13 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
 
   module Schema
     TYPES = {
-      "AUTO_Int32" => "INT NOT NULL AUTO_INCREMENT PRIMARY KEY",
-      "AUTO_Int64" => "BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY",
+      "AUTO_Int32" => "INT NOT NULL AUTO_INCREMENT",
+      "AUTO_Int64" => "BIGINT NOT NULL AUTO_INCREMENT",
       "created_at" => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
       "updated_at" => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
     }
   end
-  
+
   # Using TRUNCATE instead of DELETE so the id column resets to 0
   def clear(table_name)
     statement = "TRUNCATE #{quote(table_name)}"

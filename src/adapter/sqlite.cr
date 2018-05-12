@@ -7,8 +7,8 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
 
   module Schema
     TYPES = {
-      "AUTO_Int32" => "INTEGER NOT NULL PRIMARY KEY",
-      "AUTO_Int64" => "INTEGER NOT NULL PRIMARY KEY",
+      "AUTO_Int32" => "INTEGER NOT NULL",
+      "AUTO_Int64" => "INTEGER NOT NULL",
       "Int32"      => "INTEGER",
       "Int64"      => "INTEGER",
       "created_at" => "VARCHAR",
