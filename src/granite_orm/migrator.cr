@@ -22,11 +22,11 @@ module Granite::ORM::Migrator
     def initialize(klass, @table_options = "")
       @quoted_table_name = klass.quoted_table_name
     end
-    
+
     def drop_and_create
       drop
       create
-    end      
+    end
 
     def drop
     end
@@ -41,12 +41,12 @@ module Granite::ORM::Migrator
     {% primary_auto = PRIMARY[:auto] %}
     {% klass = @type.name %}
     {% adapter = "#{klass}.adapter".id %}
-    
+
     class Migrator < Granite::ORM::Migrator::Base
       def drop
         {{klass}}.exec "DROP TABLE IF EXISTS #{ @quoted_table_name };"
       end
-    
+
       def create
         resolve = ->(key : String) {
           {{adapter}}.class.schema_type?(key) || raise "Migrator(#{ {{adapter}}.class.name }) doesn't support '#{key}' yet."
@@ -61,19 +61,19 @@ module Granite::ORM::Migrator
             {% if primary_auto %}
               resolve.call("AUTO_{{primary_type.id}}")
             {% else %}
-              resolve.call("{{primary_type}}")
+              resolve.call("{{primary_type.id}}")
             {% end %}
           s.print "#{k} #{v}"
 
           # content fields
-          {% for name, type in CONTENT_FIELDS %}
+          {% for name, options in CONTENT_FIELDS %}
             s.puts ","
             k = {{adapter}}.quote("{{name}}")
             v =
               {% if name.id == "created_at" || name.id == "updated_at" %}
                 resolve.call("{{name}}")
               {% else %}
-                resolve.call("{{type}}")
+                resolve.call("{{options[:type]}}")
               {% end %}
             s.puts "#{k} #{v}"
           {% end %}
@@ -84,7 +84,7 @@ module Granite::ORM::Migrator
         {{klass}}.exec stmt
       end
     end
-    
+
     def self.migrator(**args)
       Migrator.new(self, **args)
     end

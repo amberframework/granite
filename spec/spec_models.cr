@@ -137,16 +137,6 @@ require "uuid"
           history << "{{name.id}}\n"
         end
       {% end %}
-
-      def self.drop_and_create
-        exec "DROP TABLE IF EXISTS #{ quoted_table_name }"
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            abort_at VARCHAR(31),
-            do_abort BOOL
-          )
-        SQL
-      end
     end
 
     class Kvs < Granite::ORM::Base
@@ -161,16 +151,6 @@ require "uuid"
       table_name people
 
       field name : String
-
-      def self.drop_and_create
-        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            id {{ primary_key_sql }},
-            name VARCHAR(255)
-          )
-        SQL
-      end
     end
 
     class Company < Granite::ORM::Base
@@ -179,16 +159,6 @@ require "uuid"
 
       primary id : Int32
       field name : String
-
-      def self.drop_and_create
-        exec("DROP TABLE IF EXISTS #{ quoted_table_name };")
-        exec <<-SQL
-          CREATE TABLE #{ quoted_table_name } (
-            id {{ custom_primary_key_sql }},
-            name VARCHAR(255)
-          )
-        SQL
-      end
     end
 
     class Book < Granite::ORM::Base
@@ -236,12 +206,12 @@ require "uuid"
     Empty.migrator.drop_and_create
     ReservedWord.migrator.drop_and_create
     Callback.migrator.drop_and_create
-    CallbackWithAbort.drop_and_create
+    CallbackWithAbort.migrator.drop_and_create
     Kvs.migrator.drop_and_create
-    Person.drop_and_create
-    Company.drop_and_create
+    Person.migrator.drop_and_create
+    Company.migrator.drop_and_create
     Book.migrator.drop_and_create
     BookReview.migrator.drop_and_create
-    Item.drop_and_create
+    Item.migrator.drop_and_create
   end
 {% end %}
