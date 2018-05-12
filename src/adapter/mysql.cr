@@ -85,10 +85,9 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     end
   end
 
-  def import(table_name : String, primary_name : String, fields, model_array, **options)
+  def import(table_name : String, primary_name : String, auto : String, fields, model_array, **options)
     params = [] of DB::Any
-    now = Time.now.to_utc
-    fields.reject! { |field| field === "id" } if primary_name === "id"
+    now = Time.utc_now
 
     statement = String.build do |stmt|
       stmt << "INSERT"
@@ -111,6 +110,7 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     if options["update_on_duplicate"]?
       if columns = options["columns"]?
         statement += " ON DUPLICATE KEY UPDATE "
+        columns << "updated_at" if fields.includes? "updated_at"
         columns.each do |key|
           statement += "#{quote(key)}=VALUES(#{quote(key)}), "
         end

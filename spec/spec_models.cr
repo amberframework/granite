@@ -195,6 +195,22 @@ require "uuid"
       end
     end
 
+    class NonAutoDefaultPK < Granite::ORM::Base
+      adapter {{ adapter_literal }}
+      table_name non_auto_default_pk
+
+      primary id : Int64, auto: false
+      field name : String
+    end
+
+    class NonAutoCustomPK < Granite::ORM::Base
+      adapter {{ adapter_literal }}
+      table_name non_auto_custom_pk
+
+      primary custom_id : Int64, auto: false
+      field name : String
+    end
+
     Parent.migrator.drop_and_create
     Teacher.migrator.drop_and_create
     Student.migrator.drop_and_create
@@ -213,5 +229,7 @@ require "uuid"
     Book.migrator.drop_and_create
     BookReview.migrator.drop_and_create
     Item.migrator.drop_and_create
+    NonAutoDefaultPK.migrator.drop_and_create
+    NonAutoCustomPK.migrator.drop_and_create
   end
 {% end %}
