@@ -7,8 +7,8 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
 
   module Schema
     TYPES = {
-      "AUTO_Int32" => "INTEGER NOT NULL PRIMARY KEY",
-      "AUTO_Int64" => "INTEGER NOT NULL PRIMARY KEY",
+      "AUTO_Int32" => "INTEGER NOT NULL",
+      "AUTO_Int64" => "INTEGER NOT NULL",
       "Int32"      => "INTEGER",
       "Int64"      => "INTEGER",
       "created_at" => "VARCHAR",
@@ -85,10 +85,9 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
     end
   end
 
-  def import(table_name : String, primary_name : String, fields, model_array, **options)
+  def import(table_name : String, primary_name : String, auto : String, fields, model_array, **options)
     params = [] of DB::Any
     now = Time.now.to_utc
-    fields.reject! { |field| field === "id" } if primary_name === "id"
 
     statement = String.build do |stmt|
       stmt << "INSERT "
