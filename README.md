@@ -1,6 +1,6 @@
 # Granite
 
-[Amber](https://github.com/Amber-Crystal/amber) is a web framework written in
+[Amber](https://github.com/amberframework/amber) is a web framework written in
 the [Crystal](https://github.com/crystal-lang/crystal) language.
 
 This project is to provide an ORM in Crystal.
