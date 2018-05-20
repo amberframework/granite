@@ -43,9 +43,6 @@ abstract class Granite::Adapter::Base
   # params is the query and params that is passed in via .all() method
   abstract def select(table_name, fields, clause = "", params = nil, &block)
 
-  # select_one is used by the find method.
-  # abstract def select_one(table_name, fields, field, id, &block)
-
   # This will insert a row in the database and return the id generated.
   abstract def insert(table_name, fields, params, lastval) : Int64
 

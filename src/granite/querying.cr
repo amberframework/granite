@@ -85,9 +85,7 @@ module Granite::Querying
 
   # find_by returns the first row found that matches the given criteria. Otherwise nil.
   def find_by(**args)
-    @@adapter.select_one(@@table_name, fields, args.keys.to_a, args.values.to_a) do |result|
-      from_sql(result)
-    end
+    first("WHERE #{args.map { |name| "#{quote(@@table_name)}.#{quote(name.to_s)} = ?" }.join(" AND ")}", args.values.to_a)
   end
 
   # find_by returns the first row found that matches the given criteria. Otherwise raises an exception.
