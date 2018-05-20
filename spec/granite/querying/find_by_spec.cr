@@ -11,10 +11,10 @@ module {{adapter.capitalize.id}}
       model.name = name
       model.save
 
-      found = Parent.find_by("name", name)
+      found = Parent.find_by(name: name)
       found.not_nil!.id.should eq model.id
 
-      found = Parent.find_by!("name", name)
+      found = Parent.find_by!(name: name)
       found.should be_a(Parent)
     end
 
@@ -26,10 +26,10 @@ module {{adapter.capitalize.id}}
       model.name = name
       model.save
 
-      found = Parent.find_by(:name, name)
+      found = Parent.find_by(name: name)
       found.not_nil!.id.should eq model.id
 
-      found = Parent.find_by!(:name, name)
+      found = Parent.find_by!(name: name)
       found.id.should eq model.id
     end
 
@@ -41,20 +41,20 @@ module {{adapter.capitalize.id}}
       model.all = value
       model.save
 
-      found = ReservedWord.find_by("all", value)
+      found = ReservedWord.find_by(all: value)
       found.not_nil!.id.should eq model.id
 
-      found = ReservedWord.find_by!(:all, value)
+      found = ReservedWord.find_by!(all: value)
       found.id.should eq model.id
     end
 
     it "returns nil or raises if no result" do
       Parent.clear
-      found = Parent.find_by("name", "xxx")
+      found = Parent.find_by(name: "xxx")
       found.should be_nil
 
-      expect_raises(Granite::Querying::NotFound, /Couldn't find .*Parent.* with name=xxx/) do
-        Parent.find_by!("name", "xxx")
+      expect_raises(Granite::Querying::NotFound, /Couldn't find .*Parent.* with name = xxx/) do
+        Parent.find_by!(name: "xxx")
       end
     end
   end

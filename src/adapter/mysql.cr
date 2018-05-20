@@ -44,21 +44,19 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     end
   end
 
-  # select_one is used by the find method.
-  # it checks id by default, but one can
-  # pass another field.
-  def select_one(table_name, fields, field, id, &block)
+  # Returns the first row matching the given criteria.
+  def select_one(table_name : String, fields : Array(String), criteria : Array(Symbol | String), params : Array(DB::Any), &block)
     statement = String.build do |stmt|
       stmt << "SELECT "
       stmt << fields.map { |name| "#{quote(table_name)}.#{quote(name)}" }.join(", ")
       stmt << " FROM #{quote(table_name)}"
-      stmt << " WHERE #{quote(field)}=? LIMIT 1"
+      stmt << " WHERE #{criteria.map { |name| "#{quote(table_name)}.#{quote(name.to_s)} = ?" }.join(" AND ")} LIMIT 1"
     end
 
-    log statement, id
+    log statement, params
 
     open do |db|
-      db.query_one? statement, id do |rs|
+      db.query_one? statement, params do |rs|
         yield rs
       end
     end

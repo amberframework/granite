@@ -305,12 +305,13 @@ post = Post.find! 1 # raises when no records found
 #### Find By
 
 ```crystal
-post = Post.find_by :slug, "example_slug"
+post = Post.find_by(slug: "example_slug")
 if post
   puts post.name
 end
 
-post = Post.find_by! :slug, "foo" # raises when no records found
+post = Post.find_by!(slug: "foo") # raises when no records found.
+other_post = Post.find_by(slug: "foo", type: "bar") # Also works for multiple arguments.
 ```
 
 #### Insert

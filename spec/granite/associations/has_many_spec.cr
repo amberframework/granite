@@ -70,7 +70,7 @@ module {{adapter.capitalize.id}}
         klass3.teacher = teacher
         klass3.save
 
-        klass = teacher.klasss.find_by(:name, "Test class with different name").not_nil!
+        klass = teacher.klasss.find_by(name: "Test class with different name").not_nil!
         klass.id.should eq klass3.id
         klass.name.should eq "Test class with different name"
       end
@@ -95,15 +95,15 @@ module {{adapter.capitalize.id}}
         klass3.teacher = teacher
         klass3.save
 
-        klass = teacher.klasss.find_by!(:name, "Test class with different name").not_nil!
+        klass = teacher.klasss.find_by!(name: "Test class with different name").not_nil!
         klass.id.should eq klass3.id
         klass.name.should eq "Test class with different name"
 
         expect_raises(
           Granite::Querying::NotFound,
-          "Couldn't find #{Klass.name} with name=not_found"
+          "Couldn't find #{Klass.name} with name = not_found"
         ) do
-          klass = teacher.klasss.find_by!(:name, "not_found")
+          klass = teacher.klasss.find_by!(name: "not_found")
         end
       end
 
@@ -161,7 +161,7 @@ module {{adapter.capitalize.id}}
 
         expect_raises(
           Granite::Querying::NotFound,
-          "Couldn't find #{Klass.name} with id=#{id}"
+          "Couldn't find #{Klass.name} with id = #{id}"
         ) do
           teacher.klasss.find!(id)
         end

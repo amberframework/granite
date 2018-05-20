@@ -11,26 +11,23 @@ class Granite::AssociationCollection(Owner, Target)
     )
   end
 
-  def find_by(field : String | Symbol, value)
+  def find_by(**args)
     Target.first(
-      [query, "AND #{Target.table_name}.#{field} = ?"].join(" "),
-      [owner.id, value]
+      "#{query} AND #{args.map { |arg| "#{Target.table_name}.#{arg} = ?" }.join(" AND ")}",
+      [owner.id] + args.values.to_a
     )
   end
 
-  def find_by!(field : String | Symbol, value)
-    find_by(field, value) ||
-      raise Granite::Querying::NotFound.new(
-        "Couldn't find #{Target.name} with #{field}=#{value}"
-      )
+  def find_by!(**args)
+    find_by(**args) || raise Granite::Querying::NotFound.new("Couldn't find #{Target.name} with #{args.map { |k, v| "#{k} = #{v}" }.join(" and ")}")
   end
 
   def find(value)
-    find_by(Target.primary_name, value)
+    Target.find(value)
   end
 
   def find!(value)
-    find_by!(Target.primary_name, value)
+    Target.find!(value)
   end
 
   private getter owner
