@@ -80,7 +80,7 @@ module Granite::Querying
 
   # find returns the row with the primary key specified. Otherwise raises an exception.
   def find!(value)
-    first("WHERE #{@@primary_name} = ?", value) || raise Granite::Querying::NotFound.new("Couldn't find #{{{@type.name.stringify}}} with #{@@primary_name} = #{value}")
+    find(value) || raise Granite::Querying::NotFound.new("Couldn't find #{{{@type.name.stringify}}} with #{@@primary_name} = #{value}")
   end
 
   # find_by returns the first row found that matches the given criteria. Otherwise nil.
