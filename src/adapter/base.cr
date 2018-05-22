@@ -5,11 +5,11 @@ require "db"
 # objects to perform actions against a specific database.  Each adapter needs
 # to implement these methods.
 abstract class Granite::Adapter::Base
-  property database : DB::Database
+  property database_url : String
 
   def initialize(adapter : String)
     if url = ENV["DATABASE_URL"]? || Granite.settings.database_url || replace_env_vars(settings(adapter)["database"].to_s)
-      @database = DB.open(url)
+      @database_url = url
     else
       raise "database url needs to be set in the config/database.yml or DATABASE_URL environment variable"
     end
@@ -28,7 +28,9 @@ abstract class Granite::Adapter::Base
   end
 
   def open(&block)
-    yield @database
+    DB.open(@database_url) do |db|
+      yield db
+    end
   end
 
   def log(query : String, params = [] of String) : Nil
