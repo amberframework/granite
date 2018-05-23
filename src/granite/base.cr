@@ -9,6 +9,7 @@ require "./table"
 require "./transactions"
 require "./validators"
 require "./migrator"
+require "./select"
 require "./version"
 
 # Granite::Base is the base class for your model objects.
@@ -20,6 +21,7 @@ class Granite::Base
   include Transactions
   include Validators
   include Migrator
+  include Select
 
   extend Querying
   extend Transactions::ClassMethods
@@ -28,6 +30,7 @@ class Granite::Base
     macro finished
       __process_table
       __process_fields
+      __process_select
       __process_querying
       __process_transactions
       __process_migrator

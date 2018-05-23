@@ -38,10 +38,11 @@ abstract class Granite::Adapter::Base
   # remove all rows from a table and reset the counter on the id.
   abstract def clear(table_name)
 
-  # select performs a query against a table.  The table_name and fields are
-  # configured using the sql_mapping directive in your model.  The clause and
-  # params is the query and params that is passed in via .all() method
-  abstract def select(table_name, fields, clause = "", params = nil, &block)
+  # select performs a query against a table.  The query object containes table_name,
+  # fields (configured using the sql_mapping directive in your model), and an optional
+  # raw query string.  The clause and params is the query and params that is passed
+  # in via .all() method
+  abstract def select(query : Granite::Select::Container, clause = "", params = nil, &block)
 
   # select_one is used by the find method.
   # abstract def select_one(table_name, fields, field, id, &block)

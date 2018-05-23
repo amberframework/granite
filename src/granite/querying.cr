@@ -44,7 +44,7 @@ module Granite::Querying
 
   def raw_all(clause = "", params = [] of DB::Any)
     rows = [] of self
-    @@adapter.select(@@table_name, fields, clause, params) do |results|
+    @@adapter.select(@@select, clause, params) do |results|
       results.each do
         rows << from_sql(results)
       end
@@ -87,7 +87,7 @@ module Granite::Querying
   # find_by returns the first row found where the field maches the value
   def find_by(field : String | Symbol, value)
     row = nil
-    @@adapter.select_one(@@table_name, fields, field.to_s, value) do |result|
+    @@adapter.select_one(@@select, field.to_s, value) do |result|
       row = from_sql(result) if result
     end
     return row

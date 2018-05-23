@@ -25,14 +25,19 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     end
   end
 
-  # select performs a query against a table.  The table_name and fields are
-  # configured using the sql_mapping directive in your model.  The clause and
-  # params is the query and params that is passed in via .all() method
-  def select(table_name, fields, clause = "", params = [] of DB::Any, &block)
-    statement = String.build do |stmt|
-      stmt << "SELECT "
-      stmt << fields.map { |name| "#{quote(table_name)}.#{quote(name)}" }.join(", ")
-      stmt << " FROM #{quote(table_name)} #{clause}"
+  # select performs a query against a table.  The query object containes table_name,
+  # fields (configured using the sql_mapping directive in your model), and an optional
+  # raw query string.  The clause and params is the query and params that is passed
+  # in via .all() method
+  def select(query : Granite::Select::Container, clause = "", params = [] of DB::Any, &block)
+    if query.custom.size > 0
+      statement = query.custom
+    else
+      statement = String.build do |stmt|
+        stmt << "SELECT "
+        stmt << query.fields.map { |name| "#{quote(query.table_name)}.#{quote(name)}" }.join(", ")
+        stmt << " FROM #{quote(query.table_name)} #{clause}"
+      end
     end
 
     log statement, params
@@ -47,13 +52,18 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
   # select_one is used by the find method.
   # it checks id by default, but one can
   # pass another field.
-  def select_one(table_name, fields, field, id, &block)
-    statement = String.build do |stmt|
-      stmt << "SELECT "
-      stmt << fields.map { |name| "#{quote(table_name)}.#{quote(name)}" }.join(", ")
-      stmt << " FROM #{quote(table_name)}"
-      stmt << " WHERE #{quote(field)}=? LIMIT 1"
+  def select_one(query : Granite::Select::Container, field, id, &block)
+    if query.custom.size > 0
+      initial_statement = query.custom
+    else
+      initial_statement = String.build do |stmt|
+        stmt << "SELECT "
+        stmt << query.fields.map { |name| "#{quote(query.table_name)}.#{quote(name)}" }.join(", ")
+        stmt << " FROM #{quote(query.table_name)}"
+      end
     end
+
+    statement = "#{initial_statement} WHERE #{quote(field)}=? LIMIT 1"
 
     log statement, id
 
