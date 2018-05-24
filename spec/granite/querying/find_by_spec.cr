@@ -29,7 +29,7 @@ module {{adapter.capitalize.id}}
       Review.find_by(upvotes: 0).not_nil!.id.should eq 2
       Review.find_by(name: "review1", upvotes: 10).not_nil!.id.should eq 3
 
-      expect_raises(Granite::Querying::NotFound, /Couldn't find .*Review.* with name = review1 and upvotes = 20/) do
+      expect_raises(Granite::Querying::NotFound, /No .*Review.* found where name = review1 and upvotes = 20/) do
         Review.find_by!(name: "review1", upvotes: 20)
       end
     end
@@ -54,7 +54,7 @@ module {{adapter.capitalize.id}}
       found = Parent.find_by(name: "xxx")
       found.should be_nil
 
-      expect_raises(Granite::Querying::NotFound, /Couldn't find .*Parent.* with name = xxx/) do
+      expect_raises(Granite::Querying::NotFound, /No .*Parent.* found where name = xxx/) do
         Parent.find_by!(name: "xxx")
       end
     end

@@ -70,7 +70,7 @@ module Granite::Querying
   end
 
   def first!(clause = "", params = [] of DB::Any)
-    first(clause, params) || raise NotFound.new("Couldn't find " + {{@type.name.stringify}} + " with first(#{clause})")
+    first(clause, params) || raise NotFound.new("No #{{{@type.name.stringify}}} found with first(#{clause})")
   end
 
   # find returns the row with the primary key specified. Otherwise nil.
@@ -80,7 +80,7 @@ module Granite::Querying
 
   # find returns the row with the primary key specified. Otherwise raises an exception.
   def find!(value)
-    find(value) || raise Granite::Querying::NotFound.new("Couldn't find #{{{@type.name.stringify}}} with #{@@primary_name} = #{value}")
+    find(value) || raise Granite::Querying::NotFound.new("No #{{{@type.name.stringify}}} found where #{@@primary_name} = #{value}")
   end
 
   # find_by returns the first row found that matches the given criteria. Otherwise nil.
@@ -90,7 +90,7 @@ module Granite::Querying
 
   # find_by returns the first row found that matches the given criteria. Otherwise raises an exception.
   def find_by!(**args)
-    find_by(**args) || raise NotFound.new("Couldn't find #{{{@type.name.stringify}}} with #{args.map { |k, v| "#{k} = #{v}" }.join(" and ")}")
+    find_by(**args) || raise NotFound.new("No #{{{@type.name.stringify}}} found where #{args.map { |k, v| "#{k} = #{v}" }.join(" and ")}")
   end
 
   def find_each(clause = "", params = [] of DB::Any, batch_size limit = 100, offset = 0)

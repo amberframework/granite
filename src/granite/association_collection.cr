@@ -13,13 +13,13 @@ class Granite::AssociationCollection(Owner, Target)
 
   def find_by(**args)
     Target.first(
-      "#{query} AND #{args.map { |arg| "#{Target.table_name}.#{arg} = ?" }.join(" AND ")}",
+      "#{query} AND #{args.map { |arg| "#{Target.quote(Target.table_name)}.#{Target.quote(arg.to_s)} = ?" }.join(" AND ")}",
       [owner.id] + args.values.to_a
     )
   end
 
   def find_by!(**args)
-    find_by(**args) || raise Granite::Querying::NotFound.new("Couldn't find #{Target.name} with #{args.map { |k, v| "#{k} = #{v}" }.join(" and ")}")
+    find_by(**args) || raise Granite::Querying::NotFound.new("No #{Target.name} found where #{args.map { |k, v| "#{k} = #{v}" }.join(" and ")}")
   end
 
   def find(value)

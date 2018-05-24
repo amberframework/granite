@@ -126,7 +126,7 @@ module {{adapter.capitalize.id}}
 
         expect_raises(
           Granite::Querying::NotFound,
-          "Couldn't find #{Klass.name} with name = not_found"
+          "No #{Klass.name} found where name = not_found"
         ) do
           klass = student.klasss.find_by!(name: "not_found")
         end
@@ -189,7 +189,7 @@ module {{adapter.capitalize.id}}
 
         expect_raises(
           Granite::Querying::NotFound,
-          "Couldn't find #{Klass.name} with id = #{id}"
+          "No #{Klass.name} found where id = #{id}"
         ) do
           student.klasss.find!(id)
         end

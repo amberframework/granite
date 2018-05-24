@@ -51,7 +51,7 @@ module {{adapter.capitalize.id}}
       found = Parent.first("WHERE name = 'Test 2'")
       found.should be nil
 
-      expect_raises(Granite::Querying::NotFound, /Couldn't find .*Parent.* with first\(WHERE name = 'Test 2'\)/) do
+      expect_raises(Granite::Querying::NotFound, /No .*Parent.* found with first\(WHERE name = 'Test 2'\)/) do
         Parent.first!("WHERE name = 'Test 2'")
       end
     end
