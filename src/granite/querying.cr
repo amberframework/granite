@@ -8,7 +8,7 @@ module Granite::Querying
       \{% primary_type = PRIMARY[:type] %}
 
       # Create the from_sql method
-      def self.from_sql(result)
+      def self.from_sql(result : DB::ResultSet)
         model = \{{@type.name.id}}.new
         model.set_attributes(result)
         model
@@ -31,6 +31,7 @@ module Granite::Querying
             self.\{{name.id}} = result.read(Union(\{{type.id}} | Nil))
           \{% end %}
         \{% end %}
+        result.close
         return self
       end
     end
