@@ -635,7 +635,7 @@ A set of common validation macros exist to make validations easier to manage/cre
 - `validate_greater_than :field, 0` - Validates that field should be greater than 0.
 - `validate_greater_than :field, 0, true` - Validates that field should be greater than or equal to 0.
 - `validate_less_than :field, 100` - Validates that field should be less than 100.
-- `validate_less_than :field, 1000, true` - Validates that field should be less than or equal to 100.
+- `validate_less_than :field, 100, true` - Validates that field should be less than or equal to 100.
 
 Using the helpers, the previous example could have been written like:
 
