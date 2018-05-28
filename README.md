@@ -616,7 +616,6 @@ class Post < Granite::Base
 end
 ```
 
-
 #### Validation Helpers
 
 A set of common validation macros exist to make validations easier to manage/create.
@@ -638,6 +637,17 @@ A set of common validation macros exist to make validations easier to manage/cre
 - `validate_less_than :field, 100` - Validates that field should be less than 100.
 - `validate_less_than :field, 1000, true` - Validates that field should be less than or equal to 100.
 
+For example the previous example, using the helpers, could have been written:
+
+```Crystal
+class Post < Granite::Base
+  adapter mysql
+
+  field title : String
+
+  validate_not_blank :title
+end
+```
 
 ### Migration
 
