@@ -598,7 +598,7 @@ You can register callbacks for the following events:
 
 ### Validation
 
-Validation assertions can be made on models to ensure that the given criteria are met.
+Validations can be made on models to ensure that given criteria are met.
 
 Models that do not pass the validations will not be saved, and will have the errors added to the model's `errors` array.
 
@@ -637,7 +637,7 @@ A set of common validation macros exist to make validations easier to manage/cre
 - `validate_less_than :field, 100` - Validates that field should be less than 100.
 - `validate_less_than :field, 1000, true` - Validates that field should be less than or equal to 100.
 
-Using the helpers the previous example could have been written like:
+Using the helpers, the previous example could have been written like:
 
 ```Crystal
 class Post < Granite::Base
