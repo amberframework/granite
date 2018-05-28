@@ -637,7 +637,7 @@ A set of common validation macros exist to make validations easier to manage/cre
 - `validate_less_than :field, 100` - Validates that field should be less than 100.
 - `validate_less_than :field, 1000, true` - Validates that field should be less than or equal to 100.
 
-For example the previous example, using the helpers, could have been written:
+Using the helpers the previous example could have been written like:
 
 ```Crystal
 class Post < Granite::Base
