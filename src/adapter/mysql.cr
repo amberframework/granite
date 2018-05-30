@@ -44,26 +44,6 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     end
   end
 
-  # select_one is used by the find method.
-  # it checks id by default, but one can
-  # pass another field.
-  def select_one(table_name, fields, field, id, &block)
-    statement = String.build do |stmt|
-      stmt << "SELECT "
-      stmt << fields.map { |name| "#{quote(table_name)}.#{quote(name)}" }.join(", ")
-      stmt << " FROM #{quote(table_name)}"
-      stmt << " WHERE #{quote(field)}=? LIMIT 1"
-    end
-
-    log statement, id
-
-    open do |db|
-      db.query_one? statement, id do |rs|
-        yield rs
-      end
-    end
-  end
-
   def insert(table_name, fields, params, lastval)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{quote(table_name)} ("
