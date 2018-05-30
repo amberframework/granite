@@ -88,7 +88,7 @@ module {{adapter.capitalize.id}}
         Parent.import(to_import)
         import_time = Time.now
 
-        parent1 = Parent.find_by! :name, "ParentOne"
+        parent1 = Parent.find_by!(name: "ParentOne")
         parent1.name.should eq "ParentOne"
         parent1.created_at.not_nil!.epoch.should eq import_time.epoch
         parent1.updated_at.not_nil!.epoch.should eq import_time.epoch
@@ -101,7 +101,7 @@ module {{adapter.capitalize.id}}
         Parent.import(to_update, update_on_duplicate: true, columns: ["name"])
         update_time = Time.now
 
-        parent1_edited = Parent.find_by! :name, "ParentOneEdited"
+        parent1_edited = Parent.find_by!(name: "ParentOneEdited")
         parent1_edited.name.should eq "ParentOneEdited"
         parent1_edited.created_at.not_nil!.epoch.should eq import_time.epoch
         parent1_edited.updated_at.not_nil!.epoch.should eq update_time.epoch
