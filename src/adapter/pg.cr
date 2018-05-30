@@ -71,16 +71,18 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       stmt << ") VALUES ("
       stmt << fields.map { |name| "$#{fields.index(name).not_nil! + 1}" }.join(", ")
       stmt << ")"
+
+      stmt << " RETURNING #{quote(lastval)}" if lastval
     end
 
     log statement, params
 
     open do |db|
-      db.exec statement, params
       if lastval
-        return db.scalar(last_val()).as(Int64)
+        db.scalar(statement, params).as(Int32 | Int64).to_i64
       else
-        return -1_i64
+        db.exec statement, params
+        -1_i64
       end
     end
   end
@@ -129,10 +131,6 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     open do |db|
       db.exec statement, params
     end
-  end
-
-  private def last_val
-    return "SELECT LASTVAL()"
   end
 
   # This will update a row in the database.
