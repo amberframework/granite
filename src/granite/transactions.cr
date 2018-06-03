@@ -4,7 +4,7 @@ module Granite::Transactions
       create(args.to_h)
     end
 
-    def create(args : Hash(Symbol | String, DB::Any))
+    def create(args : Hash(Symbol | String, DB::Any) | JSON::Any)
       instance = new
       instance.set_attributes(args)
       instance.save
