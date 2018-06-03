@@ -10,6 +10,16 @@ module Granite::Transactions
       instance.save
       instance
     end
+
+    def from_json(args : JSON::Any)
+      if args.as_a?
+        args.map { |a| model = new; model.set_attributes(a); model }
+      else
+        model = new
+        model.set_attributes(args)
+        model
+      end
+    end
   end
 
   macro __process_transactions

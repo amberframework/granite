@@ -73,7 +73,7 @@ describe Granite::Base do
 
     review_json.is_a?(JSON::Any).should be_true
 
-    review = Review.new(review_json)
+    review = Review.from_json(review_json).as(Review)
     review.name.should eq "json::anyReview"
     review.user_id.should eq 99_i32
     review.upvotes.should eq 2_i64
@@ -81,6 +81,19 @@ describe Granite::Base do
     review.interest.should eq 4.56_f64
     review.published.should eq true
     review.created_at.should eq Time.parse("2016-02-15 10:20:30", "%F %X")
+  end
+
+  it "takes JSON::Any Array" do
+    json_str = %([{"name": "web1"},{"name": "web2"},{"name": "web3"}])
+    website_json = JSON.parse(json_str)
+
+    website_json.is_a?(JSON::Any).should be_true
+
+    webSites = WebSite.from_json(website_json).as(Array(WebSite))
+
+    webSites[0].name.should eq "web1"
+    webSites[1].name.should eq "web2"
+    webSites[2].name.should eq "web3"
   end
 
   describe "#to_h" do
