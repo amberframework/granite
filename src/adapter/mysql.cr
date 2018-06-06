@@ -56,11 +56,13 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     log statement, params
 
     open do |db|
-      db.exec statement, params
-      if lastval
-        return db.scalar(last_val()).as(Int64)
-      else
-        return -1_i64
+      db.using_connection do |conn|
+        conn.exec statement, params
+        if lastval
+          return conn.scalar(last_val()).as(Int64)
+        else
+          return -1_i64
+        end
       end
     end
   end
