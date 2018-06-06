@@ -44,7 +44,7 @@ module Granite::Querying
 
   def raw_all(clause = "", params = [] of DB::Any)
     rows = [] of self
-    @@adapter.select(@@table_name, fields, clause, params) do |results|
+    @@adapter.select(@@select, clause, params) do |results|
       results.each do
         rows << from_sql(results)
       end

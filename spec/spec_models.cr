@@ -211,6 +211,34 @@ require "uuid"
       field name : String
     end
 
+    class Article < Granite::Base
+      adapter {{ adapter.id }}
+      table_name articles
+
+      primary id : Int64
+      field articlebody : String
+    end
+
+    class Comment < Granite::Base
+      adapter {{ adapter.id }}
+      table_name comments
+
+      primary id : Int64
+      field commentbody : String
+      field articleid : Int64
+    end
+
+    class ArticleViewModel < Granite::Base
+      adapter {{ adapter.id }}
+
+      field articlebody : String
+      field commentbody : String
+
+      query <<-SQL
+        SELECT articles.id, articles.articlebody, comments.commentbody FROM articles JOIN comments ON comments.articleid = articles.id
+      SQL
+    end
+
     Parent.migrator.drop_and_create
     Teacher.migrator.drop_and_create
     Student.migrator.drop_and_create
@@ -231,5 +259,8 @@ require "uuid"
     Item.migrator.drop_and_create
     NonAutoDefaultPK.migrator.drop_and_create
     NonAutoCustomPK.migrator.drop_and_create
+    Article.migrator.drop_and_create
+    Comment.migrator.drop_and_create
+
   end
 {% end %}

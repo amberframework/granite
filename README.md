@@ -341,12 +341,13 @@ puts "deleted" unless post
 
 ### Queries
 
-The where clause will give you full control over your query.
+The query macro and where clause combine to give you full control over your query.
 
 #### All
 
-When using the `all` method, the SQL selected fields will always match the
-fields specified in the model.
+When using the `all` method, the SQL selected fields will match the
+fields specified in the model unless the `query` macro was used to customize
+the SELECT.
 
 Always pass in parameters to avoid SQL Injection.  Use a `?`
 in your query as placeholder. Checkout the [Crystal DB Driver](https://github.com/crystal-lang/crystal-db)
@@ -388,6 +389,31 @@ This is the same as:
 
 ```crystal
 post = Post.all("ORDER BY posts.name DESC LIMIT 1").first
+```
+
+#### Customizing SELECT
+
+The `query` macro allows you to customize the entire query, including the SELECT portion.  This shouldn't be necessary in most cases, but allows you to craft more complex (i.e. cross-table) queries if needed:
+
+```crystal
+class CustomView < Granite:Base
+  adapter pg
+  field articlebody : String
+  field commentbody : String
+
+  query <<-SQL
+    SELECT articles.articlebody, comments.commentbody 
+    FROM articles 
+    JOIN comments 
+    ON comments.articleid = articles.id
+  SQL
+end
+```
+
+You can combine this with an argument to `all` or `first` for maximum flexibility:
+
+```crystal
+results = CustomView.all("WHERE articles.author = ?", ["Noah"])
 ```
 
 ### Relationships
