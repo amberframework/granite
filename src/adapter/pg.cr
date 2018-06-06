@@ -31,15 +31,10 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
   # in via .all() method
   def select(query : Granite::Select::Container, clause = "", params = [] of DB::Any, &block)
     clause = _ensure_clause_template(clause)
-
-    if query.custom.size > 0
-      statement = query.custom
-    else
-      statement = String.build do |stmt|
-        stmt << "SELECT "
-        stmt << query.fields.map { |name| "#{quote(query.table_name)}.#{quote(name)}" }.join(", ")
-        stmt << " FROM #{quote(query.table_name)} #{clause}"
-      end
+    statement = query.custom || String.build do |stmt|
+      stmt << "SELECT "
+      stmt << query.fields.map { |name| "#{quote(query.table_name)}.#{quote(name)}" }.join(", ")
+      stmt << " FROM #{quote(query.table_name)} #{clause}"
     end
 
     log statement, params
@@ -53,14 +48,10 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
 
   # select_one is used by the find method.
   def select_one(query : Granite::Select::Container, field, id, &block)
-    if query.custom.size > 0
-      initial_statement = query.custom
-    else
-      initial_statement = String.build do |stmt|
-        stmt << "SELECT "
-        stmt << query.fields.map { |name| "#{quote(query.table_name)}.#{quote(name)}" }.join(", ")
-        stmt << " FROM #{quote(query.table_name)}"
-      end
+    initial_statement = query.custom || String.build do |stmt|
+      stmt << "SELECT "
+      stmt << query.fields.map { |name| "#{quote(query.table_name)}.#{quote(name)}" }.join(", ")
+      stmt << " FROM #{quote(query.table_name)}"
     end
 
     statement = "#{initial_statement} WHERE #{quote(field)}=$1 LIMIT 1"

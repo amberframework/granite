@@ -30,14 +30,10 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
   # raw query string.  The clause and params is the query and params that is passed
   # in via .all() method
   def select(query : Granite::Select::Container, clause = "", params = [] of DB::Any, &block)
-    if query.custom.size > 0
-      statement = query.custom
-    else
-      statement = String.build do |stmt|
-        stmt << "SELECT "
-        stmt << query.fields.map { |name| "#{quote(query.table_name)}.#{quote(name)}" }.join(", ")
-        stmt << " FROM #{quote(query.table_name)} #{clause}"
-      end
+    statement = query.custom || String.build do |stmt|
+      stmt << "SELECT "
+      stmt << query.fields.map { |name| "#{quote(query.table_name)}.#{quote(name)}" }.join(", ")
+      stmt << " FROM #{quote(query.table_name)} #{clause}"
     end
 
     log statement, params
@@ -53,14 +49,10 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
   # it checks id by default, but one can
   # pass another field.
   def select_one(query : Granite::Select::Container, field, id, &block)
-    if query.custom.size > 0
-      initial_statement = query.custom
-    else
-      initial_statement = String.build do |stmt|
-        stmt << "SELECT "
-        stmt << query.fields.map { |name| "#{quote(query.table_name)}.#{quote(name)}" }.join(", ")
-        stmt << " FROM #{quote(query.table_name)}"
-      end
+    initial_statement = query.custom || String.build do |stmt|
+      stmt << "SELECT "
+      stmt << query.fields.map { |name| "#{quote(query.table_name)}.#{quote(name)}" }.join(", ")
+      stmt << " FROM #{quote(query.table_name)}"
     end
 
     statement = "#{initial_statement} WHERE #{quote(field)}=? LIMIT 1"

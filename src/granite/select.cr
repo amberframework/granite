@@ -1,9 +1,9 @@
 module Granite::Select
   struct Container
-    property custom
+    property custom : String?
     getter table_name, fields
 
-    def initialize(@custom = "", @table_name = "", @fields = [] of String)
+    def initialize(@custom, @table_name = "", @fields = [] of String)
     end
   end
 
