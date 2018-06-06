@@ -25,16 +25,16 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     end
   end
 
-  # select performs a query against a table.  The table_name and fields are
-  # configured using the sql_mapping directive in your model.  The clause and
-  # params is the query and params that is passed in via .all() method
-  def select(table_name, fields, clause = "", params = [] of DB::Any, &block)
+  # select performs a query against a table.  The query object containes table_name,
+  # fields (configured using the sql_mapping directive in your model), and an optional
+  # raw query string.  The clause and params is the query and params that is passed
+  # in via .all() method
+  def select(query : Granite::Select::Container, clause = "", params = [] of DB::Any, &block)
     clause = _ensure_clause_template(clause)
-
-    statement = String.build do |stmt|
+    statement = query.custom || String.build do |stmt|
       stmt << "SELECT "
-      stmt << fields.map { |name| "#{quote(table_name)}.#{quote(name)}" }.join(", ")
-      stmt << " FROM #{quote(table_name)} #{clause}"
+      stmt << query.fields.map { |name| "#{quote(query.table_name)}.#{quote(name)}" }.join(", ")
+      stmt << " FROM #{quote(query.table_name)} #{clause}"
     end
 
     log statement, params
