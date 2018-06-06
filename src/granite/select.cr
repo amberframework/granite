@@ -3,7 +3,7 @@ module Granite::Select
     property custom : String?
     getter table_name, fields
 
-    def initialize(@custom, @table_name = "", @fields = [] of String)
+    def initialize(@custom = nil, @table_name = "", @fields = [] of String)
     end
   end
 
