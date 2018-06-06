@@ -45,27 +45,6 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     end
   end
 
-  # select_one is used by the find method.
-  # it checks id by default, but one can
-  # pass another field.
-  def select_one(query : Granite::Select::Container, field, id, &block)
-    initial_statement = query.custom || String.build do |stmt|
-      stmt << "SELECT "
-      stmt << query.fields.map { |name| "#{quote(query.table_name)}.#{quote(name)}" }.join(", ")
-      stmt << " FROM #{quote(query.table_name)}"
-    end
-
-    statement = "#{initial_statement} WHERE #{quote(field)}=? LIMIT 1"
-
-    log statement, id
-
-    open do |db|
-      db.query_one? statement, id do |rs|
-        yield rs
-      end
-    end
-  end
-
   def insert(table_name, fields, params, lastval)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{quote(table_name)} ("
@@ -78,11 +57,13 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     log statement, params
 
     open do |db|
-      db.exec statement, params
-      if lastval
-        return db.scalar(last_val()).as(Int64)
-      else
-        return -1_i64
+      db.using_connection do |conn|
+        conn.exec statement, params
+        if lastval
+          return conn.scalar(last_val()).as(Int64)
+        else
+          return -1_i64
+        end
       end
     end
   end

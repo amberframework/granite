@@ -8,6 +8,7 @@ require "./settings"
 require "./table"
 require "./transactions"
 require "./validators"
+require "./validation_helpers"
 require "./migrator"
 require "./select"
 require "./version"
@@ -20,6 +21,7 @@ class Granite::Base
   include Table
   include Transactions
   include Validators
+  include ValidationHelpers
   include Migrator
   include Select
 

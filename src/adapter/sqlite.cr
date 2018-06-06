@@ -46,26 +46,7 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
       end
     end
   end
-
-  # select_one is used by the find method.
-  def select_one(query : Granite::Select::Container, field, id, &block)
-    initial_statement = query.custom || String.build do |stmt|
-      stmt << "SELECT "
-      stmt << query.fields.map { |name| "#{quote(query.table_name)}.#{quote(name)}" }.join(", ")
-      stmt << " FROM #{quote(query.table_name)}"
-    end
-
-    statement = "#{initial_statement} WHERE #{quote(field)}=:id LIMIT 1"
-
-    log statement, id
-
-    open do |db|
-      db.query_one? statement, id do |rs|
-        yield rs
-      end
-    end
-  end
-
+  
   def insert(table_name, fields, params, lastval)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{quote(table_name)} ("

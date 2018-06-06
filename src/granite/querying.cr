@@ -31,7 +31,7 @@ module Granite::Querying
             self.\{{name.id}} = result.read(Union(\{{type.id}} | Nil))
           \{% end %}
         \{% end %}
-        return self
+        self
       end
     end
   end
@@ -70,31 +70,27 @@ module Granite::Querying
   end
 
   def first!(clause = "", params = [] of DB::Any)
-    first(clause, params) || raise NotFound.new("Couldn't find " + {{@type.name.stringify}} + " with first(#{clause})")
+    first(clause, params) || raise NotFound.new("No #{{{@type.name.stringify}}} found with first(#{clause})")
   end
 
-  # find returns the row with the primary key specified.
-  # it checks by primary by default, but one can pass
-  # another field for comparison
+  # find returns the row with the primary key specified. Otherwise nil.
   def find(value)
-    return find_by(@@primary_name, value)
+    first("WHERE #{@@primary_name} = ?", value)
   end
 
+  # find returns the row with the primary key specified. Otherwise raises an exception.
   def find!(value)
-    return find_by!(@@primary_name, value)
+    find(value) || raise Granite::Querying::NotFound.new("No #{{{@type.name.stringify}}} found where #{@@primary_name} = #{value}")
   end
 
-  # find_by returns the first row found where the field maches the value
-  def find_by(field : String | Symbol, value)
-    row = nil
-    @@adapter.select_one(@@select, field.to_s, value) do |result|
-      row = from_sql(result) if result
-    end
-    return row
+  # find_by returns the first row found that matches the given criteria. Otherwise nil.
+  def find_by(**args)
+    first("WHERE #{args.map { |name| "#{quote(@@table_name)}.#{quote(name.to_s)} = ?" }.join(" AND ")}", args.values.to_a)
   end
 
-  def find_by!(field : String | Symbol, value)
-    find_by(field, value) || raise NotFound.new("Couldn't find " + {{@type.name.stringify}} + " with #{field}=#{value}")
+  # find_by returns the first row found that matches the given criteria. Otherwise raises an exception.
+  def find_by!(**args)
+    find_by(**args) || raise NotFound.new("No #{{{@type.name.stringify}}} found where #{args.map { |k, v| "#{k} = #{v}" }.join(" and ")}")
   end
 
   def find_each(clause = "", params = [] of DB::Any, batch_size limit = 100, offset = 0)
@@ -110,7 +106,7 @@ module Granite::Querying
       raise ArgumentError.new("batch_size must be >= 1")
     end
 
-    while true
+    loop do
       results = all "#{clause} LIMIT ? OFFSET ?", params + [limit, offset]
       break unless results.any?
       yield results

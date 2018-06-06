@@ -11,29 +11,30 @@ module {{adapter.capitalize.id}}
       model.name = name
       model.save
 
-      found = Parent.find_by("name", name)
+      found = Parent.find_by(name: name)
       found.not_nil!.id.should eq model.id
 
-      found = Parent.find_by!("name", name)
+      found = Parent.find_by!(name: name)
       found.should be_a(Parent)
     end
 
-    it "finds an object with a symbol field" do
-      Parent.clear
-      name = "robinson"
+    it "works with multiple arguments" do
+      Review.clear
 
-      model = Parent.new
-      model.name = name
-      model.save
+      Review.create(name: "review1", upvotes: 2.to_i64)
+      Review.create(name: "review2", upvotes: 0.to_i64)
+      Review.create(name: "review1", upvotes: 10.to_i64)
 
-      found = Parent.find_by(:name, name)
-      found.not_nil!.id.should eq model.id
+      Review.find_by(name: "review1").not_nil!.id.should eq 1
+      Review.find_by(upvotes: 0).not_nil!.id.should eq 2
+      Review.find_by(name: "review1", upvotes: 10).not_nil!.id.should eq 3
 
-      found = Parent.find_by!(:name, name)
-      found.id.should eq model.id
+      expect_raises(Granite::Querying::NotFound, /No .*Review.* found where name = review1 and upvotes = 20/) do
+        Review.find_by!(name: "review1", upvotes: 20)
+      end
     end
 
-    it "also works with reserved words" do
+    it "works with reserved words" do
       Parent.clear
       value = "robinson"
 
@@ -41,20 +42,20 @@ module {{adapter.capitalize.id}}
       model.all = value
       model.save
 
-      found = ReservedWord.find_by("all", value)
+      found = ReservedWord.find_by(all: value)
       found.not_nil!.id.should eq model.id
 
-      found = ReservedWord.find_by!(:all, value)
+      found = ReservedWord.find_by!(all: value)
       found.id.should eq model.id
     end
 
     it "returns nil or raises if no result" do
       Parent.clear
-      found = Parent.find_by("name", "xxx")
+      found = Parent.find_by(name: "xxx")
       found.should be_nil
 
-      expect_raises(Granite::Querying::NotFound, /Couldn't find .*Parent.* with name=xxx/) do
-        Parent.find_by!("name", "xxx")
+      expect_raises(Granite::Querying::NotFound, /No .*Parent.* found where name = xxx/) do
+        Parent.find_by!(name: "xxx")
       end
     end
   end

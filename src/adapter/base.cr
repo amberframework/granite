@@ -44,9 +44,6 @@ abstract class Granite::Adapter::Base
   # in via .all() method
   abstract def select(query : Granite::Select::Container, clause = "", params = nil, &block)
 
-  # select_one is used by the find method.
-  # abstract def select_one(table_name, fields, field, id, &block)
-
   # This will insert a row in the database and return the id generated.
   abstract def insert(table_name, fields, params, lastval) : Int64
 
