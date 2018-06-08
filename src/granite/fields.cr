@@ -1,7 +1,7 @@
 require "json"
 
 module Granite::Fields
-  alias Type = JSON::Type | DB::Any
+  alias Type = JSON::Type | DB::Any | JSON::Any
   TIME_FORMAT_REGEX = /\d{4,}-\d{2,}-\d{2,}\s\d{2,}:\d{2,}:\d{2,}/
 
   macro included
@@ -101,7 +101,7 @@ module Granite::Fields
       end
     end
 
-    def set_attributes(args : Hash(String | Symbol, Type))
+    def set_attributes(args : Hash(String | Symbol, Type) | JSON::Any)
       args.each do |k, v|
         cast_to_field(k, v.as(Type))
       end
@@ -120,22 +120,22 @@ module Granite::Fields
           when "{{_name.id}}"
             if "{{_name.id}}" == "{{PRIMARY[:name]}}"
               {% if !PRIMARY[:auto] %}
-                @{{PRIMARY[:name]}} = value.as({{PRIMARY[:type]}})
+                @{{PRIMARY[:name]}} = value.is_a?(JSON::Any) ? value.raw.as({{PRIMARY[:type]}}) : value.as({{PRIMARY[:type]}})
               {% end %}
               return
             end
 
             return @{{_name.id}} = nil if value.nil?
             {% if type.id == Int32.id %}
-              @{{_name.id}} = value.is_a?(String) ? value.to_i32(strict: false) : value.is_a?(Int64) ? value.to_i32 : value.as(Int32)
+              @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_i : value.is_a?(String) ? value.to_i32(strict: false) : value.is_a?(Int64) ? value.to_i32 : value.as(Int32)
             {% elsif type.id == Int64.id %}
-              @{{_name.id}} = value.is_a?(String) ? value.to_i64(strict: false) : value.as(Int64)
+              @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_i64 : value.is_a?(String) ? value.to_i64(strict: false) : value.as(Int64)
             {% elsif type.id == Float32.id %}
-              @{{_name.id}} = value.is_a?(String) ? value.to_f32(strict: false) : value.is_a?(Float64) ? value.to_f32 : value.as(Float32)
+              @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_f32 : value.is_a?(String) ? value.to_f32(strict: false) : value.is_a?(Float64) ? value.to_f32 : value.as(Float32)
             {% elsif type.id == Float64.id %}
-              @{{_name.id}} = value.is_a?(String) ? value.to_f64(strict: false) : value.as(Float64)
+              @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_f : value.is_a?(String) ? value.to_f64(strict: false) : value.as(Float64)
             {% elsif type.id == Bool.id %}
-              @{{_name.id}} = ["1", "yes", "true", true].includes?(value)
+              @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_bool : ["1", "yes", "true", true].includes?(value)
             {% elsif type.id == Time.id %}
               if value.is_a?(Time)
                  @{{_name.id}} = value
@@ -143,7 +143,7 @@ module Granite::Fields
                  @{{_name.id}} = Time.parse(value.to_s, "%F %X")
                end
             {% else %}
-              @{{_name.id}} = value.to_s
+              @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_s : value.to_s
             {% end %}
           {% end %}
         end

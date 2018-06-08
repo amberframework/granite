@@ -60,6 +60,27 @@ class Post < Granite::Base
 end
 ```
 
+```crystal
+require "granite/adapter/mysql"
+
+class Post < Granite::Base
+  adapter mysql
+  field name : String
+  field body : String
+  timestamps
+end
+
+# There are various ways to instantiate a new object:
+namedTuple = Post.new(name: "Name", body: "I am the body") # .new NamedTuple
+hash = Post.new({name: "Name", body: "I am the body"}.to_h) # .new Hash
+fromJson = Post.from_json(JSON.parse(%({"name": "Name", "body": "I am the body"}))).as(Post) # .from_json JSON
+jsonArray = Post.from_json(JSON.parse(%([{"name": "Post1", "body": "I am the body for post1"},{"name": "Post2", "body": "I am the body for post2"}]))).as(Array(Post)) # .from_json array of JSON
+
+# Can also use .create to automatically instantiate and save a model
+Post.create(name: "First Post", body: "I get saved automatically") # Instantiates and saved the post
+```
+**Note:  When using `.from_json` you must specify the type that will be returned.  I.e. single object or an array of objects.**
+
 You can disable the timestamps for SqlLite since TIMESTAMP is not supported for this database:
 
 ```crystal

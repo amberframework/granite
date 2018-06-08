@@ -4,11 +4,21 @@ module Granite::Transactions
       create(args.to_h)
     end
 
-    def create(args : Hash(Symbol | String, DB::Any))
+    def create(args : Hash(Symbol | String, DB::Any) | JSON::Any)
       instance = new
       instance.set_attributes(args)
       instance.save
       instance
+    end
+
+    def from_json(args : JSON::Any)
+      if args.as_a?
+        args.map { |a| model = new; model.set_attributes(a); model }
+      else
+        model = new
+        model.set_attributes(args)
+        model
+      end
     end
   end
 

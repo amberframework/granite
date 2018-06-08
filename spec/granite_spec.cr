@@ -67,6 +67,35 @@ describe Granite::Base do
     review.created_at.should eq Time.parse("1900-01-01 12:10:05.123", "%F %X")
   end
 
+  it "takes JSON::Any" do
+    json_str = %({"name": "json::anyReview", "user_id": 99, "upvotes": 2, "sentiment": 1.23, "interest": 4.56, "published": true, "created_at": "2016-02-15 10:20:30"})
+    review_json = JSON.parse(json_str)
+
+    review_json.is_a?(JSON::Any).should be_true
+
+    review = Review.from_json(review_json).as(Review)
+    review.name.should eq "json::anyReview"
+    review.user_id.should eq 99_i32
+    review.upvotes.should eq 2_i64
+    review.sentiment.should eq 1.23_f32
+    review.interest.should eq 4.56_f64
+    review.published.should eq true
+    review.created_at.should eq Time.parse("2016-02-15 10:20:30", "%F %X")
+  end
+
+  it "takes JSON::Any Array" do
+    json_str = %([{"name": "web1"},{"name": "web2"},{"name": "web3"}])
+    website_json = JSON.parse(json_str)
+
+    website_json.is_a?(JSON::Any).should be_true
+
+    webSites = WebSite.from_json(website_json).as(Array(WebSite))
+
+    webSites[0].name.should eq "web1"
+    webSites[1].name.should eq "web2"
+    webSites[2].name.should eq "web3"
+  end
+
   describe "#to_h" do
     it "convert object to hash" do
       t = Todo.new(name: "test todo", priority: 20)
