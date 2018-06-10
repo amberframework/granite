@@ -109,8 +109,6 @@ class PersonUniqueness < Granite::Base
   validate_uniqueness :name
 end
 
-PersonUniqueness.migrator.drop_and_create
-
 describe Granite::ValidationHelpers do
   context "Nil" do
     it "should work for is_nil and not_nil for all data types" do
@@ -246,6 +244,10 @@ describe Granite::ValidationHelpers do
   end
 
   context "Uniqueness" do
+    Spec.before_each do
+      PersonUniqueness.migrator.drop_and_create
+    end
+
     it "should work for uniqueness" do
       personUniqueness1 = PersonUniqueness.new
       personUniqueness2 = PersonUniqueness.new
@@ -260,9 +262,19 @@ describe Granite::ValidationHelpers do
       personUniqueness2.errors.size.should eq 1
 
       personUniqueness2.errors[0].message.should eq "name should be unique"
+    end
 
-      # Should be valid because it should not check uniqueness on itself
+    it "should work for uniqueness on the same instance" do
+      personUniqueness1 = PersonUniqueness.new
+
+      personUniqueness1.name = "awesomeName"
       personUniqueness1.save
+
+      personUniqueness1.errors.size.should eq 0
+
+      personUniqueness1.name = "awesomeName"
+      personUniqueness1.save
+
       personUniqueness1.errors.size.should eq 0
     end
   end

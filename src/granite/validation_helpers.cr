@@ -37,7 +37,6 @@ module Granite::ValidationHelpers
 
   macro validate_uniqueness(field)
     validate {{field}}, "#{{{field}}} should be unique", -> (model: self) do
-      # If there is no value than ignore this validation
       return true if model.{{field.id}}.nil?
 
       instance = self.find_by({{field.id}}: model.{{field.id}})
