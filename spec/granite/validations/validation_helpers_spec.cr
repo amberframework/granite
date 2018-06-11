@@ -101,6 +101,14 @@ class LengthTest < Granite::Base
   validate_max_length :description, 25
 end
 
+class PersonUniqueness < Granite::Base
+  adapter pg
+
+  field name : String
+
+  validate_uniqueness :name
+end
+
 describe Granite::ValidationHelpers do
   context "Nil" do
     it "should work for is_nil and not_nil for all data types" do
@@ -232,6 +240,42 @@ describe Granite::ValidationHelpers do
       lengthTest.errors.size.should eq 2
       lengthTest.errors[0].message.should eq "title is too short. It must be at least 5"
       lengthTest.errors[1].message.should eq "description is too long. It must be at most 25"
+    end
+  end
+
+  context "Uniqueness" do
+    Spec.before_each do
+      PersonUniqueness.migrator.drop_and_create
+    end
+
+    it "should work for uniqueness" do
+      personUniqueness1 = PersonUniqueness.new
+      personUniqueness2 = PersonUniqueness.new
+
+      personUniqueness1.name = "awesomeName"
+      personUniqueness2.name = "awesomeName"
+
+      personUniqueness1.save
+      personUniqueness2.save
+
+      personUniqueness1.errors.size.should eq 0
+      personUniqueness2.errors.size.should eq 1
+
+      personUniqueness2.errors[0].message.should eq "name should be unique"
+    end
+
+    it "should work for uniqueness on the same instance" do
+      personUniqueness1 = PersonUniqueness.new
+
+      personUniqueness1.name = "awesomeName"
+      personUniqueness1.save
+
+      personUniqueness1.errors.size.should eq 0
+
+      personUniqueness1.name = "awesomeName"
+      personUniqueness1.save
+
+      personUniqueness1.errors.size.should eq 0
     end
   end
 end
