@@ -1,12 +1,13 @@
-FROM crystallang/crystal:0.24.2
+FROM crystallang/crystal:0.25.0
 
 RUN apt-get update -qq && apt-get install -y --no-install-recommends libpq-dev libsqlite3-dev libmysqlclient-dev
 
 WORKDIR /app/user
 
-ADD . /app/user
+COPY shard.yml ./
+RUN shards install
 
-RUN crystal deps
+COPY . /app/user
 
 CMD ["crystal", "spec"]
 

@@ -35,40 +35,9 @@ describe Granite::Base do
     t.name.should eq "Elorest"
   end
 
-  it "takes JSON::Type" do
-    tmp_hash = {} of String | Symbol => String | JSON::Type
-    body = %({
-      "name": "Elias",
-      "user_id": 333,
-      "published": false,
-      "upvotes": 9223372036854775807,
-      "sentiment": 3.14,
-      "interest": 3.92,
-      "created_at": "1900-01-01 12:10:05.123"
-    })
-
-    case json = JSON.parse_raw(body)
-    when Hash
-      json.each do |key, value|
-        tmp_hash[key.as(String)] = value
-      end
-    when Array
-      tmp_hash["_json"] = json
-    end
-
-    review = Review.new(tmp_hash)
-
-    review.name.should eq "Elias"
-    review.user_id.should eq 333_i32
-    review.published.should eq false
-    review.upvotes.should eq 9223372036854775807_i64
-    review.sentiment.should eq 3.14_f32
-    review.interest.should eq 3.92_f64
-    review.created_at.should eq Time.parse("1900-01-01 12:10:05.123", "%F %X")
-  end
-
   it "takes JSON::Any" do
-    json_str = %({"name": "json::anyReview", "user_id": 99, "upvotes": 2, "sentiment": 1.23, "interest": 4.56, "published": true, "created_at": "2016-02-15 10:20:30"})
+    time_now = Time.now.at_beginning_of_second
+    json_str = %({"name": "json::anyReview", "user_id": 99, "upvotes": 2, "sentiment": 1.23, "interest": 4.56, "published": true, "created_at": "#{time_now.to_s(Granite::DATETIME_FORMAT)}"})
     review_json = JSON.parse(json_str)
 
     review_json.is_a?(JSON::Any).should be_true
@@ -80,7 +49,7 @@ describe Granite::Base do
     review.sentiment.should eq 1.23_f32
     review.interest.should eq 4.56_f64
     review.published.should eq true
-    review.created_at.should eq Time.parse("2016-02-15 10:20:30", "%F %X")
+    review.created_at.should eq time_now
   end
 
   it "takes JSON::Any Array" do

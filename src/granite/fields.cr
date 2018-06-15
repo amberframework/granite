@@ -1,7 +1,7 @@
 require "json"
 
 module Granite::Fields
-  alias Type = JSON::Type | DB::Any | JSON::Any
+  alias Type = DB::Any | JSON::Any
   TIME_FORMAT_REGEX = /\d{4,}-\d{2,}-\d{2,}\s\d{2,}:\d{2,}:\d{2,}/
 
   macro included
@@ -60,7 +60,7 @@ module Granite::Fields
       parsed_params = [] of DB::Any
       {% for name, options in CONTENT_FIELDS %}
         {% if options[:type].id == Time.id %}
-          parsed_params << {{name.id}}.try(&.to_s("%F %X"))
+          parsed_params << {{name.id}}.try(&.to_s(Granite::DATETIME_FORMAT))
         {% else %}
           parsed_params << {{name.id}}
         {% end %}
@@ -74,7 +74,7 @@ module Granite::Fields
       {% for name, options in FIELDS %}
         {% type = options[:type] %}
         {% if type.id == Time.id %}
-          fields["{{name}}"] = {{name.id}}.try(&.to_s("%F %X"))
+          fields["{{name}}"] = {{name.id}}.try(&.to_s(Granite::DATETIME_FORMAT))
         {% elsif type.id == Slice.id %}
           fields["{{name}}"] = {{name.id}}.try(&.to_s(""))
         {% else %}
@@ -91,7 +91,7 @@ module Granite::Fields
           {% type = options[:type] %}
           %field, %value = "{{name.id}}", {{name.id}}
           {% if type.id == Time.id %}
-            json.field %field, %value.try(&.to_s("%F %X"))
+            json.field %field, %value.try(&.to_s(Granite::DATETIME_FORMAT))
           {% elsif type.id == Slice.id %}
             json.field %field, %value.id.try(&.to_s(""))
           {% else %}
@@ -101,10 +101,14 @@ module Granite::Fields
       end
     end
 
-    def set_attributes(args : Hash(String | Symbol, Type) | JSON::Any)
+    def set_attributes(args : Hash(String | Symbol, Type))
       args.each do |k, v|
         cast_to_field(k, v.as(Type))
       end
+    end
+
+    def set_attributes(attributes : JSON::Any)
+      set_attributes(attributes.as_h)
     end
 
     def set_attributes(**args)
@@ -140,7 +144,7 @@ module Granite::Fields
               if value.is_a?(Time)
                  @{{_name.id}} = value
                elsif value.to_s =~ TIME_FORMAT_REGEX
-                 @{{_name.id}} = Time.parse(value.to_s, "%F %X")
+                 @{{_name.id}} = Time.parse(value.to_s, Granite::DATETIME_FORMAT)
                end
             {% else %}
               @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_s : value.to_s
