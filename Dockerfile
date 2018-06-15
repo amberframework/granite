@@ -4,9 +4,10 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends libpq-dev l
 
 WORKDIR /app/user
 
-ADD . /app/user
-
+COPY shard.yml shard.lock ./
 RUN shards install
+
+COPY . /app/user
 
 CMD ["crystal", "spec"]
 
