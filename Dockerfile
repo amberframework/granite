@@ -4,7 +4,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends libpq-dev l
 
 WORKDIR /app/user
 
-COPY shard.yml shard.lock ./
+COPY shard.yml ./
 RUN shards install
 
 COPY . /app/user
