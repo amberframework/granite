@@ -23,11 +23,10 @@ module {{adapter.capitalize.id}}
 
       Review.create(name: "review1", upvotes: 2.to_i64)
       Review.create(name: "review2", upvotes: 0.to_i64)
-      Review.create(name: "review1", upvotes: 10.to_i64)
 
-      Review.find_by(name: "review1").not_nil!.id.should eq 1
-      Review.find_by(upvotes: 0).not_nil!.id.should eq 2
-      Review.find_by(name: "review1", upvotes: 10).not_nil!.id.should eq 3
+      expected = Review.create(name: "review3", upvotes: 10.to_i64)
+
+      Review.find_by(name: "review3", upvotes: 10).not_nil!.id.should eq expected.id
 
       expect_raises(Granite::Querying::NotFound, /No .*Review.* found where name = review1 and upvotes = 20/) do
         Review.find_by!(name: "review1", upvotes: 20)
