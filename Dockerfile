@@ -6,7 +6,7 @@ WORKDIR /app/user
 
 ADD . /app/user
 
-RUN crystal deps
+RUN shards install
 
 CMD ["crystal", "spec"]
 
