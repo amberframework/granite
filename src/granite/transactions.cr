@@ -13,7 +13,7 @@ module Granite::Transactions
 
     def from_json(args : JSON::Any)
       if args.as_a?
-        args.map { |a| model = new; model.set_attributes(a); model }
+        args.as_a.map { |a| model = new; model.set_attributes(a); model }
       else
         model = new
         model.set_attributes(args)
