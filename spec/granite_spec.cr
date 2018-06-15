@@ -36,7 +36,8 @@ describe Granite::Base do
   end
 
   it "takes JSON::Any" do
-    json_str = %({"name": "json::anyReview", "user_id": 99, "upvotes": 2, "sentiment": 1.23, "interest": 4.56, "published": true, "created_at": "2016-02-15 10:20:30"})
+    time_now = Time.now.at_beginning_of_second
+    json_str = %({"name": "json::anyReview", "user_id": 99, "upvotes": 2, "sentiment": 1.23, "interest": 4.56, "published": true, "created_at": "#{time_now.to_s(Granite::DATETIME_FORMAT)}"})
     review_json = JSON.parse(json_str)
 
     review_json.is_a?(JSON::Any).should be_true
@@ -48,7 +49,7 @@ describe Granite::Base do
     review.sentiment.should eq 1.23_f32
     review.interest.should eq 4.56_f64
     review.published.should eq true
-    review.created_at.should eq Time.parse("2016-02-15 10:20:30", "%F %X")
+    review.created_at.should eq time_now
   end
 
   it "takes JSON::Any Array" do
