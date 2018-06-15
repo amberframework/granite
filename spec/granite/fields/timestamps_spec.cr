@@ -5,6 +5,12 @@ require "../../spec_helper"
 module {{adapter.capitalize.id}}
   {%
     avoid_macro_bug = 1 # https://github.com/crystal-lang/crystal/issues/5724
+
+    if adapter == "pg"
+      time_kind_on_read = "Time::Location::UTC".id
+    else
+      time_kind_on_read = "Time::Location.local".id
+    end
   %}
 
   describe "{{ adapter.id }} timestamps" do
@@ -16,7 +22,7 @@ module {{adapter.capitalize.id}}
       read_timestamp = found_parent.created_at!
 
       original_timestamp.location.should eq Time::Location::UTC
-      read_timestamp.location.should eq Time::Location::UTC
+      read_timestamp.location.should eq {{ time_kind_on_read }}
     end
 
     it "consistently uses UTC for updated_at" do
@@ -27,7 +33,7 @@ module {{adapter.capitalize.id}}
       read_timestamp = found_parent.updated_at!
 
       original_timestamp.location.should eq Time::Location::UTC
-      read_timestamp.location.should eq Time::Location::UTC
+      read_timestamp.location.should eq {{ time_kind_on_read }}
     end
 
     it "truncates the subsecond parts of created_at" do
@@ -67,8 +73,8 @@ module {{adapter.capitalize.id}}
         parents.size.should eq 3
 
         parents.each do |parent|
-          parent.updated_at.not_nil!.location.should eq Time::Location::UTC
-          parent.created_at.not_nil!.location.should eq Time::Location::UTC
+          parent.updated_at.not_nil!.location.should eq {{ time_kind_on_read }}
+          parent.created_at.not_nil!.location.should eq {{ time_kind_on_read }}
           found_grandma.updated_at.not_nil!.epoch.should eq parent.updated_at.not_nil!.epoch
           found_grandma.created_at.not_nil!.epoch.should eq parent.created_at.not_nil!.epoch
         end

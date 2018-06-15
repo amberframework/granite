@@ -23,7 +23,7 @@ module Granite::Querying
             if @@adapter.class.name == "Granite::Adapter::Sqlite"
               # sqlite3 does not have timestamp type - timestamps are stored as str
               # will break for null timestamps
-              self.\{{name.id}} = Time.parse(result.read(String), "%F %X" )
+              self.\{{name.id}} = Time.parse(result.read(String), Granite::DATETIME_FORMAT)
             else
               self.\{{name.id}} = result.read(Union(\{{type.id}} | Nil))
             end

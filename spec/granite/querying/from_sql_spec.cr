@@ -3,7 +3,7 @@ require "../../spec_helper"
 macro build_review_emitter(driver)
   {%
     timestamp = if driver == "sqlite"
-                  "2018-04-09 13:33:46"
+                  "Time.now.to_s(Granite::DATETIME_FORMAT)".id
                 else
                   "Time.now".id
                 end
