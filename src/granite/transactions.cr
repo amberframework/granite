@@ -181,7 +181,7 @@ module Granite::Transactions
     end
 
     def destroy!
-      save || raise Granite::Transactions::TransactionError.new("Could not destroy #{self.name}")
+      destroy || raise Granite::Transactions::TransactionError.new("Could not destroy #{self.name}")
     end
   end
 
