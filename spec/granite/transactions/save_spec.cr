@@ -132,5 +132,22 @@ module {{adapter.capitalize.id}}
       end
     end
   end
+
+  describe "{{ adapter.id }} #save!" do
+    it "creates a new object" do
+      parent = Parent.new
+      parent.name = "Test Parent"
+      parent.save!
+      parent.id.should_not be_nil
+    end
+
+    it "does not create an invalid object" do
+      parent = Parent.new
+
+      expect_raises(Granite::Transactions::TransactionFailed) do
+        parent.save!
+      end
+    end
+  end
 end
 {% end %}

@@ -1,4 +1,6 @@
 module Granite::Transactions
+  class TransactionFailed < Exception; end
+
   module ClassMethods
     def create(**args)
       create(args.to_h)
@@ -141,6 +143,11 @@ module Granite::Transactions
         return false
       end
       true
+    end
+
+
+    def save!
+      save || raise Granite::Transactions::TransactionFailed.new("Could not save #{self.class.to_s}")
     end
 
     # Destroy will remove this from the database.
