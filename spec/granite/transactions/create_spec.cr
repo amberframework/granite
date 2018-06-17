@@ -81,7 +81,7 @@ module {{adapter.capitalize.id}}
     end
 
     it "does not create an invalid object but raise an exception" do
-      expect_raises(Granite::Transactions::TransactionFailed) do
+      expect_raises(Granite::Transactions::TransactionError) do
         parent = Parent.create!(name: "")
       end
     end

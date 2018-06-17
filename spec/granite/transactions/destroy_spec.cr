@@ -71,7 +71,7 @@ module {{adapter.capitalize.id}}
     it "does not destroy an invalid object but raise an exception" do
       parent = Parent.new
 
-      expect_raises(Granite::Transactions::TransactionFailed) do
+      expect_raises(Granite::Transactions::TransactionError) do
         parent.destroy!
       end
     end
