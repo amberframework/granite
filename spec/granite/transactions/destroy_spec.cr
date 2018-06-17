@@ -55,5 +55,26 @@ module {{adapter.capitalize.id}}
       end
     end
   end
+
+  describe "{{ adapter.id }} #destroy!" do
+    it "destroys an object" do
+      parent = Parent.new
+      parent.name = "Test Parent"
+      parent.save
+
+      id = parent.id
+      parent.destroy
+      found = Parent.find id
+      found.should be_nil
+    end
+
+    it "does not destroy an invalid object but raise an exception" do
+      parent = Parent.new
+
+      expect_raises(Granite::Transactions::TransactionFailed) do
+        parent.destroy!
+      end
+    end
+  end
 end
 {% end %}

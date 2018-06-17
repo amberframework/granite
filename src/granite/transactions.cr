@@ -165,6 +165,10 @@ module Granite::Transactions
       end
       true
     end
+
+    def destroy!
+      save || raise Granite::Transactions::TransactionFailed.new("Could not save #{self.class.to_s}")
+    end
   end
 
   # Returns true if this object hasn't been saved yet.

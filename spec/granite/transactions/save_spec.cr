@@ -141,7 +141,7 @@ module {{adapter.capitalize.id}}
       parent.id.should_not be_nil
     end
 
-    it "does not create an invalid object" do
+    it "does not create an invalid object but raise an exception" do
       parent = Parent.new
 
       expect_raises(Granite::Transactions::TransactionFailed) do
