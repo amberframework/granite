@@ -14,11 +14,11 @@ module Granite::Transactions
     end
 
     def create!(**args)
-      create(args.to_h) || raise Granite::Transactions::TransactionFailed.new("Could not create #{self.class.to_s}")
+      create(args.to_h).id.nil? || raise Granite::Transactions::TransactionFailed.new("Could not create #{self.class.to_s}")
     end
 
     def create!(args : Hash(Symbol | String, DB::Any) | JSON::Any)
-      create(args) || raise Granite::Transactions::TransactionFailed.new("Could not create #{self.class.to_s}")
+      create(args).id.nil? || raise Granite::Transactions::TransactionFailed.new("Could not create #{self.class.to_s}")
     end
 
     def from_json(args : JSON::Any)
