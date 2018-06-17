@@ -14,11 +14,15 @@ module Granite::Transactions
     end
 
     def create!(**args)
-      create(args.to_h).id.nil? || raise Granite::Transactions::TransactionFailed.new("Could not create #{self.class.to_s}")
+      create!(args.to_h)
     end
 
     def create!(args : Hash(Symbol | String, DB::Any) | JSON::Any)
-      create(args).id.nil? || raise Granite::Transactions::TransactionFailed.new("Could not create #{self.class.to_s}")
+      instance = create(args)
+
+      raise Granite::Transactions::TransactionFailed.new("Could not create #{self.name}") unless instance.errors.empty?
+
+      instance
     end
 
     def from_json(args : JSON::Any)
@@ -155,7 +159,7 @@ module Granite::Transactions
 
 
     def save!
-      save || raise Granite::Transactions::TransactionFailed.new("Could not save #{self.class.to_s}")
+      save || raise Granite::Transactions::TransactionFailed.new("Could not save #{self.name}")
     end
 
     # Destroy will remove this from the database.
@@ -175,7 +179,7 @@ module Granite::Transactions
     end
 
     def destroy!
-      save || raise Granite::Transactions::TransactionFailed.new("Could not destroy #{self.class.to_s}")
+      save || raise Granite::Transactions::TransactionFailed.new("Could not destroy #{self.name}")
     end
   end
 
