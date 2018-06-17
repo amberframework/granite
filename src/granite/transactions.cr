@@ -13,6 +13,14 @@ module Granite::Transactions
       instance
     end
 
+    def create!(**args)
+      create(args.to_h) || raise Granite::Transactions::TransactionFailed.new("Could not create #{self.class.to_s}")
+    end
+
+    def create!(args : Hash(Symbol | String, DB::Any) | JSON::Any)
+      create(args) || raise Granite::Transactions::TransactionFailed.new("Could not create #{self.class.to_s}")
+    end
+
     def from_json(args : JSON::Any)
       if args.as_a?
         args.as_a.map { |a| model = new; model.set_attributes(a); model }
@@ -167,7 +175,7 @@ module Granite::Transactions
     end
 
     def destroy!
-      save || raise Granite::Transactions::TransactionFailed.new("Could not save #{self.class.to_s}")
+      save || raise Granite::Transactions::TransactionFailed.new("Could not destroy #{self.class.to_s}")
     end
   end
 
