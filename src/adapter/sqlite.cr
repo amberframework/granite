@@ -87,7 +87,7 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
         model.set_timestamps
         stmt << '('
         stmt << Array.new(fields.size, '?').join(',')
-        params.concat fields.map { |field| model.to_h[field] }
+        params.concat fields.map { |field| model.read_attribute field }
         stmt << "),"
       end
     end.chomp(',')

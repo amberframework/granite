@@ -88,7 +88,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
         next unless model.valid?
         stmt << '('
         stmt << fields.map_with_index { |_f, idx| "$#{index + idx + 1}" }.join(',')
-        params.concat fields.map { |field| model.to_h[field] }
+        params.concat fields.map { |field| model.read_attribute field }
         stmt << "),"
         index += fields.size
       end

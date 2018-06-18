@@ -81,9 +81,9 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
       model_array.each do |model|
         model.set_timestamps
         next unless model.valid?
-        stmt << '('
+        stmt << "("
         stmt << Array.new(fields.size, '?').join(',')
-        params.concat fields.map { |field| model.to_h[field] }
+        params.concat fields.map { |field| model.read_attribute field }
         stmt << "),"
       end
     end.chomp(',')

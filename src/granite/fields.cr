@@ -97,6 +97,18 @@ module Granite::Fields
       end
     end
 
+    def read_attribute(attribute_name : Symbol | String) : DB::Any
+      {% begin %}
+        case attribute_name.to_s
+        {% for name, options in FIELDS %}
+          when "{{ name }}" then @{{ name.id }}
+        {% end %}
+        else
+          raise "Cannot read attribute #{attribute_name}, invalid attribute"
+        end
+      {% end %}
+    end
+
     def set_attributes(args : Hash(String | Symbol, Type))
       args.each do |k, v|
         cast_to_field(k, v.as(Type))
