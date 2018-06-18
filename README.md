@@ -762,8 +762,7 @@ $ docker-compose down
 If you'd like to test without docker you can do so by following the instructions below:
 
 1. Install dependencies with `$ crystal deps`
-2. Update .env to use appropriate ENV variables, or create appropriate databases.
-3. Setup databases:
+2. Create appropriate databases:
 
 #### PostgreSQL
 
@@ -785,5 +784,4 @@ CREATE DATABASE granite_db;
 GRANT ALL PRIVILEGES ON granite_db.* TO 'granite'@'localhost' WITH GRANT OPTION;
 ```
 
-4. Export `.env` with `$ source .env`
-5. `$ crystal spec`
+3. `$ crystal spec`
