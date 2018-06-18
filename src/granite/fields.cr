@@ -150,10 +150,10 @@ module Granite::Fields
               @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_bool : ["1", "yes", "true", true].includes?(value)
             {% elsif type.id == Time.id %}
               if value.is_a?(Time)
-                 @{{_name.id}} = value
-               elsif value.to_s =~ TIME_FORMAT_REGEX
-                 @{{_name.id}} = Time.parse(value.to_s, Granite::DATETIME_FORMAT)
-               end
+                @{{_name.id}} = value
+              elsif value.to_s =~ TIME_FORMAT_REGEX
+                @{{_name.id}} = Time.parse(value.to_s, Granite::DATETIME_FORMAT)
+              end
             {% else %}
               @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_s : value.to_s
             {% end %}

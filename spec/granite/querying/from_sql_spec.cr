@@ -1,14 +1,6 @@
 require "../../spec_helper"
 
 macro build_review_emitter(driver)
-  {%
-    timestamp = if driver == "sqlite"
-                  "Time.now.to_s(Granite::DATETIME_FORMAT)".id
-                else
-                  "Time.now".id
-                end
-  %}
-
   FieldEmitter.new.tap do |e|
     e._set_values(
       [
@@ -19,7 +11,7 @@ macro build_review_emitter(driver)
         nil,   # sentiment
         nil,   # interest
         true,  # published
-        {{ timestamp }} # created_at
+        Time.now, # created_at
       ]
     )
   end
