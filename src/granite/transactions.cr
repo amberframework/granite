@@ -164,6 +164,26 @@ module Granite::Transactions
       save || raise Granite::RecordInvalid.new(self.class.name)
     end
 
+    def update(**args)
+      update(args.to_h)
+    end
+
+    def update(args : Hash(Symbol | String, DB::Any) | JSON::Any)
+      set_attributes(args)
+
+      save
+    end
+
+    def update!(**args)
+      update!(args.to_h)
+    end
+
+    def update!(args : Hash(Symbol | String, DB::Any) | JSON::Any)
+      set_attributes(args)
+
+      save!
+    end
+
     # Destroy will remove this from the database.
     def destroy
       begin
