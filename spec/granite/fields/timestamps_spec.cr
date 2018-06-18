@@ -3,16 +3,6 @@ require "../../spec_helper"
 # Can run this spec for sqlite after https://www.sqlite.org/draft/releaselog/3_24_0.html is released.
 {% for adapter in ["pg", "mysql"] %}
 module {{adapter.capitalize.id}}
-  {%
-    avoid_macro_bug = 1 # https://github.com/crystal-lang/crystal/issues/5724
-
-    if adapter == "pg"
-      time_kind_on_read = "Time::Location::UTC".id
-    else
-      time_kind_on_read = "Time::Location.local".id
-    end
-  %}
-
   describe "{{ adapter.id }} timestamps" do
     it "consistently uses UTC for created_at" do
       parent = Parent.new(name: "parent").tap(&.save)
@@ -22,7 +12,7 @@ module {{adapter.capitalize.id}}
       read_timestamp = found_parent.created_at!
 
       original_timestamp.location.should eq Time::Location::UTC
-      read_timestamp.location.should eq {{ time_kind_on_read }}
+      read_timestamp.location.should eq Time::Location::UTC
     end
 
     it "consistently uses UTC for updated_at" do
@@ -33,7 +23,7 @@ module {{adapter.capitalize.id}}
       read_timestamp = found_parent.updated_at!
 
       original_timestamp.location.should eq Time::Location::UTC
-      read_timestamp.location.should eq {{ time_kind_on_read }}
+      read_timestamp.location.should eq Time::Location::UTC
     end
 
     it "truncates the subsecond parts of created_at" do
@@ -73,8 +63,8 @@ module {{adapter.capitalize.id}}
         parents.size.should eq 3
 
         parents.each do |parent|
-          parent.updated_at.not_nil!.location.should eq {{ time_kind_on_read }}
-          parent.created_at.not_nil!.location.should eq {{ time_kind_on_read }}
+          parent.updated_at.not_nil!.location.should eq Time::Location::UTC
+          parent.created_at.not_nil!.location.should eq Time::Location::UTC
           found_grandma.updated_at.not_nil!.epoch.should eq parent.updated_at.not_nil!.epoch
           found_grandma.created_at.not_nil!.epoch.should eq parent.created_at.not_nil!.epoch
         end
@@ -86,12 +76,12 @@ module {{adapter.capitalize.id}}
         ]
 
         Parent.import(to_import)
-        import_time = Time.now
+        import_time = Time.utc_now.at_beginning_of_second
 
         parent1 = Parent.find_by!(name: "ParentOne")
         parent1.name.should eq "ParentOne"
-        parent1.created_at.not_nil!.epoch.should eq import_time.epoch
-        parent1.updated_at.not_nil!.epoch.should eq import_time.epoch
+        parent1.created_at!.should eq import_time
+        parent1.updated_at!.should eq import_time
 
         to_update = Parent.all("WHERE name = ?", ["ParentOne"])
         to_update.each { |parent| parent.name = "ParentOneEdited" }
@@ -99,12 +89,12 @@ module {{adapter.capitalize.id}}
         sleep 1
 
         Parent.import(to_update, update_on_duplicate: true, columns: ["name"])
-        update_time = Time.now
+        update_time = Time.utc_now.at_beginning_of_second
 
         parent1_edited = Parent.find_by!(name: "ParentOneEdited")
         parent1_edited.name.should eq "ParentOneEdited"
-        parent1_edited.created_at.not_nil!.epoch.should eq import_time.epoch
-        parent1_edited.updated_at.not_nil!.epoch.should eq update_time.epoch
+        parent1_edited.created_at!.should eq import_time
+        parent1_edited.updated_at!.should eq update_time
       end
     end
   end

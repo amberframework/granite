@@ -59,11 +59,7 @@ module Granite::Fields
     def content_values
       parsed_params = [] of DB::Any
       {% for name, options in CONTENT_FIELDS %}
-        {% if options[:type].id == Time.id %}
-          parsed_params << {{name.id}}.try(&.to_s(Granite::DATETIME_FORMAT))
-        {% else %}
-          parsed_params << {{name.id}}
-        {% end %}
+        parsed_params << {{name.id}}
       {% end %}
       return parsed_params
     end
