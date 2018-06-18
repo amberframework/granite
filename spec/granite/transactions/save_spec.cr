@@ -144,7 +144,7 @@ module {{adapter.capitalize.id}}
     it "does not create an invalid object but raise an exception" do
       parent = Parent.new
 
-      expect_raises(Granite::Transactions::TransactionError) do
+      expect_raises(Granite::RecordInvalid, "{{adapter.capitalize.id}}::Parent") do
         parent.save!
       end
     end

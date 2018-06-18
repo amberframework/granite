@@ -56,6 +56,17 @@ module {{adapter.capitalize.id}}
     end
   end
 
+  class ParentWithCallback < Granite::Base
+    adapter {{ adapter.id }}
+    table_name parents
+
+    before_destroy :cancel_destroy
+
+    private def cancel_destroy
+      abort!("Canceling destroy")
+    end
+  end
+
   describe "{{ adapter.id }} #destroy!" do
     it "destroys an object" do
       parent = Parent.new
@@ -69,9 +80,9 @@ module {{adapter.capitalize.id}}
     end
 
     it "does not destroy an invalid object but raise an exception" do
-      parent = Parent.new
+      parent = ParentWithCallback.new
 
-      expect_raises(Granite::Transactions::TransactionError) do
+      expect_raises(Granite::RecordNotDestroyed, "{{adapter.capitalize.id}}::Parent") do
         parent.destroy!
       end
     end

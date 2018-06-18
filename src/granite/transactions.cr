@@ -1,6 +1,6 @@
-module Granite::Transactions
-  class TransactionError < Exception; end
+require "./exceptions"
 
+module Granite::Transactions
   module ClassMethods
     def create(**args)
       create(args.to_h)
@@ -20,8 +20,8 @@ module Granite::Transactions
     def create!(args : Hash(Symbol | String, DB::Any) | JSON::Any)
       instance = create(args)
 
-      if !instance.errors.empty?
-        raise TransactionError.new("Could not create #{self.name}")
+      if instance.errors.any?
+        raise Granite::RecordInvalid.new(self.name)
       end
 
       instance
@@ -161,7 +161,7 @@ module Granite::Transactions
 
 
     def save!
-      save || raise Granite::Transactions::TransactionError.new("Could not save #{self.name}")
+      save || raise Granite::RecordInvalid.new(self.class.name)
     end
 
     # Destroy will remove this from the database.
@@ -181,7 +181,7 @@ module Granite::Transactions
     end
 
     def destroy!
-      destroy || raise Granite::Transactions::TransactionError.new("Could not destroy #{self.name}")
+      destroy || raise Granite::RecordNotDestroyed.new(self.class.name)
     end
   end
 
