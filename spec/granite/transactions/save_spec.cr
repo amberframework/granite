@@ -7,14 +7,14 @@ module {{adapter.capitalize.id}}
       parent = Parent.new
       parent.name = "Test Parent"
       parent.save
-      parent.id.should_not be_nil
+      parent.persisted?.should be_true
     end
 
     it "does not create an invalid object" do
       parent = Parent.new
       parent.name = ""
       parent.save
-      parent.id.should be_nil
+      parent.persisted?.should be_false
     end
 
     it "updates an existing object" do
@@ -96,7 +96,7 @@ module {{adapter.capitalize.id}}
         county = Nation::County.new
         county.name = "Test School"
         county.save
-        county.id.should_not be_nil
+        county.persisted?.should be_true
       end
 
       it "updates an existing object" do
@@ -138,7 +138,7 @@ module {{adapter.capitalize.id}}
       parent = Parent.new
       parent.name = "Test Parent"
       parent.save!
-      parent.id.should_not be_nil
+      parent.persisted?.should be_true
     end
 
     it "does not create an invalid object but raise an exception" do

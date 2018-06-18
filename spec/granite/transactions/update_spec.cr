@@ -9,6 +9,7 @@ module {{adapter.capitalize.id}}
 
       parent.update(name: "Other parent").should be_true
       parent.name.should eq "Other parent"
+
       Parent.find!(parent.id).name.should eq "Other parent"
     end
 
@@ -30,6 +31,7 @@ module {{adapter.capitalize.id}}
 
       parent.update!(name: "Other parent")
       parent.name.should eq "Other parent"
+
       Parent.find!(parent.id).name.should eq "Other parent"
     end
 
@@ -40,6 +42,7 @@ module {{adapter.capitalize.id}}
       expect_raises(Granite::RecordInvalid, "{{adapter.capitalize.id}}::Parent") do
         parent.update!(name: "")
       end
+
       Parent.find!(parent.id).name.should eq "New Parent"
     end
   end
