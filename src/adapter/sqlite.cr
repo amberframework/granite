@@ -46,7 +46,7 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
       end
     end
   end
-  
+
   def insert(table_name, fields, params, lastval)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{quote(table_name)} ("
@@ -70,7 +70,6 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
 
   def import(table_name : String, primary_name : String, auto : String, fields, model_array, **options)
     params = [] of DB::Any
-    now = Time.now.to_utc
 
     statement = String.build do |stmt|
       stmt << "INSERT "
@@ -85,11 +84,10 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
 
       model_array.each do |model|
         next unless model.valid?
-        model.updated_at = now if model.responds_to? :updated_at
-        model.created_at = now if model.responds_to? :created_at
+        model.set_timestamps
         stmt << '('
         stmt << Array.new(fields.size, '?').join(',')
-        params.concat fields.map { |field| model.to_h[field] }
+        params.concat fields.map { |field| model.read_attribute field }
         stmt << "),"
       end
     end.chomp(',')
