@@ -21,7 +21,7 @@ module Granite::Transactions
       instance = create(args)
 
       if instance.errors.any?
-        raise Granite::RecordInvalid.new(self.name)
+        raise Granite::RecordNotSaved.new(self.name, instance)
       end
 
       instance
@@ -169,7 +169,7 @@ module Granite::Transactions
 
 
     def save!
-      save || raise Granite::RecordInvalid.new(self.class.name)
+      save || raise Granite::RecordNotSaved.new(self.class.name, self)
     end
 
     def update(**args)
@@ -209,7 +209,7 @@ module Granite::Transactions
     end
 
     def destroy!
-      destroy || raise Granite::RecordNotDestroyed.new(self.class.name)
+      destroy || raise Granite::RecordNotDestroyed.new(self.class.name, self)
     end
   end
 

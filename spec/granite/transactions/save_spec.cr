@@ -141,10 +141,10 @@ module {{adapter.capitalize.id}}
       parent.persisted?.should be_true
     end
 
-    it "does not create an invalid object but raise an exception" do
+    it "does not create but raise an exception" do
       parent = Parent.new
 
-      expect_raises(Granite::RecordInvalid, "{{adapter.capitalize.id}}::Parent") do
+      expect_raises(Granite::RecordNotSaved, "{{adapter.capitalize.id}}::Parent") do
         parent.save!
       end
     end

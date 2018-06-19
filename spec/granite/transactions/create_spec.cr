@@ -80,8 +80,8 @@ module {{adapter.capitalize.id}}
       parent.name.should eq("Test Parent")
     end
 
-    it "does not create an invalid object but raise an exception" do
-      expect_raises(Granite::RecordInvalid, "{{adapter.capitalize.id}}::Parent") do
+    it "does not save but raise an exception" do
+      expect_raises(Granite::RecordNotSaved, "{{adapter.capitalize.id}}::Parent") do
         parent = Parent.create!(name: "")
       end
     end

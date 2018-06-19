@@ -68,7 +68,7 @@ module {{adapter.capitalize.id}}
       found.should be_nil
     end
 
-    it "does not destroy an invalid object but raise an exception" do
+    it "does not destroy but raise an exception" do
       callback_with_abort = CallbackWithAbort.new
       callback_with_abort.name = "DestroyRaisesException"
       callback_with_abort.abort_at = "temp"

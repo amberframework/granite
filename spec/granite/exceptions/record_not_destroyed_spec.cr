@@ -1,24 +1,27 @@
 require "../../spec_helper"
 
-class RecordNotDestroyedParent; end
-class Granite::RecordNotDestroyedParent; end
+{% for adapter in GraniteExample::ADAPTERS %}
+module {{adapter.capitalize.id}}
+  describe Granite::RecordNotDestroyed do
+    it "should have a message" do
+      parent = Parent.new
+      parent.save
 
-describe Granite::RecordNotDestroyed do
-  context "when used with an class" do
-    it "should have an message" do
       Granite::RecordNotDestroyed
-        .new(RecordNotDestroyedParent.name)
+        .new(Parent.name, parent)
         .message
-        .should eq("Could not destroy RecordNotDestroyedParent")
+        .should eq("Could not destroy {{adapter.capitalize.id}}::Parent")
     end
-  end
 
-  context "when used with an module" do
-    it "should have an message" do
+    it "should have a model" do
+      parent = Parent.new
+      parent.save
+
       Granite::RecordNotDestroyed
-        .new(Granite::RecordNotDestroyedParent.name)
-        .message
-        .should eq("Could not destroy Granite::RecordNotDestroyedParent")
+        .new(Parent.name, parent)
+        .model
+        .should eq(parent)
     end
   end
 end
+{% end %}

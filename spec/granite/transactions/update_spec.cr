@@ -35,11 +35,11 @@ module {{adapter.capitalize.id}}
       Parent.find!(parent.id).name.should eq "Other parent"
     end
 
-    it "does not update an invalid object but raises an exception" do
+    it "does not update but raises an exception" do
       parent = Parent.new(name: "New Parent")
       parent.save!
 
-      expect_raises(Granite::RecordInvalid, "{{adapter.capitalize.id}}::Parent") do
+      expect_raises(Granite::RecordNotSaved, "{{adapter.capitalize.id}}::Parent") do
         parent.update!(name: "")
       end
 

@@ -1,13 +1,21 @@
 module Granite
-  class RecordInvalid < ::Exception
-    def initialize(class_name : String)
+  class RecordNotSaved < ::Exception
+    getter model : Granite::Base
+
+    def initialize(class_name : String, model : Granite::Base)
       super("Could not process #{class_name}")
+
+      @model = model
     end
   end
 
   class RecordNotDestroyed < ::Exception
-    def initialize(class_name : String)
+    getter model : Granite::Base
+
+    def initialize(class_name : String, model : Granite::Base)
       super("Could not destroy #{class_name}")
+
+      @model = model
     end
   end
 end

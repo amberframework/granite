@@ -1,24 +1,27 @@
 require "../../spec_helper"
 
-class RecordInvalidParent; end
-class Granite::RecordInvalidParent; end
+{% for adapter in GraniteExample::ADAPTERS %}
+module {{adapter.capitalize.id}}
+  describe Granite::RecordNotSaved do
+    it "should have a message" do
+      parent = Parent.new
+      parent.save
 
-describe Granite::RecordInvalid do
-  context "when used with an class" do
-    it "should have an message" do
-      Granite::RecordInvalid
-        .new(RecordInvalidParent.name)
+      Granite::RecordNotSaved
+        .new(Parent.name, parent)
         .message
-        .should eq("Could not process RecordInvalidParent")
+        .should eq("Could not process {{adapter.capitalize.id}}::Parent")
     end
-  end
 
-  context "when used with an module" do
-    it "should have an message" do
-      Granite::RecordInvalid
-        .new(Granite::RecordInvalidParent.name)
-        .message
-        .should eq("Could not process Granite::RecordInvalidParent")
+    it "should have a model" do
+      parent = Parent.new
+      parent.save
+
+      Granite::RecordNotSaved
+        .new(Parent.name, parent)
+        .model
+        .should eq(parent)
     end
   end
 end
+{% end %}
