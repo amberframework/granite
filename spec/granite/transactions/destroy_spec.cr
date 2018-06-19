@@ -56,22 +56,11 @@ module {{adapter.capitalize.id}}
     end
   end
 
-  class ParentWithCallback < Granite::Base
-    adapter {{ adapter.id }}
-    table_name parents
-
-    before_destroy :cancel_destroy
-
-    private def cancel_destroy
-      abort!("Canceling destroy")
-    end
-  end
-
   describe "{{ adapter.id }} #destroy!" do
     it "destroys an object" do
       parent = Parent.new
       parent.name = "Test Parent"
-      parent.save
+      parent.save!
 
       id = parent.id
       parent.destroy
@@ -80,11 +69,19 @@ module {{adapter.capitalize.id}}
     end
 
     it "does not destroy an invalid object but raise an exception" do
-      parent = ParentWithCallback.new
+      callback_with_abort = CallbackWithAbort.new
+      callback_with_abort.name = "DestroyRaisesException"
+      callback_with_abort.abort_at = "before_destroy"
+      callback_with_abort.do_abort = false
+      callback_with_abort.save!
+      callback_with_abort.do_abort = true
 
-      expect_raises(Granite::RecordNotDestroyed, "{{adapter.capitalize.id}}::Parent") do
-        parent.destroy!
+
+      expect_raises(Granite::RecordNotDestroyed, "{{adapter.capitalize.id}}::CallbackWithAbort") do
+        callback_with_abort.destroy!
       end
+
+      CallbackWithAbort.find_by(name: callback_with_abort.name).should_not be_nil
     end
   end
 end
