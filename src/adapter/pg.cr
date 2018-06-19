@@ -71,7 +71,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
 
   def import(table_name : String, primary_name : String, auto : String, fields, model_array, **options)
     params = [] of DB::Any
-    now = Time.utc_now
+    now = Time.utc_now.at_beginning_of_second
     # PG fails when inserting null into AUTO INCREMENT PK field.
     # If AUTO INCREMENT is TRUE AND all model's pk are nil, remove PK from fields list for AUTO INCREMENT to work properly
     fields.reject! { |field| field == primary_name } if model_array.all? { |m| m.to_h[primary_name].nil? } && auto == "true"
@@ -84,12 +84,11 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       stmt << ") VALUES "
 
       model_array.each do |model|
-        model.updated_at = now if model.responds_to? :updated_at
-        model.created_at = now if model.responds_to? :created_at
+        model.set_timestamps
         next unless model.valid?
         stmt << '('
         stmt << fields.map_with_index { |_f, idx| "$#{index + idx + 1}" }.join(',')
-        params.concat fields.map { |field| model.to_h[field] }
+        params.concat fields.map { |field| model.read_attribute field }
         stmt << "),"
         index += fields.size
       end

@@ -6,6 +6,7 @@ module {{adapter.capitalize.id}}
     describe "using the defualt primary key" do
       context "with an AUTO INCREMENT PK" do
         it "should import 3 new objects" do
+          Parent.clear
           to_import = [
             Parent.new(name: "ImportParent1"),
             Parent.new(name: "ImportParent2"),

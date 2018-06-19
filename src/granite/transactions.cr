@@ -82,8 +82,16 @@ module Granite::Transactions
       end
     end
 
+    def set_timestamps(*, to time = Time.now, mode = :create)
+      if mode == :create
+        @created_at = time.to_utc.at_beginning_of_second
+      end
+
+      @updated_at = time.to_utc.at_beginning_of_second
+    end
+
     private def __create
-      @created_at = @updated_at = Time.now.to_utc
+      set_timestamps
       fields = self.class.content_fields.dup
       params = content_values
       if value = @{{primary_name}}
@@ -115,7 +123,7 @@ module Granite::Transactions
     end
 
     private def __update
-      @updated_at = Time.now.to_utc
+      set_timestamps mode: :update
       fields = self.class.content_fields
       params = content_values + [@{{primary_name}}]
 
