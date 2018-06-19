@@ -71,9 +71,10 @@ module {{adapter.capitalize.id}}
     it "does not destroy an invalid object but raise an exception" do
       callback_with_abort = CallbackWithAbort.new
       callback_with_abort.name = "DestroyRaisesException"
-      callback_with_abort.abort_at = "before_destroy"
+      callback_with_abort.abort_at = "temp"
       callback_with_abort.do_abort = false
-      callback_with_abort.save!
+      callback_with_abort.save
+      callback_with_abort.abort_at = "before_destroy"
       callback_with_abort.do_abort = true
 
 
