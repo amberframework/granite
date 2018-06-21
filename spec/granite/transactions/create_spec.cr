@@ -5,13 +5,13 @@ module {{adapter.capitalize.id}}
   describe "{{ adapter.id }} .create" do
     it "creates a new object" do
       parent = Parent.create(name: "Test Parent")
-      parent.id.should_not be_nil
+      parent.persisted?.should be_true
       parent.name.should eq("Test Parent")
     end
 
     it "does not create an invalid object" do
       parent = Parent.create(name: "")
-      parent.id.should be_nil
+      parent.persisted?.should be_false
     end
 
     it "takes JSON::Any" do
@@ -51,7 +51,7 @@ module {{adapter.capitalize.id}}
     describe "with a custom primary key" do
       it "creates a new object" do
         school = School.create(name: "Test School")
-        school.custom_id.should_not be_nil
+        school.persisted?.should be_true
         school.name.should eq("Test School")
       end
     end
@@ -59,7 +59,7 @@ module {{adapter.capitalize.id}}
     describe "with a modulized model" do
       it "creates a new object" do
         county = Nation::County.create(name: "Test School")
-        county.id.should_not be_nil
+        county.persisted?.should be_true
         county.name.should eq("Test School")
       end
     end
@@ -69,6 +69,20 @@ module {{adapter.capitalize.id}}
         reserved_word = ReservedWord.create(all: "foo")
         reserved_word.errors.empty?.should be_true
         reserved_word.all.should eq("foo")
+      end
+    end
+  end
+
+  describe "{{ adapter.id }} .create!" do
+    it "creates a new object" do
+      parent = Parent.create!(name: "Test Parent")
+      parent.persisted?.should be_true
+      parent.name.should eq("Test Parent")
+    end
+
+    it "does not save but raise an exception" do
+      expect_raises(Granite::RecordNotSaved, "{{adapter.capitalize.id}}::Parent") do
+        parent = Parent.create!(name: "")
       end
     end
   end

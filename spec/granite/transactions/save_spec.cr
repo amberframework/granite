@@ -7,14 +7,14 @@ module {{adapter.capitalize.id}}
       parent = Parent.new
       parent.name = "Test Parent"
       parent.save
-      parent.id.should_not be_nil
+      parent.persisted?.should be_true
     end
 
     it "does not create an invalid object" do
       parent = Parent.new
       parent.name = ""
       parent.save
-      parent.id.should be_nil
+      parent.persisted?.should be_false
     end
 
     it "updates an existing object" do
@@ -96,7 +96,7 @@ module {{adapter.capitalize.id}}
         county = Nation::County.new
         county.name = "Test School"
         county.save
-        county.id.should_not be_nil
+        county.persisted?.should be_true
       end
 
       it "updates an existing object" do
@@ -129,6 +129,23 @@ module {{adapter.capitalize.id}}
         reserved_word.save
         reserved_word.errors.empty?.should be_true
         reserved_word.all.should eq("bar")
+      end
+    end
+  end
+
+  describe "{{ adapter.id }} #save!" do
+    it "creates a new object" do
+      parent = Parent.new
+      parent.name = "Test Parent"
+      parent.save!
+      parent.persisted?.should be_true
+    end
+
+    it "does not create but raise an exception" do
+      parent = Parent.new
+
+      expect_raises(Granite::RecordNotSaved, "{{adapter.capitalize.id}}::Parent") do
+        parent.save!
       end
     end
   end

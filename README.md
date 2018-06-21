@@ -335,6 +335,12 @@ post = Post.find_by!(slug: "foo") # raises when no records found.
 other_post = Post.find_by(slug: "foo", type: "bar") # Also works for multiple arguments.
 ```
 
+#### Create
+```crystal
+Post.create(name: "Granite Rocks!", body: "Check this out.") # Set attributes and call save
+Post.create!(name: "Granite Rocks!", body: "Check this out.") # Set attributes and call save!. Will throw an exception when the save failed
+```
+
 #### Insert
 
 ```crystal
@@ -342,6 +348,11 @@ post = Post.new
 post.name = "Granite Rocks!"
 post.body = "Check this out."
 post.save
+
+post = Post.new
+post.name = "Granite Rocks!"
+post.body = "Check this out."
+post.save! # raises when save failed
 ```
 
 #### Update
@@ -350,6 +361,12 @@ post.save
 post = Post.find 1
 post.name = "Granite Really Rocks!"
 post.save
+
+post = Post.find 1
+post.update(name: "Granite Really Rocks!") # Assigns attributes and calls save
+
+post = Post.find 1
+post.update!(name: "Granite Really Rocks!") # Assigns attributes and calls save!. Will throw an exception when the save failed
 ```
 
 #### Delete
@@ -358,6 +375,9 @@ post.save
 post = Post.find 1
 post.destroy
 puts "deleted" unless post
+
+post = Post.find 1
+post.destroy! # raises when delete failed
 ```
 
 ### Queries
@@ -423,9 +443,9 @@ class CustomView < Granite:Base
   field commentbody : String
 
   query <<-SQL
-    SELECT articles.articlebody, comments.commentbody 
-    FROM articles 
-    JOIN comments 
+    SELECT articles.articlebody, comments.commentbody
+    FROM articles
+    JOIN comments
     ON comments.articleid = articles.id
   SQL
 end

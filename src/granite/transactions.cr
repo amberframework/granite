@@ -1,3 +1,5 @@
+require "./exceptions"
+
 module Granite::Transactions
   module ClassMethods
     def create(**args)
@@ -8,6 +10,20 @@ module Granite::Transactions
       instance = new
       instance.set_attributes(args)
       instance.save
+      instance
+    end
+
+    def create!(**args)
+      create!(args.to_h)
+    end
+
+    def create!(args : Hash(Symbol | String, DB::Any) | JSON::Any)
+      instance = create(args)
+
+      if instance.errors.any?
+        raise Granite::RecordNotSaved.new(self.name, instance)
+      end
+
       instance
     end
 
@@ -151,6 +167,31 @@ module Granite::Transactions
       true
     end
 
+
+    def save!
+      save || raise Granite::RecordNotSaved.new(self.class.name, self)
+    end
+
+    def update(**args)
+      update(args.to_h)
+    end
+
+    def update(args : Hash(Symbol | String, DB::Any) | JSON::Any)
+      set_attributes(args)
+
+      save
+    end
+
+    def update!(**args)
+      update!(args.to_h)
+    end
+
+    def update!(args : Hash(Symbol | String, DB::Any) | JSON::Any)
+      set_attributes(args)
+
+      save!
+    end
+
     # Destroy will remove this from the database.
     def destroy
       begin
@@ -165,6 +206,10 @@ module Granite::Transactions
         return false
       end
       true
+    end
+
+    def destroy!
+      destroy || raise Granite::RecordNotDestroyed.new(self.class.name, self)
     end
   end
 
