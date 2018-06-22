@@ -761,7 +761,7 @@ $ docker-compose down
 
 If you'd like to test without docker you can do so by following the instructions below:
 
-1. Install dependencies with `$ crystal deps`
+1. Install dependencies with `$ shards install`
 2. Create appropriate databases:
 
 #### PostgreSQL
