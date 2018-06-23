@@ -53,6 +53,10 @@ module Granite::Table
       @@primary_name
     end
 
+    def self.primary_type
+      @@primary_type
+    end
+
     def self.primary_auto
       @@primary_auto
     end

@@ -112,134 +112,134 @@ end
 describe Granite::ValidationHelpers do
   context "Nil" do
     it "should work for is_nil and not_nil for all data types" do
-      nilTest = NilTest.new
+      nil_test = NilTest.new
 
-      nilTest.first_name = "John"
-      nilTest.last_name = "Smith"
-      nilTest.age = 32
-      nilTest.born = true
-      nilTest.value = 123.56.to_f32
+      nil_test.first_name = "John"
+      nil_test.last_name = "Smith"
+      nil_test.age = 32
+      nil_test.born = true
+      nil_test.value = 123.56.to_f32
 
-      nilTest.save
+      nil_test.save
 
-      nilTest.errors.size.should eq 10
-      nilTest.errors[0].message.should eq "first_name_not_nil must not be nil"
-      nilTest.errors[1].message.should eq "last_name_not_nil must not be nil"
-      nilTest.errors[2].message.should eq "age_not_nil must not be nil"
-      nilTest.errors[3].message.should eq "born_not_nil must not be nil"
-      nilTest.errors[4].message.should eq "value_not_nil must not be nil"
-      nilTest.errors[5].message.should eq "first_name must be nil"
-      nilTest.errors[6].message.should eq "last_name must be nil"
-      nilTest.errors[7].message.should eq "age must be nil"
-      nilTest.errors[8].message.should eq "born must be nil"
-      nilTest.errors[9].message.should eq "value must be nil"
+      nil_test.errors.size.should eq 10
+      nil_test.errors[0].message.should eq "first_name_not_nil must not be nil"
+      nil_test.errors[1].message.should eq "last_name_not_nil must not be nil"
+      nil_test.errors[2].message.should eq "age_not_nil must not be nil"
+      nil_test.errors[3].message.should eq "born_not_nil must not be nil"
+      nil_test.errors[4].message.should eq "value_not_nil must not be nil"
+      nil_test.errors[5].message.should eq "first_name must be nil"
+      nil_test.errors[6].message.should eq "last_name must be nil"
+      nil_test.errors[7].message.should eq "age must be nil"
+      nil_test.errors[8].message.should eq "born must be nil"
+      nil_test.errors[9].message.should eq "value must be nil"
     end
   end
 
   context "Blank" do
     it "should work for is_blank and not_blank" do
-      blankTest = BlankTest.new
+      blank_test = BlankTest.new
 
-      blankTest.first_name_not_blank = ""
-      blankTest.last_name_not_blank = "      "
+      blank_test.first_name_not_blank = ""
+      blank_test.last_name_not_blank = "      "
 
-      blankTest.first_name_is_blank = "foo"
-      blankTest.last_name_is_blank = "  bar  "
+      blank_test.first_name_is_blank = "foo"
+      blank_test.last_name_is_blank = "  bar  "
 
-      blankTest.save
+      blank_test.save
 
-      blankTest.errors.size.should eq 4
-      blankTest.errors[0].message.should eq "first_name_not_blank must not be blank"
-      blankTest.errors[1].message.should eq "last_name_not_blank must not be blank"
-      blankTest.errors[2].message.should eq "first_name_is_blank must be blank"
-      blankTest.errors[3].message.should eq "last_name_is_blank must be blank"
+      blank_test.errors.size.should eq 4
+      blank_test.errors[0].message.should eq "first_name_not_blank must not be blank"
+      blank_test.errors[1].message.should eq "last_name_not_blank must not be blank"
+      blank_test.errors[2].message.should eq "first_name_is_blank must be blank"
+      blank_test.errors[3].message.should eq "last_name_is_blank must be blank"
     end
   end
 
   context "Choice" do
     it "should work for is_valid_choice" do
-      choiceTest = ChoiceTest.new
+      choice_test = ChoiceTest.new
 
-      choiceTest.number_symbol = 4
-      choiceTest.type_array_symbol = "foo"
+      choice_test.number_symbol = 4
+      choice_test.type_array_symbol = "foo"
 
-      choiceTest.number_string = 2
-      choiceTest.type_array_string = "bar"
+      choice_test.number_string = 2
+      choice_test.type_array_string = "bar"
 
-      choiceTest.save
+      choice_test.save
 
-      choiceTest.errors.size.should eq 4
-      choiceTest.errors[0].message.should eq "number_symbol has an invalid choice. Valid choices are: 1,2,3"
-      choiceTest.errors[1].message.should eq "type_array_symbol has an invalid choice. Valid choices are: internal,external,third_party"
-      choiceTest.errors[2].message.should eq "number_string has an invalid choice. Valid choices are: 4,5,6"
-      choiceTest.errors[3].message.should eq "type_array_string has an invalid choice. Valid choices are: internal,external,third_party"
+      choice_test.errors.size.should eq 4
+      choice_test.errors[0].message.should eq "number_symbol has an invalid choice. Valid choices are: 1,2,3"
+      choice_test.errors[1].message.should eq "type_array_symbol has an invalid choice. Valid choices are: internal,external,third_party"
+      choice_test.errors[2].message.should eq "number_string has an invalid choice. Valid choices are: 4,5,6"
+      choice_test.errors[3].message.should eq "type_array_string has an invalid choice. Valid choices are: internal,external,third_party"
     end
   end
 
   context "Less Than" do
     it "should work for less_than" do
-      lessThanTest = LessThanTest.new
+      less_than_test = LessThanTest.new
 
-      lessThanTest.int_32_lt = 10
-      lessThanTest.float_32_lt = 20.5.to_f32
+      less_than_test.int_32_lt = 10
+      less_than_test.float_32_lt = 20.5.to_f32
 
-      lessThanTest.int_32_lte = 52
-      lessThanTest.float_32_lte = 155.55.to_f32
+      less_than_test.int_32_lte = 52
+      less_than_test.float_32_lte = 155.55.to_f32
 
-      lessThanTest.save
+      less_than_test.save
 
-      lessThanTest.errors.size.should eq 4
-      lessThanTest.errors[0].message.should eq "int_32_lt must be less than 10"
-      lessThanTest.errors[1].message.should eq "float_32_lt must be less than 20.5"
-      lessThanTest.errors[2].message.should eq "int_32_lte must be less than or equal to 50"
-      lessThanTest.errors[3].message.should eq "float_32_lte must be less than or equal to 100.25"
+      less_than_test.errors.size.should eq 4
+      less_than_test.errors[0].message.should eq "int_32_lt must be less than 10"
+      less_than_test.errors[1].message.should eq "float_32_lt must be less than 20.5"
+      less_than_test.errors[2].message.should eq "int_32_lte must be less than or equal to 50"
+      less_than_test.errors[3].message.should eq "float_32_lte must be less than or equal to 100.25"
 
-      lessThanTestNil = LessThanTest.new
+      less_than_test_nil = LessThanTest.new
 
       expect_raises(Exception, "Nil assertion failed") do
-        lessThanTestNil.save
+        less_than_test_nil.save
       end
     end
   end
 
   context "Greater Than" do
     it "should work for greater_than" do
-      greaterThanTest = GreaterThanTest.new
+      greater_than_test = GreaterThanTest.new
 
-      greaterThanTest.int_32_lt = 10
-      greaterThanTest.float_32_lt = 20.5.to_f32
+      greater_than_test.int_32_lt = 10
+      greater_than_test.float_32_lt = 20.5.to_f32
 
-      greaterThanTest.int_32_lte = 49
-      greaterThanTest.float_32_lte = 100.20.to_f32
+      greater_than_test.int_32_lte = 49
+      greater_than_test.float_32_lte = 100.20.to_f32
 
-      greaterThanTest.save
+      greater_than_test.save
 
-      greaterThanTest.errors.size.should eq 4
-      greaterThanTest.errors[0].message.should eq "int_32_lt must be greater than 10"
-      greaterThanTest.errors[1].message.should eq "float_32_lt must be greater than 20.5"
-      greaterThanTest.errors[2].message.should eq "int_32_lte must be greater than or equal to 50"
-      greaterThanTest.errors[3].message.should eq "float_32_lte must be greater than or equal to 100.25"
+      greater_than_test.errors.size.should eq 4
+      greater_than_test.errors[0].message.should eq "int_32_lt must be greater than 10"
+      greater_than_test.errors[1].message.should eq "float_32_lt must be greater than 20.5"
+      greater_than_test.errors[2].message.should eq "int_32_lte must be greater than or equal to 50"
+      greater_than_test.errors[3].message.should eq "float_32_lte must be greater than or equal to 100.25"
 
-      greaterThanTest = GreaterThanTest.new
+      greater_than_test = GreaterThanTest.new
 
       expect_raises(Exception, "Nil assertion failed") do
-        greaterThanTest.save
+        greater_than_test.save
       end
     end
   end
 
   context "Length" do
     it "should work for length" do
-      lengthTest = LengthTest.new
+      length_test = LengthTest.new
 
-      lengthTest.title = "one"
-      lengthTest.description = "abcdefghijklmnopqrstuvwxyz"
+      length_test.title = "one"
+      length_test.description = "abcdefghijklmnopqrstuvwxyz"
 
-      lengthTest.save
+      length_test.save
 
-      lengthTest.errors.size.should eq 2
-      lengthTest.errors[0].message.should eq "title is too short. It must be at least 5"
-      lengthTest.errors[1].message.should eq "description is too long. It must be at most 25"
+      length_test.errors.size.should eq 2
+      length_test.errors[0].message.should eq "title is too short. It must be at least 5"
+      length_test.errors[1].message.should eq "description is too long. It must be at most 25"
     end
   end
 
@@ -249,33 +249,33 @@ describe Granite::ValidationHelpers do
     end
 
     it "should work for uniqueness" do
-      personUniqueness1 = PersonUniqueness.new
-      personUniqueness2 = PersonUniqueness.new
+      person_uniqueness1 = PersonUniqueness.new
+      person_uniqueness2 = PersonUniqueness.new
 
-      personUniqueness1.name = "awesomeName"
-      personUniqueness2.name = "awesomeName"
+      person_uniqueness1.name = "awesomeName"
+      person_uniqueness2.name = "awesomeName"
 
-      personUniqueness1.save
-      personUniqueness2.save
+      person_uniqueness1.save
+      person_uniqueness2.save
 
-      personUniqueness1.errors.size.should eq 0
-      personUniqueness2.errors.size.should eq 1
+      person_uniqueness1.errors.size.should eq 0
+      person_uniqueness2.errors.size.should eq 1
 
-      personUniqueness2.errors[0].message.should eq "name should be unique"
+      person_uniqueness2.errors[0].message.should eq "name should be unique"
     end
 
     it "should work for uniqueness on the same instance" do
-      personUniqueness1 = PersonUniqueness.new
+      person_uniqueness1 = PersonUniqueness.new
 
-      personUniqueness1.name = "awesomeName"
-      personUniqueness1.save
+      person_uniqueness1.name = "awesomeName"
+      person_uniqueness1.save
 
-      personUniqueness1.errors.size.should eq 0
+      person_uniqueness1.errors.size.should eq 0
 
-      personUniqueness1.name = "awesomeName"
-      personUniqueness1.save
+      person_uniqueness1.name = "awesomeName"
+      person_uniqueness1.save
 
-      personUniqueness1.errors.size.should eq 0
+      person_uniqueness1.errors.size.should eq 0
     end
   end
 end

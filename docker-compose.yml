@@ -2,7 +2,7 @@ version: '2'
 services:
   spec:
     build: .
-    command: 'bash -c "cd /app/user && sleep 10 && crystal spec"'
+    command: 'bash -c "cd /app/user && sleep 10 && bin/ameba && crystal spec"'
     working_dir: /app/user
     environment:
       PG_DATABASE_URL: 'postgres://postgres:@pg:5432/postgres'

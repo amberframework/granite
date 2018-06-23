@@ -9,3 +9,6 @@
 # Dependencies will be locked in application that uses them
 /.deps.lock
 shard.lock
+
+# Ignore bin because they will be build with shards install
+bin
