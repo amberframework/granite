@@ -8,10 +8,13 @@ abstract class Granite::Adapter::Base
   property database : DB::Database
 
   def initialize(adapter : String)
-    if url = ENV["DATABASE_URL"]? || Granite.settings.database_url || replace_env_vars(settings(adapter)["database"].to_s)
+    if url = Granite.settings.database_url
+      @database = DB.open(url)
+    elsif url = ENV["DATABASE_URL"]? || replace_env_vars(settings(adapter)["database"].to_s)
+      Granite.settings.logger.warn "Setting database url via ENV variables or config files is deprecated and will be removed in a future release.  Use `Granite.settings.database_url = xxx` instead."
       @database = DB.open(url)
     else
-      raise "database url needs to be set in the config/database.yml or DATABASE_URL environment variable"
+      raise "database url needs to be set by `Granite.settings.database_url = xxx`"
     end
   end
 
