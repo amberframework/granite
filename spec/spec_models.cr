@@ -128,6 +128,7 @@ require "uuid"
       table_name callbacks_with_abort
       primary abort_at : String, auto: false
       field do_abort : Bool
+      field name : String
 
       property history : IO::Memory = IO::Memory.new
 

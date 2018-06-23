@@ -18,18 +18,7 @@ module Granite::Querying
         # Loading from DB means existing records.
         @new_record = false
         \{% for name, options in FIELDS %}
-          \{% type = options[:type] %}
-          \{% if type.id.stringify == "Time" %}
-            if @@adapter.class.name == "Granite::Adapter::Sqlite"
-              # sqlite3 does not have timestamp type - timestamps are stored as str
-              # will break for null timestamps
-              self.\{{name.id}} = Time.parse(result.read(String), Granite::DATETIME_FORMAT)
-            else
-              self.\{{name.id}} = result.read(Union(\{{type.id}} | Nil))
-            end
-          \{% else %}
-            self.\{{name.id}} = result.read(Union(\{{type.id}} | Nil))
-          \{% end %}
+          self.\{{name.id}} = result.read(Union(\{{options[:type].id}} | Nil))
         \{% end %}
         self
       end

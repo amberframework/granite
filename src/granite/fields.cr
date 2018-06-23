@@ -59,11 +59,7 @@ module Granite::Fields
     def content_values
       parsed_params = [] of DB::Any
       {% for name, options in CONTENT_FIELDS %}
-        {% if options[:type].id == Time.id %}
-          parsed_params << {{name.id}}.try(&.to_s(Granite::DATETIME_FORMAT))
-        {% else %}
-          parsed_params << {{name.id}}
-        {% end %}
+        parsed_params << {{name.id}}
       {% end %}
       return parsed_params
     end
@@ -99,6 +95,18 @@ module Granite::Fields
           {% end %}
         {% end %}
       end
+    end
+
+    def read_attribute(attribute_name : Symbol | String) : DB::Any
+      {% begin %}
+        case attribute_name.to_s
+        {% for name, options in FIELDS %}
+          when "{{ name }}" then @{{ name.id }}
+        {% end %}
+        else
+          raise "Cannot read attribute #{attribute_name}, invalid attribute"
+        end
+      {% end %}
     end
 
     def set_attributes(args : Hash(String | Symbol, Type))
@@ -142,10 +150,10 @@ module Granite::Fields
               @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_bool : ["1", "yes", "true", true].includes?(value)
             {% elsif type.id == Time.id %}
               if value.is_a?(Time)
-                 @{{_name.id}} = value
-               elsif value.to_s =~ TIME_FORMAT_REGEX
-                 @{{_name.id}} = Time.parse(value.to_s, Granite::DATETIME_FORMAT)
-               end
+                @{{_name.id}} = value
+              elsif value.to_s =~ TIME_FORMAT_REGEX
+                @{{_name.id}} = Time.parse(value.to_s, Granite::DATETIME_FORMAT)
+              end
             {% else %}
               @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_s : value.to_s
             {% end %}
