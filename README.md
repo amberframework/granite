@@ -31,19 +31,22 @@ dependencies:
 
 ```
 
-Next you will need to create a `config/database.yml`
-You can leverage environment variables using `${}` syntax.
+Next you will need to supply a connection string for the adapter you are using.  For example:
 
-```yaml
-mysql:
-  database: "mysql://username:password@hostname:3306/database_${AMBER_ENV}"
-pg:
-  database: "postgres://username:password@hostname:5432/database"
-sqlite:
-  database: "sqlite3:./config/${DB_NAME}.db"
+```Crystal
+# For MySQL
+Granite::Settings.database_url["mysql"] = YOUR_CONNECTION_STRING
+
+# For PostgreSQL
+Granite::Settings.database_url["pg"] = YOUR_CONNECTION_STRING
+
+# For Sqlite
+Granite::Settings.database_url["sqlite"] = YOUR_CONNECTION_STRING
 ```
 
-Or you can set the `DATABASE_URL` environment variable.  This will override the config/database.yml
+This should be supplied near the very top of your main Crystal program.  Before Granite is required.
+
+How you supply the string is up to you and what would be suit you application.
 
 ## Usage
 

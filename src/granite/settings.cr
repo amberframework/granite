@@ -2,16 +2,11 @@ require "logger"
 
 module Granite
   class Settings
-    property database_url : String? = nil
-    property logger : Logger
+    class_property database_url = {"mysql" => "", "pg" => "", "sqlite" => ""}
+    class_property logger = Logger.new STDOUT
 
     def initialize
-      @logger = Logger.new STDOUT
-      @logger.progname = "Granite"
+      @@logger.progname = "Granite"
     end
-  end
-
-  def self.settings
-    @@settings ||= Settings.new
   end
 end

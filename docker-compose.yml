@@ -7,7 +7,7 @@ services:
     environment:
       PG_DATABASE_URL: 'postgres://postgres:@pg:5432/postgres'
       MYSQL_DATABASE_URL: 'mysql://user:pass@mysql:3306/test'
-      SQLITE_DATABASE_URL: 'sqlite3:./config/test.db'
+      SQLITE_DATABASE_URL: 'sqlite3:./test.db'
     depends_on:
       - pg
       - mysql

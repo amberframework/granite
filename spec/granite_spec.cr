@@ -108,6 +108,20 @@ describe Granite::Base do
     end
   end
 
+  describe "Granite::Settings.database_url" do
+    it "should be set correctly" do
+      Granite::Settings.database_url["mysql"] = "MYSQL_CONNECTION_URL"
+      Granite::Settings.database_url["pg"] = "PG_CONNECTION_URL"
+      Granite::Settings.database_url["sqlite"] = "SQLITE_CONNECTION_URL"
+
+      urls = Granite::Settings.database_url
+
+      urls["mysql"].should eq "MYSQL_CONNECTION_URL"
+      urls["pg"].should eq "PG_CONNECTION_URL"
+      urls["sqlite"].should eq "SQLITE_CONNECTION_URL"
+    end
+  end
+
   describe "validating fields" do
     context "without a name" do
       it "is not valid" do
