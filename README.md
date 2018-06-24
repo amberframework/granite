@@ -46,7 +46,7 @@ Granite::Settings.database_url["sqlite"] = YOUR_CONNECTION_STRING
 
 This should be supplied near the very top of your main Crystal program.  Before Granite is required.
 
-How you supply the string is up to you and what would be suit you application.
+How you supply the string is up to you and what would suit you application best.
 
 ## Usage
 
