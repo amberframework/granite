@@ -52,7 +52,7 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
       stmt << "INSERT INTO #{quote(table_name)} ("
       stmt << fields.map { |name| "#{quote(name)}" }.join(", ")
       stmt << ") VALUES ("
-      stmt << fields.map { |name| "?" }.join(", ")
+      stmt << fields.map { |_name| "?" }.join(", ")
       stmt << ")"
     end
 
