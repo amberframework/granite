@@ -44,6 +44,7 @@ module Granite::Table
     @@table_name = "{{table_name}}"
     @@primary_name = "{{primary_name}}"
     @@primary_auto = "{{primary_auto}}"
+    @@primary_type = "{{primary_type}}"
 
     def self.table_name
       @@table_name
@@ -51,6 +52,10 @@ module Granite::Table
 
     def self.primary_name
       @@primary_name
+    end
+
+    def self.primary_type
+      @@primary_type
     end
 
     def self.primary_auto
