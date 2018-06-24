@@ -58,11 +58,11 @@ describe Granite::Base do
 
     website_json.is_a?(JSON::Any).should be_true
 
-    webSites = WebSite.from_json(website_json).as(Array(WebSite))
+    web_sites = WebSite.from_json(website_json).as(Array(WebSite))
 
-    webSites[0].name.should eq "web1"
-    webSites[1].name.should eq "web2"
-    webSites[2].name.should eq "web3"
+    web_sites[0].name.should eq "web1"
+    web_sites[1].name.should eq "web2"
+    web_sites[2].name.should eq "web3"
   end
 
   describe "#to_h" do

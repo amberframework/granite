@@ -73,7 +73,7 @@ class FieldEmitter < DB::ResultSet
       raise "Overread"
     end
 
-    @values[@position].tap do |v|
+    @values[@position].tap do
       @position += 1
     end
   end
