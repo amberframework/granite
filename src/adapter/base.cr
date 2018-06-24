@@ -8,10 +8,10 @@ abstract class Granite::Adapter::Base
   property database : DB::Database
 
   def initialize(adapter : String)
-    if url = Granite::Settings.database_url[adapter]
+    if url = Granite.settings.adapters[adapter]
       @database = DB.open(url)
     else
-      raise "Database url needs to be set by `Granite::Settings.database_url[ADAPTER_NAME] = xxx`"
+      raise "Database url needs to be set by `Granite.settings.database_url = xxx`"
     end
   end
 
@@ -20,7 +20,7 @@ abstract class Granite::Adapter::Base
   end
 
   def log(query : String, params = [] of String) : Nil
-    Granite::Settings.logger.info "#{query}: #{params}"
+    Granite.settings.logger.info "#{query}: #{params}"
   end
 
   # remove all rows from a table and reset the counter on the id.
