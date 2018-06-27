@@ -108,6 +108,36 @@ describe Granite::Base do
     end
   end
 
+  describe "Granite.settings.database_url" do
+    it "should be set correctly" do
+      urls = Granite.settings.adapters
+
+      urls["mysql"].should eq ENV["MYSQL_DATABASE_URL"]
+      urls["pg"].should eq ENV["PG_DATABASE_URL"]
+      urls["sqlite"].should eq ENV["SQLITE_DATABASE_URL"]
+    end
+
+    it "should not store multiple of same adapter" do
+      Granite.settings.database_url = "mysql://user:pass@host:port/database1"
+      Granite.settings.database_url = "mysql://user:pass@host:port/database2"
+
+      urls = Granite.settings.adapters
+      urls["mysql"].should eq "mysql://user:pass@host:port/database2"
+    end
+
+    it "should raise exception on invalid database_url" do
+      expect_raises Exception, "Invalid connection string" do
+        Granite.settings.database_url = "MYSQL_DATABASE_URL_ONE"
+      end
+    end
+
+    it "should raise exception on unexpected adapter" do
+      expect_raises Exception, "Unexpected adapter: 'myAwesomeDb'" do
+        Granite.settings.database_url = "myAwesomeDb://user:pass@host:port/database"
+      end
+    end
+  end
+
   describe "validating fields" do
     context "without a name" do
       it "is not valid" do

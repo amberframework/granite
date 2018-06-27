@@ -8,22 +8,10 @@ abstract class Granite::Adapter::Base
   property database : DB::Database
 
   def initialize(adapter : String)
-    if url = ENV["DATABASE_URL"]? || Granite.settings.database_url || replace_env_vars(settings(adapter)["database"].to_s)
+    if url = Granite.settings.adapters[adapter]
       @database = DB.open(url)
     else
-      raise "database url needs to be set in the config/database.yml or DATABASE_URL environment variable"
-    end
-  end
-
-  DATABASE_YML = "config/database.yml"
-
-  def settings(adapter : String)
-    if File.exists?(DATABASE_YML) &&
-       (yaml = YAML.parse(File.read DATABASE_YML)) &&
-       (settings = yaml[adapter])
-      settings
-    else
-      return {"database": ""}
+      raise "Database url needs to be set by `Granite.settings.database_url = xxx`"
     end
   end
 
@@ -56,11 +44,6 @@ abstract class Granite::Adapter::Base
   # This will delete a row from the database.
   abstract def delete(table_name, primary_name, value)
 
-  # method used to replace the environment variable if exists
-  private def replace_env_vars(url)
-    Granite::Adapter::Base.env(url)
-  end
-
   module Schema
     TYPES = {
       "Bool"    => "BOOL",
@@ -84,18 +67,6 @@ abstract class Granite::Adapter::Base
     # converts the crystal class to database type of this adapter
     def self.schema_type?(key : String)
       Schema::TYPES[key]? || Granite::Adapter::Base::Schema::TYPES[key]?
-    end
-  end
-
-  # class level method so we can test it
-  def self.env(url)
-    regex = /\$\{(.*?)\}/
-    if regex.match(url)
-      url = url.gsub(regex) do |match|
-        ENV[match.gsub("${", "").gsub("}", "")]
-      end
-    else
-      return url
     end
   end
 end

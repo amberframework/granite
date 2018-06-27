@@ -1,3 +1,7 @@
+Granite.settings.database_url = ENV["MYSQL_DATABASE_URL"]
+Granite.settings.database_url = ENV["PG_DATABASE_URL"]
+Granite.settings.database_url = ENV["SQLITE_DATABASE_URL"]
+
 require "spec"
 
 module GraniteExample

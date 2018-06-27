@@ -1,4 +1,3 @@
-require "yaml"
 require "db"
 
 module Granite
