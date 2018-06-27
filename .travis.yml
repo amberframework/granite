@@ -16,4 +16,5 @@ before_install:
   - docker-compose build spec
 
 script:
+  - source .env
   - docker-compose run spec
