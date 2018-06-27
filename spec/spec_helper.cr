@@ -1,3 +1,6 @@
+require "envy"
+Envy.load
+
 require "spec"
 
 module GraniteExample
