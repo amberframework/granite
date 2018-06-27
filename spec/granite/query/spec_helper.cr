@@ -21,7 +21,7 @@ def query_fields
 end
 
 def builder
-  builder = Granite::Query::Builder(Model).new
+  Granite::Query::Builder(Model).new
 end
 
 def assembler

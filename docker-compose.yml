@@ -2,7 +2,7 @@ version: '2'
 services:
   spec:
     build: .
-    command: 'bash -c "cd /app/user && sleep 10 && crystal spec"'
+    command: 'bash -c "cd /app/user && sleep 10 && bin/ameba && crystal tool format --check && crystal spec"'
     working_dir: /app/user
     environment:
       PG_DATABASE_URL: 'postgres://postgres:@pg:5432/postgres'
@@ -12,9 +12,9 @@ services:
       - pg
       - mysql
   pg:
-    image: postgres:9.5
+    image: postgres:10.4
   mysql:
-    image: mysql:5.6
+    image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: pass
       MYSQL_DATABASE: test

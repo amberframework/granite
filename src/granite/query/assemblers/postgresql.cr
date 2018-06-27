@@ -60,7 +60,7 @@ module Granite::Query::Assembler
 
     def count : Executor::Value(Model, Int64)
       where = build_where
-      order = build_order(use_default_order = false)
+      order = build_order(false)
       group = build_group_by
 
       sql = <<-SQL
