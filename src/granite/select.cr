@@ -7,7 +7,7 @@ module Granite::Select
     end
   end
 
-  macro query(text)
+  macro select_statement(text)
     @@select.custom = {{text.strip}}
 
     def self.select

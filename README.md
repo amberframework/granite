@@ -434,7 +434,7 @@ post = Post.all("ORDER BY posts.name DESC LIMIT 1").first
 
 #### Customizing SELECT
 
-The `query` macro allows you to customize the entire query, including the SELECT portion.  This shouldn't be necessary in most cases, but allows you to craft more complex (i.e. cross-table) queries if needed:
+The `select_statement` macro allows you to customize the entire query, including the SELECT portion.  This shouldn't be necessary in most cases, but allows you to craft more complex (i.e. cross-table) queries if needed:
 
 ```crystal
 class CustomView < Granite:Base
@@ -442,7 +442,7 @@ class CustomView < Granite:Base
   field articlebody : String
   field commentbody : String
 
-  query <<-SQL
+  select_statement <<-SQL
     SELECT articles.articlebody, comments.commentbody
     FROM articles
     JOIN comments
