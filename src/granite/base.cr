@@ -25,6 +25,8 @@ class Granite::Base
   include Migrator
   include Select
 
+  include JSON::Serializable
+
   extend Querying
   extend Transactions::ClassMethods
 

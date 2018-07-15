@@ -5,10 +5,6 @@ class Granite::Error
   end
 
   def to_s
-    if @field == :base
-      @message
-    else
-      "#{@field.to_s.capitalize} #{message}"
-    end
+    (@field == :base) ? @message : "#{@field.to_s.capitalize} #{message}"
   end
 end

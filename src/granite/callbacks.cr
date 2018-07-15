@@ -2,9 +2,10 @@ module Granite::Callbacks
   class Abort < Exception
   end
 
-  CALLBACK_NAMES = %i(before_save after_save before_create after_create before_update after_update before_destroy after_destroy)
+  CALLBACK_NAMES = %w(before_save after_save before_create after_create before_update after_update before_destroy after_destroy)
 
-  @_current_callback : Symbol?
+  @[JSON::Field(ignore: true)]
+  @_current_callback : String?
 
   macro included
     macro inherited

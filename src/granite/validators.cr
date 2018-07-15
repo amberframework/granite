@@ -16,6 +16,7 @@ require "./error"
 # validate :name, "can't be blank", name_required
 # ```
 module Granite::Validators
+  @[JSON::Field(ignore: true)]
   getter errors = [] of Error
 
   macro included

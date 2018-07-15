@@ -6,7 +6,7 @@ module Granite::Transactions
       create(args.to_h)
     end
 
-    def create(args : Hash(Symbol | String, DB::Any) | JSON::Any)
+    def create(args : Hash(Symbol | String, DB::Any))
       instance = new
       instance.set_attributes(args)
       instance.save
@@ -17,7 +17,7 @@ module Granite::Transactions
       create!(args.to_h)
     end
 
-    def create!(args : Hash(Symbol | String, DB::Any) | JSON::Any)
+    def create!(args : Hash(Symbol | String, DB::Any))
       instance = create(args)
 
       if instance.errors.any?
@@ -25,16 +25,6 @@ module Granite::Transactions
       end
 
       instance
-    end
-
-    def from_json(args : JSON::Any)
-      if args.as_a?
-        args.as_a.map { |a| model = new; model.set_attributes(a); model }
-      else
-        model = new
-        model.set_attributes(args)
-        model
-      end
     end
   end
 
@@ -176,7 +166,7 @@ module Granite::Transactions
       update(args.to_h)
     end
 
-    def update(args : Hash(Symbol | String, DB::Any) | JSON::Any)
+    def update(args : Hash(Symbol | String, DB::Any))
       set_attributes(args)
 
       save
@@ -186,7 +176,7 @@ module Granite::Transactions
       update!(args.to_h)
     end
 
-    def update!(args : Hash(Symbol | String, DB::Any) | JSON::Any)
+    def update!(args : Hash(Symbol | String, DB::Any))
       set_attributes(args)
 
       save!
@@ -214,9 +204,11 @@ module Granite::Transactions
   end
 
   # Returns true if this object hasn't been saved yet.
+  @[JSON::Field(ignore: true)]
   getter? new_record : Bool = true
 
   # Returns true if this object has been destroyed.
+  @[JSON::Field(ignore: true)]
   getter? destroyed : Bool = false
 
   # Returns true if the record is persisted.
