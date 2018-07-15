@@ -39,6 +39,9 @@ module Granite::Fields
     {% for name, options in FIELDS %}
       {% type = options[:type] %}
       {% suffixes = options[:raise_on_nil] ? ["?", ""] : ["", "!"] %}
+      {% if options[:json_options] %}
+         @[JSON::Field({{**options[:json_options]}})]
+      {% end %}
       property{{suffixes[0].id}} {{name.id}} : Union({{type.id}} | Nil)
       def {{name.id}}{{suffixes[1].id}}
         raise {{@type.name.stringify}} + "#" + {{name.stringify}} + " cannot be nil" if @{{name.id}}.nil?
