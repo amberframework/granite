@@ -37,7 +37,7 @@ require "./spec_helper"
           end
 
           it "works with after_initialize" do
-            model = AfterJSONInit.from_json(%({"name": "after_initialize"}))
+            model = AfterInit.from_json(%({"name": "after_initialize"}))
 
             model.name.should eq "after_initialize"
             model.priority.should eq 1000
@@ -67,7 +67,76 @@ require "./spec_helper"
             ]
 
             collection = todos.to_json
-            collection.should eq(%([{"name":"todo 1","priority":1},{"name":"todo 2","priority":2},{"name":"todo 3","priority":3}]))
+            collection.should eq %([{"name":"todo 1","priority":1},{"name":"todo 2","priority":2},{"name":"todo 3","priority":3}])
+          end
+        end
+      end
+
+      describe "YAML" do
+        context ".from_yaml" do
+          it "can create an object from YAML" do
+            yaml_str = %({"name": "yaml::anyReview","upvotes": 2, "sentiment": 1.23, "interest": 4.56, "published": true})
+
+            review = Review.from_json(yaml_str)
+            review.name.should eq "yaml::anyReview"
+            review.upvotes.should eq 2
+            review.sentiment.should eq 1.23.to_f32
+            review.interest.should eq 4.56
+            review.published.should eq true
+            review.created_at.should be_nil
+          end
+
+          it "can create an array of objects from YAML" do
+            yaml_str = "---\n- name: yaml1\n  upvotes: 2\n  sentiment: 1.23\n  interest: 4.56\n  published: true\n- name: yaml2\n  upvotes: 0\n  sentiment: !!float 5\n  interest: 6.99\n  published: false"
+
+            review = Array(Review).from_yaml(yaml_str)
+            review[0].name.should eq "yaml1"
+            review[0].upvotes.should eq 2
+            review[0].sentiment.should eq 1.23.to_f32
+            review[0].interest.should eq 4.56
+            review[0].published.should be_true
+            review[0].created_at.should be_nil
+
+            review[1].name.should eq "yaml2"
+            review[1].upvotes.should eq 0
+            review[1].sentiment.should eq 5.00.to_f32
+            review[1].interest.should eq 6.99
+            review[1].published.should be_false
+            review[1].created_at.should be_nil
+          end
+
+          it "works with after_initialize" do
+            model = AfterInit.from_yaml(%({"name": "after_initialize"}))
+
+            model.name.should eq "after_initialize"
+            model.priority.should eq 1000
+          end
+        end
+
+        context ".to_yaml" do
+          it "emits nil values when told" do
+            t = TodoEmitNull.new(name: "test todo", priority: 20)
+            result = %(---\nid: \nname: test todo\npriority: 20\ncreated_at: \nupdated_at: \n)
+
+            t.to_yaml.should eq result
+          end
+
+          it "does not emit nil values by default" do
+            t = Todo.new(name: "test todo", priority: 20)
+            result = %(---\nname: test todo\npriority: 20\n)
+
+            t.to_yaml.should eq result
+          end
+
+          it "works with array of models" do
+            todos = [
+              Todo.new(name: "todo 1", priority: 1),
+              Todo.new(name: "todo 2", priority: 2),
+              Todo.new(name: "todo 3", priority: 3),
+            ]
+
+            collection = todos.to_yaml
+            collection.should eq %(---\n- name: todo 1\n  priority: 1\n- name: todo 2\n  priority: 2\n- name: todo 3\n  priority: 3\n)
           end
         end
       end

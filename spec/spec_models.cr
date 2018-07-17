@@ -230,6 +230,7 @@ require "uuid"
     end
 
     @[JSON::Serializable::Options(emit_nulls: true)]
+    @[YAML::Serializable::Options(emit_nulls: true)]
     class TodoEmitNull < Granite::Base
       adapter {{ adapter.id }}
       table_name todos
@@ -248,7 +249,7 @@ require "uuid"
       timestamps
     end
 
-    class AfterJSONInit < Granite::Base
+    class AfterInit < Granite::Base
       adapter {{ adapter.id }}
       table_name after_json_init
 
@@ -295,6 +296,6 @@ require "uuid"
     Comment.migrator.drop_and_create
     Todo.migrator.drop_and_create
     TodoEmitNull.migrator.drop_and_create
-    AfterJSONInit.migrator.drop_and_create
+    AfterInit.migrator.drop_and_create
   end
 {% end %}
