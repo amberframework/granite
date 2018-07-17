@@ -229,6 +229,37 @@ require "uuid"
       field articleid : Int64
     end
 
+    @[JSON::Serializable::Options(emit_nulls: true)]
+    class TodoEmitNull < Granite::Base
+      adapter {{ adapter.id }}
+      table_name todos
+
+      field name : String
+      field priority : Int32
+      timestamps
+    end
+
+    class Todo < Granite::Base
+      adapter {{ adapter.id }}
+      table_name todos
+
+      field name : String
+      field priority : Int32
+      timestamps
+    end
+
+    class AfterJSONInit < Granite::Base
+      adapter {{ adapter.id }}
+      table_name after_json_init
+
+      field name : String
+      field priority : Int32
+
+      def after_initialize
+        @priority = 1000
+      end
+    end
+
     class ArticleViewModel < Granite::Base
       adapter {{ adapter.id }}
 
@@ -262,6 +293,8 @@ require "uuid"
     NonAutoCustomPK.migrator.drop_and_create
     Article.migrator.drop_and_create
     Comment.migrator.drop_and_create
-
+    Todo.migrator.drop_and_create
+    TodoEmitNull.migrator.drop_and_create
+    AfterJSONInit.migrator.drop_and_create
   end
 {% end %}
