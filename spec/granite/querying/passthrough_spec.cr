@@ -19,12 +19,5 @@ module {{adapter.capitalize.id}}
      end
     end
   end
-
-  describe "{{ adapter.id }} #exec" do
-    it "calls exec against the db driver" do
-     Parent.clear
-     Parent.exec "SELECT count(*) FROM parents"
-    end
-  end
 end
 {% end %}
