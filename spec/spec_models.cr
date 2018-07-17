@@ -267,7 +267,7 @@ require "uuid"
       field articlebody : String
       field commentbody : String
 
-      query <<-SQL
+      select_statement <<-SQL
         SELECT articles.id, articles.articlebody, comments.commentbody FROM articles JOIN comments ON comments.articleid = articles.id
       SQL
     end
