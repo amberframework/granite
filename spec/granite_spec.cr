@@ -77,7 +77,7 @@ require "./spec_helper"
           it "can create an object from YAML" do
             yaml_str = %({"name": "yaml::anyReview","upvotes": 2, "sentiment": 1.23, "interest": 4.56, "published": true})
 
-            review = Review.from_json(yaml_str)
+            review = Review.from_yaml(yaml_str)
             review.name.should eq "yaml::anyReview"
             review.upvotes.should eq 2
             review.sentiment.should eq 1.23.to_f32
