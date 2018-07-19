@@ -75,7 +75,7 @@ require "./spec_helper"
       describe "YAML" do
         context ".from_yaml" do
           it "can create an object from YAML" do
-            yaml_str = %({"name": "yaml::anyReview","upvotes": 2, "sentiment": 1.23, "interest": 4.56, "published": true})
+            yaml_str = %(---\nname: yaml::anyReview\nupvotes: 2\nsentiment: 1.23\ninterest: 4.56\npublished: true)
 
             review = Review.from_yaml(yaml_str)
             review.name.should eq "yaml::anyReview"
@@ -106,7 +106,7 @@ require "./spec_helper"
           end
 
           it "works with after_initialize" do
-            model = AfterInit.from_yaml(%({"name": "after_initialize"}))
+            model = AfterInit.from_yaml(%(---\nname: after_initialize))
 
             model.name.should eq "after_initialize"
             model.priority.should eq 1000
