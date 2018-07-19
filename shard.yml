@@ -1,6 +1,8 @@
 name: granite
+
 version: 0.12.1
-crystal: 0.25.0
+
+crystal: 0.25.1
 
 authors:
   - drujensen <drujensen@gmail.com>
