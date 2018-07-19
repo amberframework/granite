@@ -9,11 +9,7 @@ module Granite::Table
   # specify the database adapter you will be using for this model.
   # mysql, pg, sqlite, etc.
   macro adapter(name)
-    @@adapter = Granite::Adapter::{{name.id.capitalize}}.new("{{name.id}}")
-
-    def self.adapter
-      @@adapter
-    end
+    class_getter adapter : Granite::Adapter::Base = Granite.adapters.adapters.find { |a| a.name == {{name.stringify}} } || raise "No registered adapter with the name '{{name.id}}'"
   end
 
   # specify the table name to use otherwise it will use the model's name
