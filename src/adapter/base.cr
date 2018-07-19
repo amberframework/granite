@@ -18,7 +18,7 @@ abstract class Granite::Adapter::Base
   end
 
   def log(query : String, params = [] of String) : Nil
-    Granite.settings.logger.info "#{query}: #{params}"
+    Granite::Settings.logger.info "#{query}: #{params}"
   end
 
   # remove all rows from a table and reset the counter on the id.
