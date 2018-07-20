@@ -26,7 +26,7 @@ dependencies:
 
 Next you will need to register an adapter.  This should be one of the first things in your main Crystal file, before Granite is required.
 
-```yaml
+```crystal
 Granite::Settings.adapters << Granite::Adapter::Mysql.new({name: "mysql", url: "YOUR_DATABASE_URL"})
 
 # Rest of code...
@@ -56,11 +56,6 @@ This model is using an adapter named `mysql`, registered in the example above.  
 ```Crystal
 Granite::Settings.adapters << Granite::Adapter::Mysql.new({name: "LegacyDB", url: "LEGACY_DB_URL"})
 Granite::Settings.adapters << Granite::Adapter::Pg.new({name: "NewDb", url: "NEW_DB_URL"})
-```
-
-```Crystal
-require "granite/adapter/mysql"
-require "granite/adapter/pg"
 
 class Foo < Granite::Base
   adapter LegacyDB
