@@ -8,9 +8,5 @@ module Granite
     def initialize
       @@logger.progname = "Granite"
     end
-
-    def self.<<(adapter : Granite::Adapter::Base)
-      @@adapters << adapter
-    end
   end
 end

@@ -9,6 +9,7 @@ abstract class Granite::Adapter::Base
   property url : String
 
   def initialize(connection_hash : NamedTuple(url: String, name: String))
+    raise "Adapter with name '#{connection_hash[:name]}' has already been registered." if Granite::Settings.adapters.any? { |adapter| adapter.name == connection_hash[:name] }
     @name = connection_hash[:name]
     @url = connection_hash[:url]
   end

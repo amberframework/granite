@@ -5,7 +5,7 @@
 Add this library to your projects dependencies along with the driver in
 your `shard.yml`.  This can be used with any framework but was originally
 designed to work with the amber framework in mind.  This library will work
-with kemal or any other framework as well.
+with Kemal or any other framework as well.
 
 ```yaml
 dependencies:
@@ -24,21 +24,19 @@ dependencies:
 
 ```
 
-Next you will need to create a `config/database.yml`
-You can leverage environment variables using `${}` syntax.
+Next you will need to register an adapter.  This should be one of the first things in your main Crystal file, before Granite is required.
 
 ```yaml
-mysql:
-  database: "mysql://username:password@hostname:3306/database_${AMBER_ENV}"
-pg:
-  database: "postgres://username:password@hostname:5432/database"
-sqlite:
-  database: "sqlite3:./config/${DB_NAME}.db"
+Granite::Settings.adapters << Granite::Adapter::Mysql.new({name: "mysql", url: "YOUR_DATABASE_URL"})
+
+# Rest of code...
 ```
 
-Or you can set the `DATABASE_URL` environment variable.  This will override the config/database.yml
+Supported adapters include `Mysql, Pg, and Sqlite`.
 
 ## Usage
+
+### Adapters
 
 Here is an example using Granite Model
 
@@ -52,6 +50,34 @@ class Post < Granite::Base
   timestamps
 end
 ```
+
+This model is using an adapter named `mysql`, registered in the example above.  It is possible to register multiple adapters with different names/URLs, for example:
+
+```Crystal
+Granite::Settings.adapters << Granite::Adapter::Mysql.new({name: "LegacyDB", url: "LEGACY_DB_URL"})
+Granite::Settings.adapters << Granite::Adapter::Pg.new({name: "NewDb", url: "NEW_DB_URL"})
+```
+
+```Crystal
+require "granite/adapter/mysql"
+require "granite/adapter/pg"
+
+class Foo < Granite::Base
+  adapter LegacyDB
+  
+  # model fields
+end
+
+class Bar < Granite::Base
+  adapter NewDb
+  
+  # model fields
+end
+```
+
+In this example, model `Foo`, is connecting to a MySQL DB at the URL of `LEGACY_DB_URL` while model `Bar` is connecting to a Postgres DB at the URL `NEW_DB_URL`.  The adapter name given in the model maps to the name of a registered adapter. 
+
+**NOTE: How you store/supply each adapter's URL is up to you; Granite only cares that it gets registered via `Granite::Settings.adapters << adapter_object`.**
 
 ### id, created_at, updated_at
 
