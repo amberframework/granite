@@ -43,11 +43,6 @@ abstract class Granite::Adapter::Base
   # This will delete a row from the database.
   abstract def delete(table_name, primary_name, value)
 
-  # method used to replace the environment variable if exists
-  private def replace_env_vars(url)
-    Granite::Adapter::Base.env(url)
-  end
-
   module Schema
     TYPES = {
       "Bool"    => "BOOL",
