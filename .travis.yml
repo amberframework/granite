@@ -1,5 +1,11 @@
 language: generic
 
+env:
+  - MYSQL_IMAGE=mysql:5.6
+  - MYSQL_IMAGE=mysql:5.7
+  - POSTGRES_IMAGE=postgres:9.5
+  - POSTGRES_IMAGE=postgres:9.6
+  - POSTGRES_IMAGE=postgres:10.4
 services:
   - docker
 
@@ -7,4 +13,5 @@ before_install:
   - docker-compose build spec
 
 script:
+  - source .env
   - docker-compose run spec

@@ -12,9 +12,9 @@ services:
       - pg
       - mysql
   pg:
-    image: postgres:10.4
+    image: ${POSTGRES_IMAGE}
   mysql:
-    image: mysql:5.7
+    image: ${MYSQL_IMAGE}
     environment:
       MYSQL_ROOT_PASSWORD: pass
       MYSQL_DATABASE: test
