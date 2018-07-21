@@ -6,8 +6,8 @@ module Granite::Fields
 
   macro included
     macro inherited
-      CONTENT_FIELDS = {} of Nil => Nil
-      FIELDS = {} of Nil => Nil
+      noDoc CONTENT_FIELDS = {} of Nil => Nil
+      noDoc FIELDS = {} of Nil => Nil
     end
   end
 
@@ -36,30 +36,34 @@ module Granite::Fields
     {% end %}
 
     # Create the properties
+
     {% for name, options in FIELDS %}
       {% type = options[:type] %}
       {% suffixes = options[:raise_on_nil] ? ["?", ""] : ["", "!"] %}
       {% if options[:json_options] %}
          @[JSON::Field({{**options[:json_options]}})]
       {% end %}
+      {% if options[:comment] %}
+         {{options[:comment].id}}
+      {% end %}
       property{{suffixes[0].id}} {{name.id}} : Union({{type.id}} | Nil)
-      def {{name.id}}{{suffixes[1].id}}
+      noDoc def {{name.id}}{{suffixes[1].id}}
         raise {{@type.name.stringify}} + "#" + {{name.stringify}} + " cannot be nil" if @{{name.id}}.nil?
         @{{name.id}}.not_nil!
       end
     {% end %}
 
     # keep a hash of the fields to be used for mapping
-    def self.fields : Array(String)
+    noDoc def self.fields : Array(String)
       @@fields ||= {{ FIELDS.empty? ? "[] of String".id : FIELDS.keys.map(&.id.stringify) }}
     end
 
-    def self.content_fields : Array(String)
+    noDoc def self.content_fields : Array(String)
       @@content_fields ||= {{ CONTENT_FIELDS.empty? ? "[] of String".id : CONTENT_FIELDS.keys.map(&.id.stringify) }}
     end
 
     # keep a hash of the params that will be passed to the adapter.
-    def content_values
+    noDoc def content_values
       parsed_params = [] of DB::Any
       {% for name, options in CONTENT_FIELDS %}
         parsed_params << {{name.id}}
@@ -67,7 +71,7 @@ module Granite::Fields
       return parsed_params
     end
 
-    def to_h
+    noDoc def to_h
       fields = {} of String => DB::Any
 
       {% for name, options in FIELDS %}
@@ -84,7 +88,7 @@ module Granite::Fields
       return fields
     end
 
-    def read_attribute(attribute_name : Symbol | String) : DB::Any
+    noDoc def read_attribute(attribute_name : Symbol | String) : DB::Any
       {% begin %}
         case attribute_name.to_s
         {% for name, options in FIELDS %}
@@ -96,13 +100,13 @@ module Granite::Fields
       {% end %}
     end
 
-    def set_attributes(args : Hash(String | Symbol, Type))
+    noDoc def set_attributes(args : Hash(String | Symbol, Type))
       args.each do |k, v|
         cast_to_field(k, v.as(Type))
       end
     end
 
-    def set_attributes(**args)
+    noDoc def set_attributes(**args)
       set_attributes(args.to_h)
     end
 

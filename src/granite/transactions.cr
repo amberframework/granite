@@ -2,22 +2,22 @@ require "./exceptions"
 
 module Granite::Transactions
   module ClassMethods
-    def create(**args)
+    noDoc def create(**args)
       create(args.to_h)
     end
 
-    def create(args : Hash(Symbol | String, DB::Any))
+    noDoc def create(args : Hash(Symbol | String, DB::Any))
       instance = new
       instance.set_attributes(args)
       instance.save
       instance
     end
 
-    def create!(**args)
+    noDoc def create!(**args)
       create!(args.to_h)
     end
 
-    def create!(args : Hash(Symbol | String, DB::Any))
+    noDoc def create!(args : Hash(Symbol | String, DB::Any))
       instance = create(args)
 
       if instance.errors.any?
@@ -39,7 +39,7 @@ module Granite::Transactions
     # The import class method will run a batch INSERT statement for each model in the array
     # the array must contain only one model class
     # invalid model records will be skipped
-    def self.import(model_array : Array(self) | Granite::Collection(self), batch_size : Int32 = model_array.size)
+    noDoc def self.import(model_array : Array(self) | Granite::Collection(self), batch_size : Int32 = model_array.size)
       begin
         fields_duplicate = fields.dup
         model_array.each_slice(batch_size, true) do |slice|
@@ -50,7 +50,7 @@ module Granite::Transactions
       end
     end
 
-    def self.import(model_array : Array(self) | Granite::Collection(self), update_on_duplicate : Bool, columns : Array(String), batch_size : Int32 = model_array.size)
+    noDoc def self.import(model_array : Array(self) | Granite::Collection(self), update_on_duplicate : Bool, columns : Array(String), batch_size : Int32 = model_array.size)
       begin
         fields_duplicate = fields.dup
         model_array.each_slice(batch_size, true) do |slice|
@@ -61,7 +61,7 @@ module Granite::Transactions
       end
     end
 
-    def self.import(model_array : Array(self) | Granite::Collection(self), ignore_on_duplicate : Bool, batch_size : Int32 = model_array.size)
+    noDoc def self.import(model_array : Array(self) | Granite::Collection(self), ignore_on_duplicate : Bool, batch_size : Int32 = model_array.size)
       begin
         fields_duplicate = fields.dup
         model_array.each_slice(batch_size, true) do |slice|
@@ -72,7 +72,7 @@ module Granite::Transactions
       end
     end
 
-    def set_timestamps(*, to time = Time.now, mode = :create)
+    noDoc def set_timestamps(*, to time = Time.now, mode = :create)
       if mode == :create
         @created_at = time.to_utc.at_beginning_of_second
       end
@@ -132,7 +132,7 @@ module Granite::Transactions
     # The save method will check to see if the primary exists yet. If it does it
     # will call the update method, otherwise it will call the create method.
     # This will update the timestamps appropriately.
-    def save
+    noDoc def save
       return false unless valid?
 
       begin
@@ -158,32 +158,32 @@ module Granite::Transactions
     end
 
 
-    def save!
+    noDoc def save!
       save || raise Granite::RecordNotSaved.new(self.class.name, self)
     end
 
-    def update(**args)
+    noDoc def update(**args)
       update(args.to_h)
     end
 
-    def update(args : Hash(Symbol | String, DB::Any))
+    noDoc def update(args : Hash(Symbol | String, DB::Any))
       set_attributes(args)
 
       save
     end
 
-    def update!(**args)
+    noDoc def update!(**args)
       update!(args.to_h)
     end
 
-    def update!(args : Hash(Symbol | String, DB::Any))
+    noDoc def update!(args : Hash(Symbol | String, DB::Any))
       set_attributes(args)
 
       save!
     end
 
     # Destroy will remove this from the database.
-    def destroy
+    noDoc def destroy
       begin
         __before_destroy
         __destroy
@@ -198,7 +198,7 @@ module Granite::Transactions
       true
     end
 
-    def destroy!
+    noDoc def destroy!
       destroy || raise Granite::RecordNotDestroyed.new(self.class.name, self)
     end
   end
@@ -212,7 +212,7 @@ module Granite::Transactions
   getter? destroyed : Bool = false
 
   # Returns true if the record is persisted.
-  def persisted?
+  noDoc def persisted?
     !(new_record? || destroyed?)
   end
 end

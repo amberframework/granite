@@ -9,13 +9,13 @@ module Granite::Callbacks
 
   macro included
     macro inherited
-      CALLBACKS = {
+      noDoc CALLBACKS = {
         {% for name in CALLBACK_NAMES %}
           {{name.id}}: [] of Nil,
         {% end %}
       }
       {% for name in CALLBACK_NAMES %}
-        def {{name.id}}
+        noDoc def {{name.id}}
           __{{name.id}}
         end
       {% end %}

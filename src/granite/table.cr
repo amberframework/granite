@@ -1,8 +1,18 @@
+# Adds a :nodoc: to granite methods/constants if `DISABLE_GRANTE_DOCS` ENV var is true
+macro noDoc(stmt)
+  {% if env("DISABLE_GRANTE_DOCS") == "true" %}
+    # :nodoc:
+    {{stmt.id}}
+  {% else %}
+    {{stmt.id}}
+  {% end %}
+end
+
 module Granite::Table
   macro included
     macro inherited
-      SETTINGS = {} of Nil => Nil
-      PRIMARY = {name: id, type: Int64, auto: true}
+      noDoc SETTINGS = {} of Nil => Nil
+      noDoc PRIMARY = {name: id, type: Int64, auto: true}
     end
   end
 
@@ -11,7 +21,7 @@ module Granite::Table
   macro adapter(name)
     @@adapter = Granite::Adapter::{{name.id.capitalize}}.new("{{name.id}}")
 
-    def self.adapter
+    noDoc def self.adapter
       @@adapter
     end
   end
@@ -27,11 +37,26 @@ module Granite::Table
     {% PRIMARY[:type] = decl.type %}
   end
 
+  # specify the primary key column and type and comment
+  macro primary(decl, comment)
+    {% PRIMARY[:name] = decl.var %}
+    {% PRIMARY[:type] = decl.type %}
+    {% PRIMARY[:comment] = comment %}
+  end
+
   # specify the primary key column and type and auto_increment
   macro primary(decl, auto)
     {% PRIMARY[:name] = decl.var %}
     {% PRIMARY[:type] = decl.type %}
     {% PRIMARY[:auto] = auto %}
+  end
+
+  # specify the primary key column and type and auto_increment and comment
+  macro primary(decl, comment, auto)
+    {% PRIMARY[:name] = decl.var %}
+    {% PRIMARY[:type] = decl.type %}
+    {% PRIMARY[:auto] = auto %}
+    {% PRIMARY[:comment] = comment %}
   end
 
   macro __process_table
@@ -46,27 +71,27 @@ module Granite::Table
     @@primary_auto = "{{primary_auto}}"
     @@primary_type = "{{primary_type}}"
 
-    def self.table_name
+    noDoc def self.table_name
       @@table_name
     end
 
-    def self.primary_name
+    noDoc def self.primary_name
       @@primary_name
     end
 
-    def self.primary_type
+    noDoc def self.primary_type
       @@primary_type
     end
 
-    def self.primary_auto
+    noDoc def self.primary_auto
       @@primary_auto
     end
 
-    def self.quoted_table_name
+    noDoc def self.quoted_table_name
       @@adapter.quote(table_name)
     end
 
-    def self.quote(column_name)
+    noDoc def self.quote(column_name)
       @@adapter.quote(column_name)
     end
   end
