@@ -5,11 +5,10 @@ require "db"
 # objects to perform actions against a specific database.  Each adapter needs
 # to implement these methods.
 abstract class Granite::Adapter::Base
-  property name : String
-  property url : String
+  getter name : String
+  getter url : String
 
   def initialize(connection_hash : NamedTuple(url: String, name: String))
-    raise "Adapter with name '#{connection_hash[:name]}' has already been registered." if Granite::Settings.adapters.any? { |adapter| adapter.name == connection_hash[:name] }
     @name = connection_hash[:name]
     @url = connection_hash[:url]
   end
@@ -19,7 +18,7 @@ abstract class Granite::Adapter::Base
   end
 
   def log(query : String, params = [] of String) : Nil
-    Granite::Settings.logger.info "#{query}: #{params}"
+    Granite.settings.logger.info "#{query}: #{params}"
   end
 
   # remove all rows from a table and reset the counter on the id.

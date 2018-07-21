@@ -54,8 +54,8 @@ end
 This model is using an adapter named `mysql`, registered in the example above.  It is possible to register multiple adapters with different names/URLs, for example:
 
 ```Crystal
-Granite::Settings.adapters << Granite::Adapter::Mysql.new({name: "LegacyDB", url: "LEGACY_DB_URL"})
-Granite::Settings.adapters << Granite::Adapter::Pg.new({name: "NewDb", url: "NEW_DB_URL"})
+Granite::Adapters << Granite::Adapter::Mysql.new({name: "LegacyDB", url: "LEGACY_DB_URL"})
+Granite::Adapters << Granite::Adapter::Pg.new({name: "NewDb", url: "NEW_DB_URL"})
 
 class Foo < Granite::Base
   adapter LegacyDB
@@ -72,7 +72,7 @@ end
 
 In this example, model `Foo`, is connecting to a MySQL DB at the URL of `LEGACY_DB_URL` while model `Bar` is connecting to a Postgres DB at the URL `NEW_DB_URL`.  The adapter name given in the model maps to the name of a registered adapter. 
 
-**NOTE: How you store/supply each adapter's URL is up to you; Granite only cares that it gets registered via `Granite::Settings.adapters << adapter_object`.**
+**NOTE: How you store/supply each adapter's URL is up to you; Granite only cares that it gets registered via `Granite::Adapters << adapter_object`.**
 
 ### id, created_at, updated_at
 

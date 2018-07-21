@@ -2,11 +2,15 @@ require "logger"
 
 module Granite
   class Settings
-    class_getter adapters = [] of Granite::Adapter::Base
-    class_property logger = Logger.new STDOUT
+    property logger : Logger
 
     def initialize
-      @@logger.progname = "Granite"
+      @logger = Logger.new nil
+      @logger.progname = "Granite"
     end
+  end
+
+  def self.settings
+    @@settings ||= Settings.new
   end
 end
