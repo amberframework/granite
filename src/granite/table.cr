@@ -1,6 +1,6 @@
 # Adds a :nodoc: to granite methods/constants if `DISABLE_GRANTE_DOCS` ENV var is true
-macro noDoc(stmt)
-  {% if env("DISABLE_GRANTE_DOCS") == "true" %}
+macro disable_granite_docs?(stmt)
+  {% unless env("DISABLE_GRANITE_DOCS") == "false" %}
     # :nodoc:
     {{stmt.id}}
   {% else %}
@@ -11,8 +11,8 @@ end
 module Granite::Table
   macro included
     macro inherited
-      noDoc SETTINGS = {} of Nil => Nil
-      noDoc PRIMARY = {name: id, type: Int64, auto: true}
+      disable_granite_docs? SETTINGS = {} of Nil => Nil
+      disable_granite_docs? PRIMARY = {name: id, type: Int64, auto: true}
     end
   end
 
@@ -21,7 +21,7 @@ module Granite::Table
   macro adapter(name)
     @@adapter = Granite::Adapter::{{name.id.capitalize}}.new("{{name.id}}")
 
-    noDoc def self.adapter
+    disable_granite_docs? def self.adapter
       @@adapter
     end
   end
@@ -71,27 +71,27 @@ module Granite::Table
     @@primary_auto = "{{primary_auto}}"
     @@primary_type = "{{primary_type}}"
 
-    noDoc def self.table_name
+    disable_granite_docs? def self.table_name
       @@table_name
     end
 
-    noDoc def self.primary_name
+    disable_granite_docs? def self.primary_name
       @@primary_name
     end
 
-    noDoc def self.primary_type
+    disable_granite_docs? def self.primary_type
       @@primary_type
     end
 
-    noDoc def self.primary_auto
+    disable_granite_docs? def self.primary_auto
       @@primary_auto
     end
 
-    noDoc def self.quoted_table_name
+    disable_granite_docs? def self.quoted_table_name
       @@adapter.quote(table_name)
     end
 
-    noDoc def self.quote(column_name)
+    disable_granite_docs? def self.quote(column_name)
       @@adapter.quote(column_name)
     end
   end

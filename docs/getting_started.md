@@ -116,7 +116,7 @@ end
 
 ### Generating Documentation
 
-By default, running `crystal docs` will include Granite methods, constants, and properties.  To exclude these, have an ENV variable: `DISABLE_GRANTE_DOCS=true` set before running `crystal docs`.
+By default, running `crystal docs` will include Granite methods, constants, and properties.  To exclude these, have an ENV variable: `DISABLE_GRANITE_DOCS=true` set before running `crystal docs`.
 
 The `field` and `primary` macros have a comment option that will specify the documentation comment to apply to that property's getter and setter.
 

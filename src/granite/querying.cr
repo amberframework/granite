@@ -8,13 +8,13 @@ module Granite::Querying
       \{% primary_type = PRIMARY[:type] %}
 
       # Create the from_sql method
-      noDoc def self.from_sql(result)
+      disable_granite_docs? def self.from_sql(result)
         model = \{{@type.name.id}}.new
         model.set_attributes(result)
         model
       end
 
-      noDoc def set_attributes(result : DB::ResultSet)
+      disable_granite_docs? def set_attributes(result : DB::ResultSet)
         # Loading from DB means existing records.
         @new_record = false
         \{% for name, options in FIELDS %}

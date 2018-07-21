@@ -6,8 +6,8 @@ module Granite::Fields
 
   macro included
     macro inherited
-      noDoc CONTENT_FIELDS = {} of Nil => Nil
-      noDoc FIELDS = {} of Nil => Nil
+      disable_granite_docs? CONTENT_FIELDS = {} of Nil => Nil
+      disable_granite_docs? FIELDS = {} of Nil => Nil
     end
   end
 
@@ -47,23 +47,23 @@ module Granite::Fields
          {{options[:comment].id}}
       {% end %}
       property{{suffixes[0].id}} {{name.id}} : Union({{type.id}} | Nil)
-      noDoc def {{name.id}}{{suffixes[1].id}}
+      disable_granite_docs? def {{name.id}}{{suffixes[1].id}}
         raise {{@type.name.stringify}} + "#" + {{name.stringify}} + " cannot be nil" if @{{name.id}}.nil?
         @{{name.id}}.not_nil!
       end
     {% end %}
 
     # keep a hash of the fields to be used for mapping
-    noDoc def self.fields : Array(String)
+    disable_granite_docs? def self.fields : Array(String)
       @@fields ||= {{ FIELDS.empty? ? "[] of String".id : FIELDS.keys.map(&.id.stringify) }}
     end
 
-    noDoc def self.content_fields : Array(String)
+    disable_granite_docs? def self.content_fields : Array(String)
       @@content_fields ||= {{ CONTENT_FIELDS.empty? ? "[] of String".id : CONTENT_FIELDS.keys.map(&.id.stringify) }}
     end
 
     # keep a hash of the params that will be passed to the adapter.
-    noDoc def content_values
+    disable_granite_docs? def content_values
       parsed_params = [] of DB::Any
       {% for name, options in CONTENT_FIELDS %}
         parsed_params << {{name.id}}
@@ -71,7 +71,7 @@ module Granite::Fields
       return parsed_params
     end
 
-    noDoc def to_h
+    disable_granite_docs? def to_h
       fields = {} of String => DB::Any
 
       {% for name, options in FIELDS %}
@@ -88,7 +88,7 @@ module Granite::Fields
       return fields
     end
 
-    noDoc def read_attribute(attribute_name : Symbol | String) : DB::Any
+    disable_granite_docs? def read_attribute(attribute_name : Symbol | String) : DB::Any
       {% begin %}
         case attribute_name.to_s
         {% for name, options in FIELDS %}
@@ -100,13 +100,13 @@ module Granite::Fields
       {% end %}
     end
 
-    noDoc def set_attributes(args : Hash(String | Symbol, Type))
+    disable_granite_docs? def set_attributes(args : Hash(String | Symbol, Type))
       args.each do |k, v|
         cast_to_field(k, v.as(Type))
       end
     end
 
-    noDoc def set_attributes(**args)
+    disable_granite_docs? def set_attributes(**args)
       set_attributes(args.to_h)
     end
 
