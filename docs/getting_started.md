@@ -27,7 +27,7 @@ dependencies:
 Next you will need to register an adapter.  This should be one of the first things in your main Crystal file, before Granite is required.
 
 ```crystal
-Granite::Settings.adapters << Granite::Adapter::Mysql.new({name: "mysql", url: "YOUR_DATABASE_URL"})
+Granite::Adapters << Granite::Adapter::Mysql.new({name: "mysql", url: "YOUR_DATABASE_URL"})
 
 # Rest of code...
 ```
