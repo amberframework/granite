@@ -17,6 +17,7 @@ require "./error"
 # ```
 module Granite::Validators
   @[JSON::Field(ignore: true)]
+  @[YAML::Field(ignore: true)]
   getter errors = [] of Error
 
   macro included
