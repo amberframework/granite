@@ -122,7 +122,7 @@ module Granite::Fields
           when "{{_name.id}}"
             if "{{_name.id}}" == "{{PRIMARY[:name]}}"
               {% if !PRIMARY[:auto] %}
-                @{{PRIMARY[:name]}} = value.is_a?(JSON::Any) ? value.raw.as({{PRIMARY[:type]}}) : value.as({{PRIMARY[:type]}})
+                @{{PRIMARY[:name]}} = value.as({{PRIMARY[:type]}})
               {% end %}
               return
             end
