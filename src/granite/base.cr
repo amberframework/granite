@@ -27,6 +27,7 @@ class Granite::Base
   include Select
 
   include JSON::Serializable
+  include YAML::Serializable
 
   extend Querying
   extend Transactions::ClassMethods
