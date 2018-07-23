@@ -83,7 +83,7 @@ end
 
 This will override the default primary key of `id : Int64`.
 
-#### Natural Keys
+### Natural Keys
 
 For natural keys, you can set `auto: false` option to disable auto increment.
 
@@ -95,7 +95,7 @@ class Site < Granite::Base
 end
 ```
 
-#### UUIDs
+### UUIDs
 
 For databases that utilize UUIDs as the primary key, the `primary` macro can be used again with the `auto: false` option.  A `before_create` callback can be added to the model to randomly generate and set a secure UUID on the record before it is saved to the database.
 
@@ -114,6 +114,12 @@ class Book < Granite::Base
 end
 ```
 
+### Generating Documentation
 
+By default, running `crystal docs` will **not** include Granite methods, constants, and properties.  To include these, have an ENV variable: `DISABLE_GRANITE_DOCS=false` set before running `crystal docs`.
+
+The `field` and `primary` macros have a comment option that will specify the documentation comment to apply to that property's getter and setter.
+
+`field age : Int32, comment: "# Number of seconds since the post was posted"`
 
 See the [Docs folder](./) for additional information.

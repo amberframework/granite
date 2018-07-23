@@ -10,13 +10,13 @@ module Granite::Callbacks
 
   macro included
     macro inherited
-      CALLBACKS = {
+      disable_granite_docs? CALLBACKS = {
         {% for name in CALLBACK_NAMES %}
           {{name.id}}: [] of Nil,
         {% end %}
       }
       {% for name in CALLBACK_NAMES %}
-        def {{name.id}}
+        disable_granite_docs? def {{name.id}}
           __{{name.id}}
         end
       {% end %}
