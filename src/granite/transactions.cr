@@ -205,10 +205,12 @@ module Granite::Transactions
 
   # Returns true if this object hasn't been saved yet.
   @[JSON::Field(ignore: true)]
+  @[YAML::Field(ignore: true)]
   getter? new_record : Bool = true
 
   # Returns true if this object has been destroyed.
   @[JSON::Field(ignore: true)]
+  @[YAML::Field(ignore: true)]
   getter? destroyed : Bool = false
 
   # Returns true if the record is persisted.

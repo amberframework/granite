@@ -43,6 +43,9 @@ module Granite::Fields
       {% if options[:json_options] %}
          @[JSON::Field({{**options[:json_options]}})]
       {% end %}
+      {% if options[:yaml_options] %}
+         @[YAML::Field({{**options[:yaml_options]}})]
+      {% end %}
       {% if options[:comment] %}
          {{options[:comment].id}}
       {% end %}
