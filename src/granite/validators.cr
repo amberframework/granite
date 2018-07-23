@@ -24,19 +24,19 @@ module Granite::Validators
     macro inherited
       @@validators = Array({field: String, message: String, block: Proc(self, Bool)}).new
 
-      def self.validate(message : String, &block : self -> Bool)
+      disable_granite_docs? def self.validate(message : String, &block : self -> Bool)
         self.validate(:base, message, block)
       end
 
-      def self.validate(field : (Symbol | String), message : String, &block : self -> Bool)
+      disable_granite_docs? def self.validate(field : (Symbol | String), message : String, &block : self -> Bool)
         self.validate(field, message, block)
       end
 
-      def self.validate(message : String, block : self -> Bool)
+      disable_granite_docs? def self.validate(message : String, block : self -> Bool)
         self.validate(:base, message, block)
       end
 
-      def self.validate(field : (Symbol | String), message : String, block : self -> Bool)
+      disable_granite_docs? def self.validate(field : (Symbol | String), message : String, block : self -> Bool)
         @@validators << {field: field.to_s, message: message, block: block}
       end
     end
