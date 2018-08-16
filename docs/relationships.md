@@ -23,6 +23,7 @@ class Post < Granite::Base
   adapter mysql
 
   belongs_to :user
+  belongs_to :user, User, user_id : String # if uuid is used as an id
 
   field title : String
   timestamps
