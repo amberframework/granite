@@ -36,6 +36,24 @@ module Granite::Associations
     end
   end
 
+  macro has_one(model_name)
+    # retrieve the associated object
+    {% foreign_key = @type.stringify.split("::").last.underscore + "_id" %}
+    has_one {{model_name.id}}, foreign_key: {{foreign_key.id}}
+  end
+
+  macro has_one(model_name, foreign_key)
+    # retrieve the associated object
+    def {{model_name.id}}
+      {{model_name.id.camelcase}}.find_by({{foreign_key.id}}: self.id)
+    end
+
+    # set the associated object to given relationship
+    def {{model_name.id}}=(children)
+      children.{{foreign_key.id}} = self.id
+    end
+  end
+
   macro has_many(children_table)
     def {{children_table.id}}
       {% children_class = children_table.id[0...-1].camelcase %}
