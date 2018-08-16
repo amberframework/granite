@@ -2,21 +2,21 @@
 
 ## One to Many
 
-`belongs_to` and `has_many` macros provide a rails like mapping between Objects.
+`has_many`, `has_one` and `belongs_to` macros provide a rails like mapping between Objects.
 
 ```crystal
 class User < Granite::Base
   adapter mysql
 
+  has_one :profile
   has_many :posts
 
   field email : String
-  field name : String
   timestamps
 end
 ```
 
-This will add a `posts` instance method to the user which returns an array of posts.
+This will add a `profile` and `posts` instance methods to the user which returns a profile and an array of posts respectively.
 
 ```crystal
 class Post < Granite::Base
@@ -27,9 +27,18 @@ class Post < Granite::Base
   field title : String
   timestamps
 end
+
+class Profile < Granite::Base
+  adapter mysql
+
+  belongs_to :user
+
+  field name : String
+  timestamps
+end
 ```
 
-This will add a `user` and `user=` instance method to the post.
+This will add a `user` and `user=` instance method to both of these models.
 
 For example:
 
@@ -39,6 +48,8 @@ user.posts.each do |post|
   puts post.title
 end
 
+puts user.profile
+
 post = Post.find 1
 puts post.user
 
@@ -46,7 +57,7 @@ post.user = user
 post.save
 ```
 
-In this example, you will need to add a `user_id` and index to your posts table:
+In this example, you will need to add a `user_id` and index to your posts and profiles table:
 
 ```mysql
 CREATE TABLE posts (
@@ -58,6 +69,49 @@ CREATE TABLE posts (
 );
 
 CREATE INDEX 'user_id_idx' ON posts (user_id);
+
+CREATE TABLE profiles (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT,
+  name VARCHAR,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);
+
+CREATE INDEX 'user_id_idx' ON profiles (user_id);
+```
+
+
+## One to One
+
+For one-to-one relationships, You can use the `has_one` and `belongs_to` in your models.
+
+*Note:* one-to-one relationship does not support a through association yet.
+
+```crystal
+class Team < Granite::Base
+  has_one :coach
+
+  field name : String
+end
+
+class Coach < Granite::Base
+  belongs_to :team
+end
+```
+
+Foreign key is inferred from the class name of the Model which uses `has_one`. In above case `team_id` is assumed to be present in `coaches` table. In case its different you can specify one like this:
+
+```crystal
+class Team < Granite::Base
+  has_one :coach, foreign_key: :custom_id
+
+  field name : String
+end
+
+class Coach < Granite::Base
+  belongs_to :team
+end
 ```
 
 ## Many to Many
