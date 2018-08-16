@@ -1,92 +1,10 @@
 # Relationships
 
-## One to Many
-
-`has_many`, `has_one` and `belongs_to` macros provide a rails like mapping between Objects.
-
-```crystal
-class User < Granite::Base
-  adapter mysql
-
-  has_one :profile
-  has_many :posts
-
-  field email : String
-  timestamps
-end
-```
-
-This will add a `profile` and `posts` instance methods to the user which returns a profile and an array of posts respectively.
-
-```crystal
-class Post < Granite::Base
-  adapter mysql
-
-  belongs_to :user
-
-  field title : String
-  timestamps
-end
-
-class Profile < Granite::Base
-  adapter mysql
-
-  belongs_to :user
-
-  field name : String
-  timestamps
-end
-```
-
-This will add a `user` and `user=` instance method to both of these models.
-
-For example:
-
-```crystal
-user = User.find 1
-user.posts.each do |post|
-  puts post.title
-end
-
-puts user.profile
-
-post = Post.find 1
-puts post.user
-
-post.user = user
-post.save
-```
-
-In this example, you will need to add a `user_id` and index to your posts and profiles table:
-
-```mysql
-CREATE TABLE posts (
-  id BIGSERIAL PRIMARY KEY,
-  user_id BIGINT,
-  title VARCHAR,
-  created_at TIMESTAMP,
-  updated_at TIMESTAMP
-);
-
-CREATE INDEX 'user_id_idx' ON posts (user_id);
-
-CREATE TABLE profiles (
-  id BIGSERIAL PRIMARY KEY,
-  user_id BIGINT,
-  name VARCHAR,
-  created_at TIMESTAMP,
-  updated_at TIMESTAMP
-);
-
-CREATE INDEX 'user_id_idx' ON profiles (user_id);
-```
-
-
 ## One to One
 
 For one-to-one relationships, You can use the `has_one` and `belongs_to` in your models.
 
-*Note:* one-to-one relationship does not support a through association yet.
+*Note:* one-to-one relationship does not support through associations yet.
 
 ```crystal
 class Team < Granite::Base
@@ -94,13 +12,60 @@ class Team < Granite::Base
 
   field name : String
 end
+```
 
+This will add a `coach` and `coach=` instance methods to the team which returns associated coach.
+
+
+```crystal
 class Coach < Granite::Base
   belongs_to :team
+
+  field name : String
 end
 ```
 
+This will add a `team` and `team=` instance method to the coach.
+
+For example:
+
+```crystal
+team = Team.find 1
+# has_one side..
+puts team.coach
+
+coach = Coach.find 1
+# belongs_to side...
+puts coach.team
+
+coach.team = team
+coach.save
+
+# or in one-to-one you can also do
+
+team.coach = coach
+# coach is the child entity and contians the foreign_key
+# so save should called on coach instance
+coach.save
+
+```
+
+In this example, you will need to add a `team_id` and index to your coaches table:
+
+```mysql
+CREATE TABLE coaches (
+  id BIGSERIAL PRIMARY KEY,
+  team_id BIGINT,
+  name VARCHAR,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);
+
+CREATE INDEX 'team_id_idx' ON coaches (team_id);
+```
+
 Foreign key is inferred from the class name of the Model which uses `has_one`. In above case `team_id` is assumed to be present in `coaches` table. In case its different you can specify one like this:
+
 
 ```crystal
 class Team < Granite::Base
@@ -113,6 +78,67 @@ class Coach < Granite::Base
   belongs_to :team
 end
 ```
+
+## One to Many
+
+`belongs_to` and `has_many` macros provide a rails like mapping between Objects.
+
+```crystal
+class User < Granite::Base
+  adapter mysql
+
+  has_many :posts
+
+  field email : String
+  field name : String
+  timestamps
+end
+```
+
+This will add a `posts` instance method to the user which returns an array of posts.
+
+```crystal
+class Post < Granite::Base
+  adapter mysql
+
+  belongs_to :user
+
+  field title : String
+  timestamps
+end
+```
+
+This will add a `user` and `user=` instance method to the post.
+
+For example:
+
+```crystal
+user = User.find 1
+user.posts.each do |post|
+  puts post.title
+end
+
+post = Post.find 1
+puts post.user
+
+post.user = user
+post.save
+```
+
+In this example, you will need to add a `user_id` and index to your posts table:
+
+```mysql
+CREATE TABLE posts (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT,
+  title VARCHAR,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);
+
+CREATE INDEX 'user_id_idx' ON posts (user_id);
+```
+
 
 ## Many to Many
 
