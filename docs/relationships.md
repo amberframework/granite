@@ -4,7 +4,7 @@
 
 For one-to-one relationships, You can use the `has_one` and `belongs_to` in your models.
 
-*Note:* one-to-one relationship does not support through associations yet.
+**Note:** one-to-one relationship does not support through associations yet.
 
 ```crystal
 class Team < Granite::Base

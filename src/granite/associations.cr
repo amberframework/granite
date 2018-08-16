@@ -37,9 +37,9 @@ module Granite::Associations
   end
 
   macro has_one(model_name)
-    # retrieve the associated object
+    # create foreign key..
     {% foreign_key = @type.stringify.split("::").last.underscore + "_id" %}
-    has_one {{model_name.id}}, foreign_key: {{foreign_key.id}}
+    has_one {{model_name.id}}, {{foreign_key.id}}
   end
 
   macro has_one(model_name, foreign_key)
