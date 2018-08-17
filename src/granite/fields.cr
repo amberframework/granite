@@ -142,7 +142,7 @@ module Granite::Fields
               if value.is_a?(Time)
                 @{{_name.id}} = value
               elsif value.to_s =~ TIME_FORMAT_REGEX
-                @{{_name.id}} = Time.parse(value.to_s, Granite::DATETIME_FORMAT)
+                @{{_name.id}} = Time.parse_utc(value.to_s, Granite::DATETIME_FORMAT)
               end
             {% else %}
               @{{_name.id}} = value.to_s
