@@ -109,7 +109,7 @@ As a convenience, we provide a `through:` clause to simplify accessing the many-
 ```crystal
 class User < Granite::Base
   has_many :participants
-  has_many :rooms, through: participants
+  has_many :rooms, through: :participants
 
   field name : String
 end
@@ -121,7 +121,7 @@ end
 
 class Room < Granite::Base
   has_many :participants
-  has_many :users, through: participants
+  has_many :users, through: :participants
 
   field name : String
 end
