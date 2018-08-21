@@ -2,14 +2,14 @@ require "./spec_helper"
 require "../src/adapter/pg"
 
 class Todo < Granite::Base
-  adapter pg
+  adapter {{ env("CURRENT_ADAPTER").id }}
   field name : String
   field priority : Int32
   timestamps
 end
 
 class Review < Granite::Base
-  adapter pg
+  adapter {{ env("CURRENT_ADAPTER").id }}
   field name : String
   field user_id : Int32
   field upvotes : Int64
@@ -20,7 +20,7 @@ class Review < Granite::Base
 end
 
 class WebSite < Granite::Base
-  adapter pg
+  adapter {{ env("CURRENT_ADAPTER").id }}
   primary custom_id : Int32
   field name : String
 

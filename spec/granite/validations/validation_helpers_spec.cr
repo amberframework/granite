@@ -1,7 +1,7 @@
 require "../../spec_helper"
 
 class NilTest < Granite::Base
-  adapter mysql
+  adapter {{ env("CURRENT_ADAPTER").id }}
 
   field first_name_not_nil : String
   field last_name_not_nil : String
@@ -29,7 +29,7 @@ class NilTest < Granite::Base
 end
 
 class BlankTest < Granite::Base
-  adapter pg
+  adapter {{ env("CURRENT_ADAPTER").id }}
 
   field first_name_not_blank : String
   field last_name_not_blank : String
@@ -45,7 +45,7 @@ class BlankTest < Granite::Base
 end
 
 class ChoiceTest < Granite::Base
-  adapter sqlite
+  adapter {{ env("CURRENT_ADAPTER").id }}
 
   field number_symbol : Int32
   field type_array_symbol : String
@@ -60,7 +60,7 @@ class ChoiceTest < Granite::Base
 end
 
 class LessThanTest < Granite::Base
-  adapter mysql
+  adapter {{ env("CURRENT_ADAPTER").id }}
 
   field int_32_lt : Int32
   field float_32_lt : Float32
@@ -76,7 +76,7 @@ class LessThanTest < Granite::Base
 end
 
 class GreaterThanTest < Granite::Base
-  adapter pg
+  adapter {{ env("CURRENT_ADAPTER").id }}
 
   field int_32_lt : Int32
   field float_32_lt : Float32
@@ -92,7 +92,7 @@ class GreaterThanTest < Granite::Base
 end
 
 class LengthTest < Granite::Base
-  adapter sqlite
+  adapter {{ env("CURRENT_ADAPTER").id }}
 
   field title : String
   field description : String
@@ -102,7 +102,7 @@ class LengthTest < Granite::Base
 end
 
 class PersonUniqueness < Granite::Base
-  adapter pg
+  adapter {{ env("CURRENT_ADAPTER").id }}
 
   field name : String
 

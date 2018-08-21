@@ -1,12 +1,12 @@
 require "../../spec_helper"
 
 class SongThread < Granite::Base
-  adapter pg
+  adapter {{ env("CURRENT_ADAPTER").id }}
   field name : String
 end
 
 class CustomSongThread < Granite::Base
-  adapter pg
+  adapter {{ env("CURRENT_ADAPTER").id }}
   table_name custom_table_name
   primary custom_primary_key : Int64
   field name : String

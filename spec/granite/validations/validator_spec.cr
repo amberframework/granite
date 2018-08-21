@@ -1,7 +1,7 @@
 require "../../spec_helper"
 
 class NameTest < Granite::Base
-  adapter pg
+  adapter {{ env("CURRENT_ADAPTER").id }}
   field name : String
 
   validate :name, "cannot be blank", ->(s : NameTest) do
@@ -10,7 +10,7 @@ class NameTest < Granite::Base
 end
 
 class EmailTest < Granite::Base
-  adapter pg
+  adapter {{ env("CURRENT_ADAPTER").id }}
   field email : String
 
   validate :email, "cannot be blank" do |email_test|
@@ -19,7 +19,7 @@ class EmailTest < Granite::Base
 end
 
 class PasswordTest < Granite::Base
-  adapter pg
+  adapter {{ env("CURRENT_ADAPTER").id }}
   field password : String
   field password_validation : String
 
