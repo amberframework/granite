@@ -1,6 +1,9 @@
 version: '2'
 services:
   spec:
+    extends:
+      file: ../docker-compose.yml
+      service: spec
     environment:
       CURRENT_ADAPTER: pg
     depends_on:
