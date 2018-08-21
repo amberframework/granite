@@ -4,10 +4,10 @@ services:
   - docker
 
 before_install:
-  - docker-compose build spec
+  - docker-compose -f docker-compose.yml -f docker-compose.$CURRENT_ADAPTER.yml build spec
 
 script:
-  - docker-compose run spec
+  - docker-compose -f docker-compose.yml -f docker-compose.$CURRENT_ADAPTER.yml run spec
 
 matrix:
   include:

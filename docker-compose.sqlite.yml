@@ -1,0 +1,6 @@
+version: '2'
+services:
+  spec:
+    environment:
+      CURRENT_ADAPTER: sqlite
+    depends_on: []

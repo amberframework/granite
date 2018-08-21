@@ -1,0 +1,9 @@
+version: '2'
+services:
+  spec:
+    environment:
+      CURRENT_ADAPTER: pg
+    depends_on:
+      - pg
+  pg:
+    image: postgres:${PG_VERSION}

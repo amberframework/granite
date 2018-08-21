@@ -7,15 +7,15 @@ services:
     environment:
       PG_DATABASE_URL: 'postgres://postgres:@pg:5432/postgres'
       MYSQL_DATABASE_URL: 'mysql://user:pass@mysql:3306/test'
-      SQLITE_DATABASE_URL: 'sqlite3:./test.db'
-      CURRENT_ADAPTER: ${CURRENT_ADAPTER}
+      SQLITE_DATABASE_URL: 'sqlite3:./config/test.db'
+      CURRENT_ADAPTER: pg
     depends_on:
       - pg
       - mysql
   pg:
-    image: postgres:${PG_VERSION}
+    image: postgres:10.4
   mysql:
-    image: mysql:${MYSQL_VERSION}
+    image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: pass
       MYSQL_DATABASE: test
