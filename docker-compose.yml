@@ -13,9 +13,9 @@ services:
       - pg
       - mysql
   pg:
-    image: postgres:${PG_VERSION}
+    image: postgres:10.4
   mysql:
-    image: mysql:${MYSQL_VERSION}
+    image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: pass
       MYSQL_DATABASE: test
