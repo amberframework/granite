@@ -10,6 +10,4 @@ require "../src/adapter/**"
 require "./spec_models"
 require "./mocks/**"
 
-puts GraniteExample::CURRENT_ADAPTER
-
 Granite.settings.logger = ::Logger.new(nil)
