@@ -9,7 +9,20 @@ before_install:
 script:
   - docker-compose run spec
 
-env:
-  - CURRENT_ADAPTER=mysql
-  - CURRENT_ADAPTER=pg
-  - CURRENT_ADAPTER=sqlite
+matrix:
+  include:
+    - name: "Mysql 5.7"
+      env:
+        - CURRENT_ADAPTER=mysql
+        - MYSQL_VERSION=5.7
+        - PG_VERSION=10.4
+    - name: "Mysql 5.6"
+      env:
+        - CURRENT_ADAPTER=mysql
+        - MYSQL_VERSION=5.6
+        - PG_VERSION=10.4
+    - name: "Mysql 5.5"
+      env:
+        - CURRENT_ADAPTER=mysql
+        - MYSQL_VERSION=5.5
+        - PG_VERSION=10.4
