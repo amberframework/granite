@@ -224,13 +224,45 @@ class Comment < Granite::Base
   field articleid : Int64
 end
 
+@[JSON::Serializable::Options(emit_nulls: true)]
+@[YAML::Serializable::Options(emit_nulls: true)]
+class TodoEmitNull < Granite::Base
+  adapter {{ env("CURRENT_ADAPTER").id }}
+  table_name todos
+
+  field name : String
+  field priority : Int32
+  timestamps
+end
+
+class Todo < Granite::Base
+  adapter {{ env("CURRENT_ADAPTER").id }}
+  table_name todos
+
+  field name : String
+  field priority : Int32
+  timestamps
+end
+
+class AfterInit < Granite::Base
+  adapter {{ env("CURRENT_ADAPTER").id }}
+  table_name after_json_init
+
+  field name : String
+  field priority : Int32
+
+  def after_initialize
+    @priority = 1000
+  end
+end
+
 class ArticleViewModel < Granite::Base
   adapter {{ env("CURRENT_ADAPTER").id }}
 
   field articlebody : String
   field commentbody : String
 
-  query <<-SQL
+  select_statement <<-SQL
     SELECT articles.id, articles.articlebody, comments.commentbody FROM articles JOIN comments ON comments.articleid = articles.id
   SQL
 end
@@ -257,3 +289,6 @@ NonAutoDefaultPK.migrator.drop_and_create
 NonAutoCustomPK.migrator.drop_and_create
 Article.migrator.drop_and_create
 Comment.migrator.drop_and_create
+Todo.migrator.drop_and_create
+TodoEmitNull.migrator.drop_and_create
+AfterInit.migrator.drop_and_create

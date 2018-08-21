@@ -12,23 +12,6 @@ describe "#create" do
     parent.persisted?.should be_false
   end
 
-  it "takes JSON::Any" do
-    json_str = %({"name": "json::anyReview", "downvotes": 99, "upvotes": 2, "sentiment": 1.23, "interest": 4.56, "published": true})
-    review_json = JSON.parse(json_str)
-
-    review_json.is_a?(JSON::Any).should be_true
-
-    review = Review.create(review_json)
-    review.name.should eq "json::anyReview"
-    review.downvotes.should eq 99_i32
-    review.upvotes.should eq 2_i64
-    review.sentiment.should eq 1.23_f32
-    review.interest.should eq 4.56_f64
-    review.published.should eq true
-    review.created_at.to_s.should eq Time.utc_now.to_s
-    review.persisted?.should be_true
-  end
-
   it "doesn't have a race condition on IDs" do
     channel = Channel(Int64).new
 

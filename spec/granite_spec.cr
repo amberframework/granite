@@ -1,132 +1,156 @@
-require "../spec_helper"
+require "./spec_helper"
 
-module GraniteSpec
-  class Todo < Granite::Base
-    adapter {{ env("CURRENT_ADAPTER").id }}
-    field name : String
-    field priority : Int32
-    timestamps
-  end
+describe "Granite::Base" do
+  describe "JSON" do
+    context ".from_json" do
+      it "can create an object from json" do
+        json_str = %({"name": "json::anyReview","upvotes": 2, "sentiment": 1.23, "interest": 4.56, "published": true})
 
-  class Review < Granite::Base
-    adapter {{ env("CURRENT_ADAPTER").id }}
-
-    field name : String
-    field user_id : Int32
-    field upvotes : Int64
-    field sentiment : Float32
-    field interest : Float64
-    field published : Bool
-    field created_at : Time
-    timestamps
-  end
-
-  class WebSite < Granite::Base
-    adapter {{ env("CURRENT_ADAPTER").id }}
-    primary custom_id : Int32
-    field name : String
-
-    validate :name, "Name cannot be blank", ->(s : WebSite) do
-      !s.name.to_s.blank?
-    end
-  end
-
-  describe Granite::Base do
-    it "should create a new todo object with name set" do
-      t = Todo.new(name: "Elorest")
-      t.name.should eq "Elorest"
-    end
-
-    it "takes JSON::Any" do
-      time_now = Time.now.at_beginning_of_second
-      json_str = %({"name": "json::anyReview", "user_id": 99, "upvotes": 2, "sentiment": 1.23, "interest": 4.56, "published": true, "created_at": "#{time_now.to_s(Granite::DATETIME_FORMAT)}"})
-      review_json = JSON.parse(json_str)
-
-      review_json.is_a?(JSON::Any).should be_true
-
-      review = Review.from_json(review_json).as(Review)
-      review.name.should eq "json::anyReview"
-      review.user_id.should eq 99_i32
-      review.upvotes.should eq 2_i64
-      review.sentiment.should eq 1.23_f32
-      review.interest.should eq 4.56_f64
-      review.published.should eq true
-      review.created_at.should eq time_now
-    end
-
-    it "takes JSON::Any Array" do
-      json_str = %([{"name": "web1"},{"name": "web2"},{"name": "web3"}])
-      website_json = JSON.parse(json_str)
-
-      website_json.is_a?(JSON::Any).should be_true
-
-      web_sites = WebSite.from_json(website_json).as(Array(WebSite))
-
-      web_sites[0].name.should eq "web1"
-      web_sites[1].name.should eq "web2"
-      web_sites[2].name.should eq "web3"
-    end
-
-    describe "#to_h" do
-      it "convert object to hash" do
-        t = Todo.new(name: "test todo", priority: 20)
-        result = {"id" => nil, "name" => "test todo", "priority" => 20, "created_at" => nil, "updated_at" => nil}
-
-        t.to_h.should eq result
+        review = Review.from_json(json_str)
+        review.name.should eq "json::anyReview"
+        review.upvotes.should eq 2
+        review.sentiment.should eq 1.23.to_f32
+        review.interest.should eq 4.56
+        review.published.should eq true
+        review.created_at.should be_nil
       end
 
-      it "honors custom primary key" do
-        s = WebSite.new(name: "Hacker News")
-        s.custom_id = 3
-        s.to_h.should eq({"name" => "Hacker News", "custom_id" => 3})
+      it "can create an array of objects from json" do
+        json_str = %([{"name": "json1","upvotes": 2, "sentiment": 1.23, "interest": 4.56, "published": true},{"name": "json2","upvotes": 0, "sentiment": 5.00, "interest": 6.99, "published": false}])
+
+        review = Array(Review).from_json(json_str)
+        review[0].name.should eq "json1"
+        review[0].upvotes.should eq 2
+        review[0].sentiment.should eq 1.23.to_f32
+        review[0].interest.should eq 4.56
+        review[0].published.should be_true
+        review[0].created_at.should be_nil
+
+        review[1].name.should eq "json2"
+        review[1].upvotes.should eq 0
+        review[1].sentiment.should eq 5.00.to_f32
+        review[1].interest.should eq 6.99
+        review[1].published.should be_false
+        review[1].created_at.should be_nil
+      end
+
+      it "works with after_initialize" do
+        model = AfterInit.from_json(%({"name": "after_initialize"}))
+
+        model.name.should eq "after_initialize"
+        model.priority.should eq 1000
       end
     end
 
-    describe "#to_json" do
-      it "converts object to json" do
-        t = Todo.new(name: "test todo", priority: 20)
+    context ".to_json" do
+      it "emits nil values when told" do
+        t = TodoEmitNull.new(name: "test todo", priority: 20)
         result = %({"id":null,"name":"test todo","priority":20,"created_at":null,"updated_at":null})
 
         t.to_json.should eq result
       end
 
-      it "works with collections" do
+      it "does not emit nil values by default" do
+        t = Todo.new(name: "test todo", priority: 20)
+        result = %({"name":"test todo","priority":20})
+
+        t.to_json.should eq result
+      end
+
+      it "works with array of models" do
         todos = [
           Todo.new(name: "todo 1", priority: 1),
           Todo.new(name: "todo 2", priority: 2),
           Todo.new(name: "todo 3", priority: 3),
         ]
 
-        collection = JSON.parse todos.to_json
-        collection[0].should eq({"id" => nil, "name" => "todo 1", "priority" => 1, "created_at" => nil, "updated_at" => nil})
-        collection[1].should eq({"id" => nil, "name" => "todo 2", "priority" => 2, "created_at" => nil, "updated_at" => nil})
-        collection[2].should eq({"id" => nil, "name" => "todo 3", "priority" => 3, "created_at" => nil, "updated_at" => nil})
+        collection = todos.to_json
+        collection.should eq %([{"name":"todo 1","priority":1},{"name":"todo 2","priority":2},{"name":"todo 3","priority":3}])
+      end
+    end
+  end
+
+  describe "YAML" do
+    context ".from_yaml" do
+      it "can create an object from YAML" do
+        yaml_str = %(---\nname: yaml::anyReview\nupvotes: 2\nsentiment: 1.23\ninterest: 4.56\npublished: true)
+
+        review = Review.from_yaml(yaml_str)
+        review.name.should eq "yaml::anyReview"
+        review.upvotes.should eq 2
+        review.sentiment.should eq 1.23.to_f32
+        review.interest.should eq 4.56
+        review.published.should eq true
+        review.created_at.should be_nil
       end
 
-      it "honors custom primary key" do
-        s = WebSite.new(name: "Hacker News")
-        s.custom_id = 3
-        s.to_json.should eq %({"custom_id":3,"name":"Hacker News"})
+      it "can create an array of objects from YAML" do
+        yaml_str = "---\n- name: yaml1\n  upvotes: 2\n  sentiment: 1.23\n  interest: 4.56\n  published: true\n- name: yaml2\n  upvotes: 0\n  sentiment: !!float 5\n  interest: 6.99\n  published: false"
+
+        review = Array(Review).from_yaml(yaml_str)
+        review[0].name.should eq "yaml1"
+        review[0].upvotes.should eq 2
+        review[0].sentiment.should eq 1.23.to_f32
+        review[0].interest.should eq 4.56
+        review[0].published.should be_true
+        review[0].created_at.should be_nil
+
+        review[1].name.should eq "yaml2"
+        review[1].upvotes.should eq 0
+        review[1].sentiment.should eq 5.00.to_f32
+        review[1].interest.should eq 6.99
+        review[1].published.should be_false
+        review[1].created_at.should be_nil
+      end
+
+      it "works with after_initialize" do
+        model = AfterInit.from_yaml(%(---\nname: after_initialize))
+
+        model.name.should eq "after_initialize"
+        model.priority.should eq 1000
       end
     end
 
-    describe "validating fields" do
-      context "without a name" do
-        it "is not valid" do
-          s = WebSite.new(name: "")
-          s.valid?.should eq false
-          s.errors.first.message.should eq "Name cannot be blank"
-        end
+    context ".to_yaml" do
+      it "emits nil values when told" do
+        t = TodoEmitNull.new(name: "test todo", priority: 20)
+        result = %(---\nid: \nname: test todo\npriority: 20\ncreated_at: \nupdated_at: \n)
+
+        t.to_yaml.should eq result
       end
 
-      context "when name is present" do
-        it "is valid" do
-          s = WebSite.new(name: "Hacker News")
+      it "does not emit nil values by default" do
+        t = Todo.new(name: "test todo", priority: 20)
+        result = %(---\nname: test todo\npriority: 20\n)
 
-          s.valid?.should eq true
-          s.errors.empty?.should eq true
-        end
+        t.to_yaml.should eq result
       end
+
+      it "works with array of models" do
+        todos = [
+          Todo.new(name: "todo 1", priority: 1),
+          Todo.new(name: "todo 2", priority: 2),
+          Todo.new(name: "todo 3", priority: 3),
+        ]
+
+        collection = todos.to_yaml
+        collection.should eq %(---\n- name: todo 1\n  priority: 1\n- name: todo 2\n  priority: 2\n- name: todo 3\n  priority: 3\n)
+      end
+    end
+  end
+
+  describe "#to_h" do
+    it "convert object to hash" do
+      t = Todo.new(name: "test todo", priority: 20)
+      result = {"id" => nil, "name" => "test todo", "priority" => 20, "created_at" => nil, "updated_at" => nil}
+
+      t.to_h.should eq result
+    end
+
+    it "honors custom primary key" do
+      s = Item.new(item_name: "Hacker News")
+      s.item_id = "three"
+      s.to_h.should eq({"item_name" => "Hacker News", "item_id" => "three"})
     end
   end
 end
