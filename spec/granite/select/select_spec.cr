@@ -11,7 +11,7 @@ describe "custom select" do
       model.save
     end
 
-    second = Comment.new.tap do |model|
+    Comment.new.tap do |model|
       model.commentbody = "The Comment Body"
       model.articleid = first.id
       model.save

@@ -20,7 +20,6 @@ class Parent < Granite::Base
   end
 end
 
-
 class Teacher < Granite::Base
   primary id : Int64
   adapter {{ env("CURRENT_ADAPTER").id }}

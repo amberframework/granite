@@ -1,11 +1,11 @@
 describe "#casting_to_fields" do
   it "casts string to int" do
-    model = Review.new({ "downvotes" => "32" })
+    model = Review.new({"downvotes" => "32"})
     model.downvotes.should eq 32
   end
 
   it "generates an error if casting fails" do
-    model = Review.new({ "downvotes" => "" })
+    model = Review.new({"downvotes" => ""})
     model.errors.size.should eq 1
   end
 

@@ -49,7 +49,7 @@ describe "(callback feature)" do
       # close IO in order to raise IO::Error in callback blocks
       callback.history.close
 
-      expect_raises(IO::Error, "Closed stream")  do
+      expect_raises(IO::Error, "Closed stream") do
         callback.save
       end
     end

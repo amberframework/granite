@@ -8,7 +8,7 @@ describe "#first, #first!" do
       model.save
     end
 
-    second = Parent.new.tap do |model|
+    Parent.new.tap do |model|
       model.name = "Test 2"
       model.save
     end
@@ -22,7 +22,7 @@ describe "#first, #first!" do
 
   it "supports a SQL clause" do
     Parent.clear
-    first = Parent.new.tap do |model|
+    Parent.new.tap do |model|
       model.name = "Test 1"
       model.save
     end
@@ -41,7 +41,7 @@ describe "#first, #first!" do
 
   it "returns nil or raises if no result" do
     Parent.clear
-    first = Parent.new.tap do |model|
+    Parent.new.tap do |model|
       model.name = "Test 1"
       model.save
     end

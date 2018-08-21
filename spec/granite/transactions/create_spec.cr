@@ -80,7 +80,7 @@ describe "#create!" do
 
   it "does not save but raise an exception" do
     expect_raises(Granite::RecordNotSaved, "Parent") do
-      parent = Parent.create!(name: "")
+      Parent.create!(name: "")
     end
   end
 end

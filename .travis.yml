@@ -8,3 +8,8 @@ before_install:
 
 script:
   - docker-compose run spec
+
+env:
+  - CURRENT_ADAPTER=mysql
+  - CURRENT_ADAPTER=pg
+  - CURRENT_ADAPTER=sqlite

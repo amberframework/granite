@@ -75,7 +75,6 @@ describe "#destroy!" do
     callback_with_abort.abort_at = "before_destroy"
     callback_with_abort.do_abort = true
 
-
     expect_raises(Granite::RecordNotDestroyed, "CallbackWithAbort") do
       callback_with_abort.destroy!
     end

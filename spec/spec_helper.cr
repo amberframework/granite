@@ -1,8 +1,8 @@
 require "spec"
 
 module GraniteExample
-  ADAPTERS = ["pg", "mysql", "sqlite"]
-  CURRENT_ADAPTER = {{ env("CURRENT_ADAPTER") }} 
+  ADAPTERS        = ["pg", "mysql", "sqlite"]
+  CURRENT_ADAPTER = {{ env("CURRENT_ADAPTER") }}
 end
 
 require "../src/granite"

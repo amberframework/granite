@@ -16,10 +16,10 @@ describe "#import" do
 
       it "should work with batch_size" do
         to_import = [
-           Book.new(name: "ImportBatchBook1"),
-           Book.new(name: "ImportBatchBook2"),
-           Book.new(name: "ImportBatchBook3"),
-           Book.new(name: "ImportBatchBook4"),
+          Book.new(name: "ImportBatchBook1"),
+          Book.new(name: "ImportBatchBook2"),
+          Book.new(name: "ImportBatchBook3"),
+          Book.new(name: "ImportBatchBook4"),
         ]
 
         Book.import(to_import, batch_size: 2)
@@ -28,10 +28,10 @@ describe "#import" do
 
       it "should be able to update existing records" do
         to_import = [
-           Review.new(name: "ImportReview1", published: false, upvotes: 0.to_i64),
-           Review.new(name: "ImportReview2", published: false, upvotes: 0.to_i64),
-           Review.new(name: "ImportReview3", published: false, upvotes: 0.to_i64),
-           Review.new(name: "ImportReview4", published: false, upvotes: 0.to_i64),
+          Review.new(name: "ImportReview1", published: false, upvotes: 0.to_i64),
+          Review.new(name: "ImportReview2", published: false, upvotes: 0.to_i64),
+          Review.new(name: "ImportReview3", published: false, upvotes: 0.to_i64),
+          Review.new(name: "ImportReview4", published: false, upvotes: 0.to_i64),
         ]
 
         Review.import(to_import)
@@ -63,7 +63,7 @@ describe "#import" do
         NonAutoDefaultPK.import(to_import)
 
         to_import = [
-           NonAutoDefaultPK.new(id: 3.to_i64, name: "NonAutoDefaultPK3"),
+          NonAutoDefaultPK.new(id: 3.to_i64, name: "NonAutoDefaultPK3"),
         ]
 
         NonAutoDefaultPK.import(to_import, update_on_duplicate: true, columns: ["name"])
@@ -83,7 +83,7 @@ describe "#import" do
         NonAutoDefaultPK.import(to_import)
 
         to_import = [
-           NonAutoDefaultPK.new(id: 6.to_i64, name: "NonAutoDefaultPK6"),
+          NonAutoDefaultPK.new(id: 6.to_i64, name: "NonAutoDefaultPK6"),
         ]
 
         NonAutoDefaultPK.import(to_import, ignore_on_duplicate: true)
@@ -108,10 +108,10 @@ describe "#import" do
 
       it "should work with batch_size" do
         to_import = [
-           School.new(name: "ImportBatchSchool1"),
-           School.new(name: "ImportBatchSchool2"),
-           School.new(name: "ImportBatchSchool3"),
-           School.new(name: "ImportBatchSchool4"),
+          School.new(name: "ImportBatchSchool1"),
+          School.new(name: "ImportBatchSchool2"),
+          School.new(name: "ImportBatchSchool3"),
+          School.new(name: "ImportBatchSchool4"),
         ]
 
         School.import(to_import, batch_size: 2)
@@ -120,10 +120,10 @@ describe "#import" do
 
       it "should be able to update existing records" do
         to_import = [
-           School.new(name: "ImportExistingSchool"),
-           School.new(name: "ImportExistingSchool"),
-           School.new(name: "ImportExistingSchool"),
-           School.new(name: "ImportExistingSchool"),
+          School.new(name: "ImportExistingSchool"),
+          School.new(name: "ImportExistingSchool"),
+          School.new(name: "ImportExistingSchool"),
+          School.new(name: "ImportExistingSchool"),
         ]
 
         School.import(to_import)
@@ -152,7 +152,7 @@ describe "#import" do
         NonAutoCustomPK.import(to_import)
 
         to_import = [
-           NonAutoCustomPK.new(custom_id: 3.to_i64, name: "NonAutoCustomPK3"),
+          NonAutoCustomPK.new(custom_id: 3.to_i64, name: "NonAutoCustomPK3"),
         ]
 
         NonAutoCustomPK.import(to_import, update_on_duplicate: true, columns: ["name"])
@@ -172,7 +172,7 @@ describe "#import" do
         NonAutoCustomPK.import(to_import)
 
         to_import = [
-           NonAutoCustomPK.new(custom_id: 6.to_i64, name: "NonAutoCustomPK6"),
+          NonAutoCustomPK.new(custom_id: 6.to_i64, name: "NonAutoCustomPK6"),
         ]
 
         NonAutoCustomPK.import(to_import, ignore_on_duplicate: true)

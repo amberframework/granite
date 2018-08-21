@@ -33,26 +33,26 @@ describe "(Natural Key) usecases" do
   it "CRUD" do
     Kvs.clear
 
-    ## Create
+    # # Create
     port = Kvs.new(k: "mysql_port", v: "3306")
     port.new_record?.should be_true
     port.save.should be_true
     port.v.should eq("3306")
     Kvs.count.should eq(1)
 
-    ## Read
+    # # Read
     port = Kvs.find!("mysql_port")
     port.v.should eq("3306")
     port.new_record?.should be_false
 
-    ## Update
+    # # Update
     port.v = "3307"
     port.new_record?.should be_false
     port.save.should be_true
     port.v.should eq("3307")
     Kvs.count.should eq(1)
 
-    ## Delete
+    # # Delete
     port.destroy.should be_true
     Kvs.count.should eq(0)
   end

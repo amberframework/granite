@@ -8,6 +8,7 @@ services:
       PG_DATABASE_URL: 'postgres://postgres:@pg:5432/postgres'
       MYSQL_DATABASE_URL: 'mysql://user:pass@mysql:3306/test'
       SQLITE_DATABASE_URL: 'sqlite3:./config/test.db'
+      CURRENT_ADAPTER: ${CURRENT_ADAPTER}
     depends_on:
       - pg
       - mysql

@@ -23,7 +23,7 @@ describe "#all" do
 
   it "finds records with question mark substition" do
     name = "findable model"
-    model = Parent.new(name: name).tap(&.save)
+    Parent.new(name: name).save
     set = Parent.all("WHERE name = ?", [name])
     set.size.should eq 1
     set.first.name.should eq name

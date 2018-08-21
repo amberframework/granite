@@ -150,7 +150,6 @@ describe "has_many" do
       klass3.teacher = teacher
       klass3.save
 
-
       klass = teacher.klasss.find!(klass1.id).not_nil!
       klass.id.should eq klass1.id
       klass.name.should eq "Test class X"

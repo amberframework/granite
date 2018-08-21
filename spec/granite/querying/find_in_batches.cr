@@ -16,14 +16,14 @@ describe "#find_in_batches" do
   end
 
   it "doesnt yield when no records are found" do
-    Parent.find_in_batches do |model|
+    Parent.find_in_batches do
       fail "find_in_batches did yield but shouldn't have"
     end
   end
 
   it "errors when batch_size is < 1" do
     expect_raises ArgumentError do
-      Parent.find_in_batches batch_size: 0 do |model|
+      Parent.find_in_batches batch_size: 0 do
         fail "should have raised"
       end
     end
