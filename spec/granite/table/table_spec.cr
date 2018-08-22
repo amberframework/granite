@@ -1,17 +1,5 @@
 require "../../spec_helper"
 
-class SongThread < Granite::Base
-  adapter {{ env("CURRENT_ADAPTER").id }}
-  field name : String
-end
-
-class CustomSongThread < Granite::Base
-  adapter {{ env("CURRENT_ADAPTER").id }}
-  table_name custom_table_name
-  primary custom_primary_key : Int64
-  field name : String
-end
-
 describe Granite::Table do
   describe "#table_name" do
     it "sets the table name to name specified" do
