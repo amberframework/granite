@@ -139,7 +139,6 @@ CREATE TABLE posts (
 CREATE INDEX 'user_id_idx' ON posts (user_id);
 ```
 
-
 ## Many to Many
 
 Instead of using a hidden many-to-many table, Granite recommends always creating a model for your join tables.  For example, let's say you have many `users` that belong to many `rooms`. We recommend adding a new model called `participants` to represent the many-to-many relationship.
