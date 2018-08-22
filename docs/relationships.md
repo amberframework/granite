@@ -16,7 +16,6 @@ end
 
 This will add a `coach` and `coach=` instance methods to the team which returns associated coach.
 
-
 ```crystal
 class Coach < Granite::Base
   belongs_to :team
@@ -65,7 +64,6 @@ CREATE INDEX 'team_id_idx' ON coaches (team_id);
 ```
 
 Foreign key is inferred from the class name of the Model which uses `has_one`. In above case `team_id` is assumed to be present in `coaches` table. In case its different you can specify one like this:
-
 
 ```crystal
 class Team < Granite::Base
