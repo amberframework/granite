@@ -12,7 +12,6 @@ module {{adapter.capitalize.id}}
       user.email = "test@domain.com"
       user.save
 
-      # profile's foriegn_key is now set, so calling save again
       user.profile = profile
       profile.user_id.should eq profile.id
     end
