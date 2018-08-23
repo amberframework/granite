@@ -1,5 +1,82 @@
 # Relationships
 
+## One to One
+
+For one-to-one relationships, You can use the `has_one` and `belongs_to` in your models.
+
+**Note:** one-to-one relationship does not support through associations yet.
+
+```crystal
+class Team < Granite::Base
+  has_one :coach
+
+  field name : String
+end
+```
+
+This will add a `coach` and `coach=` instance methods to the team which returns associated coach.
+
+```crystal
+class Coach < Granite::Base
+  belongs_to :team
+
+  field name : String
+end
+```
+
+This will add a `team` and `team=` instance method to the coach.
+
+For example:
+
+```crystal
+team = Team.find 1
+# has_one side..
+puts team.coach
+
+coach = Coach.find 1
+# belongs_to side...
+puts coach.team
+
+coach.team = team
+coach.save
+
+# or in one-to-one you can also do
+
+team.coach = coach
+# coach is the child entity and contians the foreign_key
+# so save should called on coach instance
+coach.save
+
+```
+
+In this example, you will need to add a `team_id` and index to your coaches table:
+
+```mysql
+CREATE TABLE coaches (
+  id BIGSERIAL PRIMARY KEY,
+  team_id BIGINT,
+  name VARCHAR,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);
+
+CREATE INDEX 'team_id_idx' ON coaches (team_id);
+```
+
+Foreign key is inferred from the class name of the Model which uses `has_one`. In above case `team_id` is assumed to be present in `coaches` table. In case its different you can specify one like this:
+
+```crystal
+class Team < Granite::Base
+  has_one :coach, foreign_key: :custom_id
+
+  field name : String
+end
+
+class Coach < Granite::Base
+  belongs_to :team
+end
+```
+
 ## One to Many
 
 `belongs_to` and `has_many` macros provide a rails like mapping between Objects.
