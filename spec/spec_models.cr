@@ -75,6 +75,26 @@ require "uuid"
       table_name schools
     end
 
+    class User < Granite::Base
+      adapter {{ adapter_literal }}
+      primary id : Int64
+      field email : String
+
+      has_one :profile
+
+      table_name users
+    end
+
+    class Profile < Granite::Base
+      adapter {{ adapter_literal }}
+      primary id : Int64
+      field name : String
+
+      belongs_to :user
+
+      table_name profiles
+    end
+
     class Nation::County < Granite::Base
       adapter {{ adapter_literal }}
       primary id : Int64
@@ -278,6 +298,8 @@ require "uuid"
     Klass.migrator.drop_and_create
     Enrollment.migrator.drop_and_create
     School.migrator.drop_and_create
+    User.migrator.drop_and_create
+    Profile.migrator.drop_and_create
     Nation::County.migrator.drop_and_create
     Review.migrator.drop_and_create
     Empty.migrator.drop_and_create
