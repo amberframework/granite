@@ -16,7 +16,7 @@ describe Granite::Adapters do
 
     it "should disallow multiple adapters with the same name" do
       expect_raises(Exception, "Adapter with name 'mysql' has already been registered.") do
-        Granite::Adapters << Granite::Adapter::Pg.new({name: "mysql", url: "PG_DATABASE_URL"})
+        Granite::Adapters << Granite::Adapter::Pg.new({name: "mysql", url: ENV["PG_DATABASE_URL"]})
       end
     end
 
