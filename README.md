@@ -59,7 +59,7 @@ Start by checking out the [Getting Started](docs/getting_started.md) guide to ge
    If you're done testing and you'd like to shut down and clean up the docker dependences run the following:
 
    ```
-   $ docker-compose down
+   $ docker-compose -f docker/docker-compose.{database_type}.yml down
    ```
 
    ### Local setup
