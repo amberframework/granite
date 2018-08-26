@@ -3,12 +3,6 @@ Granite::Adapters << Granite::Adapter::Pg.new({name: "pg", url: ENV["PG_DATABASE
 Granite::Adapters << Granite::Adapter::Sqlite.new({name: "sqlite", url: ENV["SQLITE_DATABASE_URL"]})
 
 require "spec"
-
-module GraniteExample
-  ADAPTERS        = ["pg", "mysql", "sqlite"]
-  CURRENT_ADAPTER = {{ env("CURRENT_ADAPTER") }}
-end
-
 require "../src/granite"
 require "../src/adapter/**"
 require "./spec_models"
