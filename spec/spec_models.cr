@@ -73,6 +73,26 @@ require "uuid"
     table_name schools
   end
 
+  class User < Granite::Base
+    adapter {{ adapter_literal }}
+    primary id : Int64
+    field email : String
+
+    has_one :profile
+
+    table_name users
+  end
+
+  class Profile < Granite::Base
+    adapter {{ adapter_literal }}
+    primary id : Int64
+    field name : String
+
+    belongs_to :user
+
+    table_name profiles
+  end
+
   class Nation::County < Granite::Base
     adapter {{ adapter_literal }}
     primary id : Int64
@@ -282,31 +302,33 @@ require "uuid"
     SQL
   end
 
-  Parent.migrator.drop_and_create
-  Teacher.migrator.drop_and_create
-  Student.migrator.drop_and_create
-  Klass.migrator.drop_and_create
-  Enrollment.migrator.drop_and_create
-  School.migrator.drop_and_create
-  Nation::County.migrator.drop_and_create
-  Review.migrator.drop_and_create
-  Empty.migrator.drop_and_create
-  ReservedWord.migrator.drop_and_create
-  Callback.migrator.drop_and_create
-  CallbackWithAbort.migrator.drop_and_create
-  Kvs.migrator.drop_and_create
-  Person.migrator.drop_and_create
-  Company.migrator.drop_and_create
-  Book.migrator.drop_and_create
-  BookReview.migrator.drop_and_create
-  Item.migrator.drop_and_create
-  NonAutoDefaultPK.migrator.drop_and_create
-  NonAutoCustomPK.migrator.drop_and_create
-  Article.migrator.drop_and_create
-  Comment.migrator.drop_and_create
-  Todo.migrator.drop_and_create
-  TodoEmitNull.migrator.drop_and_create
-  AfterInit.migrator.drop_and_create
-  SongThread.migrator.drop_and_create
-  CustomSongThread.migrator.drop_and_create
+    Parent.migrator.drop_and_create
+    Teacher.migrator.drop_and_create
+    Student.migrator.drop_and_create
+    Klass.migrator.drop_and_create
+    Enrollment.migrator.drop_and_create
+    School.migrator.drop_and_create
+    User.migrator.drop_and_create
+    Profile.migrator.drop_and_create
+    Nation::County.migrator.drop_and_create
+    Review.migrator.drop_and_create
+    Empty.migrator.drop_and_create
+    ReservedWord.migrator.drop_and_create
+    Callback.migrator.drop_and_create
+    CallbackWithAbort.migrator.drop_and_create
+    Kvs.migrator.drop_and_create
+    Person.migrator.drop_and_create
+    Company.migrator.drop_and_create
+    Book.migrator.drop_and_create
+    BookReview.migrator.drop_and_create
+    Item.migrator.drop_and_create
+    NonAutoDefaultPK.migrator.drop_and_create
+    NonAutoCustomPK.migrator.drop_and_create
+    Article.migrator.drop_and_create
+    Comment.migrator.drop_and_create
+    Todo.migrator.drop_and_create
+    TodoEmitNull.migrator.drop_and_create
+    AfterInit.migrator.drop_and_create
+    SongThread.migrator.drop_and_create
+    CustomSongThread.migrator.drop_and_create
 {% end %}
