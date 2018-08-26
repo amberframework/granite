@@ -29,7 +29,15 @@ Start by checking out the [Getting Started](docs/getting_started.md) guide to ge
 
    There is a self-contained testing environment provided via the `docker-compose.yml` file in this repository.
    We are testing against multiple databases so you have to specify which docker-compose file you would like to use.
-   Replace "{database_type}" with "mysql" or "pg" or "sqlite"
+   Replace "{database_type}" with "mysql" or "pg" or "sqlite". Before you can run the docker configuration you have to set the appropriate
+   env variables. To do so you can either load them yourself or load the .env file
+
+   ```
+   $ source .env
+   ```
+
+   You can find postgres versions at https://hub.docker.com/_/postgres/
+   You can find mysql versions at https://hub.docker.com/_/mysql/
 
    After you have docker installed do the following to run tests:
 
