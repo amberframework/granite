@@ -4,29 +4,26 @@ module Granite::Comparator
 
     def_equals_and_hash {{ *FIELDS.keys }}
 
-    # Compares this {{@type}} to another {{@type}} by comparing their fields in this order: {{ FIELDS.keys.join(", ").id }}.
+    {%
+      pk_type = PRIMARY[:type].id
+      pk_type_node = PRIMARY[:type].resolve
+      pk_field = PRIMARY[:name].id
+    %}
+
+    {% if pk_type_node.has_method?("<=>") %}
+    # Compares this `{{@type}}` to another `{{@type}}` by comparing their primary keys (`{{pk_field}}`).
     #
-    # Each individual field will be compared using the <=> (if available).
-    #
-    # Returns 0 if the two objects are equal, a negative number if this object is considered less than other, or a positive number otherwise.
+    # Returns 0 if the two primary keys are equal, a negative number if this object's primary key is considered less than other's, or a positive number otherwise.
+    {% else %}
+    # Raises an exception; the `{{pk_field}}` field does not implement the `<=>` operator.
+    {% end %}
     def <=>(other : {{@type}})
-      {% for field, options in FIELDS %}
-        if self.{{field}} && !other.{{field}}
-          return -1
-        elsif !self.{{field}} && other.{{field}}
-          return 1
-        elsif self.{{field}} != other.{{field}}
-          {%
-            type = options[:type]
-            type_node = options[:type].resolve
-          %}
-          {% if type_node.has_method?("<=>") %}
-            n = self.{{field}}.as({{type}}) <=> other.{{field}}.as({{type}})
-            return n unless n == 0
-          {% end %}
-        end
+      raise "Cannot compare two {{@type}} objects if either's `{{pk_field}}` is `nil`." if self.{{pk_field}}.nil? || other.{{pk_field}}.nil?
+      {% if pk_type_node.has_method?("<=>") %}
+        self.{{pk_field}}.as({{pk_type}}) <=> other.{{pk_field}}.as({{pk_type}})
+      {% else %}
+        raise "Cannot compare two {{@type}} objects because their `{{pk_field}}` does not implement the `<=>` operator."
       {% end %}
-      0
     end
 
     include Comparable(self)

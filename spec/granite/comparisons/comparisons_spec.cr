@@ -68,48 +68,35 @@ module {{adapter.capitalize.id}}
         review_ids.should eq(sorted)
       end
 
-      it "sorts records by other fields if the ids are the same" do
+      it "raises an exception if sorting with nil primary keys" do
         Review.clear
         reviews = [] of Review
         100.times do |num|
           review = new_review({downvotes: num})
           reviews << review
         end
-        review_downvotes = reviews.map{|review| review.downvotes.as(Int32)}.sort
-        sorted = reviews.shuffle.sort.map(&.downvotes)
-        review_downvotes.should eq(sorted)
+        expect_raises(Exception) do
+          sorted = reviews.shuffle.sort
+        end
       end
 
     end
 
     describe "<=>" do
-      it "compares records by id before other attributes" do
+      it "compares records with primary keys" do
         r1 = create_review({downvotes: 50})
         r2 = create_review({downvotes: 10})
-        (r1 <=> r2 < 0).should be_truthy
+        (r1 <=> r2 < 0).should_not eq(0)
       end
 
-      it "compares other fields if the ids are the same" do
-        r1 = new_review({downvotes: 50})
-        r2 = new_review({downvotes: 10})
-        (r1 <=> r2 > 0).should be_truthy
+      it "raises an exception if comparing a record without a primary key" do
+        r1 = new_review
+        r2 = create_review
+        expect_raises(Exception) do
+          r1 <=> r2
+        end
       end
 
-      it "compares Bool fields" do
-        r1 = create_review({published: true})
-        r2 = create_review({published: false})
-        (r1 <=> r2).should_not eq(0)
-      end
-
-      it "compares belongs_to field ids" do
-        teacher_1 = Teacher.create(name: "Test Teacher")
-        teacher_2 = Teacher.create(name: "Test Teacher")
-        klass_1 = Klass.new(name: "Test Class")
-        klass_1.teacher = teacher_1
-        klass_2 = Klass.new(name: "Test Class")
-        klass_2.teacher = teacher_2
-        (klass_1 <=> klass_2).should_not eq(0)
-      end
     end
   end
 end
