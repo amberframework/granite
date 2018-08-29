@@ -21,16 +21,11 @@ matrix:
         - CURRENT_ADAPTER=mysql
         - MYSQL_VERSION=5.6
         - PG_VERSION=10.4
-    - name: "Postgres 9.5"
+    - name: "Postgres 9.6"
       env:
         - CURRENT_ADAPTER=pg
         - MYSQL_VERSION=5.7
-        - PG_VERSION=9.5
-    - name: "Postgres 10.4"
-      env:
-        - CURRENT_ADAPTER=pg
-        - MYSQL_VERSION=5.7
-        - PG_VERSION=10.4
+        - PG_VERSION=9.6
     - name: "Postgres 10.5"
       env:
         - CURRENT_ADAPTER=pg
