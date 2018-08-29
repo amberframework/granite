@@ -1,4 +1,3 @@
-require "spec"
 require "mysql"
 require "pg"
 require "sqlite3"
