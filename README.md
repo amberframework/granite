@@ -28,20 +28,30 @@ Start by checking out the [Getting Started](docs/getting_started.md) guide to ge
    ### Docker setup
 
    There is a self-contained testing environment provided via the `docker-compose.yml` file in this repository.
+   We are testing against multiple databases so you have to specify which docker-compose file you would like to use.
+   Replace "{database_type}" with "mysql" or "pg" or "sqlite". Before you can run the docker configuration you have to set the appropriate
+   env variables. To do so you can either load them yourself or load the .env file
+
+   ```
+   $ source .env
+   ```
+
+   You can find postgres versions at https://hub.docker.com/_/postgres/
+   You can find mysql versions at https://hub.docker.com/_/mysql/
 
    After you have docker installed do the following to run tests:
 
    #### First run
 
    ```
-   $ docker-compose build spec
-   $ docker-compose run spec
+   $ docker-compose -f docker/docker-compose.{database_type}.yml build spec
+   $ docker-compose -f docker/docker-compose.{database_type}.yml run spec
    ```
 
    #### Subsequent runs
 
    ```
-   $ docker-compose run spec
+   $ docker-compose -f docker/docker-compose.{database_type}.yml run spec
    ```
 
    #### Cleanup
@@ -49,7 +59,7 @@ Start by checking out the [Getting Started](docs/getting_started.md) guide to ge
    If you're done testing and you'd like to shut down and clean up the docker dependences run the following:
 
    ```
-   $ docker-compose down
+   $ docker-compose -f docker/docker-compose.{database_type}.yml down
    ```
 
    ### Local setup
@@ -64,9 +74,9 @@ Start by checking out the [Getting Started](docs/getting_started.md) guide to ge
 
    ```sql
    CREATE USER granite WITH PASSWORD 'password';
-   
+
    CREATE DATABASE granite_db;
-   
+
    GRANT ALL PRIVILEGES ON DATABASE granite_db TO granite;
    ```
 
@@ -74,9 +84,9 @@ Start by checking out the [Getting Started](docs/getting_started.md) guide to ge
 
    ```sql
    CREATE USER 'granite'@'localhost' IDENTIFIED BY 'password';
-   
+
    CREATE DATABASE granite_db;
-   
+
    GRANT ALL PRIVILEGES ON granite_db.* TO 'granite'@'localhost' WITH GRANT OPTION;
    ```
 

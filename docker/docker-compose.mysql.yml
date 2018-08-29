@@ -1,0 +1,17 @@
+version: '2'
+services:
+  spec:
+    extends:
+      file: ../docker-compose.yml
+      service: spec
+    environment:
+      CURRENT_ADAPTER: mysql
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql:${MYSQL_VERSION}
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: test
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass

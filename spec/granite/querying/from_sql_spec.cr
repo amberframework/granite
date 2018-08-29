@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-macro build_review_emitter(driver)
+macro build_review_emitter
   FieldEmitter.new.tap do |e|
     e._set_values(
       [
@@ -21,13 +21,9 @@ def method_which_takes_any_model(model : Granite::Base.class)
   model.as(Granite::Base).from_sql build_review_emitter
 end
 
-{% for adapter in GraniteExample::ADAPTERS %}
-  module {{ adapter.capitalize.id }}
-    describe "{{ adapter.id }} #from_sql" do
-      it "Builds a model from a resultset" do
-        model = Review.from_sql build_review_emitter({{ adapter }})
-        model.class.should eq Review
-      end
-    end
+describe "#from_sql" do
+  it "Builds a model from a resultset" do
+    model = Review.from_sql build_review_emitter
+    model.class.should eq Review
   end
-{% end %}
+end
