@@ -7,14 +7,16 @@ require "db"
 abstract class Granite::Adapter::Base
   getter name : String
   getter url : String
+  private property database : DB::Database
 
   def initialize(connection_hash : NamedTuple(url: String, name: String))
     @name = connection_hash[:name]
     @url = connection_hash[:url]
+    @database = DB.open(@url)
   end
 
   def open(&block)
-    yield DB.open(@url)
+    yield database
   end
 
   def log(query : String, params = [] of String) : Nil
