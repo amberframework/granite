@@ -1,13 +1,13 @@
 require "json"
 
 module Granite::Fields
-  alias Type = DB::Any | JSON::Any
+  alias Type = DB::Any
   TIME_FORMAT_REGEX = /\d{4,}-\d{2,}-\d{2,}\s\d{2,}:\d{2,}:\d{2,}/
 
   macro included
     macro inherited
-      CONTENT_FIELDS = {} of Nil => Nil
-      FIELDS = {} of Nil => Nil
+      disable_granite_docs? CONTENT_FIELDS = {} of Nil => Nil
+      disable_granite_docs? FIELDS = {} of Nil => Nil
     end
   end
 
@@ -36,27 +36,37 @@ module Granite::Fields
     {% end %}
 
     # Create the properties
+
     {% for name, options in FIELDS %}
       {% type = options[:type] %}
       {% suffixes = options[:raise_on_nil] ? ["?", ""] : ["", "!"] %}
+      {% if options[:json_options] %}
+         @[JSON::Field({{**options[:json_options]}})]
+      {% end %}
+      {% if options[:yaml_options] %}
+         @[YAML::Field({{**options[:yaml_options]}})]
+      {% end %}
+      {% if options[:comment] %}
+         {{options[:comment].id}}
+      {% end %}
       property{{suffixes[0].id}} {{name.id}} : Union({{type.id}} | Nil)
-      def {{name.id}}{{suffixes[1].id}}
+      disable_granite_docs? def {{name.id}}{{suffixes[1].id}}
         raise {{@type.name.stringify}} + "#" + {{name.stringify}} + " cannot be nil" if @{{name.id}}.nil?
         @{{name.id}}.not_nil!
       end
     {% end %}
 
     # keep a hash of the fields to be used for mapping
-    def self.fields : Array(String)
+    disable_granite_docs? def self.fields : Array(String)
       @@fields ||= {{ FIELDS.empty? ? "[] of String".id : FIELDS.keys.map(&.id.stringify) }}
     end
 
-    def self.content_fields : Array(String)
+    disable_granite_docs? def self.content_fields : Array(String)
       @@content_fields ||= {{ CONTENT_FIELDS.empty? ? "[] of String".id : CONTENT_FIELDS.keys.map(&.id.stringify) }}
     end
 
     # keep a hash of the params that will be passed to the adapter.
-    def content_values
+    disable_granite_docs? def content_values
       parsed_params = [] of DB::Any
       {% for name, options in CONTENT_FIELDS %}
         parsed_params << {{name.id}}
@@ -64,7 +74,7 @@ module Granite::Fields
       return parsed_params
     end
 
-    def to_h
+    disable_granite_docs? def to_h
       fields = {} of String => DB::Any
 
       {% for name, options in FIELDS %}
@@ -81,23 +91,7 @@ module Granite::Fields
       return fields
     end
 
-    def to_json(json : JSON::Builder)
-      json.object do
-        {% for name, options in FIELDS %}
-          {% type = options[:type] %}
-          %field, %value = "{{name.id}}", {{name.id}}
-          {% if type.id == Time.id %}
-            json.field %field, %value.try(&.to_s(Granite::DATETIME_FORMAT))
-          {% elsif type.id == Slice.id %}
-            json.field %field, %value.id.try(&.to_s(""))
-          {% else %}
-            json.field %field, %value
-          {% end %}
-        {% end %}
-      end
-    end
-
-    def read_attribute(attribute_name : Symbol | String) : DB::Any
+    disable_granite_docs? def read_attribute(attribute_name : Symbol | String) : DB::Any
       {% begin %}
         case attribute_name.to_s
         {% for name, options in FIELDS %}
@@ -109,17 +103,13 @@ module Granite::Fields
       {% end %}
     end
 
-    def set_attributes(args : Hash(String | Symbol, Type))
+    disable_granite_docs? def set_attributes(args : Hash(String | Symbol, Type))
       args.each do |k, v|
         cast_to_field(k, v.as(Type))
       end
     end
 
-    def set_attributes(attributes : JSON::Any)
-      set_attributes(attributes.as_h)
-    end
-
-    def set_attributes(**args)
+    disable_granite_docs? def set_attributes(**args)
       set_attributes(args.to_h)
     end
 
@@ -132,30 +122,30 @@ module Granite::Fields
           when "{{_name.id}}"
             if "{{_name.id}}" == "{{PRIMARY[:name]}}"
               {% if !PRIMARY[:auto] %}
-                @{{PRIMARY[:name]}} = value.is_a?(JSON::Any) ? value.raw.as({{PRIMARY[:type]}}) : value.as({{PRIMARY[:type]}})
+                @{{PRIMARY[:name]}} = value.as({{PRIMARY[:type]}})
               {% end %}
               return
             end
 
             return @{{_name.id}} = nil if value.nil?
             {% if type.id == Int32.id %}
-              @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_i : value.is_a?(String) ? value.to_i32(strict: false) : value.is_a?(Int64) ? value.to_i32 : value.as(Int32)
+              @{{_name.id}} = value.is_a?(String) ? value.to_i32(strict: false) : value.is_a?(Int64) ? value.to_i32 : value.as(Int32)
             {% elsif type.id == Int64.id %}
-              @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_i64 : value.is_a?(String) ? value.to_i64(strict: false) : value.as(Int64)
+              @{{_name.id}} = value.is_a?(String) ? value.to_i64(strict: false) : value.as(Int64)
             {% elsif type.id == Float32.id %}
-              @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_f32 : value.is_a?(String) ? value.to_f32(strict: false) : value.is_a?(Float64) ? value.to_f32 : value.as(Float32)
+              @{{_name.id}} = value.is_a?(String) ? value.to_f32(strict: false) : value.is_a?(Float64) ? value.to_f32 : value.as(Float32)
             {% elsif type.id == Float64.id %}
-              @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_f : value.is_a?(String) ? value.to_f64(strict: false) : value.as(Float64)
+              @{{_name.id}} = value.is_a?(String) ? value.to_f64(strict: false) : value.as(Float64)
             {% elsif type.id == Bool.id %}
-              @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_bool : ["1", "yes", "true", true].includes?(value)
+              @{{_name.id}} = ["1", "yes", "true", true].includes?(value)
             {% elsif type.id == Time.id %}
               if value.is_a?(Time)
                 @{{_name.id}} = value
               elsif value.to_s =~ TIME_FORMAT_REGEX
-                @{{_name.id}} = Time.parse(value.to_s, Granite::DATETIME_FORMAT)
+                @{{_name.id}} = Time.parse_utc(value.to_s, Granite::DATETIME_FORMAT)
               end
             {% else %}
-              @{{_name.id}} = value.is_a?(JSON::Any) ? value.as_s : value.to_s
+              @{{_name.id}} = value.to_s
             {% end %}
           {% end %}
         end

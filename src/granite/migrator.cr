@@ -42,7 +42,7 @@ module Granite::Migrator
     {% klass = @type.name %}
     {% adapter = "#{klass}.adapter".id %}
 
-    class Migrator < Granite::Migrator::Base
+    disable_granite_docs? class Migrator < Granite::Migrator::Base
       def drop
         {{klass}}.exec "DROP TABLE IF EXISTS #{ @quoted_table_name };"
       end
@@ -85,7 +85,7 @@ module Granite::Migrator
       end
     end
 
-    def self.migrator(**args)
+    disable_granite_docs? def self.migrator(**args)
       Migrator.new(self, **args)
     end
   end

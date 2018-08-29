@@ -75,6 +75,26 @@ require "uuid"
       table_name schools
     end
 
+    class User < Granite::Base
+      adapter {{ adapter_literal }}
+      primary id : Int64
+      field email : String
+
+      has_one :profile
+
+      table_name users
+    end
+
+    class Profile < Granite::Base
+      adapter {{ adapter_literal }}
+      primary id : Int64
+      field name : String
+
+      belongs_to :user
+
+      table_name profiles
+    end
+
     class Nation::County < Granite::Base
       adapter {{ adapter_literal }}
       primary id : Int64
@@ -229,13 +249,45 @@ require "uuid"
       field articleid : Int64
     end
 
+    @[JSON::Serializable::Options(emit_nulls: true)]
+    @[YAML::Serializable::Options(emit_nulls: true)]
+    class TodoEmitNull < Granite::Base
+      adapter {{ adapter.id }}
+      table_name todos
+
+      field name : String
+      field priority : Int32
+      timestamps
+    end
+
+    class Todo < Granite::Base
+      adapter {{ adapter.id }}
+      table_name todos
+
+      field name : String
+      field priority : Int32
+      timestamps
+    end
+
+    class AfterInit < Granite::Base
+      adapter {{ adapter.id }}
+      table_name after_json_init
+
+      field name : String
+      field priority : Int32
+
+      def after_initialize
+        @priority = 1000
+      end
+    end
+
     class ArticleViewModel < Granite::Base
       adapter {{ adapter.id }}
 
       field articlebody : String
       field commentbody : String
 
-      query <<-SQL
+      select_statement <<-SQL
         SELECT articles.id, articles.articlebody, comments.commentbody FROM articles JOIN comments ON comments.articleid = articles.id
       SQL
     end
@@ -246,6 +298,8 @@ require "uuid"
     Klass.migrator.drop_and_create
     Enrollment.migrator.drop_and_create
     School.migrator.drop_and_create
+    User.migrator.drop_and_create
+    Profile.migrator.drop_and_create
     Nation::County.migrator.drop_and_create
     Review.migrator.drop_and_create
     Empty.migrator.drop_and_create
@@ -262,6 +316,8 @@ require "uuid"
     NonAutoCustomPK.migrator.drop_and_create
     Article.migrator.drop_and_create
     Comment.migrator.drop_and_create
-
+    Todo.migrator.drop_and_create
+    TodoEmitNull.migrator.drop_and_create
+    AfterInit.migrator.drop_and_create
   end
 {% end %}

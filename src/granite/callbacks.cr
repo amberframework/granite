@@ -2,19 +2,21 @@ module Granite::Callbacks
   class Abort < Exception
   end
 
-  CALLBACK_NAMES = %i(before_save after_save before_create after_create before_update after_update before_destroy after_destroy)
+  CALLBACK_NAMES = %w(before_save after_save before_create after_create before_update after_update before_destroy after_destroy)
 
-  @_current_callback : Symbol?
+  @[JSON::Field(ignore: true)]
+  @[YAML::Field(ignore: true)]
+  @_current_callback : String?
 
   macro included
     macro inherited
-      CALLBACKS = {
+      disable_granite_docs? CALLBACKS = {
         {% for name in CALLBACK_NAMES %}
           {{name.id}}: [] of Nil,
         {% end %}
       }
       {% for name in CALLBACK_NAMES %}
-        def {{name.id}}
+        disable_granite_docs? def {{name.id}}
           __{{name.id}}
         end
       {% end %}

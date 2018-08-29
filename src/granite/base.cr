@@ -12,6 +12,7 @@ require "./validation_helpers"
 require "./migrator"
 require "./select"
 require "./version"
+require "./adapters"
 
 # Granite::Base is the base class for your model objects.
 class Granite::Base
@@ -24,6 +25,9 @@ class Granite::Base
   include ValidationHelpers
   include Migrator
   include Select
+
+  include JSON::Serializable
+  include YAML::Serializable
 
   extend Querying
   extend Transactions::ClassMethods
