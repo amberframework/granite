@@ -13,7 +13,7 @@ abstract class Granite::Adapter::Base
     @url = connection_hash[:url]
   end
 
-  def database
+  def database : DB::Database
     @database ||= DB.open(@url)
   end
 
