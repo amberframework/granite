@@ -57,7 +57,7 @@ module Granite::Table
 
   macro __process_table
     {% name_space = @type.name.gsub(/::/, "_").underscore.id %}
-    {% table_name = SETTINGS[:table_name] || name_space + "s" %}
+    {% table_name = SETTINGS[:table_name] || name_space %}
     {% primary_name = PRIMARY[:name] %}
     {% primary_type = PRIMARY[:type] %}
     {% primary_auto = PRIMARY[:auto] %}
