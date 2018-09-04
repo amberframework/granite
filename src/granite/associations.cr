@@ -51,18 +51,27 @@ module Granite::Associations
     end
   end
 
-  macro has_many(children_table)
-    def {{children_table.id}}
-      {% children_class = children_table.id[0...-1].camelcase %}
-      Granite::AssociationCollection(self, {{children_class}}).new(self)
-    end
+  macro has_many(model)
+    {% if model.is_a? TypeDeclaration %}
+      def {{model.var}}
+          Granite::AssociationCollection(self, {{model.type}}).new(self)
+      end
+    {% else %}
+      def {{model.id}}
+          Granite::AssociationCollection(self, {{model.id.camelcase}}).new(self)
+      end
+    {% end %}
   end
 
-  # define getter for related children
-  macro has_many(children_table, through)
-    def {{children_table.id}}
-      {% children_class = children_table.id[0...-1].camelcase %}
-      Granite::AssociationCollection(self, {{children_class}}).new(self, {{through}})
-    end
+  macro has_many(model, through)
+    {% if model.is_a? TypeDeclaration %}
+      def {{model.var}}
+          Granite::AssociationCollection(self, {{model.type}}).new(self, {{through}})
+      end
+    {% else %}
+      def {{model.id}}
+          Granite::AssociationCollection(self, {{model.id.camelcase}}).new(self, {{through}})
+      end
+    {% end %}
   end
 end
