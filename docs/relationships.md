@@ -18,6 +18,8 @@ This will add a `coach` and `coach=` instance methods to the team which returns 
 
 ```crystal
 class Coach < Granite::Base
+  table_name :coaches
+
   belongs_to :team
 
   field name : String
@@ -85,7 +87,13 @@ end
 class User < Granite::Base
   adapter mysql
 
-  has_many :posts
+  has_many post
+
+  # or non-standard name
+  has_many posts : Post
+
+  # or non-standard foreign key
+  has_many posts : Post, post_uuid : String
 
   field email : String
   field name : String
@@ -98,9 +106,15 @@ This will add a `posts` instance method to the user which returns an array of po
 ```crystal
 class Post < Granite::Base
   adapter mysql
+  table_name :posts
 
   belongs_to :user
-  belongs_to :user, User, user_id : String # if uuid is used as an id
+
+  # or non-standard name
+  belongs_to my_user : User
+  
+  # or non-standard primary key
+  belongs_to user : User, uuid : String
 
   field title : String
   timestamps
@@ -146,18 +160,22 @@ Then you can use the `belongs_to` and `has_many` relationships going both ways.
 
 ```crystal
 class User < Granite::Base
-  has_many :participants
+  has_many participants : Participant
 
   field name : String
 end
 
 class Participant < Granite::Base
+  table_name :participants
+
   belongs_to :user
   belongs_to :room
 end
 
 class Room < Granite::Base
-  has_many :participants
+  table_name :rooms
+
+  has_many participants : Participant
 
   field name : String
 end
@@ -186,8 +204,8 @@ As a convenience, we provide a `through:` clause to simplify accessing the many-
 
 ```crystal
 class User < Granite::Base
-  has_many :participants
-  has_many :rooms, through: :participants
+  has_many participants : Participant
+  has_many rooms : Room, through: :participants
 
   field name : String
 end
@@ -198,8 +216,8 @@ class Participant < Granite::Base
 end
 
 class Room < Granite::Base
-  has_many :participants
-  has_many :users, through: :participants
+  has_many participants : Participant
+  has_many users : User, through: :participants
 
   field name : String
 end

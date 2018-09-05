@@ -20,7 +20,7 @@ describe "has_many" do
     class3.name = "Test class 3"
     class3.save
 
-    teacher.klasss.size.should eq 2
+    teacher.klasses.size.should eq 2
   end
 
   context "querying association" do
@@ -44,7 +44,7 @@ describe "has_many" do
       klass3.teacher = teacher
       klass3.save
 
-      klasses = teacher.klasss.all("AND klasss.name = ? ORDER BY klasss.id DESC", ["Test class X"])
+      klasses = teacher.klasses.all("AND klasses.name = ? ORDER BY klasses.id DESC", ["Test class X"])
       klasses.map(&.id).should eq [klass2.id, klass1.id]
     end
 
@@ -68,7 +68,7 @@ describe "has_many" do
       klass3.teacher = teacher
       klass3.save
 
-      klass = teacher.klasss.find_by(name: "Test class with different name").not_nil!
+      klass = teacher.klasses.find_by(name: "Test class with different name").not_nil!
       klass.id.should eq klass3.id
       klass.name.should eq "Test class with different name"
     end
@@ -93,7 +93,7 @@ describe "has_many" do
       klass3.teacher = teacher
       klass3.save
 
-      klass = teacher.klasss.find_by!(name: "Test class with different name").not_nil!
+      klass = teacher.klasses.find_by!(name: "Test class with different name").not_nil!
       klass.id.should eq klass3.id
       klass.name.should eq "Test class with different name"
 
@@ -101,7 +101,7 @@ describe "has_many" do
         Granite::Querying::NotFound,
         "No #{Klass.name} found where name = not_found"
       ) do
-        klass = teacher.klasss.find_by!(name: "not_found")
+        klass = teacher.klasses.find_by!(name: "not_found")
       end
     end
 
@@ -125,7 +125,7 @@ describe "has_many" do
       klass3.teacher = teacher
       klass3.save
 
-      klass = teacher.klasss.find(klass1.id).not_nil!
+      klass = teacher.klasses.find(klass1.id).not_nil!
       klass.id.should eq klass1.id
       klass.name.should eq "Test class X"
     end
@@ -150,7 +150,7 @@ describe "has_many" do
       klass3.teacher = teacher
       klass3.save
 
-      klass = teacher.klasss.find!(klass1.id).not_nil!
+      klass = teacher.klasses.find!(klass1.id).not_nil!
       klass.id.should eq klass1.id
       klass.name.should eq "Test class X"
 
@@ -160,7 +160,7 @@ describe "has_many" do
         Granite::Querying::NotFound,
         "No #{Klass.name} found where id = #{id}"
       ) do
-        teacher.klasss.find!(id)
+        teacher.klasses.find!(id)
       end
     end
   end

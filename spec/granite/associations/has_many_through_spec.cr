@@ -37,7 +37,7 @@ describe "has_many, through:" do
     enrollment3.student = unrelated_student
     enrollment3.save
 
-    student.klasss.map(&.id).compact.sort.should eq [klass1.id, klass2.id].compact.sort
+    student.klasses.map(&.id).compact.sort.should eq [klass1.id, klass2.id].compact.sort
 
     klass2.students.map(&.id).compact.sort.should eq [student.id, unrelated_student.id].compact.sort
   end
@@ -65,7 +65,7 @@ describe "has_many, through:" do
       enrollment3.student = student
       enrollment3.save
 
-      klasses = student.klasss.all("AND klasss.name = ? ORDER BY klasss.id DESC", ["Test class X"])
+      klasses = student.klasses.all("AND klasses.name = ? ORDER BY klasses.id DESC", ["Test class X"])
       klasses.map(&.id).should eq [klass2.id, klass1.id]
     end
 
@@ -91,7 +91,7 @@ describe "has_many, through:" do
       enrollment3.student = student
       enrollment3.save
 
-      klass = student.klasss.find_by(name: "Test class with different name").not_nil!
+      klass = student.klasses.find_by(name: "Test class with different name").not_nil!
       klass.id.should eq klass3.id
       klass.name.should eq "Test class with different name"
     end
@@ -118,7 +118,7 @@ describe "has_many, through:" do
       enrollment3.student = student
       enrollment3.save
 
-      klass = student.klasss.find_by!(name: "Test class with different name").not_nil!
+      klass = student.klasses.find_by!(name: "Test class with different name").not_nil!
       klass.id.should eq klass3.id
       klass.name.should eq "Test class with different name"
 
@@ -126,7 +126,7 @@ describe "has_many, through:" do
         Granite::Querying::NotFound,
         "No #{Klass.name} found where name = not_found"
       ) do
-        klass = student.klasss.find_by!(name: "not_found")
+        klass = student.klasses.find_by!(name: "not_found")
       end
     end
 
@@ -152,7 +152,7 @@ describe "has_many, through:" do
       enrollment3.student = student
       enrollment3.save
 
-      klass = student.klasss.find(klass1.id).not_nil!
+      klass = student.klasses.find(klass1.id).not_nil!
       klass.id.should eq klass1.id
       klass.name.should eq "Test class X"
     end
@@ -179,7 +179,7 @@ describe "has_many, through:" do
       enrollment3.student = student
       enrollment3.save
 
-      klass = student.klasss.find!(klass1.id).not_nil!
+      klass = student.klasses.find!(klass1.id).not_nil!
       klass.id.should eq klass1.id
       klass.name.should eq "Test class X"
 
@@ -189,7 +189,7 @@ describe "has_many, through:" do
         Granite::Querying::NotFound,
         "No #{Klass.name} found where id = #{id}"
       ) do
-        student.klasss.find!(id)
+        student.klasses.find!(id)
       end
     end
   end
