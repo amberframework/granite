@@ -79,6 +79,25 @@ class Coach < Granite::Base
 end
 ```
 
+The class name inferred from the name but you can specify the class name:
+```crystal
+class Team < Granite::Base
+  has_one coach : Coach, foreign_key: :custom_id
+
+  # or you can provide the class name as a parameter
+  has_one :coach, class_name: Coach, foreign_key: :custom_id
+
+  field name : String
+end
+
+class Coach < Granite::Base
+  belongs_to team : Team
+
+  # provide a custom foreign key
+  belongs_to team : Team, foreign_key: team_uuid : String
+end
+```
+
 ## One to Many
 
 `belongs_to` and `has_many` macros provide a rails like mapping between Objects.
@@ -89,10 +108,13 @@ class User < Granite::Base
 
   has_many :post
 
-  # or provide class name
+  # pluralization requires providing the class name
+  has_many posts : Post
+
+  # or you can provide class name as a parameter
   has_many :posts, class_name: Post
 
-  # or custom foreign key
+  # you can provide a custom foreign key
   has_many :posts, class_name: Post, foreign_key: :custom_id
 
   field email : String
@@ -112,7 +134,7 @@ class Post < Granite::Base
 
   # or custom name
   belongs_to my_user : User
-  
+
   # or custom foreign key
   belongs_to user : User, foreign_key: uuid : String
 

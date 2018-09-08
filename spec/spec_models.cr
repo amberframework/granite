@@ -185,7 +185,7 @@ require "uuid"
     table_name books
     has_many :book_reviews, class_name: BookReview
     belongs_to author : Person
-    belongs_to publisher : Company, publisher_id : Int32
+    belongs_to publisher : Company, foreign_key: publisher_id : Int32
 
     primary id : Int32
     field name : String
@@ -194,7 +194,7 @@ require "uuid"
   class BookReview < Granite::Base
     adapter {{ adapter_literal }}
     table_name book_reviews
-    belongs_to book : Book, book_id : Int32
+    belongs_to book : Book, foreign_key: book_id : Int32
 
     primary id : Int32
     field body : String
