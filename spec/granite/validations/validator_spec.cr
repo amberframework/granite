@@ -58,6 +58,7 @@ require "../../spec_helper"
         subject.valid?.should eq false
       end
     end
+
     describe "validates using block without field" do
       it "returns true if passwords match" do
         subject = PasswordTest.new
@@ -71,6 +72,17 @@ require "../../spec_helper"
         subject.password = "123"
         subject.password_validation = "1234"
         subject.valid?.should eq false
+      end
+    end
+
+    describe "validates cleanly after previously failing" do
+      it "returns true if name is rectified after after failing" do
+        subject = NameTest.new
+        subject.name = ""
+        subject.valid?.should eq false
+
+        subject.name = "name"
+        subject.valid?.should eq true
       end
     end
   end

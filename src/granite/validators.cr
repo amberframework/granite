@@ -43,11 +43,14 @@ module Granite::Validators
   end
 
   def valid?
+    errors.clear
+
     @@validators.each do |validator|
       unless validator[:block].call(self)
         errors << Error.new(validator[:field], validator[:message])
       end
     end
+
     errors.empty?
   end
 end
