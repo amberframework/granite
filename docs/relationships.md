@@ -87,13 +87,13 @@ end
 class User < Granite::Base
   adapter mysql
 
-  has_many post
+  has_many :post
 
   # or non-standard name
-  has_many posts, Post
+  has_many :posts, class_name: Post
 
   # or non-standard foreign key
-  has_many posts, Post, foreign_key: post_uuid
+  has_many :posts, class_name: Post, foreign_key: :post_uuid
 
   field email : String
   field name : String
@@ -160,7 +160,7 @@ Then you can use the `belongs_to` and `has_many` relationships going both ways.
 
 ```crystal
 class User < Granite::Base
-  has_many participants, Participant
+  has_many :participants, class_name: Participant
 
   field name : String
 end
@@ -175,7 +175,7 @@ end
 class Room < Granite::Base
   table_name :rooms
 
-  has_many participants, Participant
+  has_many :participants, class_name: Participant
 
   field name : String
 end
@@ -204,8 +204,8 @@ As a convenience, we provide a `through:` clause to simplify accessing the many-
 
 ```crystal
 class User < Granite::Base
-  has_many participants, Participant
-  has_many rooms, Room, through: :participants
+  has_many :participants, class_name: Participant
+  has_many :rooms, class_name: Room, through: :participants
 
   field name : String
 end
@@ -216,8 +216,8 @@ class Participant < Granite::Base
 end
 
 class Room < Granite::Base
-  has_many participants, Participant
-  has_many users, User, through: :participants
+  has_many :participants, class_name: Participant
+  has_many :users, class_name: User, through: :participants
 
   field name : String
 end
