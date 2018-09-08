@@ -16,7 +16,7 @@ require "uuid"
     field name : String
     timestamps
 
-    has_many students : Student
+    has_many students, Student
 
     validate :name, "Name cannot be blank" do |parent|
       !parent.name.to_s.blank?
@@ -30,7 +30,7 @@ require "uuid"
 
     field name : String
 
-    has_many klasses : Klass
+    has_many klasses, Klass
   end
 
   class Student < Granite::Base
@@ -40,8 +40,8 @@ require "uuid"
 
     field name : String
 
-    has_many enrollments : Enrollment
-    has_many klasses : Klass, through: :enrollments
+    has_many enrollments, Enrollment
+    has_many klasses, Klass, through: :enrollments
   end
 
   class Klass < Granite::Base
@@ -52,8 +52,8 @@ require "uuid"
 
     belongs_to teacher : Teacher
 
-    has_many enrollments : Enrollment
-    has_many students : Student, through: :enrollments
+    has_many enrollments, Enrollment
+    has_many students, Student, through: :enrollments
   end
 
   class Enrollment < Granite::Base
@@ -183,7 +183,7 @@ require "uuid"
   class Book < Granite::Base
     adapter {{ adapter_literal }}
     table_name books
-    has_many book_reviews : BookReview
+    has_many book_reviews, BookReview
     belongs_to author : Person
     belongs_to publisher : Company, publisher_id : Int32
 

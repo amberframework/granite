@@ -52,26 +52,20 @@ module Granite::Associations
   end
 
   macro has_many(model)
-    {% if model.is_a? TypeDeclaration %}
-      def {{model.var}}
-          Granite::AssociationCollection(self, {{model.type}}).new(self)
-      end
-    {% else %}
-      def {{model.id}}
-          Granite::AssociationCollection(self, {{model.id.camelcase}}).new(self)
-      end
-    {% end %}
+    def {{model.id}}
+      Granite::AssociationCollection(self, {{model.id.camelcase}}).new(self)
+    end
   end
 
-  macro has_many(model, through)
-    {% if model.is_a? TypeDeclaration %}
-      def {{model.var}}
-          Granite::AssociationCollection(self, {{model.type}}).new(self, {{through}})
-      end
-    {% else %}
-      def {{model.id}}
-          Granite::AssociationCollection(self, {{model.id.camelcase}}).new(self, {{through}})
-      end
-    {% end %}
+  macro has_many(model, model_name)
+    def {{model.id}}
+      Granite::AssociationCollection(self, {{model_name.id}}).new(self)
+    end
+  end
+
+  macro has_many(model, model_name, through)
+    def {{model.id}}
+      Granite::AssociationCollection(self, {{model_name.id}}).new(self, {{through}})
+    end
   end
 end
