@@ -89,11 +89,11 @@ class User < Granite::Base
 
   has_many :post
 
-  # or non-standard name
+  # or provide class name
   has_many :posts, class_name: Post
 
-  # or non-standard foreign key
-  has_many :posts, class_name: Post, foreign_key: :post_uuid
+  # or custom foreign key
+  has_many :posts, class_name: Post, foreign_key: :custom_id
 
   field email : String
   field name : String
