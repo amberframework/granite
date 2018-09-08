@@ -110,11 +110,11 @@ class Post < Granite::Base
 
   belongs_to :user
 
-  # or non-standard name
+  # or custom name
   belongs_to my_user : User
   
-  # or non-standard primary key
-  belongs_to user : User, uuid : String
+  # or custom foreign key
+  belongs_to user : User, foreign_key: uuid : String
 
   field title : String
   timestamps
