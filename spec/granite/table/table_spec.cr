@@ -7,7 +7,7 @@ describe Granite::Table do
     end
 
     it "sets the table name based on class name if not specified" do
-      SongThread.table_name.should eq "song_threads"
+      SongThread.table_name.should eq "song_thread"
     end
   end
 

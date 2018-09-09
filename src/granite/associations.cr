@@ -1,5 +1,4 @@
 module Granite::Associations
-  # define getter and setter for parent relationship
   macro belongs_to(model)
     {% if model.is_a? TypeDeclaration %}
       belongs_to {{model.var}}, {{model.type}}, {{model.var}}_id : Int64
@@ -8,7 +7,6 @@ module Granite::Associations
     {% end %}
   end
 
-  # ditto
   macro belongs_to(model, foreign_key)
     {% if model.is_a? TypeDeclaration %}
       belongs_to {{model.var}}, {{model.type}}, {{foreign_key}}
@@ -17,52 +15,52 @@ module Granite::Associations
     {% end %}
   end
 
-  # ditto
-  macro belongs_to(method_name, model_name, foreign_key)
+  macro belongs_to(model, class_name, foreign_key)
     field {{foreign_key}}
 
-    # retrieve the parent relationship
-    def {{method_name.id}}
-      if parent = {{model_name.id}}.find {{foreign_key.var}}
+    def {{model.id}}
+      if parent = {{class_name.id}}.find {{foreign_key.var}}
         parent
       else
-        {{model_name.id}}.new
+        {{class_name.id}}.new
       end
     end
 
-    # set the parent relationship
-    def {{method_name.id}}=(parent)
+    def {{model.id}}=(parent)
       @{{foreign_key.var}} = parent.id
     end
   end
 
-  macro has_one(model_name)
-    {% foreign_key = @type.stringify.split("::").last.underscore + "_id" %}
-    has_one {{model_name.id}}, {{foreign_key.id}}
-  end
-
-  macro has_one(model_name, foreign_key)
-    def {{model_name.id}}
-      {{model_name.id.camelcase}}.find_by({{foreign_key.id}}: self.id)
+  macro has_one(model, **options)
+    {% if model.is_a? TypeDeclaration %}
+      {% method_name = model.var %}
+      {% class_name = model.type %}
+    {% else %}
+      {% method_name = model.id %}
+      {% class_name = options[:class_name] || model.id.camelcase %}
+    {% end %}
+    {% foreign_key = options[:foreign_key] || @type.stringify.split("::").last.underscore + "_id" %}
+    def {{method_name}}
+      {{class_name.id}}.find_by({{foreign_key.id}}: self.id)
     end
 
-    def {{model_name.id}}=(children)
+    def {{method_name}}=(children)
       children.{{foreign_key.id}} = self.id
     end
   end
 
-  macro has_many(children_table)
-    def {{children_table.id}}
-      {% children_class = children_table.id[0...-1].camelcase %}
-      Granite::AssociationCollection(self, {{children_class}}).new(self)
-    end
-  end
-
-  # define getter for related children
-  macro has_many(children_table, through)
-    def {{children_table.id}}
-      {% children_class = children_table.id[0...-1].camelcase %}
-      Granite::AssociationCollection(self, {{children_class}}).new(self, {{through}})
+  macro has_many(model, **options)
+    {% if model.is_a? TypeDeclaration %}
+      {% method_name = model.var %}
+      {% class_name = model.type %}
+    {% else %}
+      {% method_name = model.id %}
+      {% class_name = options[:class_name] || model.id.camelcase %}
+    {% end %}
+    {% foreign_key = options[:foreign_key] || @type.stringify.split("::").last.underscore + "_id" %}
+    {% through = options[:through] %}
+    def {{method_name.id}}
+      Granite::AssociationCollection(self, {{class_name.id}}).new(self, {{foreign_key}}, {{through}})
     end
   end
 end

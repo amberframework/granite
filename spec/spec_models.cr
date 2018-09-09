@@ -16,7 +16,7 @@ require "uuid"
     field name : String
     timestamps
 
-    has_many :students
+    has_many :students, class_name: Student
 
     validate :name, "Name cannot be blank" do |parent|
       !parent.name.to_s.blank?
@@ -30,7 +30,7 @@ require "uuid"
 
     field name : String
 
-    has_many :klasss
+    has_many :klasses, class_name: Klass
   end
 
   class Student < Granite::Base
@@ -40,20 +40,20 @@ require "uuid"
 
     field name : String
 
-    has_many :enrollments
-    has_many :klasss, through: :enrollments
+    has_many :enrollments, class_name: Enrollment
+    has_many :klasses, class_name: Klass, through: :enrollments
   end
 
   class Klass < Granite::Base
     primary id : Int64
     adapter {{ adapter_literal }}
-    table_name klasss
+    table_name klasses
     field name : String
 
-    belongs_to :teacher
+    belongs_to teacher : Teacher
 
-    has_many :enrollments
-    has_many :students, through: :enrollments
+    has_many :enrollments, class_name: Enrollment
+    has_many :students, class_name: Student, through: :enrollments
   end
 
   class Enrollment < Granite::Base
@@ -96,7 +96,7 @@ require "uuid"
   class Nation::County < Granite::Base
     adapter {{ adapter_literal }}
     primary id : Int64
-    table_name nation_countys
+    table_name nation_counties
 
     field name : String
   end
@@ -115,7 +115,7 @@ require "uuid"
 
   class Empty < Granite::Base
     adapter {{ adapter_literal }}
-    table_name emptys
+    table_name empties
     primary id : Int64
   end
 
@@ -160,7 +160,7 @@ require "uuid"
 
   class Kvs < Granite::Base
     adapter {{ adapter_literal }}
-    table_name kvss
+    table_name kvs
     primary k : String, auto: false
     field v : String
   end
@@ -183,7 +183,7 @@ require "uuid"
   class Book < Granite::Base
     adapter {{ adapter_literal }}
     table_name books
-    has_many :book_reviews
+    has_many :book_reviews, class_name: BookReview
     belongs_to author : Person
     belongs_to publisher : Company, foreign_key: publisher_id : Int32
 
@@ -194,7 +194,7 @@ require "uuid"
   class BookReview < Granite::Base
     adapter {{ adapter_literal }}
     table_name book_reviews
-    belongs_to :book, foreign_key: book_id : Int32
+    belongs_to book : Book, foreign_key: book_id : Int32
 
     primary id : Int32
     field body : String
