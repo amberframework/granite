@@ -13,6 +13,7 @@ require "./migrator"
 require "./select"
 require "./version"
 require "./adapters"
+require "./comparator"
 
 # Granite::Base is the base class for your model objects.
 class Granite::Base
@@ -25,6 +26,7 @@ class Granite::Base
   include ValidationHelpers
   include Migrator
   include Select
+  include Comparator
 
   include JSON::Serializable
   include YAML::Serializable
@@ -40,6 +42,7 @@ class Granite::Base
       __process_querying
       __process_transactions
       __process_migrator
+      __process_comparator
     end
   end
 
