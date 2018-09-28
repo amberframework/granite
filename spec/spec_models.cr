@@ -412,6 +412,14 @@ require "uuid"
       validate_uniqueness :name
     end
 
+    class ExclusionTest < Granite::Base
+      adapter {{ adapter_literal }}
+
+      field name : String
+
+      validate_exclusion :name, ["test_name"]
+    end
+
     NilTest.migrator.drop_and_create
     BlankTest.migrator.drop_and_create
     ChoiceTest.migrator.drop_and_create
@@ -419,6 +427,7 @@ require "uuid"
     GreaterThanTest.migrator.drop_and_create
     LengthTest.migrator.drop_and_create
     PersonUniqueness.migrator.drop_and_create
+    ExclusionTest.migrator.drop_and_create
   end
 
   Parent.migrator.drop_and_create
