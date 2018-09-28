@@ -4,7 +4,35 @@ services:
   - docker
 
 before_install:
-  - docker-compose build spec
+  - docker-compose -f docker/docker-compose.$CURRENT_ADAPTER.yml build spec
 
 script:
-  - docker-compose run spec
+  - docker-compose -f docker/docker-compose.$CURRENT_ADAPTER.yml run spec
+
+matrix:
+  include:
+    - name: "Mysql 5.7"
+      env:
+        - CURRENT_ADAPTER=mysql
+        - MYSQL_VERSION=5.7
+        - PG_VERSION=10.4
+    - name: "Mysql 5.6"
+      env:
+        - CURRENT_ADAPTER=mysql
+        - MYSQL_VERSION=5.6
+        - PG_VERSION=10.4
+    - name: "Postgres 9.6"
+      env:
+        - CURRENT_ADAPTER=pg
+        - MYSQL_VERSION=5.7
+        - PG_VERSION=9.6
+    - name: "Postgres 10.5"
+      env:
+        - CURRENT_ADAPTER=pg
+        - MYSQL_VERSION=5.7
+        - PG_VERSION=10.5
+    - name: "Sqlite"
+      env:
+        - CURRENT_ADAPTER=sqlite
+        - MYSQL_VERSION=5.7
+        - PG_VERSION=10.4

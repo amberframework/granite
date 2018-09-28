@@ -1,9 +1,8 @@
 require "../../spec_helper"
 
 # Can run this spec for sqlite after https://www.sqlite.org/draft/releaselog/3_24_0.html is released.
-{% for adapter in ["pg", "mysql"] %}
-module {{adapter.capitalize.id}}
-  describe "{{ adapter.id }} timestamps" do
+{% if ["pg", "mysql"].includes? env("CURRENT_ADAPTER") %}
+  describe "timestamps" do
     it "consistently uses UTC for created_at" do
       parent = Parent.new(name: "parent").tap(&.save)
       found_parent = Parent.find!(parent.id)
@@ -98,5 +97,4 @@ module {{adapter.capitalize.id}}
       end
     end
   end
-end
 {% end %}

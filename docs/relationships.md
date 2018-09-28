@@ -18,6 +18,8 @@ This will add a `coach` and `coach=` instance methods to the team which returns 
 
 ```crystal
 class Coach < Granite::Base
+  table_name :coaches
+
   belongs_to :team
 
   field name : String
@@ -77,6 +79,25 @@ class Coach < Granite::Base
 end
 ```
 
+The class name inferred from the name but you can specify the class name:
+```crystal
+class Team < Granite::Base
+  has_one coach : Coach, foreign_key: :custom_id
+
+  # or you can provide the class name as a parameter
+  has_one :coach, class_name: Coach, foreign_key: :custom_id
+
+  field name : String
+end
+
+class Coach < Granite::Base
+  belongs_to team : Team
+
+  # provide a custom foreign key
+  belongs_to team : Team, foreign_key: team_uuid : String
+end
+```
+
 ## One to Many
 
 `belongs_to` and `has_many` macros provide a rails like mapping between Objects.
@@ -85,7 +106,16 @@ end
 class User < Granite::Base
   adapter mysql
 
-  has_many :posts
+  has_many :post
+
+  # pluralization requires providing the class name
+  has_many posts : Post
+
+  # or you can provide class name as a parameter
+  has_many :posts, class_name: Post
+
+  # you can provide a custom foreign key
+  has_many :posts, class_name: Post, foreign_key: :custom_id
 
   field email : String
   field name : String
@@ -98,9 +128,15 @@ This will add a `posts` instance method to the user which returns an array of po
 ```crystal
 class Post < Granite::Base
   adapter mysql
+  table_name :posts
 
   belongs_to :user
-  belongs_to :user, User, user_id : String # if uuid is used as an id
+
+  # or custom name
+  belongs_to my_user : User
+
+  # or custom foreign key
+  belongs_to user : User, foreign_key: uuid : String
 
   field title : String
   timestamps
@@ -146,18 +182,22 @@ Then you can use the `belongs_to` and `has_many` relationships going both ways.
 
 ```crystal
 class User < Granite::Base
-  has_many :participants
+  has_many :participants, class_name: Participant
 
   field name : String
 end
 
 class Participant < Granite::Base
+  table_name :participants
+
   belongs_to :user
   belongs_to :room
 end
 
 class Room < Granite::Base
-  has_many :participants
+  table_name :rooms
+
+  has_many :participants, class_name: Participant
 
   field name : String
 end
@@ -186,8 +226,8 @@ As a convenience, we provide a `through:` clause to simplify accessing the many-
 
 ```crystal
 class User < Granite::Base
-  has_many :participants
-  has_many :rooms, through: :participants
+  has_many :participants, class_name: Participant
+  has_many :rooms, class_name: Room, through: :participants
 
   field name : String
 end
@@ -198,8 +238,8 @@ class Participant < Granite::Base
 end
 
 class Room < Granite::Base
-  has_many :participants
-  has_many :users, through: :participants
+  has_many :participants, class_name: Participant
+  has_many :users, class_name: User, through: :participants
 
   field name : String
 end
