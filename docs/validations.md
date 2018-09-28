@@ -37,7 +37,7 @@ A set of common validation macros exist to make validations easier to manage/cre
 - `validate_not_nil :field` - Validates that field should not be nil.
 - `validate_is_nil :field` - Validates that field should be nil.
 - `validate_is_valid_choice :type, ["allowedType1", "allowedType2"]` - Validates that type should be one of a preset option.
-- `validate_exclusion :type, ["notAllowedType1", "notAllowedType2"` - Validates that type should not be one of a preset option.
+- `validate_exclusion :type, ["notAllowedType1", "notAllowedType2"]` - Validates that type should not be one of a preset option.
 - `validate_uniqueness :field` - Validates that the field is unique
 
 ### String
