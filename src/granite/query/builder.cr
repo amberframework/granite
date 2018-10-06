@@ -26,6 +26,8 @@ class Granite::Query::Builder(Model)
 
   getter where_fields = {} of FieldName => FieldData
   getter order_fields = [] of NamedTuple(field: String, direction: Sort)
+  getter offset : Int64?
+  getter limit : Int64?
 
   def initialize(@boolean_operator = :and)
   end
@@ -77,6 +79,18 @@ class Granite::Query::Builder(Model)
 
       @order_fields << {field: field.to_s, direction: direction}
     end
+
+    self
+  end
+
+  def offset(num)
+    @offset = num.to_i64
+
+    self
+  end
+
+  def limit(num)
+    @limit = num.to_i64
 
     self
   end

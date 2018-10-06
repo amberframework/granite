@@ -4,6 +4,8 @@ module Granite::Query::Assembler
   class Postgresql(Model) < Base(Model)
     @where : String?
     @order : String?
+    @limit : String?
+    @offset : String?
     @group_by : String?
 
     def where
@@ -51,6 +53,18 @@ module Granite::Query::Assembler
       @order = "ORDER BY #{order_clauses.join ", "}"
     end
 
+    def limit
+      @limit ||= if limit = @query.limit
+                   "LIMIT #{limit}"
+                 end
+    end
+
+    def offset
+      @offset ||= if offset = @query.offset
+                    "OFFSET #{offset}"
+                  end
+    end
+
     def log(*stuff)
     end
 
@@ -83,6 +97,7 @@ module Granite::Query::Assembler
         s << where if where
         s << order if order
         s << "LIMIT #{n}"
+        s << offset if offset
       end
 
       Executor::List(Model).new sql, numbered_parameters
@@ -106,6 +121,8 @@ module Granite::Query::Assembler
         s << "FROM #{table_name}"
         s << where if where
         s << order if order
+        s << limit if limit
+        s << offset if offset
       end
 
       Executor::List(Model).new sql, numbered_parameters
