@@ -26,7 +26,7 @@ require "../spec_helper"
         query.raw_sql.should match ignore_whitespace sql
 
         assembler = query.assembler
-        assembler.build_where
+        assembler.where
         assembler.numbered_parameters.should eq ["bob", "23"]
       end
     end

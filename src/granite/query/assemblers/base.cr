@@ -26,8 +26,26 @@ module Granite::Query::Assembler
       [Model.fields].flatten.join ", "
     end
 
+    def build_sql
+      builder = SQLBuilder.new
+      yield builder
+      builder.build
+    end
+
     abstract def count : Int64
     abstract def first(n : Int32 = 1) : Array(Model)
     abstract def delete
+
+    class SQLBuilder
+      @clauses = [] of String
+
+      def <<(clause)
+        clause.try { |c| @clauses << c }
+      end
+
+      def build
+        @clauses.join " "
+      end
+    end
   end
 end

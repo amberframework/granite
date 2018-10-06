@@ -24,12 +24,10 @@ class Granite::Query::Builder(Model)
     Descending
   end
 
-  getter where_fields
-  getter order_fields
+  getter where_fields = {} of FieldName => FieldData
+  getter order_fields = [] of NamedTuple(field: String, direction: Sort)
 
   def initialize(@boolean_operator = :and)
-    @where_fields = {} of FieldName => FieldData
-    @order_fields = [] of NamedTuple(field: String, direction: Sort)
   end
 
   def assembler
@@ -40,6 +38,10 @@ class Granite::Query::Builder(Model)
   end
 
   def where(**matches)
+    where(matches)
+  end
+
+  def where(matches)
     matches.each do |field, data|
       @where_fields[field.to_s] = data
     end
@@ -62,6 +64,10 @@ class Granite::Query::Builder(Model)
   end
 
   def order(**dsl)
+    order(dsl)
+  end
+
+  def order(dsl)
     dsl.each do |field, dsl_direction|
       direction = Sort::Ascending
 
