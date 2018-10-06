@@ -302,33 +302,161 @@ require "uuid"
     SQL
   end
 
-    Parent.migrator.drop_and_create
-    Teacher.migrator.drop_and_create
-    Student.migrator.drop_and_create
-    Klass.migrator.drop_and_create
-    Enrollment.migrator.drop_and_create
-    School.migrator.drop_and_create
-    User.migrator.drop_and_create
-    Profile.migrator.drop_and_create
-    Nation::County.migrator.drop_and_create
-    Review.migrator.drop_and_create
-    Empty.migrator.drop_and_create
-    ReservedWord.migrator.drop_and_create
-    Callback.migrator.drop_and_create
-    CallbackWithAbort.migrator.drop_and_create
-    Kvs.migrator.drop_and_create
-    Person.migrator.drop_and_create
-    Company.migrator.drop_and_create
-    Book.migrator.drop_and_create
-    BookReview.migrator.drop_and_create
-    Item.migrator.drop_and_create
-    NonAutoDefaultPK.migrator.drop_and_create
-    NonAutoCustomPK.migrator.drop_and_create
-    Article.migrator.drop_and_create
-    Comment.migrator.drop_and_create
-    Todo.migrator.drop_and_create
-    TodoEmitNull.migrator.drop_and_create
-    AfterInit.migrator.drop_and_create
-    SongThread.migrator.drop_and_create
-    CustomSongThread.migrator.drop_and_create
+  module Validators
+    class NilTest < Granite::Base
+      adapter {{ adapter_literal }}
+
+      field first_name_not_nil : String
+      field last_name_not_nil : String
+      field age_not_nil : Int32
+      field born_not_nil : Bool
+      field value_not_nil : Float32
+
+      field first_name : String
+      field last_name : String
+      field age : Int32
+      field born : Bool
+      field value : Float32
+
+      validate_not_nil "first_name_not_nil"
+      validate_not_nil :last_name_not_nil
+      validate_not_nil :age_not_nil
+      validate_not_nil "born_not_nil"
+      validate_not_nil :value_not_nil
+
+      validate_is_nil "first_name"
+      validate_is_nil :last_name
+      validate_is_nil :age
+      validate_is_nil "born"
+      validate_is_nil :value
+    end
+
+    class BlankTest < Granite::Base
+      adapter {{ adapter_literal }}
+
+      field first_name_not_blank : String
+      field last_name_not_blank : String
+
+      field first_name_is_blank : String
+      field last_name_is_blank : String
+
+      validate_not_blank "first_name_not_blank"
+      validate_not_blank "last_name_not_blank"
+
+      validate_is_blank "first_name_is_blank"
+      validate_is_blank "last_name_is_blank"
+    end
+
+    class ChoiceTest < Granite::Base
+      adapter {{ adapter_literal }}
+
+      field number_symbol : Int32
+      field type_array_symbol : String
+
+      field number_string : Int32
+      field type_array_string : String
+
+      validate_is_valid_choice :number_symbol, [1, 2, 3]
+      validate_is_valid_choice :type_array_symbol, [:internal, :external, :third_party]
+      validate_is_valid_choice "number_string", [4, 5, 6]
+      validate_is_valid_choice "type_array_string", ["internal", "external", "third_party"]
+    end
+
+    class LessThanTest < Granite::Base
+      adapter {{ adapter_literal }}
+
+      field int_32_lt : Int32
+      field float_32_lt : Float32
+
+      field int_32_lte : Int32
+      field float_32_lte : Float32
+
+      validate_less_than "int_32_lt", 10
+      validate_less_than :float_32_lt, 20.5
+
+      validate_less_than :int_32_lte, 50, true
+      validate_less_than "float_32_lte", 100.25, true
+    end
+
+    class GreaterThanTest < Granite::Base
+      adapter {{ adapter_literal }}
+
+      field int_32_lt : Int32
+      field float_32_lt : Float32
+
+      field int_32_lte : Int32
+      field float_32_lte : Float32
+
+      validate_greater_than "int_32_lt", 10
+      validate_greater_than :float_32_lt, 20.5
+
+      validate_greater_than :int_32_lte, 50, true
+      validate_greater_than "float_32_lte", 100.25, true
+    end
+
+    class LengthTest < Granite::Base
+      adapter {{ adapter_literal }}
+
+      field title : String
+      field description : String
+
+      validate_min_length :title, 5
+      validate_max_length :description, 25
+    end
+
+    class PersonUniqueness < Granite::Base
+      adapter {{ adapter_literal }}
+
+      field name : String
+
+      validate_uniqueness :name
+    end
+
+    class ExclusionTest < Granite::Base
+      adapter {{ adapter_literal }}
+
+      field name : String
+
+      validate_exclusion :name, ["test_name"]
+    end
+
+    NilTest.migrator.drop_and_create
+    BlankTest.migrator.drop_and_create
+    ChoiceTest.migrator.drop_and_create
+    LessThanTest.migrator.drop_and_create
+    GreaterThanTest.migrator.drop_and_create
+    LengthTest.migrator.drop_and_create
+    PersonUniqueness.migrator.drop_and_create
+    ExclusionTest.migrator.drop_and_create
+  end
+
+  Parent.migrator.drop_and_create
+  Teacher.migrator.drop_and_create
+  Student.migrator.drop_and_create
+  Klass.migrator.drop_and_create
+  Enrollment.migrator.drop_and_create
+  School.migrator.drop_and_create
+  User.migrator.drop_and_create
+  Profile.migrator.drop_and_create
+  Nation::County.migrator.drop_and_create
+  Review.migrator.drop_and_create
+  Empty.migrator.drop_and_create
+  ReservedWord.migrator.drop_and_create
+  Callback.migrator.drop_and_create
+  CallbackWithAbort.migrator.drop_and_create
+  Kvs.migrator.drop_and_create
+  Person.migrator.drop_and_create
+  Company.migrator.drop_and_create
+  Book.migrator.drop_and_create
+  BookReview.migrator.drop_and_create
+  Item.migrator.drop_and_create
+  NonAutoDefaultPK.migrator.drop_and_create
+  NonAutoCustomPK.migrator.drop_and_create
+  Article.migrator.drop_and_create
+  Comment.migrator.drop_and_create
+  Todo.migrator.drop_and_create
+  TodoEmitNull.migrator.drop_and_create
+  AfterInit.migrator.drop_and_create
+  SongThread.migrator.drop_and_create
+  CustomSongThread.migrator.drop_and_create
 {% end %}
