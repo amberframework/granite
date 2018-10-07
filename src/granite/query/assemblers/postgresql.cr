@@ -82,9 +82,9 @@ module Granite::Query::Assembler
       sql = build_sql do |s|
         s << "SELECT COUNT(*)"
         s << "FROM #{table_name}"
-        s << where if where
-        s << group_by if group_by
-        s << order if order
+        s << where
+        s << group_by
+        s << order
       end
 
       Executor::Value(Model, Int64).new sql, numbered_parameters, default: 0_i64
@@ -94,10 +94,10 @@ module Granite::Query::Assembler
       sql = build_sql do |s|
         s << "SELECT #{field_list}"
         s << "FROM #{table_name}"
-        s << where if where
-        s << order if order
+        s << where
+        s << order
         s << "LIMIT #{n}"
-        s << offset if offset
+        s << offset
       end
 
       Executor::List(Model).new sql, numbered_parameters
@@ -106,7 +106,7 @@ module Granite::Query::Assembler
     def delete
       sql = build_sql do |s|
         s << "DELETE FROM #{table_name}"
-        s << where if where
+        s << where
       end
 
       log sql, numbered_parameters
@@ -119,10 +119,10 @@ module Granite::Query::Assembler
       sql = build_sql do |s|
         s << "SELECT #{field_list}"
         s << "FROM #{table_name}"
-        s << where if where
-        s << order if order
-        s << limit if limit
-        s << offset if offset
+        s << where
+        s << order
+        s << limit
+        s << offset
       end
 
       Executor::List(Model).new sql, numbered_parameters
