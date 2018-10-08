@@ -2,7 +2,15 @@
 # This will likely require adapter specific subclassing :[.
 module Granite::Query::Assembler
   class Postgresql(Model) < Base(Model)
-    def build_where
+    @where : String?
+    @order : String?
+    @limit : String?
+    @offset : String?
+    @group_by : String?
+
+    def where
+      return @where if @where
+
       clauses = @query.where_fields.map do |field, value|
         add_aggregate_field field
 
@@ -14,19 +22,21 @@ module Granite::Query::Assembler
         end
       end
 
-      return "" if clauses.none?
+      return nil if clauses.none?
 
-      "WHERE #{clauses.join " AND "}"
+      @where = "WHERE #{clauses.join " AND "}"
     end
 
-    def build_order(use_default_order = true)
+    def order(use_default_order = true)
+      return @order if @order
+
       order_fields = @query.order_fields
 
       if order_fields.none?
         if use_default_order
           order_fields = default_order
         else
-          return ""
+          return nil
         end
       end
 
@@ -40,7 +50,19 @@ module Granite::Query::Assembler
         end
       end
 
-      "ORDER BY #{order_clauses.join ", "}"
+      @order = "ORDER BY #{order_clauses.join ", "}"
+    end
+
+    def limit
+      @limit ||= if limit = @query.limit
+                   "LIMIT #{limit}"
+                 end
+    end
+
+    def offset
+      @offset ||= if offset = @query.offset
+                    "OFFSET #{offset}"
+                  end
     end
 
     def log(*stuff)
@@ -50,48 +72,42 @@ module Granite::Query::Assembler
       [{field: Model.primary_name, direction: "ASC"}]
     end
 
-    def build_group_by
-      if @aggregate_fields.any?
-        "GROUP BY #{@aggregate_fields.join ", "}"
-      else
-        ""
-      end
+    def group_by
+      @group_by ||= if @aggregate_fields.any?
+                      "GROUP BY #{@aggregate_fields.join ", "}"
+                    end
     end
 
     def count : Executor::Value(Model, Int64)
-      where = build_where
-      order = build_order(false)
-      group = build_group_by
-
-      sql = <<-SQL
-        SELECT COUNT(*)
-          FROM #{table_name}
-         #{where}
-         #{group}
-         #{order}
-      SQL
+      sql = build_sql do |s|
+        s << "SELECT COUNT(*)"
+        s << "FROM #{table_name}"
+        s << where
+        s << group_by
+        s << order
+      end
 
       Executor::Value(Model, Int64).new sql, numbered_parameters, default: 0_i64
     end
 
     def first(n : Int32 = 1) : Executor::List(Model)
-      sql = <<-SQL
-          SELECT #{field_list}
-            FROM #{table_name}
-           #{build_where}
-           #{build_order}
-           LIMIT #{n}
-      SQL
+      sql = build_sql do |s|
+        s << "SELECT #{field_list}"
+        s << "FROM #{table_name}"
+        s << where
+        s << order
+        s << "LIMIT #{n}"
+        s << offset
+      end
 
       Executor::List(Model).new sql, numbered_parameters
     end
 
     def delete
-      sql = <<-SQL
-         DELETE
-           FROM #{table_name}
-          #{build_where}
-      SQL
+      sql = build_sql do |s|
+        s << "DELETE FROM #{table_name}"
+        s << where
+      end
 
       log sql, numbered_parameters
       Model.adapter.open do |db|
@@ -100,12 +116,14 @@ module Granite::Query::Assembler
     end
 
     def select
-      sql = <<-SQL
-        SELECT #{field_list}
-          FROM #{table_name}
-          #{build_where}
-          #{build_order}
-      SQL
+      sql = build_sql do |s|
+        s << "SELECT #{field_list}"
+        s << "FROM #{table_name}"
+        s << where
+        s << order
+        s << limit
+        s << offset
+      end
 
       Executor::List(Model).new sql, numbered_parameters
     end

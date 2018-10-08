@@ -26,7 +26,7 @@ require "../spec_helper"
         query.raw_sql.should match ignore_whitespace sql
 
         assembler = query.assembler
-        assembler.build_where
+        assembler.where
         assembler.numbered_parameters.should eq ["bob", "23"]
       end
     end
@@ -39,6 +39,25 @@ require "../spec_helper"
       it "uses specified sort when provided" do
         sql = "select #{query_fields} from table order by id asc"
         builder.order(id: :asc).raw_sql.should match ignore_whitespace sql
+      end
+    end
+
+    context "offset" do
+      it "adds offset for select query" do
+        sql = "select #{query_fields} from table order by id desc offset 8"
+        builder.offset(8).raw_sql.should match ignore_whitespace sql
+      end
+
+      it "adds offset for first query" do
+        sql = "select #{query_fields} from table order by id desc limit 1 offset 3"
+        builder.offset(3).assembler.first.raw_sql.should match ignore_whitespace sql
+      end
+    end
+
+    context "limit" do
+      it "adds limit for select query" do
+        sql = "select #{query_fields} from table order by id desc limit 5"
+        builder.limit(5).raw_sql.should match ignore_whitespace sql
       end
     end
   end

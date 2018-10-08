@@ -26,6 +26,12 @@ module Granite::Query::Assembler
       [Model.fields].flatten.join ", "
     end
 
+    def build_sql
+      clauses = [] of String?
+      yield clauses
+      clauses.compact!.join " "
+    end
+
     abstract def count : Int64
     abstract def first(n : Int32 = 1) : Array(Model)
     abstract def delete

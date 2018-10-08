@@ -24,12 +24,12 @@ class Granite::Query::Builder(Model)
     Descending
   end
 
-  getter where_fields
-  getter order_fields
+  getter where_fields = {} of FieldName => FieldData
+  getter order_fields = [] of NamedTuple(field: String, direction: Sort)
+  getter offset : Int64?
+  getter limit : Int64?
 
   def initialize(@boolean_operator = :and)
-    @where_fields = {} of FieldName => FieldData
-    @order_fields = [] of NamedTuple(field: String, direction: Sort)
   end
 
   def assembler
@@ -40,6 +40,10 @@ class Granite::Query::Builder(Model)
   end
 
   def where(**matches)
+    where(matches)
+  end
+
+  def where(matches)
     matches.each do |field, data|
       @where_fields[field.to_s] = data
     end
@@ -62,6 +66,10 @@ class Granite::Query::Builder(Model)
   end
 
   def order(**dsl)
+    order(dsl)
+  end
+
+  def order(dsl)
     dsl.each do |field, dsl_direction|
       direction = Sort::Ascending
 
@@ -71,6 +79,18 @@ class Granite::Query::Builder(Model)
 
       @order_fields << {field: field.to_s, direction: direction}
     end
+
+    self
+  end
+
+  def offset(num)
+    @offset = num.to_i64
+
+    self
+  end
+
+  def limit(num)
+    @limit = num.to_i64
 
     self
   end
