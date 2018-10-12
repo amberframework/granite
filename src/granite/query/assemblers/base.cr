@@ -42,9 +42,9 @@ module Granite::Query::Assembler
         add_aggregate_field expression[:field]
 
         if expression[:value].nil?
-          "#{field} IS NULL"
+          "#{expression[:field]} IS NULL"
         else
-          "#{expression[:field]} #{operators expression[:operator]} #{add_parameter expression[:value]}"
+          "#{expression[:field]} #{sql_operator(expression[:operator])} #{add_parameter expression[:value]}"
         end
       end
 
@@ -153,38 +153,38 @@ module Granite::Query::Assembler
 
       Executor::List(Model).new sql, numbered_parameters
     end
-  end
 
-  private def operators(operator : Symbol) : String
-    case operator
-    when :eq
-      "="
-    when :gteq
-      ">="
-    when :lteq
-      "<="
-    when :neq
-      "!="
-    when :ltgt
-      "<>"
-    when :gt
-      ">"
-    when :lt
-      "<"
-    when :ngt
-      "!>"
-    when :nlt
-      "!<"
-    when :in
-      "IN"
-    when :nin
-      "NOT IN"
-    when :like
-      "LIKE"
-    when :nlike
-      "NOT LIKE"
-    else
-      operator.to_s
+    def sql_operator(operator : Symbol) : String
+      case operator
+      when :eq
+        "="
+      when :gteq
+        ">="
+      when :lteq
+        "<="
+      when :neq
+        "!="
+      when :ltgt
+        "<>"
+      when :gt
+        ">"
+      when :lt
+        "<"
+      when :ngt
+        "!>"
+      when :nlt
+        "!<"
+      when :in
+        "IN"
+      when :nin
+        "NOT IN"
+      when :like
+        "LIKE"
+      when :nlike
+        "NOT LIKE"
+      else
+        operator.to_s
+      end
     end
   end
 end
