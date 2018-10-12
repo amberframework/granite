@@ -16,15 +16,12 @@
 # or
 # - Model.where(field: value).or { whehre(field3: value3) }
 class Granite::Query::Builder(Model)
-  alias FieldName = String
-  alias FieldData = DB::Any
-
   enum Sort
     Ascending
     Descending
   end
 
-  getter where_fields = {} of FieldName => FieldData
+  getter where_fields = [] of NamedTuple(field: String, operator: Symbol, value: DB::Any)
   getter order_fields = [] of NamedTuple(field: String, direction: Sort)
   getter offset : Int64?
   getter limit : Int64?
@@ -33,10 +30,16 @@ class Granite::Query::Builder(Model)
   end
 
   def assembler
-    # when adapter.postgresql?
+    #    case Model.adapter.class
+    #    when Granite::Adapter::Pg
     Assembler::Postgresql(Model).new self
-    # when adapter.mysql?
-    # etc
+    #    when Granite::Adapter::Mysql
+    #      Assembler::Mysql(Model).new self
+    #    when Granite::Adapter::Sqlite
+    #      Assembler::Sqlite(Model).new self
+    #    else
+    #      raise "Query builder not supported for #{adapter.class}"
+    #    end
   end
 
   def where(**matches)
@@ -44,9 +47,15 @@ class Granite::Query::Builder(Model)
   end
 
   def where(matches)
-    matches.each do |field, data|
-      @where_fields[field.to_s] = data
+    matches.each do |field, value|
+      @where_fields << {field: field.to_s, operator: :eq, value: value}
     end
+
+    self
+  end
+
+  def where(field : Symbol, operator : Symbol, value : DB::Any)
+    @where_fields << {field: field.to_s, operator: operator, value: value}
 
     self
   end

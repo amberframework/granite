@@ -38,14 +38,13 @@ module Granite::Query::Assembler
     def where
       return @where if @where
 
-      clauses = @query.where_fields.map do |field, value|
-        add_aggregate_field field
+      clauses = @query.where_fields.map do |expression|
+        add_aggregate_field expression[:field]
 
-        # TODO value is an array
-        if value.nil?
+        if expression[:value].nil?
           "#{field} IS NULL"
         else
-          "#{field} = #{add_parameter value}"
+          "#{expression[:field]} #{operators expression[:operator]} #{add_parameter expression[:value]}"
         end
       end
 
@@ -153,6 +152,39 @@ module Granite::Query::Assembler
       end
 
       Executor::List(Model).new sql, numbered_parameters
+    end
+  end
+
+  private def operators(operator : Symbol) : String
+    case operator
+    when :eq
+      "="
+    when :gteq
+      ">="
+    when :lteq
+      "<="
+    when :neq
+      "!="
+    when :ltgt
+      "<>"
+    when :gt
+      ">"
+    when :lt
+      "<"
+    when :ngt
+      "!>"
+    when :nlt
+      "!<"
+    when :in
+      "IN"
+    when :nin
+      "NOT IN"
+    when :like
+      "LIKE"
+    when :nlike
+      "NOT LIKE"
+    else
+      operator.to_s
     end
   end
 end

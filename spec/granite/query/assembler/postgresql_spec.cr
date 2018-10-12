@@ -29,6 +29,17 @@ require "../spec_helper"
         assembler.where
         assembler.numbered_parameters.should eq ["bob", "23"]
       end
+
+      it "supports different operators" do
+        sql = "select #{query_fields} from table where name like $1 and age > $2 order by id desc"
+        query = builder.where(:name, :like, "bob").where(:age, :gt, 24)
+        query.raw_sql.should match ignore_whitespace sql
+
+        assembler = query.assembler
+        assembler.where
+        assembler.numbered_parameters.should eq ["bob", 23]
+      end
+
     end
 
     context "order" do
