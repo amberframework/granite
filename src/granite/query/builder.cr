@@ -30,16 +30,14 @@ class Granite::Query::Builder(Model)
   end
 
   def assembler
-    #    case Model.adapter.class
-    #    when Granite::Adapter::Pg
-    Assembler::Postgresql(Model).new self
-    #    when Granite::Adapter::Mysql
-    #      Assembler::Mysql(Model).new self
-    #    when Granite::Adapter::Sqlite
-    #      Assembler::Sqlite(Model).new self
-    #    else
-    #      raise "Query builder not supported for #{adapter.class}"
-    #    end
+    case Model.adapter.class
+    when Granite::Adapter::Mysql
+      Assembler::Mysql(Model).new self
+    when Granite::Adapter::Sqlite
+      Assembler::Sqlite(Model).new self
+    else
+      Assembler::Postgresql(Model).new self
+    end
   end
 
   def where(**matches)

@@ -3,6 +3,10 @@ require "db"
 require "../../../src/query_builder"
 
 class Model
+  def self.adapter
+    "adapter"
+  end
+
   def self.table_name
     "table"
   end
