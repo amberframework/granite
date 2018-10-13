@@ -3,10 +3,6 @@ require "db"
 require "../../../src/query_builder"
 
 class Model
-  def self.adapter
-    "adapter"
-  end
-
   def self.table_name
     "table"
   end
@@ -25,9 +21,5 @@ def query_fields
 end
 
 def builder
-  Granite::Query::Builder(Model).new
-end
-
-def assembler
-  Granite::Query::Assembler::Postgresql(Model).new builder
+  Granite::Query::Builder(Model).new Granite::Query::Builder::DbType::Pg
 end

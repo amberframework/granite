@@ -16,27 +16,36 @@
 # or
 # - Model.where(field: value).or { whehre(field3: value3) }
 class Granite::Query::Builder(Model)
+  enum DbType
+    Mysql
+    Sqlite
+    Pg
+  end
+
   enum Sort
     Ascending
     Descending
   end
 
+  getter db_type : DbType
   getter where_fields = [] of NamedTuple(field: String, operator: Symbol, value: DB::Any)
   getter order_fields = [] of NamedTuple(field: String, direction: Sort)
   getter offset : Int64?
   getter limit : Int64?
 
-  def initialize(@boolean_operator = :and)
+  def initialize(@db_type, @boolean_operator = :and)
   end
 
-  def assembler
-    case Model.adapter.class
-    when Granite::Adapter::Mysql
+  def assembler : Assembler::Base(Model)
+    case @db_type
+    when DbType::Pg
+      Assembler::Pg(Model).new self
+    when DbType::Mysql
       Assembler::Mysql(Model).new self
-    when Granite::Adapter::Sqlite
+    when DbType::Sqlite
       Assembler::Sqlite(Model).new self
     else
-      Assembler::Postgresql(Model).new self
+      raise "Database type not supported"
     end
   end
 
@@ -52,7 +61,7 @@ class Granite::Query::Builder(Model)
     self
   end
 
-  def where(field : Symbol, operator : Symbol, value : DB::Any)
+  def where(field : Union(Symbol | String), operator : Symbol, value : DB::Any)
     @where_fields << {field: field.to_s, operator: operator, value: value}
 
     self

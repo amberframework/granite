@@ -158,17 +158,17 @@ module Granite::Query::Assembler
       case operator
       when :eq
         "="
-      when :gteq
+      when :>=, :gteq
         ">="
-      when :lteq
+      when :<=, :lteq
         "<="
-      when :neq
+      when :!=, :neq
         "!="
       when :ltgt
         "<>"
-      when :gt
+      when :>, :gt
         ">"
-      when :lt
+      when :<, :lt
         "<"
       when :ngt
         "!>"
