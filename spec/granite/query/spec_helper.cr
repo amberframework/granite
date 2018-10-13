@@ -29,3 +29,9 @@ def builder
   Granite::Query::Builder(Model).new Granite::Query::Builder::DbType::Sqlite
   {% end %}
 end
+
+def ignore_whitespace(expected : String)
+  whitespace = "\\s+"
+  compiled = expected.split(/\s/).map { |s| Regex.escape s }.join(whitespace)
+  Regex.new compiled, Regex::Options::IGNORE_CASE ^ Regex::Options::MULTILINE
+end
