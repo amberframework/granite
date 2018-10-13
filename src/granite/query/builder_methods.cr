@@ -8,13 +8,13 @@ module Granite::Query::BuilderMethods
   def __builder
     db_type = case adapter.class
               when Granite::Adapter::Pg
-                DbType::Pg
+                Granite::Query::Builder::DbType::Pg
               when Granite::Adapter::Mysql
-                DbType::Mysql
+                Granite::Query::Builder::DbType::Mysql
               when Granite::Adapter::Sqlite
-                DbType::Sqlite
+                Granite::Query::Builder::DbType::Sqlite
               else
-                raise "Adapter not supported #{Model.adapter.class}"
+                raise "Adapter not supported #{adapter.class}"
               end
 
     Builder(self).new(db_type)

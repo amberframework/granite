@@ -61,7 +61,7 @@ class Granite::Query::Builder(Model)
     self
   end
 
-  def where(field : Union(Symbol | String), operator : Symbol, value : DB::Any)
+  def where(field : (Symbol | String), operator : Symbol, value : DB::Any)
     @where_fields << {field: field.to_s, operator: operator, value: value}
 
     self
