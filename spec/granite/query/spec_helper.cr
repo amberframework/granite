@@ -21,5 +21,11 @@ def query_fields
 end
 
 def builder
+  {% if env("CURRENT_ADAPTER").id == "pg" %}
   Granite::Query::Builder(Model).new Granite::Query::Builder::DbType::Pg
+  {% elsif env("CURRENT_ADAPTER").id == "mysql" %}
+  Granite::Query::Builder(Model).new Granite::Query::Builder::DbType::Mysql
+  {% else %}
+  Granite::Query::Builder(Model).new Granite::Query::Builder::DbType::Sqlite
+  {% end %}
 end
