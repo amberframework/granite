@@ -154,37 +154,10 @@ module Granite::Query::Assembler
       Executor::List(Model).new sql, numbered_parameters
     end
 
+    OPERATORS = {"eq": "=", "gteq": ">=", "lteq": "<=", "neq": "!=", "ltgt": "<>", "gt": ">", "lt": "<", "ngt": "!>", "nlt": "!<", "in": "IN", "nin": "NOT IN", "like": "LIKE", "nlike": "NOT LIKE"}
+
     def sql_operator(operator : Symbol) : String
-      case operator
-      when :eq
-        "="
-      when :>=, :gteq
-        ">="
-      when :<=, :lteq
-        "<="
-      when :!=, :neq
-        "!="
-      when :ltgt
-        "<>"
-      when :>, :gt
-        ">"
-      when :<, :lt
-        "<"
-      when :ngt
-        "!>"
-      when :nlt
-        "!<"
-      when :in
-        "IN"
-      when :nin
-        "NOT IN"
-      when :like
-        "LIKE"
-      when :nlike
-        "NOT LIKE"
-      else
-        operator.to_s
-      end
+      OPERATORS[operator.to_s]? || operator.to_s
     end
   end
 end
