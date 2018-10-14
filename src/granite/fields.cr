@@ -40,6 +40,10 @@ module Granite::Fields
     {% for name, options in FIELDS %}
       {% type = options[:type] %}
       {% suffixes = options[:raise_on_nil] ? ["?", ""] : ["", "!"] %}
+
+      {% if options[:options] %}
+        {% options = options[:options] %}
+      {% end %}
       {% if options[:annotations] %}
         {% for ann in options[:annotations] %}
           {{ann.id}}
