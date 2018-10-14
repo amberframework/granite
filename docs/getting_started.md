@@ -144,3 +144,20 @@ The `field` and `primary` macros have a comment option that will specify the doc
 `field age : Int32, comment: "# Number of seconds since the post was posted"`
 
 See the [Docs folder](./) for additional information.
+
+### Third-Party Annotations
+
+Annotations can be a powerful method of adding property specific features with minimal amounts of code.  Since Granite utilizes the `property` keyword for its fields, annotations are able to be applied easily.  This is accomplished by using the `annotations` option on a field, similar to the `comment` option above.  It is used in the form of `annotations: ["annotation1", "annotation2"]`, for example:
+
+```Crystal
+class Foo < Granite::Base
+  adapter mysql
+  table_name foos
+
+  field name : String
+  field password : String, annotations: ["@[Foo::Options(option1: true)]", "@[Bar::Settings(other_option: 7)]"]
+  field age : Int32
+end
+```
+
+Notice the values of the array are exactly as what you would put on a normal property, just as strings.  In this case, Granite will apply the two annotations to the `password` property only.

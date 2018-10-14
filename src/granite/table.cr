@@ -27,32 +27,11 @@ module Granite::Table
     {% SETTINGS[:table_name] = name.id %}
   end
 
-  # specify the primary key column and type
-  macro primary(decl)
+  macro primary(decl, **options)
     {% PRIMARY[:name] = decl.var %}
     {% PRIMARY[:type] = decl.type %}
-  end
-
-  # specify the primary key column and type and comment
-  macro primary(decl, comment)
-    {% PRIMARY[:name] = decl.var %}
-    {% PRIMARY[:type] = decl.type %}
-    {% PRIMARY[:comment] = comment %}
-  end
-
-  # specify the primary key column and type and auto_increment
-  macro primary(decl, auto)
-    {% PRIMARY[:name] = decl.var %}
-    {% PRIMARY[:type] = decl.type %}
-    {% PRIMARY[:auto] = auto %}
-  end
-
-  # specify the primary key column and type and auto_increment and comment
-  macro primary(decl, comment, auto)
-    {% PRIMARY[:name] = decl.var %}
-    {% PRIMARY[:type] = decl.type %}
-    {% PRIMARY[:auto] = auto %}
-    {% PRIMARY[:comment] = comment %}
+    {% PRIMARY[:auto] = (options[:auto] == false || options[:auto] == true) ? options[:auto] : true %}
+    {% PRIMARY[:options] = options %}
   end
 
   macro __process_table

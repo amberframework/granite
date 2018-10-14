@@ -31,82 +31,85 @@ This project is to provide an ORM in Crystal.
 
 ## Contributing
 
-   1. Fork it ( https://github.com/amberframework/granite/fork )
-   2. Create your feature branch (git checkout -b my-new-feature)
-   3. Commit your changes (git commit -am 'Add some feature')
-   4. Push to the branch (git push origin my-new-feature)
-   5. Create a new Pull Request
+1. Fork it ( https://github.com/amberframework/granite/fork )
+2. Create your feature branch (git checkout -b my-new-feature)
+3. Commit your changes (git commit -am 'Add some feature')
+4. Push to the branch (git push origin my-new-feature)
+5. Create a new Pull Request
 
-   ## Running tests
+## Running tests
+Granite uses Crystal's built in test framework. The tests can be run with `$ crystal spec`.
 
-   Granite uses Crystal's built in test framework. The tests can be run with `$ crystal spec`.
+The test suite depends on access to a PostgreSQL, MySQL, and SQLite database to ensure the adapters work as intended.
 
-   The test suite depends on access to a PostgreSQL, MySQL, and SQLite database to ensure the adapters work as intended.
+### Docker setup
 
-   ### Docker setup
+There is a self-contained testing environment provided via the `docker-compose.yml` file in this repository.
+We are testing against multiple databases so you have to specify which docker-compose file you would like to use.
+Replace "{database_type}" with "mysql" or "pg" or "sqlite". Before you can run the docker configuration you have to set the appropriate
+env variables. To do so you can either load them yourself or load the .env file
 
-   There is a self-contained testing environment provided via the `docker-compose.yml` file in this repository.
-   We are testing against multiple databases so you have to specify which docker-compose file you would like to use.
-   Replace "{database_type}" with "mysql" or "pg" or "sqlite". Before you can run the docker configuration you have to set the appropriate
-   env variables. To do so you can either load them yourself or load the .env file
+```
+$ source .env
+```
 
-   ```
-   $ source .env
-   ```
+You can find postgres versions at https://hub.docker.com/_/postgres/
+You can find mysql versions at https://hub.docker.com/_/mysql/
 
-   You can find postgres versions at https://hub.docker.com/_/postgres/
-   You can find mysql versions at https://hub.docker.com/_/mysql/
+After you have docker installed do the following to run tests:
 
-   After you have docker installed do the following to run tests:
+#### First run
 
-   #### First run
+```
+$ docker-compose -f docker/docker-compose.{database_type}.yml build spec
+$ docker-compose -f docker/docker-compose.{database_type}.yml run spec
+```
 
-   ```
-   $ docker-compose -f docker/docker-compose.{database_type}.yml build spec
-   $ docker-compose -f docker/docker-compose.{database_type}.yml run spec
-   ```
+#### Subsequent runs
 
-   #### Subsequent runs
+```
+$ docker-compose -f docker/docker-compose.{database_type}.yml run spec
+```
 
-   ```
-   $ docker-compose -f docker/docker-compose.{database_type}.yml run spec
-   ```
+#### Cleanup
 
-   #### Cleanup
+If you're done testing and you'd like to shut down and clean up the docker dependences run the following:
 
-   If you're done testing and you'd like to shut down and clean up the docker dependences run the following:
+```
+$ docker-compose -f docker/docker-compose.{database_type}.yml down
+```
 
-   ```
-   $ docker-compose -f docker/docker-compose.{database_type}.yml down
-   ```
+#### Run all
 
-   ### Local setup
+To run the specs for each database adapter use `./spec/run_all_specs.sh`.    This will build and run each adapter, then cleanup after itself.
 
-   If you'd like to test without docker you can do so by following the instructions below:
+### Local setup
 
-   1. Install dependencies with `$ shards install `
-   2. Update .env to use appropriate ENV variables, or create appropriate databases.
-   3. Setup databases:
+If you'd like to test without docker you can do so by following the instructions below:
 
-   #### PostgreSQL
+1. Install dependencies with `$ shards install `
+2. Update .env to use appropriate ENV variables, or create appropriate databases.
+3. Setup databases:
 
-   ```sql
-   CREATE USER granite WITH PASSWORD 'password';
+#### PostgreSQL
 
-   CREATE DATABASE granite_db;
+```sql
+CREATE USER granite WITH PASSWORD 'password';
 
-   GRANT ALL PRIVILEGES ON DATABASE granite_db TO granite;
-   ```
+CREATE DATABASE granite_db;
 
-   #### MySQL
+GRANT ALL PRIVILEGES ON DATABASE granite_db TO granite;
+```
 
-   ```sql
-   CREATE USER 'granite'@'localhost' IDENTIFIED BY 'password';
+#### MySQL
 
-   CREATE DATABASE granite_db;
+```sql
+CREATE USER 'granite'@'localhost' IDENTIFIED BY 'password';
 
-   GRANT ALL PRIVILEGES ON granite_db.* TO 'granite'@'localhost' WITH GRANT OPTION;
-   ```
+CREATE DATABASE granite_db;
 
-   4. Export `.env` with `$ source .env`
-   5. `$ crystal spec`
+GRANT ALL PRIVILEGES ON granite_db.* TO 'granite'@'localhost' WITH GRANT OPTION;
+```
+
+4. Export `.env` with `$ source .env`
+5. `$ crystal spec`
