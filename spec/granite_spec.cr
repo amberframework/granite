@@ -153,4 +153,63 @@ describe "Granite::Base" do
       s.to_h.should eq({"item_name" => "Hacker News", "item_id" => "three"})
     end
   end
+
+  # Only PG supports array types
+  {% if env("CURRENT_ENV") == "pg" %}
+    describe "Array(T)" do
+      describe "with values" do
+        it "should save correctly" do
+          model = ArrayModel.new
+          model.id = 1
+          model.str_array = ["jack", "john", "jill"]
+          model.i16_array = [10_000_i16, 20_000_i16, 30_000_i16]
+          model.i32_array = [1_000_000_i32, 2_000_000_i32, 3_000_000_i32, 4_000_000_i32]
+          model.i64_array = [100_000_000_000_i64, 200_000_000_000_i64, 300_000_000_000_i64, 400_000_000_000_i64]
+          model.f32_array = [1.123_456_78_f32, 1.234_567_899_998_741_4_f32]
+          model.f64_array = [1.123_456_789_011_23_f64, 1.234_567_899_998_741_4_f64]
+          model.bool_array = [true, true, false, true, false, false]
+          model.save.should be_true
+        end
+
+        it "should read correctly" do
+          model = ArrayModel.find! 1
+          model.str_array!.should be_a Array(String)
+          model.str_array!.should eq ["jack", "john", "jill"]
+          model.i16_array!.should be_a Array(Int16)
+          model.i16_array!.should eq [10_000_i16, 20_000_i16, 30_000_i16]
+          model.i32_array!.should be_a Array(Int32)
+          model.i32_array!.should eq [1_000_000_i32, 2_000_000_i32, 3_000_000_i32, 4_000_000_i32]
+          model.i64_array!.should be_a Array(Int64)
+          model.i64_array!.should eq [100_000_000_000_i64, 200_000_000_000_i64, 300_000_000_000_i64, 400_000_000_000_i64]
+          model.f32_array!.should be_a Array(Float32)
+          model.f32_array!.should eq [1.123_456_78_f32, 1.234_567_899_998_741_4_f32]
+          model.f64_array!.should be_a Array(Float64)
+          model.f64_array!.should eq [1.123_456_789_011_23_f64, 1.234_567_899_998_741_4_f64]
+          model.bool_array!.should be_a Array(Bool)
+          model.bool_array!.should eq [true, true, false, true, false, false]
+        end
+      end
+
+      describe "with empty array" do
+        it "should save correctly" do
+          model = ArrayModel.new
+          model.id = 2
+          model.str_array = [] of String
+          model.save.should be_true
+        end
+
+        it "should read correctly" do
+          model = ArrayModel.find! 2
+          model.str_array.should be_a Array(String)?
+          model.str_array!.should eq [] of String
+          model.i16_array.should be_nil
+          model.i32_array.should be_nil
+          model.i64_array.should be_nil
+          model.f32_array.should be_nil
+          model.f64_array.should be_nil
+          model.bool_array.should be_nil
+        end
+      end
+    end
+  {% end %}
 end
