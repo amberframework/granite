@@ -30,10 +30,9 @@ class Granite::Base
   extend Transactions::ClassMethods
 
   macro inherited
+    include JSON::Serializable
+    include YAML::Serializable
     macro finished
-      include JSON::Serializable
-      include YAML::Serializable
-
       __process_table
       __process_fields
       __process_select
