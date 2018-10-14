@@ -41,20 +41,28 @@ module Granite::Fields
       {% type = options[:type] %}
       {% suffixes = options[:raise_on_nil] ? ["?", ""] : ["", "!"] %}
 
+      # Override options after setting required variables
+      # to get to the user supplied options
       {% if options[:options] %}
         {% options = options[:options] %}
       {% end %}
+
+      # Set each user supplied annotation on the property
       {% if options[:annotations] %}
         {% for ann in options[:annotations] %}
           {{ann.id}}
         {% end %}
       {% end %}
+
+      # Apply JSON/YAML serialization option annotations
       {% if options[:json_options] %}
          @[JSON::Field({{**options[:json_options]}})]
       {% end %}
       {% if options[:yaml_options] %}
          @[YAML::Field({{**options[:yaml_options]}})]
       {% end %}
+
+      # Apply property comment if exists
       {% if options[:comment] %}
          {{options[:comment].id}}
       {% end %}
