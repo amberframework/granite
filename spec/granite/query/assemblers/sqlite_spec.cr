@@ -1,16 +1,10 @@
 require "../spec_helper"
 
-{% if env("CURRENT_ADAPTER") == "pg" %}
-  def ignore_whitespace(expected : String)
-    whitespace = "\\s+"
-    compiled = expected.split(/\s/).map { |s| Regex.escape s }.join(whitespace)
-    Regex.new compiled, Regex::Options::IGNORE_CASE ^ Regex::Options::MULTILINE
-  end
-
-  describe Granite::Query::Assembler::Postgresql(Model) do
+{% if env("CURRENT_ADAPTER").id == "sqlite" %}
+  describe Granite::Query::Assembler::Sqlite(Model) do
     context "count" do
       it "adds group_by fields for where/count queries" do
-        sql = "select count(*) from table where name = $1 group by name"
+        sql = "select count(*) from table where name = ? group by name"
         builder.where(name: "bob").count.raw_sql.should match ignore_whitespace sql
       end
 
@@ -21,7 +15,7 @@ require "../spec_helper"
 
     context "where" do
       it "properly numbers fields" do
-        sql = "select #{query_fields} from table where name = $1 and age = $2 order by id desc"
+        sql = "select #{query_fields} from table where name = ? and age = ? order by id desc"
         query = builder.where(name: "bob", age: "23")
         query.raw_sql.should match ignore_whitespace sql
 

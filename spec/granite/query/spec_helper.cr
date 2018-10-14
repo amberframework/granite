@@ -21,9 +21,17 @@ def query_fields
 end
 
 def builder
-  Granite::Query::Builder(Model).new
+  {% if env("CURRENT_ADAPTER").id == "pg" %}
+  Granite::Query::Builder(Model).new Granite::Query::Builder::DbType::Pg
+  {% elsif env("CURRENT_ADAPTER").id == "mysql" %}
+  Granite::Query::Builder(Model).new Granite::Query::Builder::DbType::Mysql
+  {% else %}
+  Granite::Query::Builder(Model).new Granite::Query::Builder::DbType::Sqlite
+  {% end %}
 end
 
-def assembler
-  Granite::Query::Assembler::Postgresql(Model).new builder
+def ignore_whitespace(expected : String)
+  whitespace = "\\s+"
+  compiled = expected.split(/\s/).map { |s| Regex.escape s }.join(whitespace)
+  Regex.new compiled, Regex::Options::IGNORE_CASE ^ Regex::Options::MULTILINE
 end
