@@ -1,7 +1,8 @@
 require "json"
 
 module Granite::Fields
-  alias Type = DB::Any
+  alias SupportedArrayTypes = Array(String) | Array(Int16) | Array(Int32) | Array(Int64) | Array(Float32) | Array(Float64) | Array(Bool)
+  alias Type = DB::Any | SupportedArrayTypes
   TIME_FORMAT_REGEX = /\d{4,}-\d{2,}-\d{2,}\s\d{2,}:\d{2,}:\d{2,}/
 
   macro included
@@ -84,7 +85,7 @@ module Granite::Fields
 
     # keep a hash of the params that will be passed to the adapter.
     disable_granite_docs? def content_values
-      parsed_params = [] of DB::Any
+      parsed_params = [] of Type
       {% for name, options in CONTENT_FIELDS %}
         parsed_params << {{name.id}}
       {% end %}
@@ -92,7 +93,7 @@ module Granite::Fields
     end
 
     disable_granite_docs? def to_h
-      fields = {} of String => DB::Any
+      fields = {} of String => Type
 
       {% for name, options in FIELDS %}
         {% type = options[:type] %}

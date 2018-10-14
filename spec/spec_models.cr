@@ -302,6 +302,23 @@ require "uuid"
     SQL
   end
 
+  # Only PG supports array types
+  {% if env("CURRENT_ENV") == "pg" %}
+    class ArrayModel < Granite::Base
+      adapter {{ adapter_literal }}
+
+      primary id : Int32
+      field str_array : Array(String)
+      field i16_array : Array(Int16)
+      field i32_array : Array(Int32)
+      field i64_array : Array(Int64)
+      field f32_array : Array(Float32)
+      field f64_array : Array(Float64)
+      field bool_array : Array(Bool)
+    end
+    ArrayModel.migrator.drop_and_create
+  {% end %}
+
   module Validators
     class NilTest < Granite::Base
       adapter {{ adapter_literal }}
