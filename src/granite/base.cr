@@ -26,14 +26,14 @@ class Granite::Base
   include Migrator
   include Select
 
-  include JSON::Serializable
-  include YAML::Serializable
-
   extend Querying
   extend Transactions::ClassMethods
 
   macro inherited
     macro finished
+      include JSON::Serializable
+      include YAML::Serializable
+
       __process_table
       __process_fields
       __process_select
