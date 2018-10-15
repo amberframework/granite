@@ -2,6 +2,10 @@ require "./exceptions"
 
 module Granite::Transactions
   module ClassMethods
+    disable_granite_docs? def clear
+      @@adapter.clear @@table_name
+    end
+
     disable_granite_docs? def create(**args)
       create(args.to_h)
     end
