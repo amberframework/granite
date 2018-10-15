@@ -27,6 +27,7 @@ class Granite::Base
   include Select
 
   extend Querying
+  extend Query::BuilderMethods
   extend Transactions::ClassMethods
 
   macro inherited
