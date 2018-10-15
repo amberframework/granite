@@ -1,6 +1,6 @@
 require "spec"
 require "db"
-require "../../../src/query_builder"
+require "../../../src/granite/query/builder"
 
 class Model
   def self.table_name
