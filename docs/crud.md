@@ -64,6 +64,11 @@ end
 
 post = Post.first! # raises when no records exist
 ```
+
+### where, order, limit, offset
+
+See [querying](./querying.md) for more details of using the QueryBuilder.
+
 ### all
 
 Returns all records of a model.
@@ -77,6 +82,7 @@ if posts
 end
 ```
 
+See [querying](./querying.md) for more details on using `all`
 
 ## Update
 
