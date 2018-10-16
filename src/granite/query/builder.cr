@@ -119,13 +119,14 @@ class Granite::Query::Builder(Model)
     assembler.count
   end
 
-  def first : Model?
-    first(1).first?
-  end
+  # TODO: replace `querying.first` with this
+  # def first : Model?
+  #   first(1).first?
+  # end
 
-  def first(n : Int32) : Executor::List(Model)
-    assembler.first(n)
-  end
+  # def first(n : Int32) : Executor::List(Model)
+  #   assembler.first(n)
+  # end
 
   def any? : Bool
     !first.nil?

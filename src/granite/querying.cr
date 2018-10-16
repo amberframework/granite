@@ -25,12 +25,6 @@ module Granite::Querying
     end
   end
 
-  # Clear is used to remove all rows from the table and reset the counter for
-  # the primary key.
-  def clear
-    @@adapter.clear @@table_name
-  end
-
   def raw_all(clause = "", params = [] of DB::Any)
     rows = [] of self
     @@adapter.select(@@select, clause, params) do |results|

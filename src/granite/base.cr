@@ -3,6 +3,8 @@ require "./association_collection"
 require "./associations"
 require "./callbacks"
 require "./fields"
+require "./query/executors/base"
+require "./query/**"
 require "./querying"
 require "./settings"
 require "./table"
@@ -27,6 +29,7 @@ class Granite::Base
   include Select
 
   extend Querying
+  extend Query::BuilderMethods
   extend Transactions::ClassMethods
 
   macro inherited

@@ -6,4 +6,3 @@ module Granite
 end
 
 require "./granite/base"
-require "./query_builder"
