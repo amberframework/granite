@@ -2,10 +2,62 @@
 
 The query macro and where clause combine to give you full control over your query.
 
+## Where
+
+Where is using a QueryBuilder that allows you to chain where clauses together to build up a complete query.
+```crystal
+posts = Post.where(published: true, author_id: User.first!.id)
+```
+
+It supports different operators:
+```crystal
+Post.where(:created_at, :gt, Time.now - 7.days)
+```
+
+Supported operators are :eq, :gteq, :lteq, :neq, :gt, :lt, :nlt, :ngt, :ltgt, :in, :nin, :like, :nlike
+
+## Order
+
+Order is using the QueryBuilder and supports providing an ORDER BY clause:
+```crystal
+Post.order(:created_at)
+```
+
+Direction
+```crystal
+Post.order(updated_at: :desc)
+```
+
+Multiple fields
+```crystal
+Post.order([:created_at, :title])
+```
+
+With direction
+```crystal
+Post.order(created_at: :desc, title: :asc)
+```
+
+## Limit
+
+Limit is using the QueryBuilder and provides the ability to limit the number of tuples returned:
+```crystal
+Post.limit(50)
+```
+
+## Offset
+
+Offset is using the QueryBuilder and provides the ability to offset the results. This is used for pagination:
+```crystal
+Post.offset(100).limit(50)
+```
+
 ## All
 
-When using the `all` method, the SQL selected fields will match the
-fields specified in the model unless the `query` macro was used to customize
+All is not using the QueryBuilder.  It allows you to directly query the database using SQL.
+
+When using the `all` method, the selected fields will match the
+fields specified in the model unless the `select` macro was used to customize
 the SELECT.
 
 Always pass in parameters to avoid SQL Injection.  Use a `?`
@@ -32,23 +84,6 @@ posts = Post.all("JOIN comments c ON c.post_id = post.id
                   ["Joe"])
 ```
 
-## First
-
-It is common to only want the first result and append a `LIMIT 1` to the query.
-This is what the `first` method does.
-
-For example:
-
-```crystal
-post = Post.first("ORDER BY posts.name DESC")
-```
-
-This is the same as:
-
-```crystal
-post = Post.all("ORDER BY posts.name DESC LIMIT 1").first
-```
-
 ## Customizing SELECT
 
 The `select_statement` macro allows you to customize the entire query, including the SELECT portion.  This shouldn't be necessary in most cases, but allows you to craft more complex (i.e. cross-table) queries if needed:
@@ -73,5 +108,3 @@ You can combine this with an argument to `all` or `first` for maximum flexibilit
 ```crystal
 results = CustomView.all("WHERE articles.author = ?", ["Noah"])
 ```
-
-## 
