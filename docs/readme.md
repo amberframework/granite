@@ -1,21 +1,21 @@
 ## Documentation
 
-[Getting Started](docs/getting_started.md)
+[Getting Started](./getting_started.md)
 
-[CRUD](docs/crud.md)
+[CRUD](./crud.md)
 
-[Querying](docs/querying.md)
+[Querying](./querying.md)
 
-[Relationships](docs/relationships.md)
+[Relationships](./relationships.md)
 
-[Validation](docs/validations.md)
+[Validation](./validations.md)
 
-[Callbacks](docs/callbacks.md)
+[Callbacks](./callbacks.md)
 
-[Migrations](docs/migrations.md)
+[Migrations](./migrations.md)
 
-[Imports](docs/imports.md)
+[Imports](./imports.md)
 
-[JSON Support](docs/json_support.md)
+[JSON Support](./json_support.md)
 
-[YAML Support](docs/yaml_support.md)
+[YAML Support](./yaml_support.md)

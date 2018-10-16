@@ -82,7 +82,7 @@ if posts
 end
 ```
 
-See [querying](./querying.md) for more details on using `all`
+See [querying](./querying.md#all) for more details on using `all`
 
 ## Update
 

@@ -6,7 +6,7 @@ The query macro and where clause combine to give you full control over your quer
 
 Where is using a QueryBuilder that allows you to chain where clauses together to build up a complete query.
 ```crystal
-posts = Post.where(published: true, author_id: User.first.id)
+posts = Post.where(published: true, author_id: User.first!.id)
 ```
 
 It supports different operators:
@@ -15,27 +15,6 @@ Post.where(:created_at, :gt, Time.now - 7.days)
 ```
 
 Supported operators are :eq, :gteq, :lteq, :neq, :gt, :lt, :nlt, :ngt, :ltgt, :in, :nin, :like, :nlike
-
-
-This allows you create snippets of clauses that can be easily chained together similar to scopes in Rails.
-```crystal
-class Post < Granite::Base
-...
-  def live
-    where(published: true)
-  end
-
-  def draft
-    where(published: false)
-  end
-
-  def last_week
-    where(:created_at, :gt, Time.now - 7.days)
-  end
-end
-
-posts = Post.live.last_week
-```
 
 ## Order
 
@@ -46,7 +25,7 @@ Post.order(:created_at)
 
 Direction
 ```crystal
-Post.order(updated_at: Sort::Descending)
+Post.order(updated_at: :desc)
 ```
 
 Multiple fields
@@ -56,7 +35,7 @@ Post.order([:created_at, :title])
 
 With direction
 ```crystal
-Post.order(created_at: Sort::Descending, title: Sort::Ascending)
+Post.order(created_at: :desc, title: :asc)
 ```
 
 ## Limit
