@@ -100,6 +100,12 @@ module Granite::Transactions
         {% elsif primary_auto == true %}
           {% raise "Failed to define #{@type.name}#save: Primary key must be Int(32|64), or set `auto: false` for natural keys.\n\n  primary #{primary_name} : #{primary_type}, auto: false\n" %}
         {% else %}
+          {% if primary_auto == :uuid %}
+            _uuid = UUID.random.to_s
+            @{{primary_name}} = _uuid
+            params << _uuid
+            fields << "{{primary_name}}"
+          {% end %}
           if @{{primary_name}}
             @@adapter.insert(@@table_name, fields, params, lastval: nil)
           else

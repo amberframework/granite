@@ -58,7 +58,9 @@ module Granite::Migrator
           # primary key
           k = {{adapter}}.quote("{{primary_name}}")
           v =
-            {% if primary_auto %}
+            {% if primary_auto == :uuid %}
+              resolve.call("UUID")
+            {% elsif primary_auto %}
               resolve.call("AUTO_{{primary_type.id}}")
             {% else %}
               resolve.call("{{primary_type.id}}")
