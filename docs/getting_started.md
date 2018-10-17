@@ -118,21 +118,20 @@ end
 
 ### UUIDs
 
-For databases that utilize UUIDs as the primary key, the `primary` macro can be used again with the `auto: false` option.  A `before_create` callback can be added to the model to randomly generate and set a secure UUID on the record before it is saved to the database.
+For databases that utilize UUIDs as the primary key, the `primary` macro can be used as a String type, with the `auto: :uuid` option.  This will generate a secure UUID when the model is saved.
 
 ```crystal
 class Book < Granite::Base
-  require "uuid"
   adapter mysql
-  primary ISBN : String, auto: false
+  primary isbn : String, auto: :uuid
   field name : String
-
-  before_create :assign_isbn
-
-  def assign_isbn
-    @ISBN = UUID.random.to_s
-  end
 end
+
+book = Book.new
+book.name = "Moby Dick"
+book.isbn # => nil
+book.save
+book.isbn # => RFC4122 V4 UUID string
 ```
 
 ### Generating Documentation
