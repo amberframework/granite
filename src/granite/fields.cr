@@ -37,7 +37,6 @@ module Granite::Fields
     {% end %}
 
     # Create the properties
-
     {% for name, options in FIELDS %}
       {% type = options[:type] %}
       {% suffixes = options[:raise_on_nil] ? ["?", ""] : ["", "!"] %}
@@ -139,7 +138,7 @@ module Granite::Fields
             {% type = options[:type] %}
           when "{{_name.id}}"
             if "{{_name.id}}" == "{{PRIMARY[:name]}}"
-              {% if !PRIMARY[:auto] %}
+              {% unless PRIMARY[:auto] %}
                 @{{PRIMARY[:name]}} = value.as({{PRIMARY[:type]}})
               {% end %}
               return

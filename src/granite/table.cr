@@ -30,7 +30,7 @@ module Granite::Table
   macro primary(decl, **options)
     {% PRIMARY[:name] = decl.var %}
     {% PRIMARY[:type] = decl.type %}
-    {% PRIMARY[:auto] = (options[:auto] == false || options[:auto] == true) ? options[:auto] : true %}
+    {% PRIMARY[:auto] = ([true, false, :uuid].includes? options[:auto]) ? options[:auto] : true %}
     {% PRIMARY[:options] = options %}
   end
 

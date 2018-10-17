@@ -319,6 +319,13 @@ require "uuid"
     ArrayModel.migrator.drop_and_create
   {% end %}
 
+  class UUIDModel < Granite::Base
+    adapter {{ adapter_literal }}
+    table_name uuids
+
+    primary uuid : String, auto: :uuid
+  end
+
   module Validators
     class NilTest < Granite::Base
       adapter {{ adapter_literal }}
@@ -476,4 +483,5 @@ require "uuid"
   AfterInit.migrator.drop_and_create
   SongThread.migrator.drop_and_create
   CustomSongThread.migrator.drop_and_create
+  UUIDModel.migrator.drop_and_create
 {% end %}
