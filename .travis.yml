@@ -31,6 +31,11 @@ matrix:
         - CURRENT_ADAPTER=pg
         - MYSQL_VERSION=5.7
         - PG_VERSION=10.5
+    - name: "Postgres 11"
+      env:
+        - CURRENT_ADAPTER=pg
+        - MYSQL_VERSION=5.7
+        - PG_VERSION=11
     - name: "Sqlite"
       env:
         - CURRENT_ADAPTER=sqlite
