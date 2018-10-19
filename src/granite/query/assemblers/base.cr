@@ -38,19 +38,29 @@ module Granite::Query::Assembler
     def where
       return @where if @where
 
-      clauses = @query.where_fields.map do |expression|
+      first = true
+      clauses = [] of String
+
+      @query.where_fields.each do |expression|
         add_aggregate_field expression[:field]
 
-        if expression[:value].nil?
-          "#{expression[:field]} IS NULL"
+        if first
+          first = false
+          clauses << "WHERE"
         else
-          "#{expression[:field]} #{sql_operator(expression[:operator])} #{add_parameter expression[:value]}"
+          clauses << expression[:join].to_s.upcase
+        end
+
+        if expression[:value].nil?
+          clauses << "#{expression[:field]} IS NULL"
+        else
+          clauses << "#{expression[:field]} #{sql_operator(expression[:operator])} #{add_parameter expression[:value]}"
         end
       end
 
       return nil if clauses.none?
 
-      @where = "WHERE #{clauses.join " AND "}"
+      @where = clauses.join(" ")
     end
 
     def order(use_default_order = true)
