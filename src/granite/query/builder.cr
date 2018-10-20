@@ -62,7 +62,7 @@ class Granite::Query::Builder(Model)
   end
 
   def where(field : (Symbol | String), operator : Symbol, value : DB::Any)
-    and(field: field.to_s, operator: :eq, value: value)
+    and(field: field.to_s, operator: operator, value: value)
   end
 
   def and(**matches)
