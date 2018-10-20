@@ -38,18 +38,12 @@ module Granite::Query::Assembler
     def where
       return @where if @where
 
-      first = true
-      clauses = [] of String
+      clauses = ["WHERE"]
 
       @query.where_fields.each do |expression|
         add_aggregate_field expression[:field]
 
-        if first
-          first = false
-          clauses << "WHERE"
-        else
-          clauses << expression[:join].to_s.upcase
-        end
+        clauses << expression[:join].to_s.upcase unless clauses.size == 1
 
         if expression[:value].nil?
           clauses << "#{expression[:field]} IS NULL"
@@ -58,7 +52,7 @@ module Granite::Query::Assembler
         end
       end
 
-      return nil if clauses.none?
+      return nil if clauses.size == 1
 
       @where = clauses.join(" ")
     end
