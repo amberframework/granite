@@ -13,6 +13,12 @@ describe Granite::Query::Builder(Model) do
     query.where_fields.should eq expected
   end
 
+  it "stores joins with where_fields" do
+    query = builder.where(:name, :like, "bob*").or(:age, :gt, 23)
+    expected = [{join: :and, field: "name", operator: :like, value: "bob*"}, {join: :or, field: "age", operator: :gt, value: 23}]
+    query.where_fields.should eq expected
+  end
+
   it "stores order fields" do
     query = builder.order(name: :desc).order(age: :asc)
     expected = [
