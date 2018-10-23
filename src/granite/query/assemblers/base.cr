@@ -114,7 +114,7 @@ module Granite::Query::Assembler
         s << "FROM #{table_name}"
         s << where
         s << group_by
-        s << order
+        s << order(use_default_order: false)
       end
 
       Executor::Value(Model, Int64).new sql, numbered_parameters, default: 0_i64
