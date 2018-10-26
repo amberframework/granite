@@ -2,7 +2,7 @@ require "./spec_helper"
 
 describe "Granite::Base" do
   describe "JSON" do
-    describe "#from_json" do
+    describe ".from_json" do
       it "can create an object from json" do
         json_str = %({"name": "json::anyReview","upvotes": 2, "sentiment": 1.23, "interest": 4.56, "published": true})
 
@@ -79,11 +79,26 @@ describe "Granite::Base" do
       it "should serialize correctly" do
         model.to_json.should eq %({"task_name":"The Task"})
       end
+
+      context "when using timestamp fields" do
+        TodoJsonOptions.import([
+          TodoJsonOptions.new(name: "first todo", priority: 200),
+          TodoJsonOptions.new(name: "second todo", priority: 500),
+          TodoJsonOptions.new(name: "third todo", priority: 300),
+        ])
+
+        it "should serialize correctly" do
+          todos = TodoJsonOptions.order(id: :asc).select
+          todos[0].to_json.should eq %({"id":1,"task_name":"first todo","posted":"#{Time::Format::RFC_3339.format(todos[0].created_at!)}"})
+          todos[1].to_json.should eq %({"id":2,"task_name":"second todo","posted":"#{Time::Format::RFC_3339.format(todos[1].created_at!)}"})
+          todos[2].to_json.should eq %({"id":3,"task_name":"third todo","posted":"#{Time::Format::RFC_3339.format(todos[2].created_at!)}"})
+        end
+      end
     end
   end
 
   describe "YAML" do
-    describe "#from_yaml" do
+    describe ".from_yaml" do
       it "can create an object from YAML" do
         yaml_str = %(---\nname: yaml::anyReview\nupvotes: 2\nsentiment: 1.23\ninterest: 4.56\npublished: true)
 
@@ -159,6 +174,21 @@ describe "Granite::Base" do
 
       it "should serialize correctly" do
         model.to_yaml.should eq %(---\ntask_name: The Task\n)
+      end
+
+      context "when using timestamp fields" do
+        TodoYamlOptions.import([
+          TodoYamlOptions.new(name: "first todo", priority: 200),
+          TodoYamlOptions.new(name: "second todo", priority: 500),
+          TodoYamlOptions.new(name: "third todo", priority: 300),
+        ])
+
+        it "should serialize correctly" do
+          todos = TodoYamlOptions.order(id: :asc).select
+          todos[0].to_yaml.should eq %(---\nid: 1\ntask_name: first todo\nposted: #{Time::Format::YAML_DATE.format(todos[0].created_at!)}\n)
+          todos[1].to_yaml.should eq %(---\nid: 2\ntask_name: second todo\nposted: #{Time::Format::YAML_DATE.format(todos[1].created_at!)}\n)
+          todos[2].to_yaml.should eq %(---\nid: 3\ntask_name: third todo\nposted: #{Time::Format::YAML_DATE.format(todos[2].created_at!)}\n)
+        end
       end
     end
   end
