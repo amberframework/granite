@@ -1,7 +1,7 @@
 FROM crystallang/crystal:0.26.1
 
-ARG sqlite_version
-ARG sqlite_version_year
+ARG sqlite_version=3110000
+ARG sqlite_version_year=2016
 
 # Install deps
 RUN apt-get update -qq && apt-get install -y --no-install-recommends libpq-dev libmysqlclient-dev libsqlite3-dev wget unzip lib32z1
