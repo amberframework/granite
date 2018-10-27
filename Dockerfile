@@ -1,6 +1,10 @@
 FROM crystallang/crystal:0.26.1
 
-RUN apt-get update -qq && apt-get install -y --no-install-recommends libpq-dev libsqlite3-dev libmysqlclient-dev
+ARG sqlite_version
+ARG sqlite_version_year
+
+# Install deps
+RUN apt-get update -qq && apt-get install -y --no-install-recommends libpq-dev libmysqlclient-dev libsqlite3-dev wget unzip lib32z1
 
 WORKDIR /app/user
 
@@ -9,5 +13,4 @@ RUN shards install
 
 COPY . /app/user
 
-CMD ["crystal", "spec"]
-
+RUN wget -O sqlite.zip https://www.sqlite.org/$sqlite_version_year/sqlite-tools-linux-x86-$sqlite_version.zip && unzip -d /usr/bin/ -j sqlite.zip && rm sqlite.zip
