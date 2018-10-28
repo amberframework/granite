@@ -36,8 +36,17 @@ matrix:
         - CURRENT_ADAPTER=pg
         - MYSQL_VERSION=5.7
         - PG_VERSION=11
-    - name: "Sqlite"
+    - name: "Sqlite 3.11.0"
       env:
         - CURRENT_ADAPTER=sqlite
         - MYSQL_VERSION=5.7
         - PG_VERSION=10.4
+        - SQLITE_VERSION=3110000
+        - SQLITE_VERSION_YEAR=2016
+    - name: "Sqlite 3.25.2"
+      env:
+        - CURRENT_ADAPTER=sqlite
+        - MYSQL_VERSION=5.7
+        - PG_VERSION=10.4
+        - SQLITE_VERSION=3250200
+        - SQLITE_VERSION_YEAR=2018
