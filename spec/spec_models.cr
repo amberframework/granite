@@ -185,7 +185,7 @@ require "uuid"
     table_name books
     has_many :book_reviews, class_name: BookReview
     belongs_to author : Person
-    belongs_to publisher : Company, foreign_key: publisher_id : Int32
+    belongs_to publisher : Company, foreign_key: publisher_id : Int32, json_options: {ignore: true}, yaml_options: {ignore: true}
 
     primary id : Int32
     field name : String
