@@ -37,9 +37,6 @@ module Granite::Transactions
     {% primary_type = PRIMARY[:type] %}
     {% primary_auto = PRIMARY[:auto] %}
 
-    @updated_at : Time?
-    @created_at : Time?
-
     # The import class method will run a batch INSERT statement for each model in the array
     # the array must contain only one model class
     # invalid model records will be skipped
@@ -77,11 +74,15 @@ module Granite::Transactions
     end
 
     disable_granite_docs? def set_timestamps(*, to time = Time.now, mode = :create)
-      if mode == :create
-        @created_at = time.to_utc.at_beginning_of_second
-      end
+      {% if FIELDS.keys.stringify.includes? "created_at" %}
+        if mode == :create
+          @created_at = time.to_utc.at_beginning_of_second
+        end
+      {% end %}
 
-      @updated_at = time.to_utc.at_beginning_of_second
+      {% if FIELDS.keys.stringify.includes? "updated_at" %}
+        @updated_at = time.to_utc.at_beginning_of_second
+      {% end %}
     end
 
     private def __create

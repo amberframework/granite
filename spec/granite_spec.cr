@@ -2,7 +2,7 @@ require "./spec_helper"
 
 describe "Granite::Base" do
   describe "JSON" do
-    context ".from_json" do
+    describe ".from_json" do
       it "can create an object from json" do
         json_str = %({"name": "json::anyReview","upvotes": 2, "sentiment": 1.23, "interest": 4.56, "published": true})
 
@@ -42,7 +42,7 @@ describe "Granite::Base" do
       end
     end
 
-    context ".to_json" do
+    describe "#to_json" do
       it "emits nil values when told" do
         t = TodoEmitNull.new(name: "test todo", priority: 20)
         result = %({"id":null,"name":"test todo","priority":20,"created_at":null,"updated_at":null})
@@ -68,10 +68,37 @@ describe "Granite::Base" do
         collection.should eq %([{"name":"todo 1","priority":1},{"name":"todo 2","priority":2},{"name":"todo 3","priority":3}])
       end
     end
+
+    context "with json_options" do
+      model = TodoJsonOptions.from_json(%({"task_name": "The Task", "priority": 9000}))
+      it "should deserialize correctly" do
+        model.name.should eq "The Task"
+        model.priority.should be_nil
+      end
+
+      it "should serialize correctly" do
+        model.to_json.should eq %({"task_name":"The Task"})
+      end
+
+      context "when using timestamp fields" do
+        TodoJsonOptions.import([
+          TodoJsonOptions.new(name: "first todo", priority: 200),
+          TodoJsonOptions.new(name: "second todo", priority: 500),
+          TodoJsonOptions.new(name: "third todo", priority: 300),
+        ])
+
+        it "should serialize correctly" do
+          todos = TodoJsonOptions.order(id: :asc).select
+          todos[0].to_json.should eq %({"id":1,"task_name":"first todo","posted":"#{Time::Format::RFC_3339.format(todos[0].created_at!)}"})
+          todos[1].to_json.should eq %({"id":2,"task_name":"second todo","posted":"#{Time::Format::RFC_3339.format(todos[1].created_at!)}"})
+          todos[2].to_json.should eq %({"id":3,"task_name":"third todo","posted":"#{Time::Format::RFC_3339.format(todos[2].created_at!)}"})
+        end
+      end
+    end
   end
 
   describe "YAML" do
-    context ".from_yaml" do
+    describe ".from_yaml" do
       it "can create an object from YAML" do
         yaml_str = %(---\nname: yaml::anyReview\nupvotes: 2\nsentiment: 1.23\ninterest: 4.56\npublished: true)
 
@@ -111,7 +138,7 @@ describe "Granite::Base" do
       end
     end
 
-    context ".to_yaml" do
+    describe "#to_yaml" do
       it "emits nil values when told" do
         t = TodoEmitNull.new(name: "test todo", priority: 20)
         result = %(---\nid: \nname: test todo\npriority: 20\ncreated_at: \nupdated_at: \n)
@@ -135,6 +162,33 @@ describe "Granite::Base" do
 
         collection = todos.to_yaml
         collection.should eq %(---\n- name: todo 1\n  priority: 1\n- name: todo 2\n  priority: 2\n- name: todo 3\n  priority: 3\n)
+      end
+    end
+
+    context "with yaml_options" do
+      model = TodoYamlOptions.from_yaml(%(---\ntask_name: The Task\npriority: 9000))
+      it "should deserialize correctly" do
+        model.name.should eq "The Task"
+        model.priority.should be_nil
+      end
+
+      it "should serialize correctly" do
+        model.to_yaml.should eq %(---\ntask_name: The Task\n)
+      end
+
+      context "when using timestamp fields" do
+        TodoYamlOptions.import([
+          TodoYamlOptions.new(name: "first todo", priority: 200),
+          TodoYamlOptions.new(name: "second todo", priority: 500),
+          TodoYamlOptions.new(name: "third todo", priority: 300),
+        ])
+
+        it "should serialize correctly" do
+          todos = TodoYamlOptions.order(id: :asc).select
+          todos[0].to_yaml.should eq %(---\nid: 1\ntask_name: first todo\nposted: #{Time::Format::YAML_DATE.format(todos[0].created_at!)}\n)
+          todos[1].to_yaml.should eq %(---\nid: 2\ntask_name: second todo\nposted: #{Time::Format::YAML_DATE.format(todos[1].created_at!)}\n)
+          todos[2].to_yaml.should eq %(---\nid: 3\ntask_name: third todo\nposted: #{Time::Format::YAML_DATE.format(todos[2].created_at!)}\n)
+        end
       end
     end
   end

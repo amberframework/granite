@@ -326,6 +326,26 @@ require "uuid"
     primary uuid : String, auto: :uuid
   end
 
+  class TodoJsonOptions < Granite::Base
+    adapter {{ adapter_literal }}
+    table_name todos_json
+
+    field name : String, json_options: {key: "task_name"}
+    field priority : Int32, json_options: {ignore: true}
+    field updated_at : Time, json_options: {ignore: true}
+    field created_at : Time, json_options: {key: "posted"}
+  end
+
+  class TodoYamlOptions < Granite::Base
+    adapter {{ adapter_literal }}
+    table_name todos_yaml
+
+    field name : String, yaml_options: {key: "task_name"}
+    field priority : Int32, yaml_options: {ignore: true}
+    field updated_at : Time, yaml_options: {ignore: true}
+    field created_at : Time, yaml_options: {key: "posted"}
+  end
+
   module Validators
     class NilTest < Granite::Base
       adapter {{ adapter_literal }}
@@ -484,4 +504,6 @@ require "uuid"
   SongThread.migrator.drop_and_create
   CustomSongThread.migrator.drop_and_create
   UUIDModel.migrator.drop_and_create
+  TodoJsonOptions.migrator.drop_and_create
+  TodoYamlOptions.migrator.drop_and_create
 {% end %}
