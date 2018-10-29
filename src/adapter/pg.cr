@@ -39,7 +39,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
   # in via .all() method
   def select(query : Granite::Select::Container, clause = "", params = [] of DB::Any, &block)
     clause = _ensure_clause_template(clause)
-    statement = query.custom || String.build do |stmt|
+    statement = query.custom ? "#{query.custom} #{clause}" : String.build do |stmt|
       stmt << "SELECT "
       stmt << query.fields.map { |name| "#{quote(query.table_name)}.#{quote(name)}" }.join(", ")
       stmt << " FROM #{quote(query.table_name)} #{clause}"
