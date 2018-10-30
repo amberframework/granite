@@ -126,7 +126,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     end
   end
 
-  private def _ensure_clause_template(clause)
+  def ensure_clause_template(clause)
     if clause.includes?("?")
       num_subs = clause.count("?")
 
