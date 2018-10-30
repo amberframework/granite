@@ -12,7 +12,7 @@ module Granite::Table
   macro included
     macro inherited
       disable_granite_docs? SETTINGS = {} of Nil => Nil
-      disable_granite_docs? PRIMARY = {name: id, type: Int64, auto: true}
+      disable_granite_docs? PRIMARY = {name: id, type: Int64 | Nil, auto: true}
     end
   end
 

@@ -9,7 +9,6 @@ require "uuid"
   {% adapter_literal = env("CURRENT_ADAPTER").id %}
 
   class Parent < Granite::Base
-    primary id : Int64
     adapter {{ adapter_literal }}
     table_name parents
 
@@ -24,7 +23,6 @@ require "uuid"
   end
 
   class Teacher < Granite::Base
-    primary id : Int64
     adapter {{ adapter_literal }}
     table_name teachers
 
@@ -34,7 +32,6 @@ require "uuid"
   end
 
   class Student < Granite::Base
-    primary id : Int64
     adapter {{ adapter_literal }}
     table_name students
 
@@ -45,7 +42,6 @@ require "uuid"
   end
 
   class Klass < Granite::Base
-    primary id : Int64
     adapter {{ adapter_literal }}
     table_name klasses
     field name : String
@@ -57,7 +53,6 @@ require "uuid"
   end
 
   class Enrollment < Granite::Base
-    primary id : Int64
     adapter {{ adapter_literal }}
     table_name enrollments
 
@@ -75,7 +70,6 @@ require "uuid"
 
   class User < Granite::Base
     adapter {{ adapter_literal }}
-    primary id : Int64
     field email : String
 
     has_one :profile
@@ -85,7 +79,6 @@ require "uuid"
 
   class Profile < Granite::Base
     adapter {{ adapter_literal }}
-    primary id : Int64
     field name : String
 
     belongs_to :user
@@ -95,7 +88,6 @@ require "uuid"
 
   class Nation::County < Granite::Base
     adapter {{ adapter_literal }}
-    primary id : Int64
     table_name nation_counties
 
     field name : String
@@ -116,7 +108,6 @@ require "uuid"
   class Empty < Granite::Base
     adapter {{ adapter_literal }}
     table_name empties
-    primary id : Int64
   end
 
   class ReservedWord < Granite::Base
@@ -125,21 +116,20 @@ require "uuid"
     field all : String
   end
 
-  class Callback < Granite::Base
-    adapter {{ adapter_literal }}
-    table_name callbacks
-    primary id : Int64
-    field name : String
+  # class Callback < Granite::Base
+  #   adapter {{ adapter_literal }}
+  #   table_name callbacks
+  #   field name : String
 
-    property history : IO::Memory = IO::Memory.new
+  #   property history : IO::Memory = IO::Memory.new
 
-    {% for name in Granite::Callbacks::CALLBACK_NAMES %}
-      {{name.id}} _{{name.id}}
-      private def _{{name.id}}
-        history << "{{name.id}}\n"
-      end
-    {% end %}
-  end
+  #   {% for name in Granite::Callbacks::CALLBACK_NAMES %}
+  #     {{name.id}} _{{name.id}}
+  #     private def _{{name.id}}
+  #       history << "{{name.id}}\n"
+  #     end
+  #   {% end %}
+  # end
 
   class CallbackWithAbort < Granite::Base
     adapter {{ adapter_literal }}
@@ -234,7 +224,6 @@ require "uuid"
     adapter {{ adapter_literal }}
     table_name articles
 
-    primary id : Int64
     field articlebody : String
   end
 
@@ -242,7 +231,6 @@ require "uuid"
     adapter {{ adapter_literal }}
     table_name comments
 
-    primary id : Int64
     field commentbody : String
     field articleid : Int64
   end
@@ -486,7 +474,6 @@ require "uuid"
   Review.migrator.drop_and_create
   Empty.migrator.drop_and_create
   ReservedWord.migrator.drop_and_create
-  Callback.migrator.drop_and_create
   CallbackWithAbort.migrator.drop_and_create
   Kvs.migrator.drop_and_create
   Person.migrator.drop_and_create

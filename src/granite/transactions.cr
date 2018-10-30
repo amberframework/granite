@@ -94,9 +94,9 @@ module Granite::Transactions
         params << value
       end
       begin
-        {% if primary_type.id == "Int32" %}
+        {% if primary_type.stringify.includes? "Int32" %}
           @{{primary_name}} = @@adapter.insert(@@table_name, fields, params, lastval: "{{primary_name}}").to_i32
-        {% elsif primary_type.id == "Int64" %}
+        {% elsif primary_type.stringify.includes? "Int64" %}
           @{{primary_name}} = @@adapter.insert(@@table_name, fields, params, lastval: "{{primary_name}}")
         {% elsif primary_auto == true %}
           {% raise "Failed to define #{@type.name}#save: Primary key must be Int(32|64), or set `auto: false` for natural keys.\n\n  primary #{primary_name} : #{primary_type}, auto: false\n" %}

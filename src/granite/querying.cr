@@ -18,7 +18,7 @@ module Granite::Querying
         # Loading from DB means existing records.
         @new_record = false
         \{% for name, options in FIELDS %}
-          self.\{{name.id}} = result.read(Union(\{{options[:type].id}} | Nil))
+          self.\{{name.id}} = result.read(\{{options[:type].id}})
         \{% end %}
         self
       end

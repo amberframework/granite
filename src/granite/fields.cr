@@ -18,11 +18,6 @@ module Granite::Fields
     {% CONTENT_FIELDS[decl.var][:type] = decl.type %}
   end
 
-  # specify the raise-on-nil fields you want to define and types
-  macro field!(decl, **options)
-    field {{decl}}, {{options.double_splat(", ")}}raise_on_nil: true
-  end
-
   # include created_at and updated_at that will automatically be updated
   macro timestamps
     field created_at : Time
@@ -39,7 +34,6 @@ module Granite::Fields
     # Create the properties
     {% for name, options in FIELDS %}
       {% type = options[:type] %}
-      {% suffixes = options[:raise_on_nil] ? ["?", ""] : ["", "!"] %}
 
       # Override options after setting required variables
       # to get to the user supplied options
@@ -66,11 +60,7 @@ module Granite::Fields
       {% if options[:comment] %}
          {{options[:comment].id}}
       {% end %}
-      property{{suffixes[0].id}} {{name.id}} : Union({{type.id}} | Nil)
-      disable_granite_docs? def {{name.id}}{{suffixes[1].id}}
-        raise {{@type.name.stringify}} + "#" + {{name.stringify}} + " cannot be nil" if @{{name.id}}.nil?
-        @{{name.id}}.not_nil!
-      end
+      property {{name.id}} : {{type.id}}
     {% end %}
 
     # keep a hash of the fields to be used for mapping
@@ -149,6 +139,8 @@ module Granite::Fields
               @{{_name.id}} = value.is_a?(String) ? value.to_i32(strict: false) : value.is_a?(Int64) ? value.to_i32 : value.as(Int32)
             {% elsif type.id == Int64.id %}
               @{{_name.id}} = value.is_a?(String) ? value.to_i64(strict: false) : value.as(Int64)
+            {% elsif type.stringify == "Int64 | Nil" %}
+              @{{_name.id}} = "foo"
             {% elsif type.id == Float32.id %}
               @{{_name.id}} = value.is_a?(String) ? value.to_f32(strict: false) : value.is_a?(Float64) ? value.to_f32 : value.as(Float32)
             {% elsif type.id == Float64.id %}
