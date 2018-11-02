@@ -1,33 +1,31 @@
 module Granite::Associations
-  macro belongs_to(model)
+  macro belongs_to(model, **options)
     {% if model.is_a? TypeDeclaration %}
-      belongs_to {{model.var}}, {{model.type}}, {{model.var}}_id : Int64
+      {% method_name = model.var %}
+      {% class_name = model.type %}
     {% else %}
-      belongs_to {{model.id}}, {{model.id.camelcase}}, {{model.id}}_id : Int64
+      {% method_name = model.id %}
+      {% class_name = options[:class_name] || model.id.camelcase %}
     {% end %}
-  end
 
-  macro belongs_to(model, foreign_key)
-    {% if model.is_a? TypeDeclaration %}
-      belongs_to {{model.var}}, {{model.type}}, {{foreign_key}}
+    {% if options[:foreign_key] && options[:foreign_key].is_a? TypeDeclaration %}
+      {% foreign_key = options[:foreign_key].var %}
+      field {{options[:foreign_key]}}, json_options: {{options[:json_options]}}, yaml_options: {{options[:yaml_options]}}
     {% else %}
-      belongs_to {{model.id}}, {{model.id.camelcase}}, {{foreign_key}}
+      {% foreign_key = method_name + "_id" %}
+      field {{foreign_key}} : Int64, json_options: {{options[:json_options]}}, yaml_options: {{options[:yaml_options]}}
     {% end %}
-  end
 
-  macro belongs_to(model, class_name, foreign_key)
-    field {{foreign_key}}
-
-    def {{model.id}}
-      if parent = {{class_name.id}}.find {{foreign_key.var}}
+    def {{method_name.id}} : {{class_name.id}}
+      if parent = {{class_name.id}}.find {{foreign_key}}
         parent
       else
         {{class_name.id}}.new
       end
     end
 
-    def {{model.id}}=(parent)
-      @{{foreign_key.var}} = parent.id
+    def {{method_name.id}}=(parent : {{class_name.id}})
+      @{{foreign_key}} = parent.id
     end
   end
 

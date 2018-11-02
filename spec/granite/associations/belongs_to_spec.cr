@@ -65,4 +65,28 @@ describe "belongs_to" do
 
     book.publisher.name.should eq "Amber Framework"
   end
+
+  it "supports json_options" do
+    publisher = Company.new
+    publisher.name = "Amber Framework"
+    publisher.save
+
+    book = Book.new
+    book.name = "Introduction to Granite"
+    book.publisher = publisher
+    book.save
+    book.to_json.should eq %({"id":4,"name":"Introduction to Granite"})
+  end
+
+  it "supports yaml_options" do
+    publisher = Company.new
+    publisher.name = "Amber Framework"
+    publisher.save
+
+    book = Book.new
+    book.name = "Introduction to Granite"
+    book.publisher = publisher
+    book.save
+    book.to_yaml.should eq %(---\nid: 5\nname: Introduction to Granite\n)
+  end
 end

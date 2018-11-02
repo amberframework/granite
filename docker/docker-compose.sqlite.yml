@@ -1,8 +1,14 @@
 version: '2'
 services:
   spec:
+    command: 'bash -c "cd /app/user && bin/ameba && crystal tool format --check && sqlite3 --version && crystal spec"'
     extends:
       file: ../docker-compose.yml
       service: spec
+    build:
+      context: ../
+      args:
+        sqlite_version: ${SQLITE_VERSION}
+        sqlite_version_year: ${SQLITE_VERSION_YEAR}
     environment:
       CURRENT_ADAPTER: sqlite
