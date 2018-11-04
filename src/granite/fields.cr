@@ -137,7 +137,7 @@ module Granite::Fields
       {% unless FIELDS.empty? %}
         case name.to_s
           {% for _name, options in FIELDS %}
-            {% type = options[:type] %}
+            {% type = options[:type].is_a?(Union) ? options[:type].types.first : options[:type] %}
           when "{{_name.id}}"
             if "{{_name.id}}" == "{{PRIMARY[:name]}}"
               {% unless PRIMARY[:auto] %}
@@ -146,7 +146,9 @@ module Granite::Fields
               return
             end
 
-            {% if type.id == Int32.id %}
+            {% if PRIMARY[:name] == _name %}
+              @{{_name.id}} = value.as({{type.id}})
+            {% elsif type.id == Int32.id %}
               @{{_name.id}} = value.is_a?(String) ? value.to_i32(strict: false) : value.is_a?(Int64) ? value.to_i32 : value.as(Int32)
             {% elsif type.id == Int64.id %}
               @{{_name.id}} = value.is_a?(String) ? value.to_i64(strict: false) : value.as(Int64)
@@ -162,8 +164,6 @@ module Granite::Fields
               elsif value.to_s =~ TIME_FORMAT_REGEX
                 @{{_name.id}} = Time.parse_utc(value.to_s, Granite::DATETIME_FORMAT)
               end
-            {% elsif type.stringify.includes? "Nil" %}
-              @{{_name.id}} = value.nil? ? nil : value.as({{type.id}})
             {% else %}
               @{{_name.id}} = value.to_s
             {% end %}

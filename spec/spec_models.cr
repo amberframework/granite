@@ -12,7 +12,7 @@ require "uuid"
     adapter {{ adapter_literal }}
     table_name parents
 
-    field name : String
+    field name : String?
     timestamps
 
     has_many :students, class_name: Student
@@ -98,9 +98,9 @@ require "uuid"
     table_name reviews
     field name : String
     field downvotes : Int32?
-    field upvotes : Int64
-    field sentiment : Float32
-    field interest : Float64
+    field upvotes : Int64?
+    field sentiment : Float32?
+    field interest : Float64?
     field published : Bool
     field created_at : Time?
   end
@@ -136,7 +136,7 @@ require "uuid"
     table_name callbacks_with_abort
     primary abort_at : String, auto: false
     field do_abort : Bool
-    field name : String
+    field name : String?
 
     property history : IO::Memory = IO::Memory.new
 
@@ -152,7 +152,7 @@ require "uuid"
     adapter {{ adapter_literal }}
     table_name kvs
     primary k : String, auto: false
-    field v : String
+    field v : String?
   end
 
   class Person < Granite::Base
@@ -338,17 +338,17 @@ require "uuid"
     class NilTest < Granite::Base
       adapter {{ adapter_literal }}
 
-      field first_name_not_nil : String
-      field last_name_not_nil : String
-      field age_not_nil : Int32
-      field born_not_nil : Bool
-      field value_not_nil : Float32
+      field first_name_not_nil : String?
+      field last_name_not_nil : String?
+      field age_not_nil : Int32?
+      field born_not_nil : Bool?
+      field value_not_nil : Float32?
 
-      field first_name : String
-      field last_name : String
-      field age : Int32
-      field born : Bool
-      field value : Float32
+      field first_name : String?
+      field last_name : String?
+      field age : Int32?
+      field born : Bool?
+      field value : Float32?
 
       validate_not_nil "first_name_not_nil"
       validate_not_nil :last_name_not_nil
@@ -397,11 +397,11 @@ require "uuid"
     class LessThanTest < Granite::Base
       adapter {{ adapter_literal }}
 
-      field int_32_lt : Int32
-      field float_32_lt : Float32
+      field int_32_lt : Int32?
+      field float_32_lt : Float32?
 
-      field int_32_lte : Int32
-      field float_32_lte : Float32
+      field int_32_lte : Int32?
+      field float_32_lte : Float32?
 
       validate_less_than "int_32_lt", 10
       validate_less_than :float_32_lt, 20.5
@@ -413,11 +413,11 @@ require "uuid"
     class GreaterThanTest < Granite::Base
       adapter {{ adapter_literal }}
 
-      field int_32_lt : Int32
-      field float_32_lt : Float32
+      field int_32_lt : Int32?
+      field float_32_lt : Float32?
 
-      field int_32_lte : Int32
-      field float_32_lte : Float32
+      field int_32_lte : Int32?
+      field float_32_lte : Float32?
 
       validate_greater_than "int_32_lt", 10
       validate_greater_than :float_32_lt, 20.5

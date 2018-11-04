@@ -19,6 +19,7 @@ describe Granite::ValidationHelpers do
       nil_test.errors[2].message.should eq "age_not_nil must not be nil"
       nil_test.errors[3].message.should eq "born_not_nil must not be nil"
       nil_test.errors[4].message.should eq "value_not_nil must not be nil"
+
       nil_test.errors[5].message.should eq "first_name must be nil"
       nil_test.errors[6].message.should eq "last_name must be nil"
       nil_test.errors[7].message.should eq "age must be nil"
