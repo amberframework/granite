@@ -49,6 +49,8 @@ module Granite::Migrator
 
       def create
         resolve = ->(key : String) {
+          key = key.match(/\((\w+)\,/).not_nil![1] if key.includes?("Union(")
+          key = key.chomp(" | ::Nil") if key.includes?("Nil")
           {{adapter}}.class.schema_type?(key) || raise "Migrator(#{ {{adapter}}.class.name }) doesn't support '#{key}' yet."
         }
 

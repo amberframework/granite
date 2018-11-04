@@ -16,12 +16,17 @@ module Granite::Fields
   macro field(decl, **options)
     {% CONTENT_FIELDS[decl.var] = options || {} of Nil => Nil %}
     {% CONTENT_FIELDS[decl.var][:type] = decl.type %}
+    {% if decl.type.is_a?(Union) %}
+      {% CONTENT_FIELDS[decl.var][:nilable] = decl.type.types.any? { |t| t.resolve.nilable? } %}
+    {% else %}
+      {% CONTENT_FIELDS[decl.var][:nilable] = decl.type.resolve.nilable? %}
+    {% end %}
   end
 
   # include created_at and updated_at that will automatically be updated
   macro timestamps
-    field created_at : Time
-    field updated_at : Time
+    field created_at : Time?
+    field updated_at : Time?
   end
 
   macro __process_fields
@@ -61,6 +66,12 @@ module Granite::Fields
          {{options[:comment].id}}
       {% end %}
       property {{name.id}} : {{type.id}}
+
+      disable_granite_docs? def {{name.id}}{% if options[:nilable] || PRIMARY[:name] == name %}!{% end %}
+        @{{name.id}}.not_nil!
+      rescue e : Exception
+        raise {{@type.name.stringify}} + "#" + {{name.stringify}} + " cannot be nil at #{e.message.not_nil!.split("failed at ").last}"
+      end
     {% end %}
 
     # keep a hash of the fields to be used for mapping
@@ -134,13 +145,10 @@ module Granite::Fields
               return
             end
 
-            return @{{_name.id}} = nil if value.nil?
             {% if type.id == Int32.id %}
               @{{_name.id}} = value.is_a?(String) ? value.to_i32(strict: false) : value.is_a?(Int64) ? value.to_i32 : value.as(Int32)
             {% elsif type.id == Int64.id %}
               @{{_name.id}} = value.is_a?(String) ? value.to_i64(strict: false) : value.as(Int64)
-            {% elsif type.stringify == "Int64 | Nil" %}
-              @{{_name.id}} = "foo"
             {% elsif type.id == Float32.id %}
               @{{_name.id}} = value.is_a?(String) ? value.to_f32(strict: false) : value.is_a?(Float64) ? value.to_f32 : value.as(Float32)
             {% elsif type.id == Float64.id %}
@@ -153,6 +161,8 @@ module Granite::Fields
               elsif value.to_s =~ TIME_FORMAT_REGEX
                 @{{_name.id}} = Time.parse_utc(value.to_s, Granite::DATETIME_FORMAT)
               end
+            {% elsif type.stringify.includes? "Nil" %}
+              @{{_name.id}} = value.nil? ? nil : value.as({{type.id}})
             {% else %}
               @{{_name.id}} = value.to_s
             {% end %}

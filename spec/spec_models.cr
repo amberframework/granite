@@ -97,12 +97,12 @@ require "uuid"
     adapter {{ adapter_literal }}
     table_name reviews
     field name : String
-    field downvotes : Int32
+    field downvotes : Int32?
     field upvotes : Int64
     field sentiment : Float32
     field interest : Float64
     field published : Bool
-    field created_at : Time
+    field created_at : Time?
   end
 
   class Empty < Granite::Base
@@ -116,20 +116,20 @@ require "uuid"
     field all : String
   end
 
-  # class Callback < Granite::Base
-  #   adapter {{ adapter_literal }}
-  #   table_name callbacks
-  #   field name : String
+  class Callback < Granite::Base
+    adapter {{ adapter_literal }}
+    table_name callbacks
+    field name : String
 
-  #   property history : IO::Memory = IO::Memory.new
+    property history : IO::Memory = IO::Memory.new
 
-  #   {% for name in Granite::Callbacks::CALLBACK_NAMES %}
-  #     {{name.id}} _{{name.id}}
-  #     private def _{{name.id}}
-  #       history << "{{name.id}}\n"
-  #     end
-  #   {% end %}
-  # end
+    {% for name in Granite::Callbacks::CALLBACK_NAMES %}
+      {{name.id}} _{{name.id}}
+      private def _{{name.id}}
+        history << "{{name.id}}\n"
+      end
+    {% end %}
+  end
 
   class CallbackWithAbort < Granite::Base
     adapter {{ adapter_literal }}
@@ -272,7 +272,7 @@ require "uuid"
     table_name after_json_init
 
     field name : String
-    field priority : Int32
+    field priority : Int32?
 
     def after_initialize
       @priority = 1000
@@ -319,9 +319,9 @@ require "uuid"
     table_name todos_json
 
     field name : String, json_options: {key: "task_name"}
-    field priority : Int32, json_options: {ignore: true}
-    field updated_at : Time, json_options: {ignore: true}
-    field created_at : Time, json_options: {key: "posted"}
+    field priority : Int32?, json_options: {ignore: true}
+    field updated_at : Time?, json_options: {ignore: true}
+    field created_at : Time?, json_options: {key: "posted"}
   end
 
   class TodoYamlOptions < Granite::Base
@@ -329,9 +329,9 @@ require "uuid"
     table_name todos_yaml
 
     field name : String, yaml_options: {key: "task_name"}
-    field priority : Int32, yaml_options: {ignore: true}
-    field updated_at : Time, yaml_options: {ignore: true}
-    field created_at : Time, yaml_options: {key: "posted"}
+    field priority : Int32?, yaml_options: {ignore: true}
+    field updated_at : Time?, yaml_options: {ignore: true}
+    field created_at : Time?, yaml_options: {key: "posted"}
   end
 
   module Validators
@@ -474,6 +474,7 @@ require "uuid"
   Review.migrator.drop_and_create
   Empty.migrator.drop_and_create
   ReservedWord.migrator.drop_and_create
+  Callback.migrator.drop_and_create
   CallbackWithAbort.migrator.drop_and_create
   Kvs.migrator.drop_and_create
   Person.migrator.drop_and_create

@@ -25,6 +25,7 @@ describe "Granite::Base" do
         review[0].interest.should eq 4.56
         review[0].published.should be_true
         review[0].created_at.should be_nil
+        review[0].downvotes.should be_nil
 
         review[1].name.should eq "json2"
         review[1].upvotes.should eq 0
@@ -32,6 +33,7 @@ describe "Granite::Base" do
         review[1].interest.should eq 6.99
         review[1].published.should be_false
         review[1].created_at.should be_nil
+        review[1].downvotes.should be_nil
       end
 
       it "works with after_initialize" do
