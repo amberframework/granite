@@ -13,7 +13,7 @@ module Granite::Associations
       field {{options[:foreign_key]}}, json_options: {{options[:json_options]}}, yaml_options: {{options[:yaml_options]}}
     {% else %}
       {% foreign_key = method_name + "_id" %}
-      field {{foreign_key}} : Int64, json_options: {{options[:json_options]}}, yaml_options: {{options[:yaml_options]}}
+      field {{foreign_key}} : Int64?, json_options: {{options[:json_options]}}, yaml_options: {{options[:yaml_options]}}
     {% end %}
 
     def {{method_name.id}} : {{class_name.id}}
@@ -25,7 +25,7 @@ module Granite::Associations
     end
 
     def {{method_name.id}}=(parent : {{class_name.id}})
-      @{{foreign_key}} = parent.id
+      @{{foreign_key}} = parent.id!
     end
   end
 
@@ -43,7 +43,7 @@ module Granite::Associations
     end
 
     def {{method_name}}=(children)
-      children.{{foreign_key.id}} = self.id
+      children.{{foreign_key.id}} = self.id!
     end
   end
 

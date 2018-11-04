@@ -8,10 +8,10 @@ describe "belongs_to" do
 
     klass = Klass.new
     klass.name = "Test klass"
-    klass.teacher_id = teacher.id
+    klass.teacher = teacher
     klass.save
 
-    klass.teacher.id.should eq teacher.id
+    klass.teacher.id.should eq teacher.id!
   end
 
   it "provides a setter for the foreign entity" do
@@ -24,7 +24,7 @@ describe "belongs_to" do
     klass.teacher = teacher
     klass.save
 
-    klass.teacher_id.should eq teacher.id
+    klass.teacher_id.should eq teacher.id!
   end
 
   it "supports custom types for the join" do

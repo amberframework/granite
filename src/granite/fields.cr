@@ -16,6 +16,7 @@ module Granite::Fields
   macro field(decl, **options)
     {% CONTENT_FIELDS[decl.var] = options || {} of Nil => Nil %}
     {% CONTENT_FIELDS[decl.var][:type] = decl.type %}
+    {% CONTENT_FIELDS[decl.var][:default_value] = decl.value || nil %}
     {% if decl.type.is_a?(Union) %}
       {% CONTENT_FIELDS[decl.var][:nilable] = decl.type.types.any? { |t| t.resolve.nilable? } %}
     {% else %}
@@ -65,12 +66,12 @@ module Granite::Fields
       {% if options[:comment] %}
          {{options[:comment].id}}
       {% end %}
-      property {{name.id}} : {{type.id}}
+      property {{name.id}} : {{type.id}}{% if PRIMARY[:name] == name %}?{% end %}{% if options[:default_value] %} = {{options[:default_value]}} {% end %}
 
       disable_granite_docs? def {{name.id}}{% if options[:nilable] || PRIMARY[:name] == name %}!{% end %}
         @{{name.id}}.not_nil!
       rescue e : Exception
-        raise {{@type.name.stringify}} + "#" + {{name.stringify}} + " cannot be nil at #{e.message.not_nil!.split("failed at ").last}"
+        raise %({{@type.name.stringify}}#{{{name.stringify}}} cannot be nil at #{e.message.not_nil!.split("failed at ").last})
       end
     {% end %}
 

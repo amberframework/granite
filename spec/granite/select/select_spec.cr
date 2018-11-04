@@ -13,7 +13,7 @@ describe "custom select" do
 
     Comment.new.tap do |model|
       model.commentbody = "The Comment Body"
-      model.articleid = first.id
+      model.articleid = first.id!
       model.save
     end
 
