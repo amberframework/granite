@@ -33,27 +33,6 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     end
   end
 
-  # select performs a query against a table.  The query object containes table_name,
-  # fields (configured using the sql_mapping directive in your model), and an optional
-  # raw query string.  The clause and params is the query and params that is passed
-  # in via .all() method
-  def select(query : Granite::Select::Container, clause = "", params = [] of DB::Any, &block)
-    clause = _ensure_clause_template(clause)
-    statement = query.custom || String.build do |stmt|
-      stmt << "SELECT "
-      stmt << query.fields.map { |name| "#{quote(query.table_name)}.#{quote(name)}" }.join(", ")
-      stmt << " FROM #{quote(query.table_name)} #{clause}"
-    end
-
-    log statement, params
-
-    open do |db|
-      db.query statement, params do |rs|
-        yield rs
-      end
-    end
-  end
-
   def insert(table_name, fields, params, lastval)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{quote(table_name)} ("
@@ -147,7 +126,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     end
   end
 
-  private def _ensure_clause_template(clause)
+  def ensure_clause_template(clause)
     if clause.includes?("?")
       num_subs = clause.count("?")
 

@@ -32,7 +32,7 @@ require "../../spec_helper"
       original_timestamp = parent.created_at!
       read_timestamp = found_parent.created_at!
 
-      original_timestamp.epoch.should eq read_timestamp.epoch
+      original_timestamp.to_unix.should eq read_timestamp.to_unix
     end
 
     it "truncates the subsecond parts of updated_at" do
@@ -42,7 +42,7 @@ require "../../spec_helper"
       original_timestamp = parent.updated_at!
       read_timestamp = found_parent.updated_at!
 
-      original_timestamp.epoch.should eq read_timestamp.epoch
+      original_timestamp.to_unix.should eq read_timestamp.to_unix
     end
 
     context "bulk imports" do
@@ -64,8 +64,8 @@ require "../../spec_helper"
         parents.each do |parent|
           parent.updated_at.not_nil!.location.should eq Time::Location::UTC
           parent.created_at.not_nil!.location.should eq Time::Location::UTC
-          found_grandma.updated_at.not_nil!.epoch.should eq parent.updated_at.not_nil!.epoch
-          found_grandma.created_at.not_nil!.epoch.should eq parent.created_at.not_nil!.epoch
+          found_grandma.updated_at.not_nil!.to_unix.should eq parent.updated_at.not_nil!.to_unix
+          found_grandma.created_at.not_nil!.to_unix.should eq parent.created_at.not_nil!.to_unix
         end
       end
 
