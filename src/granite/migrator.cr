@@ -48,9 +48,10 @@ module Granite::Migrator
       end
 
       def create
-        resolve = ->(key : String) {
+        resolve = ->(key : String, auto : Bool) {
           key = key.match(/\((\w+)\,/).not_nil![1] if key.includes?("Union(")
           key = key.chomp(" | ::Nil") if key.includes?("Nil")
+          key = "AUTO_#{key}" if auto
           {{adapter}}.class.schema_type?(key) || raise "Migrator(#{ {{adapter}}.class.name }) doesn't support '#{key}' yet."
         }
 
@@ -61,11 +62,11 @@ module Granite::Migrator
           k = {{adapter}}.quote("{{primary_name}}")
           v =
             {% if primary_auto == :uuid %}
-              resolve.call("UUID")
+              resolve.call("UUID", false)
             {% elsif primary_auto %}
-              resolve.call("AUTO_{{primary_type.id}}")
+              resolve.call("{{primary_type.id}}", true)
             {% else %}
-              resolve.call("{{primary_type.id}}")
+              resolve.call("{{primary_type.id}}", false)
             {% end %}
           s.print "#{k} #{v} PRIMARY KEY"
 
@@ -75,9 +76,9 @@ module Granite::Migrator
             k = {{adapter}}.quote("{{name}}")
             v =
               {% if name.id == "created_at" || name.id == "updated_at" %}
-                resolve.call("{{name}}")
+                resolve.call("{{name}}", false)
               {% else %}
-                resolve.call("{{options[:type]}}")
+                resolve.call("{{options[:type]}}", false)
               {% end %}
             s.puts "#{k} #{v}"
           {% end %}

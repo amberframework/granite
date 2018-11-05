@@ -71,7 +71,7 @@ module Granite::Fields
       disable_granite_docs? def {{name.id}}{% if options[:nilable] || PRIMARY[:name] == name %}!{% end %}
         @{{name.id}}.not_nil!
       rescue e : Exception
-        raise %({{@type.name.stringify}}#{{{name.stringify}}} cannot be nil at #{e.message.not_nil!.split("failed at ").last})
+        raise %({{@type.name.stringify}}##{{{name.stringify}}} cannot be nil at #{e.message.not_nil!.split("failed at ").last})
       end
     {% end %}
 
