@@ -106,6 +106,8 @@ require "uuid"
     adapter {{ adapter_literal }}
     table_name services
 
+    has_many :couriers, class_name: Courier, foreign_key: "service_id"
+
     primary owner_id : Int64, auto: false
     field! name : String
   end
