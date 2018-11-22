@@ -153,6 +153,12 @@ class Granite::Query::Builder(Model)
     assembler.count
   end
 
+  {% for agg in %w(min max avg) %}
+    def {{agg.id}}(field : String | Symbol, t)
+      assembler.{{agg.id}}(field, t)
+    end
+  {% end %}
+
   # TODO: replace `querying.first` with this
   # def first : Model?
   #   first(1).first?
