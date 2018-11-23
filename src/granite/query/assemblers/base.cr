@@ -145,18 +145,16 @@ module Granite::Query::Assembler
       end
     end
 
-    {% for agg in %w(min max avg) %}
-      def {{agg.id}}(field : String | Symbol, t : T.class) forall T
-        sql = build_sql do |s|
-          s << "SELECT {{agg.id}}(#{field.to_s})"
-          s << "FROM #{table_name}"
-          s << where
-          s << group_by
-          s << order(use_default_order: false)
-        end
-        Executor::Value(Model, T).new sql, numbered_parameters, default: 0
+    def aggregate(query : String, t : T.class) forall T
+      sql = build_sql do |s|
+        s << "SELECT #{query}"
+        s << "FROM #{table_name}"
+        s << where
+        s << group_by
+        s << order(use_default_order: false)
       end
-    {% end %}
+      Executor::Value(Model, T).new sql, numbered_parameters, default: 0
+    end
 
     def select
       sql = build_sql do |s|

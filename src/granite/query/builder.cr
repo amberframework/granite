@@ -153,9 +153,13 @@ class Granite::Query::Builder(Model)
     assembler.count
   end
 
-  {% for agg in %w(min max avg) %}
+  def aggregate(field : String | Symbol, t)
+    assembler.aggregate(field, t).run
+  end
+
+  {% for agg in %w(min max avg sum) %}
     def {{agg.id}}(field : String | Symbol, t)
-      assembler.{{agg.id}}(field, t)
+      aggregate("{{agg.upcase.id}}(#{field.to_s})", t)
     end
   {% end %}
 

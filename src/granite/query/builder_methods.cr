@@ -12,5 +12,5 @@ module Granite::Query::BuilderMethods
     Builder(self).new(db_type)
   end
 
-  delegate where, order, offset, limit, min, max, avg, to: __builder
+  delegate where, order, offset, limit, min, max, avg, sum, aggregate, to: __builder
 end

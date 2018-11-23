@@ -346,6 +346,15 @@ require "uuid"
     field created_at : Time, yaml_options: {key: "posted"}
   end
 
+  class DataPoint < Granite::Base
+    adapter {{ adapter_literal }}
+    table_name datapoints
+
+    field value1 : Int32
+    field value2 : Int64
+    field value3 : Float64
+  end
+
   module Validators
     class NilTest < Granite::Base
       adapter {{ adapter_literal }}
@@ -506,4 +515,5 @@ require "uuid"
   UUIDModel.migrator.drop_and_create
   TodoJsonOptions.migrator.drop_and_create
   TodoYamlOptions.migrator.drop_and_create
+  DataPoint.migrator.drop_and_create
 {% end %}
