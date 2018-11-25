@@ -27,7 +27,31 @@ describe "has_one" do
     user.profile = profile
     profile.save
 
-    retrieved_profile = user.profile.not_nil!
+    retrieved_profile = user.profile!
     retrieved_profile.id.should eq profile.id
+  end
+
+  it "provides a method to retrieve associated object that will raise if record is not found" do
+    user = User.new
+    user.email = "test@domain.com"
+    user.save
+
+    expect_raises Granite::Querying::NotFound, "No Profile found where user_id = 3" { user.profile! }
+  end
+
+  it "provides the ability to use a custom primary key" do
+    courier = Courier.new
+    courier.courier_id = 139_132_750
+    courier.issuer_id = 999
+
+    character = Character.new
+    character.character_id = 999
+    character.name = "Mr Jones"
+    character.save
+
+    courier.issuer = character
+    courier.save
+
+    courier.issuer!.character_id.should eq 999
   end
 end

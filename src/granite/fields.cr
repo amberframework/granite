@@ -120,6 +120,10 @@ module Granite::Fields
       {% end %}
     end
 
+    disable_granite_docs? def primary_key_value : {{PRIMARY[:type].id}} | Nil
+      {{PRIMARY[:name].id}}
+    end
+
     disable_granite_docs? def set_attributes(args : Hash(String | Symbol, Type))
       args.each do |k, v|
         cast_to_field(k, v.as(Type))

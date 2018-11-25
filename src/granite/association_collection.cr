@@ -7,14 +7,14 @@ class Granite::AssociationCollection(Owner, Target)
   def all(clause = "", params = [] of DB::Any)
     Target.all(
       [query, clause].join(" "),
-      [owner.id] + params
+      [owner.primary_key_value] + params
     )
   end
 
   def find_by(**args)
     Target.first(
       "#{query} AND #{args.map { |arg| "#{Target.quote(Target.table_name)}.#{Target.quote(arg.to_s)} = ?" }.join(" AND ")}",
-      [owner.id] + args.values.to_a
+      [owner.primary_key_value] + args.values.to_a
     )
   end
 
@@ -38,8 +38,8 @@ class Granite::AssociationCollection(Owner, Target)
     if through.nil?
       "WHERE #{Target.table_name}.#{@foreign_key.to_s} = ?"
     else
-      "JOIN #{through.to_s} ON #{through.to_s}.#{Target.to_s.underscore}_id = #{Target.table_name}.id " \
-      "WHERE #{through.to_s}.#{Owner.to_s.underscore}_id = ?"
+      "JOIN #{through.to_s} ON #{through.to_s}.#{Target.to_s.underscore}_id = #{Target.table_name}.#{Target.primary_name} " \
+      "WHERE #{through.to_s}.#{@foreign_key.to_s} = ?"
     end
   end
 end
