@@ -12,6 +12,8 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       "UUID"           => "UUID",
       "created_at"     => "TIMESTAMP",
       "updated_at"     => "TIMESTAMP",
+      "Float32"        => "REAL",
+      "Float64"        => "DOUBLE PRECISION",
       "Array(String)"  => "TEXT[]",
       "Array(Int16)"   => "SMALLINT[]",
       "Array(Int32)"   => "INT[]",

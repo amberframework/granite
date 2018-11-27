@@ -303,7 +303,7 @@ require "uuid"
   end
 
   # Only PG supports array types
-  {% if env("CURRENT_ENV") == "pg" %}
+  {% if env("CURRENT_ADAPTER") == "pg" %}
     class ArrayModel < Granite::Base
       adapter {{ adapter_literal }}
 

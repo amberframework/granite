@@ -209,13 +209,13 @@ describe "Granite::Base" do
   end
 
   # Only PG supports array types
-  {% if env("CURRENT_ENV") == "pg" %}
+  {% if env("CURRENT_ADAPTER") == "pg" %}
     describe "Array(T)" do
       describe "with values" do
         it "should save correctly" do
           model = ArrayModel.new
           model.id = 1
-          model.str_array = ["jack", "john", "jill"]
+          model.str_array = "jack john jill".split(' ')
           model.i16_array = [10_000_i16, 20_000_i16, 30_000_i16]
           model.i32_array = [1_000_000_i32, 2_000_000_i32, 3_000_000_i32, 4_000_000_i32]
           model.i64_array = [100_000_000_000_i64, 200_000_000_000_i64, 300_000_000_000_i64, 400_000_000_000_i64]

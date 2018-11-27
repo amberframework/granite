@@ -51,6 +51,48 @@ Offset is using the QueryBuilder and provides the ability to offset the results.
 ```crystal
 Post.offset(100).limit(50)
 ```
+## Aggregates
+
+**NOTE:** The return type of each aggregate function can differ depending on the database adapter being used.  For example the `sum ` method:
+
+* `MySQL` will return a `Float64` even if it is an integer.
+* `Postgres` and `Sqlite` will return them a `Int64` or `Int32` depending on the size of the integer.
+
+### Min
+
+Min is using the QueryBuilder and will return the smallest value in the given column:
+
+```crytsal
+Post.min(:author_id, Int32)
+```
+### Max
+
+Max is using the QueryBuilder and will return the largest value in the given column:
+
+```crytsal
+Post.max(:author_id, Int32)
+```
+### Sum
+
+Sum is using the QueryBuilder and will return the sum of all the values in the given column:
+
+```crytsal
+Post.sum(:author_id, Int32)
+```
+### Avg
+
+Avg is using the QueryBuilder and will return the average value in the given column:
+
+```crytsal
+Post.avg(:author_id, Int32)
+```
+### Aggregate
+
+Aggregate is using the QueryBuilder and will return the value of a custom aggregation:
+
+```crytsal
+Post.aggregate("(MIN(author_id) / 234.234234) + 999", Float64)
+```
 
 ## All
 

@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-{% if env("CURRENT_ENV") == "pg" %}
+{% if env("CURRENT_ADAPTER") == "pg" %}
   class Field < Granite::Base
     adapter pg
 
