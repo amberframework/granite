@@ -163,5 +163,41 @@ describe "has_many" do
         teacher.klasses.find!(id)
       end
     end
+
+    it "should respect the current primary key" do
+      courier1 = Courier.new
+      courier1.courier_id = 1
+      courier1.issuer_id = 1
+      courier1.service_id = 1
+      courier1.save
+
+      courier2 = Courier.new
+      courier2.courier_id = 2
+      courier2.issuer_id = 2
+      courier2.service_id = 1
+      courier2.save
+
+      courier3 = Courier.new
+      courier3.courier_id = 3
+      courier3.issuer_id = 3
+      courier3.service_id = 1
+      courier3.save
+
+      service = CourierService.new
+      service.name = "My service"
+      service.owner_id = 1
+
+      couriers = service.couriers.to_a
+
+      couriers.size.should eq 3
+      couriers[0].courier_id.should eq courier1.courier_id
+      couriers[0].issuer_id.should eq courier1.issuer_id
+
+      couriers[1].courier_id.should eq courier2.courier_id
+      couriers[1].issuer_id.should eq courier2.issuer_id
+
+      couriers[2].courier_id.should eq courier3.courier_id
+      couriers[2].issuer_id.should eq courier3.issuer_id
+    end
   end
 end

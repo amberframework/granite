@@ -15,17 +15,22 @@ module Granite::Associations
       {% foreign_key = method_name + "_id" %}
       field {{foreign_key}} : Int64, json_options: {{options[:json_options]}}, yaml_options: {{options[:yaml_options]}}
     {% end %}
+    {% primary_key = options[:primary_key] || "id" %}
 
-    def {{method_name.id}} : {{class_name.id}}
-      if parent = {{class_name.id}}.find {{foreign_key}}
+    def {{method_name.id}} : {{class_name.id}}?
+      if parent = {{class_name.id}}.find_by({{primary_key.id}}: {{foreign_key.id}})
         parent
       else
         {{class_name.id}}.new
       end
     end
 
+    def {{method_name.id}}! : {{class_name.id}}
+      {{class_name.id}}.find_by!({{primary_key.id}}: {{foreign_key.id}})
+    end
+
     def {{method_name.id}}=(parent : {{class_name.id}})
-      @{{foreign_key}} = parent.id
+      @{{foreign_key.id}} = parent.{{primary_key.id}}
     end
   end
 
@@ -38,12 +43,18 @@ module Granite::Associations
       {% class_name = options[:class_name] || model.id.camelcase %}
     {% end %}
     {% foreign_key = options[:foreign_key] || @type.stringify.split("::").last.underscore + "_id" %}
-    def {{method_name}}
-      {{class_name.id}}.find_by({{foreign_key.id}}: self.id)
+    {% primary_key = options[:primary_key] || "id" %}
+
+    def {{method_name}} : {{class_name}}?
+      {{class_name.id}}.find_by({{foreign_key.id}}: self.{{primary_key.id}})
     end
 
-    def {{method_name}}=(children)
-      children.{{foreign_key.id}} = self.id
+    def {{method_name}}! : {{class_name}}
+      {{class_name.id}}.find_by!({{foreign_key.id}}: self.{{primary_key.id}})
+    end
+
+    def {{method_name}}=(child)
+      child.{{foreign_key.id}} = self.{{primary_key.id}}
     end
   end
 

@@ -89,4 +89,27 @@ describe "belongs_to" do
     book.save
     book.to_yaml.should eq %(---\nid: 5\nname: Introduction to Granite\n)
   end
+
+  it "provides a method to retrieve parent object that will raise if record is not found" do
+    book = Book.new
+    book.name = "Introduction to Granite"
+
+    expect_raises Granite::Querying::NotFound, "No Company found where id = " { book.publisher! }
+  end
+
+  it "provides the ability to use a custom primary key" do
+    courier = Courier.new
+    courier.courier_id = 139_132_751
+    courier.issuer_id = 999
+
+    service = CourierService.new
+    service.owner_id = 123_321
+    service.name = "My Service"
+    service.save
+
+    courier.service = service
+    courier.save
+
+    courier.service!.owner_id.should eq 123_321
+  end
 end

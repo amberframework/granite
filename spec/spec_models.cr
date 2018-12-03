@@ -83,6 +83,35 @@ require "uuid"
     table_name users
   end
 
+  class Character < Granite::Base
+    adapter {{ adapter_literal }}
+    table_name characters
+
+    primary character_id : Int32
+    field! name : String
+  end
+
+  class Courier < Granite::Base
+    adapter {{ adapter_literal }}
+    table_name couriers
+
+    primary courier_id : Int32, auto: false
+    field! issuer_id : Int32
+
+    belongs_to service : CourierService, primary_key: "owner_id"
+    has_one issuer : Character, primary_key: "issuer_id", foreign_key: "character_id"
+  end
+
+  class CourierService < Granite::Base
+    adapter {{ adapter_literal }}
+    table_name services
+
+    has_many :couriers, class_name: Courier, foreign_key: "service_id"
+
+    primary owner_id : Int64, auto: false
+    field! name : String
+  end
+
   class Profile < Granite::Base
     adapter {{ adapter_literal }}
     primary id : Int64
@@ -516,4 +545,7 @@ require "uuid"
   TodoJsonOptions.migrator.drop_and_create
   TodoYamlOptions.migrator.drop_and_create
   DataPoint.migrator.drop_and_create
+  Character.migrator.drop_and_create
+  Courier.migrator.drop_and_create
+  CourierService.migrator.drop_and_create
 {% end %}
