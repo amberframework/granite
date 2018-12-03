@@ -150,8 +150,6 @@ module Granite::Query::Assembler
         s << "SELECT #{query}"
         s << "FROM #{table_name}"
         s << where
-        s << group_by
-        s << order(use_default_order: false)
       end
       Executor::Value(Model, T).new sql, numbered_parameters, default: 0
     end

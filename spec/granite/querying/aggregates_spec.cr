@@ -19,6 +19,16 @@ describe "aggregates" do
       DataPoint.min("value2", Int64).should eq 25_269_550_649
       DataPoint.min(:value3, Float64).should eq -46_471_117_970.753_1
     end
+
+    describe "with a where clause" do
+      it "should return the smallest value" do
+        {% if env("CURRENT_ADAPTER") == "sqlite" %}
+      DataPoint.where(:value1, :gt, 400_000_000).min(:value1, Int64).should eq 582_399_917
+      {% else %}
+      DataPoint.where(:value1, :gt, 400_000_000).min(:value1, Int32).should eq 582_399_917
+      {% end %}
+      end
+    end
   end
 
   describe "#max" do
@@ -30,6 +40,12 @@ describe "aggregates" do
       {% end %}
       DataPoint.max("value2", Int64).should eq 999_999_999_999_999_999
       DataPoint.max(:value3, Float64).should eq 55_823_950_169.526
+    end
+
+    describe "with a where clause" do
+      it "should return the largest value" do
+        DataPoint.where("value2", :lt, 50_000_000_000).max(:value2, Int64).should eq 41_864_171_853
+      end
     end
   end
 
@@ -44,6 +60,12 @@ describe "aggregates" do
       {% end %}
       DataPoint.avg(:value3, Float64).should eq 4_606_870_812.859_405_5
     end
+
+    describe "with a where clause" do
+      it "should return the average value" do
+        DataPoint.where(:value3, :eq, 3.14).avg(:value3, Float64).should eq 3.14
+      end
+    end
   end
 
   describe "#sum" do
@@ -56,6 +78,16 @@ describe "aggregates" do
       DataPoint.sum("value2", Int64).should eq 1_000_000_262_691_486_074
       {% end %}
       DataPoint.sum(:value3, Float64).should eq 2.764_122_487_715_643_234_232e+10
+    end
+
+    describe "with a where clause" do
+      it "should return the total value" do
+        {% if env("CURRENT_ADAPTER") == "mysql" %}
+        DataPoint.where(:value1, :lteq, 369_007_881).sum(:value1, Float64).should eq 728_907_956
+        {% else %}
+        DataPoint.where(:value1, :lteq, 369_007_881).sum(:value1, Int64).should eq 728_907_956
+        {% end %}
+      end
     end
   end
 
@@ -72,6 +104,12 @@ describe "aggregates" do
       DataPoint.aggregate("(MIN(value2) / 234.234234) + 999", Float64).should eq 107_882_542.263_227_7
       {% end %}
       DataPoint.aggregate("SUM(value3) - 123456789", Float64).should eq 2.751_776_808_815_643_234_232e+10
+    end
+
+    describe "with a where clause" do
+      it "should return the average value" do
+        DataPoint.where("value3", :eq, 3.14).aggregate("10 + 15.2", Float64).should eq 25.2
+      end
     end
   end
 end
