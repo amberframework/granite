@@ -382,6 +382,7 @@ require "uuid"
     field value1 : Int32
     field value2 : Int64
     field value3 : Float64
+    field value4 : Float32
   end
 
   module Validators

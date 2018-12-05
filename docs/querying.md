@@ -53,10 +53,8 @@ Post.offset(100).limit(50)
 ```
 ## Aggregates
 
-**NOTE:** The return type of each aggregate function can differ depending on the database adapter being used.  For example the `sum ` method:
+The return type of each aggregate function can differ depending on what method and what adapter is being used.  Review the [spec file](https://github.com/amberframework/granite/blob/master/spec/granite/querying/aggregates_spec.cr) for examples.
 
-* `MySQL` will return a `Float64` even if it is an integer.
-* `Postgres` and `Sqlite` will return them a `Int64` or `Int32` depending on the size of the integer.
 
 ### Min
 

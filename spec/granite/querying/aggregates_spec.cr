@@ -2,19 +2,25 @@ require "../../spec_helper"
 
 describe "aggregates" do
   # Create some data points
-  DataPoint.create(value1: 1_727_095_590, value2: 999_999_999_999_999_999, value3: 3.14)
-  DataPoint.create(value1: 1_896_213_148, value2: 52_097_961_229, value3: 18_288_392_675.243_5)
-  DataPoint.create(value1: 951_974_539, value2: 52_288_232_542, value3: 0.000_032_342_32)
-  DataPoint.create(value1: 582_399_917, value2: 91_171_569_802, value3: 0.0)
-  DataPoint.create(value1: 359_900_075, value2: 41_864_171_853, value3: 55_823_950_169.526)
-  DataPoint.create(value1: 369_007_881, value2: 25_269_550_649, value3: -46_471_117_970.753_1)
+  # value1 => Int32
+  # value2 => Int64
+  # value3 => Float32
+  # value4 => Float64
+  DataPoint.create(value1: 1_727_095_590, value2: 999_999_999_999_999_999, value3: 3.14, value4: 123.456_f32)
+  DataPoint.create(value1: 1_896_213_148, value2: 52_097_961_229, value3: 18_288_392_675.243_5, value4: 0.0_f32)
+  DataPoint.create(value1: 951_974_539, value2: 52_288_232_542, value3: 0.000_032_342_32, value4: 4.0_f32)
+  DataPoint.create(value1: 582_399_917, value2: 91_171_569_802, value3: 0.0, value4: 2_345.783_7_f32)
+  DataPoint.create(value1: 359_900_075, value2: 41_864_171_853, value3: 55_823_950_169.526, value4: -0.001_f32)
+  DataPoint.create(value1: 369_007_881, value2: 25_269_550_649, value3: -46_471_117_970.753_1, value4: 4.234_f32)
 
   describe "#min" do
     it "should return the smallest value" do
       {% if env("CURRENT_ADAPTER") == "sqlite" %}
       DataPoint.min(:value1, Int64).should eq 359_900_075
+      DataPoint.min("value4", Float64).should eq -0.001_f32
       {% else %}
       DataPoint.min(:value1, Int32).should eq 359_900_075
+      DataPoint.min("value4", Float32).should eq -0.001_f32
       {% end %}
       DataPoint.min("value2", Int64).should eq 25_269_550_649
       DataPoint.min(:value3, Float64).should eq -46_471_117_970.753_1
@@ -23,10 +29,10 @@ describe "aggregates" do
     describe "with a where clause" do
       it "should return the smallest value" do
         {% if env("CURRENT_ADAPTER") == "sqlite" %}
-      DataPoint.where(:value1, :gt, 400_000_000).min(:value1, Int64).should eq 582_399_917
-      {% else %}
-      DataPoint.where(:value1, :gt, 400_000_000).min(:value1, Int32).should eq 582_399_917
-      {% end %}
+        DataPoint.where(:value1, :gt, 400_000_000).min(:value1, Int64).should eq 582_399_917
+        {% else %}
+        DataPoint.where(:value1, :gt, 400_000_000).min(:value1, Int32).should eq 582_399_917
+        {% end %}
       end
     end
   end
@@ -35,8 +41,10 @@ describe "aggregates" do
     it "should return the largest value" do
       {% if env("CURRENT_ADAPTER") == "sqlite" %}
       DataPoint.max(:value1, Int64).should eq 1_896_213_148
+      DataPoint.max("value4", Float64).should eq 2_345.783_7_f32
       {% else %}
       DataPoint.max(:value1, Int32).should eq 1_896_213_148
+      DataPoint.max("value4", Float32).should eq 2_345.783_7_f32
       {% end %}
       DataPoint.max("value2", Int64).should eq 999_999_999_999_999_999
       DataPoint.max(:value3, Float64).should eq 55_823_950_169.526
@@ -59,6 +67,7 @@ describe "aggregates" do
       DataPoint.avg("value2", Int64).should eq 1.666_667_104_485_810_2e+17
       {% end %}
       DataPoint.avg(:value3, Float64).should eq 4_606_870_812.859_405_5
+      DataPoint.avg("value4", Float64).should eq 412.912_115_482_322_4
     end
 
     describe "with a where clause" do
@@ -73,9 +82,13 @@ describe "aggregates" do
       {% if env("CURRENT_ADAPTER") == "mysql" %}
       DataPoint.sum(:value1, Float64).should eq 5_886_591_150
       DataPoint.sum("value2", Float64).should eq 1_000_000_262_691_486_074
+      DataPoint.sum(:value4, Float64).should eq 2_477.472_692_893_934_4
+      {% elsif env("CURRENT_ADAPTER") == "sqlite" %}
+      DataPoint.sum(:value4, Float64).should eq 2_477.472_692_893_934_4
       {% else %}
       DataPoint.sum(:value1, Int64).should eq 5_886_591_150
       DataPoint.sum("value2", Int64).should eq 1_000_000_262_691_486_074
+      DataPoint.sum(:value4, Float32).should eq 2_477.472_7_f32
       {% end %}
       DataPoint.sum(:value3, Float64).should eq 2.764_122_487_715_643_234_232e+10
     end
