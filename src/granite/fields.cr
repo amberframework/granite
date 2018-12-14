@@ -97,7 +97,7 @@ module Granite::Fields
       {% for name, options in FIELDS %}
         {% type = options[:type] %}
         {% if type.id == Time.id %}
-          fields["{{name}}"] = {{name.id}}.try(&.to_s(Granite::DATETIME_FORMAT))
+          fields["{{name}}"] = {{name.id}}.try(&.in(Granite.settings.default_timezone).to_s(Granite::DATETIME_FORMAT))
         {% elsif type.id == Slice.id %}
           fields["{{name}}"] = {{name.id}}.try(&.to_s(""))
         {% else %}
@@ -161,9 +161,9 @@ module Granite::Fields
               @{{_name.id}} = ["1", "yes", "true", true].includes?(value)
             {% elsif type.id == Time.id %}
               if value.is_a?(Time)
-                @{{_name.id}} = value
+                @{{_name.id}} = value.in(Granite.settings.default_timezone)
               elsif value.to_s =~ TIME_FORMAT_REGEX
-                @{{_name.id}} = Time.parse_utc(value.to_s, Granite::DATETIME_FORMAT)
+                @{{_name.id}} = Time.parse(value.to_s, Granite::DATETIME_FORMAT, Granite.settings.default_timezone)
               end
             {% else %}
               @{{_name.id}} = value.to_s

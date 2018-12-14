@@ -3,7 +3,7 @@ require "../../spec_helper"
 # Can run this spec for sqlite after https://www.sqlite.org/draft/releaselog/3_24_0.html is released.
 {% if ["pg", "mysql"].includes? env("CURRENT_ADAPTER") %}
   describe "timestamps" do
-    it "consistently uses UTC for created_at" do
+    it "should uses UTC for created_at by default" do
       parent = Parent.new(name: "parent").tap(&.save)
       found_parent = Parent.find!(parent.id)
 
@@ -14,7 +14,7 @@ require "../../spec_helper"
       read_timestamp.location.should eq Time::Location::UTC
     end
 
-    it "consistently uses UTC for updated_at" do
+    it "should uses UTC for updated_at by default" do
       parent = Parent.new(name: "parent").tap(&.save)
       found_parent = Parent.find!(parent.id)
 
@@ -23,6 +23,32 @@ require "../../spec_helper"
 
       original_timestamp.location.should eq Time::Location::UTC
       read_timestamp.location.should eq Time::Location::UTC
+    end
+
+    it "should uses timezone for created_at" do
+      Granite.settings.default_timezone = "Asia/Shanghai"
+
+      parent = Parent.new(name: "parent").tap(&.save)
+      found_parent = Parent.find!(parent.id)
+
+      original_timestamp = parent.created_at!
+      read_timestamp = found_parent.created_at!
+
+      original_timestamp.location.should eq Time::Location.load("Asia/Shanghai")
+      read_timestamp.location.should eq Time::Location.load("Asia/Shanghai")
+    end
+
+    it "should uses timezone for updated_at" do
+      Granite.settings.default_timezone = "Asia/Shanghai"
+
+      parent = Parent.new(name: "parent").tap(&.save)
+      found_parent = Parent.find!(parent.id)
+
+      original_timestamp = parent.updated_at!
+      read_timestamp = found_parent.updated_at!
+
+      original_timestamp.location.should eq Time::Location.load("Asia/Shanghai")
+      read_timestamp.location.should eq Time::Location.load("Asia/Shanghai")
     end
 
     it "truncates the subsecond parts of created_at" do
