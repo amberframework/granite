@@ -73,15 +73,15 @@ module Granite::Transactions
       end
     end
 
-    disable_granite_docs? def set_timestamps(*, to time = Time.now, mode = :create)
+    disable_granite_docs? def set_timestamps(*, to time = Time.now(Granite.settings.default_timezone), mode = :create)
       {% if FIELDS.keys.stringify.includes? "created_at" %}
         if mode == :create
-          @created_at = time.to_utc.at_beginning_of_second
+          @created_at = time.at_beginning_of_second
         end
       {% end %}
 
       {% if FIELDS.keys.stringify.includes? "updated_at" %}
-        @updated_at = time.to_utc.at_beginning_of_second
+        @updated_at = time.at_beginning_of_second
       {% end %}
     end
 
