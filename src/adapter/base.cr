@@ -104,11 +104,13 @@ abstract class Granite::Adapter::Base
   end
 
   private def colorize(query : String, params, elapsed_time : Benchmark::BM::Tms) : String
-    q = query.to_s.split(/([a-zA-Z0-9_$]+)/).map do |word|
+    q = query.to_s.split(/([a-zA-Z0-9_$']+)/).map do |word|
       if SQL_KEYWORDS.includes?(word.upcase)
         word.colorize.bold.blue.to_s
       elsif !word.starts_with?('$') && word =~ /\d+/
-        word.colorize.red
+        word.colorize.light_red
+      elsif word.starts_with?('\'') && word.ends_with?('\'')
+        word.colorize(Colorize::Color256.new(193))
       else
         word.colorize.white
       end
