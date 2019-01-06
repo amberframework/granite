@@ -375,6 +375,15 @@ require "uuid"
     field created_at : Time, yaml_options: {key: "posted"}
   end
 
+  class TimeTest < Granite::Base
+    adapter {{ adapter_literal }}
+    table_name times
+
+    field test : Time
+    field name : String
+    timestamps
+  end
+
   module Validators
     class NilTest < Granite::Base
       adapter {{ adapter_literal }}
@@ -538,4 +547,5 @@ require "uuid"
   Character.migrator.drop_and_create
   Courier.migrator.drop_and_create
   CourierService.migrator.drop_and_create
+  TimeTest.migrator.drop_and_create
 {% end %}
