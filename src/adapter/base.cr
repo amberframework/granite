@@ -1,7 +1,6 @@
 require "../granite"
 require "db"
 require "colorize"
-require "benchmark"
 
 # The Base Adapter specifies the interface that will be used by the model
 # objects to perform actions against a specific database.  Each adapter needs
