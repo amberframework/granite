@@ -7,11 +7,11 @@ module Granite::Query::Assembler
     @group_by : String?
 
     def initialize(@query : Builder(Model))
-      @numbered_parameters = [] of DB::Any
+      @numbered_parameters = [] of Granite::Fields::Type
       @aggregate_fields = [] of String
     end
 
-    abstract def add_parameter(value : DB::Any) : String
+    abstract def add_parameter(value : Granite::Fields::Type) : String
 
     def numbered_parameters
       @numbered_parameters
@@ -47,6 +47,18 @@ module Granite::Query::Assembler
 
         if expression[:value].nil?
           clauses << "#{expression[:field]} IS NULL"
+        elsif expression[:value].is_a?(Array)
+          in_stmt = String.build do |str|
+            str << '('
+            expression[:value].as(Array).each_with_index do |val, idx|
+              str << '\''
+              str << val
+              str << '\''
+              str << ',' if expression[:value].as(Array).size - 1 != idx
+            end
+            str << ')'
+          end
+          clauses << "#{expression[:field]} #{sql_operator(expression[:operator])} #{in_stmt}"
         else
           clauses << "#{expression[:field]} #{sql_operator(expression[:operator])} #{add_parameter expression[:value]}"
         end
