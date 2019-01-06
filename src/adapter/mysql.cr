@@ -19,13 +19,13 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
   def clear(table_name : String)
     statement = "TRUNCATE #{quote(table_name)}"
 
-    elapsed_time = Benchmark.measure do
+    elapsed_time = Time.measure do
       open do |db|
         db.exec statement
       end
     end
 
-    log statement, elapsed_time
+    log statement, elapsed_time unless Granite.settings.logger.nil?
   end
 
   def insert(table_name : String, fields, params, lastval)
@@ -38,7 +38,7 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     end
 
     last_id = -1_i64
-    elapsed_time = Benchmark.measure do
+    elapsed_time = Time.measure do
       open do |db|
         db.using_connection do |conn|
           conn.exec statement, params
@@ -47,7 +47,7 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
       end
     end
 
-    log statement, elapsed_time, params
+    log statement, elapsed_time, params unless Granite.settings.logger.nil?
 
     last_id
   end
@@ -83,13 +83,13 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
       end
     end
 
-    elapsed_time = Benchmark.measure do
+    elapsed_time = Time.measure do
       open do |db|
         db.exec statement, params
       end
     end
 
-    log statement, elapsed_time, params
+    log statement, elapsed_time, params unless Granite.settings.logger.nil?
   end
 
   private def last_val : String
@@ -104,25 +104,25 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
       stmt << " WHERE #{quote(primary_name)}=?"
     end
 
-    elapsed_time = Benchmark.measure do
+    elapsed_time = Time.measure do
       open do |db|
         db.exec statement, params
       end
     end
 
-    log statement, elapsed_time, params
+    log statement, elapsed_time, params unless Granite.settings.logger.nil?
   end
 
   # This will delete a row from the database.
   def delete(table_name : String, primary_name : String, value)
     statement = "DELETE FROM #{quote(table_name)} WHERE #{quote(primary_name)}=?"
 
-    elapsed_time = Benchmark.measure do
+    elapsed_time = Time.measure do
       open do |db|
         db.exec statement, value
       end
     end
 
-    log statement, elapsed_time, value
+    log statement, elapsed_time, value unless Granite.settings.logger.nil?
   end
 end

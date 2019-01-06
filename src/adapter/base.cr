@@ -31,8 +31,8 @@ abstract class Granite::Adapter::Base
     yield database
   end
 
-  def log(query : String, elapsed_time : Benchmark::BM::Tms, params = [] of String) : Nil
-    Granite.settings.logger.info colorize query, params, elapsed_time
+  def log(query : String, elapsed_time : Time::Span, params = [] of String) : Nil
+    (logger = Granite.settings.logger) ? logger.info colorize query, params, elapsed_time.total_seconds : nil
   end
 
   # remove all rows from a table and reset the counter on the id.
@@ -50,7 +50,7 @@ abstract class Granite::Adapter::Base
       stmt << " FROM #{quote(query.table_name)} #{clause}"
     end
 
-    elapsed_time = Benchmark.measure do
+    elapsed_time = Time.measure do
       open do |db|
         db.query statement, params do |rs|
           yield rs
@@ -58,7 +58,7 @@ abstract class Granite::Adapter::Base
       end
     end
 
-    log statement, elapsed_time, params
+    log statement, elapsed_time, params unless Granite.settings.logger.nil?
   end
 
   def ensure_clause_template(clause)
@@ -103,7 +103,7 @@ abstract class Granite::Adapter::Base
     end
   end
 
-  private def colorize(query : String, params, elapsed_time : Benchmark::BM::Tms) : String
+  private def colorize(query : String, params, elapsed_time : Float64) : String
     q = query.to_s.split(/([a-zA-Z0-9_$']+)/).map do |word|
       if SQL_KEYWORDS.includes?(word.upcase)
         word.colorize.bold.blue.to_s
@@ -119,15 +119,15 @@ abstract class Granite::Adapter::Base
     "[#{humanize_duration(elapsed_time)}] #{q}: #{params.colorize.light_magenta}"
   end
 
-  private def humanize_duration(elapsed_time : Benchmark::BM::Tms)
-    if elapsed_time.real > 0.1
-      "#{(elapsed_time.real).*(100).trunc./(100)}s".colorize.red
-    elsif elapsed_time.real > 0.001
-      "#{(elapsed_time.real * 1_000).trunc}ms".colorize.yellow
-    elsif elapsed_time.real > 0.000_001
-      "#{(elapsed_time.real * 100_000).trunc}µs".colorize.green
-    elsif elapsed_time.real > 0.000_000_001
-      "#{(elapsed_time.real * 1_000_000_000).trunc}ns".colorize.green
+  private def humanize_duration(elapsed_time : Float64)
+    if elapsed_time > 0.1
+      "#{(elapsed_time).*(100).trunc./(100)}s".colorize.red
+    elsif elapsed_time > 0.001
+      "#{(elapsed_time * 1_000).trunc}ms".colorize.yellow
+    elsif elapsed_time > 0.000_001
+      "#{(elapsed_time * 100_000).trunc}µs".colorize.green
+    elsif elapsed_time > 0.000_000_001
+      "#{(elapsed_time * 1_000_000_000).trunc}ns".colorize.green
     else
       "<1ns".colorize.green
     end
