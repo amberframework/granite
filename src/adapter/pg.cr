@@ -23,17 +23,19 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
   end
 
   # remove all rows from a table and reset the counter on the id.
-  def clear(table_name)
+  def clear(table_name : String)
     statement = "DELETE FROM #{quote(table_name)}"
 
-    log statement
-
-    open do |db|
-      db.exec statement
+    elapsed_time = Benchmark.measure do
+      open do |db|
+        db.exec statement
+      end
     end
+
+    log statement, elapsed_time
   end
 
-  def insert(table_name, fields, params, lastval)
+  def insert(table_name : String, fields, params, lastval)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{quote(table_name)} ("
       stmt << fields.map { |name| "#{quote(name)}" }.join(", ")
@@ -44,16 +46,20 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       stmt << " RETURNING #{quote(lastval)}" if lastval
     end
 
-    log statement, params
-
-    open do |db|
-      if lastval
-        db.scalar(statement, params).as(Int32 | Int64).to_i64
-      else
-        db.exec statement, params
-        -1_i64
+    last_id = -1_i64
+    elapsed_time = Benchmark.measure do
+      open do |db|
+        if lastval
+          last_id = db.scalar(statement, params).as(Int32 | Int64).to_i64
+        else
+          db.exec statement, params
+        end
       end
     end
+
+    log statement, elapsed_time, params
+
+    last_id
   end
 
   def import(table_name : String, primary_name : String, auto : String, fields, model_array, **options)
@@ -93,40 +99,46 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       statement += " ON CONFLICT DO NOTHING"
     end
 
-    log statement, params
-
-    open do |db|
-      db.exec statement, params
+    elapsed_time = Benchmark.measure do
+      open do |db|
+        db.exec statement, params
+      end
     end
+
+    log statement, elapsed_time, params
   end
 
   # This will update a row in the database.
-  def update(table_name, primary_name, fields, params)
+  def update(table_name : String, primary_name : String, fields, params)
     statement = String.build do |stmt|
       stmt << "UPDATE #{quote(table_name)} SET "
       stmt << fields.map { |name| "#{quote(name)}=$#{fields.index(name).not_nil! + 1}" }.join(", ")
       stmt << " WHERE #{quote(primary_name)}=$#{fields.size + 1}"
     end
 
-    log statement, params
-
-    open do |db|
-      db.exec statement, params
+    elapsed_time = Benchmark.measure do
+      open do |db|
+        db.exec statement, params
+      end
     end
+
+    log statement, elapsed_time, params
   end
 
   # This will delete a row from the database.
-  def delete(table_name, primary_name, value)
+  def delete(table_name : String, primary_name : String, value)
     statement = "DELETE FROM #{quote(table_name)} WHERE #{quote(primary_name)}=$1"
 
-    log statement, value
-
-    open do |db|
-      db.exec statement, value
+    elapsed_time = Benchmark.measure do
+      open do |db|
+        db.exec statement, value
+      end
     end
+
+    log statement, elapsed_time, value
   end
 
-  def ensure_clause_template(clause)
+  def ensure_clause_template(clause : String) : String
     if clause.includes?("?")
       num_subs = clause.count("?")
 
