@@ -158,7 +158,7 @@ module Granite::Fields
             {% elsif type.id == Float64.id %}
               @{{_name.id}} = value.is_a?(String) ? value.to_f64(strict: false) : value.as(Float64)
             {% elsif type.id == Bool.id %}
-              @{{_name.id}} = ["1", "yes", "true", true].includes?(value)
+              @{{_name.id}} = ["1", "yes", "true", true, 1].includes?(value)
             {% elsif type.id == Time.id %}
               if value.is_a?(Time)
                 @{{_name.id}} = value.in(Granite.settings.default_timezone)
