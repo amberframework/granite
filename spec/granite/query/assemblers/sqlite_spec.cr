@@ -33,6 +33,26 @@ require "../spec_helper"
         assembler.where
         assembler.numbered_parameters.should eq [] of Granite::Fields::Type
       end
+
+      it "property defines IN query with numbers" do
+        sql = "SELECT #{query_fields} FROM table WHERE date_completed IS NULL AND id IN (1,2) ORDER BY id DESC"
+        query = builder.where(date_completed: nil, id: [1, 2])
+        query.raw_sql.should match ignore_whitespace sql
+
+        assembler = query.assembler
+        assembler.where
+        assembler.numbered_parameters.should eq [] of Granite::Fields::Type
+      end
+
+      it "property defines IN query with booleans" do
+        sql = "SELECT #{query_fields} FROM table WHERE published IN (true,false) ORDER BY id DESC"
+        query = builder.where(published: [true, false])
+        query.raw_sql.should match ignore_whitespace sql
+
+        assembler = query.assembler
+        assembler.where
+        assembler.numbered_parameters.should eq [] of Granite::Fields::Type
+      end
     end
 
     context "order" do
