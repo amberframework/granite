@@ -340,9 +340,9 @@ require "uuid"
       field str_array : Array(String)
       field i16_array : Array(Int16)
       field i32_array : Array(Int32)
-      field i64_array : Array(Int64), default: [] of Float64
+      field i64_array : Array(Int64)
       field f32_array : Array(Float32)
-      field f64_array : Array(Float64)
+      field f64_array : Array(Float64), default: [] of Float64
       field bool_array : Array(Bool)
     end
     ArrayModel.migrator.drop_and_create
