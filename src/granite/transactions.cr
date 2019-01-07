@@ -214,6 +214,28 @@ module Granite::Transactions
     end
   end
 
+  # Saves the record with the *updated_at*/*names* fields updated to the current time.
+  disable_granite_docs? def touch(*fields) : Bool
+    raise "Cannot touch on a new record object" unless persisted?
+    {% begin %}
+      fields.each do |field|
+        case field.to_s
+          {% for time_field in @type.instance_vars.select { |ivar| ivar.type == Time? } %}
+            when {{time_field.stringify}} then @{{time_field.id}} = Time.now(Granite.settings.default_timezone).at_beginning_of_second
+          {% end %}
+        else
+          if {{@type.instance_vars.map(&.name.stringify)}}.includes? field.to_s
+            raise "{{@type.name}}.#{field} cannot be touched.  It is not of type `Time`."
+          else
+            raise "Field '#{field}' does not exist on type '{{@type.name}}'."
+          end
+        end
+      end
+    {% end %}
+    @updated_at = Time.now(Granite.settings.default_timezone).at_beginning_of_second
+    save
+  end
+
   # Returns true if this object hasn't been saved yet.
   @[JSON::Field(ignore: true)]
   @[YAML::Field(ignore: true)]
