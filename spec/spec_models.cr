@@ -384,6 +384,15 @@ require "uuid"
     field age : Float64, default: 0.0
   end
 
+  class TimeTest < Granite::Base
+    adapter {{ adapter_literal }}
+    table_name times
+
+    field test : Time
+    field name : String
+    timestamps
+  end
+
   module Validators
     class NilTest < Granite::Base
       adapter {{ adapter_literal }}
@@ -548,4 +557,8 @@ require "uuid"
   TodoYamlOptions.migrator.drop_and_create
   User.migrator.drop_and_create
   UUIDModel.migrator.drop_and_create
+  Character.migrator.drop_and_create
+  Courier.migrator.drop_and_create
+  CourierService.migrator.drop_and_create
+  TimeTest.migrator.drop_and_create
 {% end %}

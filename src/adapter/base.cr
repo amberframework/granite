@@ -1,5 +1,6 @@
 require "../granite"
 require "db"
+require "colorize"
 
 # The Base Adapter specifies the interface that will be used by the model
 # objects to perform actions against a specific database.  Each adapter needs
@@ -8,6 +9,13 @@ abstract class Granite::Adapter::Base
   getter name : String
   getter url : String
   private property _database : DB::Database?
+
+  private SQL_KEYWORDS = Set(String).new(%w(
+    ALTER AND ANY AS ASC COLUMN CONSTRAINT COUNT CREATE DEFAULT DELETE DESC
+    DISTINCT DROP ELSE EXISTS FALSE FOREIGN FROM GROUP HAVING IF IN INDEX INNER
+    INSERT INTO JOIN LIMIT NOT NULL ON OR ORDER PRIMARY REFERENCES RELEASE RETURNING
+    SELECT SET TABLE THEN TRUE UNION UNIQUE UPDATE USING VALUES WHEN WHERE
+  ))
 
   def initialize(connection_hash : NamedTuple(url: String, name: String))
     @name = connection_hash[:name]
@@ -22,8 +30,8 @@ abstract class Granite::Adapter::Base
     yield database
   end
 
-  def log(query : String, params = [] of String) : Nil
-    Granite.settings.logger.info "#{query}: #{params}"
+  def log(query : String, elapsed_time : Time::Span, params = [] of String) : Nil
+    (logger = Granite.settings.logger) ? logger.info colorize query, params, elapsed_time.total_seconds : nil
   end
 
   # remove all rows from a table and reset the counter on the id.
@@ -41,13 +49,15 @@ abstract class Granite::Adapter::Base
       stmt << " FROM #{quote(query.table_name)} #{clause}"
     end
 
-    log statement, params
-
-    open do |db|
-      db.query statement, params do |rs|
-        yield rs
+    elapsed_time = Time.measure do
+      open do |db|
+        db.query statement, params do |rs|
+          yield rs
+        end
       end
     end
+
+    log statement, elapsed_time, params unless Granite.settings.logger.nil?
   end
 
   def ensure_clause_template(clause)
@@ -92,6 +102,36 @@ abstract class Granite::Adapter::Base
     # converts the crystal class to database type of this adapter
     def self.schema_type?(key : String) : String?
       Schema::TYPES[key]? || Granite::Adapter::Base::Schema::TYPES[key]?
+    end
+  end
+
+  private def colorize(query : String, params, elapsed_time : Float64) : String
+    q = query.to_s.split(/([a-zA-Z0-9_$']+)/).map do |word|
+      if SQL_KEYWORDS.includes?(word.upcase)
+        word.colorize.bold.blue.to_s
+      elsif !word.starts_with?('$') && word =~ /\d+/
+        word.colorize.light_red
+      elsif word.starts_with?('\'') && word.ends_with?('\'')
+        word.colorize(Colorize::Color256.new(193))
+      else
+        word.colorize.white
+      end
+    end.join
+
+    "[#{humanize_duration(elapsed_time)}] #{q}: #{params.colorize.light_magenta}"
+  end
+
+  private def humanize_duration(elapsed_time : Float64)
+    if elapsed_time > 0.1
+      "#{(elapsed_time).*(100).trunc./(100)}s".colorize.red
+    elsif elapsed_time > 0.001
+      "#{(elapsed_time * 1_000).trunc}ms".colorize.yellow
+    elsif elapsed_time > 0.000_001
+      "#{(elapsed_time * 100_000).trunc}µs".colorize.green
+    elsif elapsed_time > 0.000_000_001
+      "#{(elapsed_time * 1_000_000_000).trunc}ns".colorize.green
+    else
+      "<1ns".colorize.green
     end
   end
 end
