@@ -234,7 +234,7 @@ describe Granite::Base do
   end
 
   # Only PG supports array types
-  {% if env("CURRENT_ENV") == "pg" %}
+  {% if env("CURRENT_ADAPTER") == "pg" %}
     describe "Array(T)" do
       describe "with values" do
         it "should save correctly" do

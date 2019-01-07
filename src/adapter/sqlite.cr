@@ -50,7 +50,7 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
   end
 
   def import(table_name : String, primary_name : String, auto : String, fields, model_array, **options)
-    params = [] of DB::Any
+    params = [] of Granite::Fields::Type
 
     statement = String.build do |stmt|
       stmt << "INSERT "
