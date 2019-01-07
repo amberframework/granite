@@ -92,12 +92,15 @@ abstract class Granite::Adapter::Base
   macro inherited
     # quotes table and column names
     def quote(name : String) : String
-      char = QUOTING_CHAR
-      char + name.gsub(char, "#{char}#{char}") + char
+      String.build do |str|
+        str << QUOTING_CHAR
+        str << name
+        str << QUOTING_CHAR
+      end
     end
 
     # converts the crystal class to database type of this adapter
-    def self.schema_type?(key : String)
+    def self.schema_type?(key : String) : String?
       Schema::TYPES[key]? || Granite::Adapter::Base::Schema::TYPES[key]?
     end
   end

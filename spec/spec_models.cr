@@ -342,7 +342,7 @@ require "uuid"
       field i32_array : Array(Int32)
       field i64_array : Array(Int64)
       field f32_array : Array(Float32)
-      field f64_array : Array(Float64)
+      field f64_array : Array(Float64), default: [] of Float64
       field bool_array : Array(Bool)
     end
     ArrayModel.migrator.drop_and_create
@@ -373,6 +373,15 @@ require "uuid"
     field priority : Int32, yaml_options: {ignore: true}
     field updated_at : Time, yaml_options: {ignore: true}
     field created_at : Time, yaml_options: {key: "posted"}
+  end
+
+  class DefaultValues < Granite::Base
+    adapter {{ adapter_literal }}
+    table_name defaults
+
+    field name : String, default: "Jim"
+    field is_alive : Bool, default: true
+    field age : Float64, default: 0.0
   end
 
   class TimeTest < Granite::Base
@@ -502,48 +511,52 @@ require "uuid"
       validate_exclusion :name, ["test_name"]
     end
 
-    NilTest.migrator.drop_and_create
     BlankTest.migrator.drop_and_create
     ChoiceTest.migrator.drop_and_create
-    LessThanTest.migrator.drop_and_create
+    ExclusionTest.migrator.drop_and_create
     GreaterThanTest.migrator.drop_and_create
     LengthTest.migrator.drop_and_create
+    LessThanTest.migrator.drop_and_create
+    NilTest.migrator.drop_and_create
     PersonUniqueness.migrator.drop_and_create
-    ExclusionTest.migrator.drop_and_create
   end
 
-  Parent.migrator.drop_and_create
-  Teacher.migrator.drop_and_create
-  Student.migrator.drop_and_create
-  Klass.migrator.drop_and_create
-  Enrollment.migrator.drop_and_create
-  School.migrator.drop_and_create
-  User.migrator.drop_and_create
-  Profile.migrator.drop_and_create
-  Nation::County.migrator.drop_and_create
-  Review.migrator.drop_and_create
-  Empty.migrator.drop_and_create
-  ReservedWord.migrator.drop_and_create
-  Callback.migrator.drop_and_create
-  CallbackWithAbort.migrator.drop_and_create
-  Kvs.migrator.drop_and_create
-  Person.migrator.drop_and_create
-  Company.migrator.drop_and_create
+  AfterInit.migrator.drop_and_create
+  Article.migrator.drop_and_create
   Book.migrator.drop_and_create
   BookReview.migrator.drop_and_create
-  Item.migrator.drop_and_create
-  NonAutoDefaultPK.migrator.drop_and_create
-  NonAutoCustomPK.migrator.drop_and_create
-  Article.migrator.drop_and_create
+  Callback.migrator.drop_and_create
+  CallbackWithAbort.migrator.drop_and_create
+  Character.migrator.drop_and_create
   Comment.migrator.drop_and_create
+  Company.migrator.drop_and_create
+  Courier.migrator.drop_and_create
+  CourierService.migrator.drop_and_create
+  CustomSongThread.migrator.drop_and_create
+  DefaultValues.migrator.drop_and_create
+  Empty.migrator.drop_and_create
+  Enrollment.migrator.drop_and_create
+  Item.migrator.drop_and_create
+  Klass.migrator.drop_and_create
+  Kvs.migrator.drop_and_create
+  Nation::County.migrator.drop_and_create
+  NonAutoCustomPK.migrator.drop_and_create
+  NonAutoDefaultPK.migrator.drop_and_create
+  Parent.migrator.drop_and_create
+  Person.migrator.drop_and_create
+  Profile.migrator.drop_and_create
+  ReservedWord.migrator.drop_and_create
+  Review.migrator.drop_and_create
+  School.migrator.drop_and_create
+  SongThread.migrator.drop_and_create
+  Student.migrator.drop_and_create
+  Teacher.migrator.drop_and_create
   Todo.migrator.drop_and_create
   TodoEmitNull.migrator.drop_and_create
-  AfterInit.migrator.drop_and_create
-  SongThread.migrator.drop_and_create
-  CustomSongThread.migrator.drop_and_create
-  UUIDModel.migrator.drop_and_create
   TodoJsonOptions.migrator.drop_and_create
   TodoYamlOptions.migrator.drop_and_create
+  User.migrator.drop_and_create
+  UUIDModel.migrator.drop_and_create
   Character.migrator.drop_and_create
   Courier.migrator.drop_and_create
   CourierService.migrator.drop_and_create
