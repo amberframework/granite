@@ -1,4 +1,5 @@
 require "./spec_helper"
+require "logger"
 
 describe Granite::Base do
   it "can instaniate a model with default values" do
@@ -6,6 +7,30 @@ describe Granite::Base do
     model.name.should eq "Jim"
     model.age.should eq 0.0
     model.is_alive.should be_true
+  end
+
+  describe Logger do
+    describe "when logger is set to IO" do
+      it "should be logged as DEBUG" do
+        IO.pipe do |r, w|
+          Granite.settings.logger = Logger.new(w, Logger::Severity::DEBUG)
+
+          Person.first
+
+          r.gets.should match /D, \[.*\] DEBUG -- : .*SELECT.*people.*id.*FROM.*people.*LIMIT.*1.*: .*\[\]/
+        end
+      end
+    end
+
+    describe "when logger is set to nil" do
+      it "should not be logged" do
+        Granite.settings.logger = Logger.new nil
+
+        a = 0
+        Granite.settings.logger.info { a = 1 }
+        a.should eq 0
+      end
+    end
   end
 
   describe "JSON" do
