@@ -27,7 +27,7 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
       end
     end
 
-    log statement, elapsed_time unless Granite.settings.logger.nil?
+    log statement, elapsed_time
   end
 
   def insert(table_name : String, fields, params, lastval)
@@ -47,7 +47,7 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
       end
     end
 
-    log statement, elapsed_time, params unless Granite.settings.logger.nil?
+    log statement, elapsed_time, params
 
     last_id
   end
@@ -82,7 +82,7 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
       end
     end
 
-    log statement, elapsed_time, params unless Granite.settings.logger.nil?
+    log statement, elapsed_time, params
   end
 
   private def last_val
@@ -103,7 +103,7 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
       end
     end
 
-    log statement, elapsed_time, params unless Granite.settings.logger.nil?
+    log statement, elapsed_time, params
   end
 
   # This will delete a row from the database.
@@ -116,6 +116,6 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
       end
     end
 
-    log statement, elapsed_time, value unless Granite.settings.logger.nil?
+    log statement, elapsed_time, value
   end
 end
