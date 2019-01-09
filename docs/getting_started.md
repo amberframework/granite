@@ -133,6 +133,21 @@ book.isbn # => nil
 book.save
 book.isbn # => RFC4122 V4 UUID string
 ```
+### Default values
+
+A default value can be assigned to a field that will be used if another value is not specified/supplies.
+
+```Crystal
+class Book < Granite::Base
+  adapter mysql
+  
+  field name : String, default: "DefaultBook"
+end
+
+book = Book.new
+book.name # => "DefaultBook"
+```
+
 
 ### Generating Documentation
 
@@ -141,8 +156,6 @@ By default, running `crystal docs` will **not** include Granite methods, constan
 The `field` and `primary` macros have a comment option that will specify the documentation comment to apply to that property's getter and setter.
 
 `field age : Int32, comment: "# Number of seconds since the post was posted"`
-
-See the [Docs folder](./) for additional information.
 
 ### Third-Party Annotations
 

@@ -28,6 +28,16 @@ describe Granite::Query::Builder(Model) do
     query.order_fields.should eq expected
   end
 
+  it "maps array to :in" do
+    query = builder.where(date_completed: nil, status: ["outstanding", "in_progress"])
+    expected = [
+      {join: :and, field: "date_completed", operator: :eq, value: nil},
+      {join: :and, field: "status", operator: :in, value: ["outstanding", "in_progress"]},
+    ]
+
+    query.where_fields.should eq expected
+  end
+
   it "stores limit" do
     query = builder.limit(7)
     query.limit.should eq 7

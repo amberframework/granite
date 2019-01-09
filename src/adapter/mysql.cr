@@ -16,17 +16,19 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
   end
 
   # Using TRUNCATE instead of DELETE so the id column resets to 0
-  def clear(table_name)
+  def clear(table_name : String)
     statement = "TRUNCATE #{quote(table_name)}"
 
-    log statement
-
-    open do |db|
-      db.exec statement
+    elapsed_time = Time.measure do
+      open do |db|
+        db.exec statement
+      end
     end
+
+    log statement, elapsed_time unless Granite.settings.logger.nil?
   end
 
-  def insert(table_name, fields, params, lastval)
+  def insert(table_name : String, fields, params, lastval)
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{quote(table_name)} ("
       stmt << fields.map { |name| "#{quote(name)}" }.join(", ")
@@ -35,22 +37,23 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
       stmt << ")"
     end
 
-    log statement, params
-
-    open do |db|
-      db.using_connection do |conn|
-        conn.exec statement, params
-        if lastval
-          return conn.scalar(last_val()).as(Int64)
-        else
-          return -1_i64
+    last_id = -1_i64
+    elapsed_time = Time.measure do
+      open do |db|
+        db.using_connection do |conn|
+          conn.exec statement, params
+          last_id = conn.scalar(last_val()).as(Int64) if lastval
         end
       end
     end
+
+    log statement, elapsed_time, params unless Granite.settings.logger.nil?
+
+    last_id
   end
 
   def import(table_name : String, primary_name : String, auto : String, fields, model_array, **options)
-    params = [] of DB::Any
+    params = [] of Granite::Fields::Type
 
     statement = String.build do |stmt|
       stmt << "INSERT"
@@ -80,40 +83,46 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
       end
     end
 
-    log statement, params
-
-    open do |db|
-      db.exec statement, params
+    elapsed_time = Time.measure do
+      open do |db|
+        db.exec statement, params
+      end
     end
+
+    log statement, elapsed_time, params unless Granite.settings.logger.nil?
   end
 
-  private def last_val
-    return "SELECT LAST_INSERT_ID()"
+  private def last_val : String
+    "SELECT LAST_INSERT_ID()"
   end
 
   # This will update a row in the database.
-  def update(table_name, primary_name, fields, params)
+  def update(table_name : String, primary_name : String, fields, params)
     statement = String.build do |stmt|
       stmt << "UPDATE #{quote(table_name)} SET "
       stmt << fields.map { |name| "#{quote(name)}=?" }.join(", ")
       stmt << " WHERE #{quote(primary_name)}=?"
     end
 
-    log statement, params
-
-    open do |db|
-      db.exec statement, params
+    elapsed_time = Time.measure do
+      open do |db|
+        db.exec statement, params
+      end
     end
+
+    log statement, elapsed_time, params unless Granite.settings.logger.nil?
   end
 
   # This will delete a row from the database.
-  def delete(table_name, primary_name, value)
+  def delete(table_name : String, primary_name : String, value)
     statement = "DELETE FROM #{quote(table_name)} WHERE #{quote(primary_name)}=?"
 
-    log statement, value
-
-    open do |db|
-      db.exec statement, value
+    elapsed_time = Time.measure do
+      open do |db|
+        db.exec statement, value
+      end
     end
+
+    log statement, elapsed_time, value unless Granite.settings.logger.nil?
   end
 end

@@ -1,6 +1,13 @@
 require "./spec_helper"
 
-describe "Granite::Base" do
+describe Granite::Base do
+  it "can instaniate a model with default values" do
+    model = DefaultValues.new
+    model.name.should eq "Jim"
+    model.age.should eq 0.0
+    model.is_alive.should be_true
+  end
+
   describe "JSON" do
     describe ".from_json" do
       it "can create an object from json" do
@@ -39,6 +46,15 @@ describe "Granite::Base" do
 
         model.name.should eq "after_initialize"
         model.priority.should eq 1000
+      end
+
+      describe "with default values" do
+        it "correctly applies values" do
+          model = DefaultValues.from_json(%({"name": "Bob"}))
+          model.name.should eq "Bob"
+          model.age.should eq 0.0
+          model.is_alive.should be_true
+        end
       end
     end
 
@@ -135,6 +151,15 @@ describe "Granite::Base" do
 
         model.name.should eq "after_initialize"
         model.priority.should eq 1000
+      end
+
+      describe "with default values" do
+        it "correctly applies values" do
+          model = DefaultValues.from_yaml(%(---\nname: Bob))
+          model.name.should eq "Bob"
+          model.age.should eq 0.0
+          model.is_alive.should be_true
+        end
       end
     end
 
@@ -249,6 +274,8 @@ describe "Granite::Base" do
           model = ArrayModel.new
           model.id = 2
           model.str_array = [] of String
+          model.f64_array.should be_a(Array(Float64))
+          model.f64_array.should eq [] of Float64
           model.save.should be_true
         end
 
@@ -260,7 +287,8 @@ describe "Granite::Base" do
           model.i32_array.should be_nil
           model.i64_array.should be_nil
           model.f32_array.should be_nil
-          model.f64_array.should be_nil
+          model.f64_array.should be_a(Array(Float64))
+          model.f64_array.should eq [] of Float64
           model.bool_array.should be_nil
         end
       end
