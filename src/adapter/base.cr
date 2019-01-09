@@ -31,7 +31,7 @@ abstract class Granite::Adapter::Base
   end
 
   def log(query : String, elapsed_time : Time::Span, params = [] of String) : Nil
-    (logger = Granite.settings.logger) ? logger.info colorize query, params, elapsed_time.total_seconds : nil
+    Granite.settings.logger.debug { colorize query, params, elapsed_time.total_seconds }
   end
 
   # remove all rows from a table and reset the counter on the id.
@@ -57,7 +57,7 @@ abstract class Granite::Adapter::Base
       end
     end
 
-    log statement, elapsed_time, params unless Granite.settings.logger.nil?
+    log statement, elapsed_time, params
   end
 
   def ensure_clause_template(clause)
