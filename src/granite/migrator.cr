@@ -53,7 +53,7 @@ module Granite::Migrator
         }
 
         stmt = String.build do |s|
-          s.puts "CREATE TABLE #{ @quoted_table_name }("
+          s.puts "CREATE TABLE IF NOT EXISTS #{ @quoted_table_name }("
 
           # primary key
           k = {{adapter}}.quote("{{primary_name}}")
