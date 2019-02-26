@@ -44,7 +44,7 @@ module Granite::Table
     @@table_name = "{{table_name}}"
     @@primary_name = "{{primary_name}}"
     @@primary_auto = "{{primary_auto}}"
-    @@primary_type = "{{primary_type}}"
+    @@primary_type = {{primary_type}}
 
     disable_granite_docs? def self.table_name
       @@table_name
