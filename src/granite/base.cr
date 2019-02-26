@@ -17,7 +17,7 @@ require "./version"
 require "./adapters"
 
 # Granite::Base is the base class for your model objects.
-class Granite::Base
+abstract class Granite::Base
   include Associations
   include Callbacks
   include Fields
