@@ -68,7 +68,7 @@ module Granite::Fields
       {% end %}
       property{{suffixes[0].id}} {{name.id}} : Union({{type.id}} | Nil){% if options[:default] %} = {{options[:default]}} {% end %}
       disable_granite_docs? def {{name.id}}{{suffixes[1].id}}
-        raise {{@type.name.stringify}} + "#" + {{name.stringify}} + " cannot be nil" if @{{name.id}}.nil?
+        raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{name.stringify}} + " cannot be nil" if @{{name.id}}.nil?
         @{{name.id}}.not_nil!
       end
     {% end %}

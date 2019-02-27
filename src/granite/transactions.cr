@@ -125,8 +125,14 @@ module Granite::Transactions
 
     private def __update
       set_timestamps mode: :update
-      fields = self.class.content_fields
+      fields = self.class.content_fields.dup
       params = content_values + [@{{primary_name}}]
+
+      # Do not update created_at on update
+      if created_at_index = fields.index("created_at")
+        fields.delete_at created_at_index
+        params.delete_at created_at_index
+      end
 
       begin
         @@adapter.update @@table_name, @@primary_name, fields, params
@@ -239,7 +245,7 @@ module Granite::Transactions
   # Returns true if this object hasn't been saved yet.
   @[JSON::Field(ignore: true)]
   @[YAML::Field(ignore: true)]
-  getter? new_record : Bool = true
+  property? new_record : Bool = true
 
   # Returns true if this object has been destroyed.
   @[JSON::Field(ignore: true)]
