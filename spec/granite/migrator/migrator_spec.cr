@@ -1,0 +1,98 @@
+require "../../spec_helper"
+
+describe Granite::Migrator::Base do
+  describe "#drop_sql" do
+    it "generates correct SQL with #{{{ env("CURRENT_ADAPTER") }}} adapter" do
+      {% if env("CURRENT_ADAPTER") == "mysql" %}
+        Review.migrator.drop_sql.should eq "DROP TABLE IF EXISTS `reviews`;"
+      {% else %}
+        Review.migrator.drop_sql.should eq "DROP TABLE IF EXISTS \"reviews\";"
+      {% end %}
+    end
+  end
+
+  describe "#create_sql" do
+    it "generates correct SQL with #{{{ env("CURRENT_ADAPTER") }}} adapter" do
+      {% if env("CURRENT_ADAPTER") == "pg" %}
+        Review.migrator.create_sql.should eq <<-SQL
+          CREATE TABLE "reviews"(
+          "id" BIGSERIAL PRIMARY KEY,
+          "name" VARCHAR(255)
+          ,
+          "downvotes" INT
+          ,
+          "upvotes" BIGINT
+          ,
+          "sentiment" FLOAT
+          ,
+          "interest" REAL
+          ,
+          "published" BOOL
+          ,
+          "created_at" TIMESTAMP
+          ) ;\n
+          SQL
+
+        # Also check Array types for pg
+        ArrayModel.migrator.create_sql.should eq <<-SQL
+          CREATE TABLE "array_model"(
+          "id" SERIAL PRIMARY KEY,
+          "str_array" TEXT[]
+          ,
+          "i16_array" SMALLINT[]
+          ,
+          "i32_array" INT[]
+          ,
+          "i64_array" BIGINT[]
+          ,
+          "f32_array" REAL[]
+          ,
+          "f64_array" DOUBLE PRECISION[]
+          ,
+          "bool_array" BOOLEAN[]
+          ) ;\n
+          SQL
+
+      {% elsif env("CURRENT_ADAPTER") == "mysql" %}
+        Review.migrator.create_sql.should eq <<-SQL
+          CREATE TABLE `reviews`(
+          `id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+          `name` VARCHAR(255)
+          ,
+          `downvotes` INT
+          ,
+          `upvotes` BIGINT
+          ,
+          `sentiment` FLOAT
+          ,
+          `interest` REAL
+          ,
+          `published` BOOL
+          ,
+          `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          ) ;\n
+          SQL
+
+      {% elsif env("CURRENT_ADAPTER") == "sqlite" %}
+        Review.migrator.create_sql.should eq <<-SQL
+          CREATE TABLE "reviews"(
+          "id" INTEGER NOT NULL PRIMARY KEY,
+          "name" VARCHAR(255)
+          ,
+          "downvotes" INTEGER
+          ,
+          "upvotes" INTEGER
+          ,
+          "sentiment" FLOAT
+          ,
+          "interest" REAL
+          ,
+          "published" BOOL
+          ,
+          "created_at" VARCHAR
+          ) ;\n
+          SQL
+      {% end %}
+    end
+  end
+end
