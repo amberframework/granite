@@ -33,6 +33,18 @@ describe Granite::Migrator::Base do
           ) ;\n
           SQL
 
+        Kvs.migrator.create_sql.should eq <<-SQL
+          CREATE TABLE "kvs"(
+          "k" VARCHAR(255) PRIMARY KEY,
+          "v" VARCHAR(255)
+          ) ;\n
+          SQL
+
+        UUIDModel.migrator.create_sql.should eq <<-SQL
+          CREATE TABLE "uuids"(
+          "uuid" UUID PRIMARY KEY) ;\n
+          SQL
+
         # Also check Array types for pg
         ArrayModel.migrator.create_sql.should eq <<-SQL
           CREATE TABLE "array_model"(
@@ -73,6 +85,18 @@ describe Granite::Migrator::Base do
           ) ;\n
           SQL
 
+        Kvs.migrator.create_sql.should eq <<-SQL
+          CREATE TABLE `kvs`(
+          `k` VARCHAR(255) PRIMARY KEY,
+          `v` VARCHAR(255)
+          ) ;\n
+          SQL
+
+        UUIDModel.migrator.create_sql.should eq <<-SQL
+          CREATE TABLE `uuids`(
+          `uuid` CHAR(36) PRIMARY KEY) ;\n
+          SQL
+
       {% elsif env("CURRENT_ADAPTER") == "sqlite" %}
         Review.migrator.create_sql.should eq <<-SQL
           CREATE TABLE "reviews"(
@@ -92,6 +116,19 @@ describe Granite::Migrator::Base do
           "created_at" VARCHAR
           ) ;\n
           SQL
+
+        Kvs.migrator.create_sql.should eq <<-SQL
+          CREATE TABLE "kvs"(
+          "k" VARCHAR(255) PRIMARY KEY,
+          "v" VARCHAR(255)
+          ) ;\n
+          SQL
+
+        UUIDModel.migrator.create_sql.should eq <<-SQL
+          CREATE TABLE "uuids"(
+          "uuid" CHAR(36) PRIMARY KEY) ;\n
+          SQL
+
       {% end %}
     end
   end
