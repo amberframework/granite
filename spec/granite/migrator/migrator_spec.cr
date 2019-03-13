@@ -17,15 +17,15 @@ describe Granite::Migrator::Base do
         Review.migrator.create_sql.should eq <<-SQL
           CREATE TABLE "reviews"(
           "id" BIGSERIAL PRIMARY KEY,
-          "name" VARCHAR(255)
+          "name" TEXT
           ,
           "downvotes" INT
           ,
           "upvotes" BIGINT
           ,
-          "sentiment" FLOAT
+          "sentiment" REAL
           ,
-          "interest" REAL
+          "interest" DOUBLE PRECISION
           ,
           "published" BOOL
           ,
@@ -35,8 +35,8 @@ describe Granite::Migrator::Base do
 
         Kvs.migrator.create_sql.should eq <<-SQL
           CREATE TABLE "kvs"(
-          "k" VARCHAR(255) PRIMARY KEY,
-          "v" VARCHAR(255)
+          "k" TEXT PRIMARY KEY,
+          "v" TEXT
           ) ;\n
           SQL
 
@@ -77,7 +77,7 @@ describe Granite::Migrator::Base do
           ,
           `sentiment` FLOAT
           ,
-          `interest` REAL
+          `interest` DOUBLE
           ,
           `published` BOOL
           ,

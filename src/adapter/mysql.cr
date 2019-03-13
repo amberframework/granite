@@ -7,6 +7,7 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
 
   module Schema
     TYPES = {
+      "Float64"    => "DOUBLE",
       "AUTO_Int32" => "INT NOT NULL AUTO_INCREMENT",
       "AUTO_Int64" => "BIGINT NOT NULL AUTO_INCREMENT",
       "UUID"       => "CHAR(36)",
