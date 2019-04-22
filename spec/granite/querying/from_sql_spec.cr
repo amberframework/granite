@@ -11,7 +11,7 @@ macro build_review_emitter
         nil,   # sentiment
         nil,   # interest
         true,  # published
-        Time.now, # created_at
+        Time.local, # created_at
       ]
     )
   end

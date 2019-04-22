@@ -101,7 +101,7 @@ require "../../spec_helper"
         ]
 
         Parent.import(to_import)
-        import_time = Time.utc_now.at_beginning_of_second
+        import_time = Time.utc.at_beginning_of_second
 
         parent1 = Parent.find_by!(name: "ParentOne")
         parent1.name.should eq "ParentOne"
@@ -114,7 +114,7 @@ require "../../spec_helper"
         sleep 1
 
         Parent.import(to_update, update_on_duplicate: true, columns: ["name"])
-        update_time = Time.utc_now.at_beginning_of_second
+        update_time = Time.utc.at_beginning_of_second
 
         parent1_edited = Parent.find_by!(name: "ParentOneEdited")
         parent1_edited.name.should eq "ParentOneEdited"

@@ -74,7 +74,7 @@ class Foo < Granite::Base
     field date_added : Time
 
     def after_initialize
-    	@date_added = Time.utc_now
+    	@date_added = Time.utc
     end
 end
    ```

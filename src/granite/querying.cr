@@ -35,7 +35,7 @@ module Granite::Querying
         rows << from_sql(results)
       end
     end
-    return rows
+    rows
   end
 
   # All will return all rows in the database. The clause allows you to specify

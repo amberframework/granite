@@ -73,7 +73,7 @@ module Granite::Transactions
       end
     end
 
-    disable_granite_docs? def set_timestamps(*, to time = Time.now(Granite.settings.default_timezone), mode = :create)
+    disable_granite_docs? def set_timestamps(*, to time = Time.local(Granite.settings.default_timezone), mode = :create)
       {% if FIELDS.keys.stringify.includes? "created_at" %}
         if mode == :create
           @created_at = time.at_beginning_of_second
@@ -227,7 +227,7 @@ module Granite::Transactions
       fields.each do |field|
         case field.to_s
           {% for time_field in @type.instance_vars.select { |ivar| ivar.type == Time? } %}
-            when {{time_field.stringify}} then @{{time_field.id}} = Time.now(Granite.settings.default_timezone).at_beginning_of_second
+            when {{time_field.stringify}} then @{{time_field.id}} = Time.local(Granite.settings.default_timezone).at_beginning_of_second
           {% end %}
         else
           if {{@type.instance_vars.map(&.name.stringify)}}.includes? field.to_s
@@ -238,7 +238,7 @@ module Granite::Transactions
         end
       end
     {% end %}
-    @updated_at = Time.now(Granite.settings.default_timezone).at_beginning_of_second
+    @updated_at = Time.local(Granite.settings.default_timezone).at_beginning_of_second
     save
   end
 
