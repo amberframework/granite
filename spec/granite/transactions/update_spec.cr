@@ -38,7 +38,7 @@ describe "#update" do
       saved_parent = Parent.find!(parent.id)
       saved_parent.name.should eq "New New Parent"
       saved_parent.created_at.should eq created_at
-      saved_parent.updated_at.should eq Time.utc_now.at_beginning_of_second
+      saved_parent.updated_at.should eq Time.utc.at_beginning_of_second
     end
   end
 end

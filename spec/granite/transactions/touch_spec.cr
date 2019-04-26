@@ -20,12 +20,12 @@ describe "#touch" do
   end
 
   it "updates updated_at on an object" do
-    old_time = Time.utc_now.at_beginning_of_second
+    old_time = Time.utc.at_beginning_of_second
     object = TimeTest.create(test: old_time)
 
     sleep 3
 
-    new_time = Time.utc_now.at_beginning_of_second
+    new_time = Time.utc.at_beginning_of_second
     object.touch
 
     object.updated_at.should eq new_time
@@ -34,12 +34,12 @@ describe "#touch" do
   end
 
   it "updates updated_at + custom fields on an object" do
-    old_time = Time.utc_now.at_beginning_of_second
+    old_time = Time.utc.at_beginning_of_second
     object = TimeTest.create(test: old_time)
 
     sleep 3
 
-    new_time = Time.utc_now.at_beginning_of_second
+    new_time = Time.utc.at_beginning_of_second
     object.touch("test")
 
     object.updated_at.should eq new_time

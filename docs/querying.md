@@ -11,7 +11,7 @@ posts = Post.where(published: true, author_id: User.first!.id)
 
 It supports different operators:
 ```crystal
-Post.where(:created_at, :gt, Time.now - 7.days)
+Post.where(:created_at, :gt, Time.local - 7.days)
 ```
 
 Supported operators are :eq, :gteq, :lteq, :neq, :gt, :lt, :nlt, :ngt, :ltgt, :in, :nin, :like, :nlike
