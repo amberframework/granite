@@ -16,6 +16,18 @@ describe "#find_by, #find_by!" do
     found.should be_a(Parent)
   end
 
+  it "also has find_or_create" do
+    Parent.clear
+    Parent.find_or_create_by(name: "name")
+    Parent.all.first.name.should eq("name")
+    Parent.all.first.new_record?.should eq(false)
+  end
+
+  it "uses find when it exists" do
+    Parent.find_or_create_by(name: "name")
+    Parent.count.should eq(1)
+  end
+
   it "works with multiple arguments" do
     Review.clear
 

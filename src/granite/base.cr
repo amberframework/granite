@@ -55,4 +55,8 @@ abstract class Granite::Base
 
   def initialize
   end
+
+  def self.find_or_create_by(**args)
+    find_by(**args) || create(**args)
+  end
 end
