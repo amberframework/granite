@@ -17,7 +17,7 @@ describe "find_or_create_by, find_or_initialize_by" do
     parent = Parent.find_or_initialize_by(name: "name")
     parent.new_record?.should eq(false)
   end
-  
+
   it "initializes with find_or_initialize when not found" do
     Parent.clear
     parent = Parent.find_or_initialize_by(name: "gnome")

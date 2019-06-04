@@ -1,5 +1,6 @@
 require "./transactions"
 require "./querying"
+
 module Granite::Integrators
   include Transactions::ClassMethods
   include Querying
