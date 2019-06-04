@@ -7,8 +7,8 @@ describe "find_or_create_by, find_or_initialize_by" do
 
   it "creates on find_or_create when not found" do
     Parent.find_or_create_by(name: "name")
-    Parent.all.first.name.should eq("name")
-    Parent.all.first.new_record?.should eq(false)
+    Parent.first!.name.should eq("name")
+    Parent.first!.new_record?.should eq(false)
   end
 
   it "uses find on find_or_create_by when it exists" do
