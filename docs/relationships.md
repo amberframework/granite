@@ -248,7 +248,12 @@ end
 This will allow you to find all the rooms that a user is in:
 
 ```crystal
-user = User.first
+user = User.create(name: "Bob")
+room = Room.create(name: "#crystal-lang")
+room2 = Room.create(name: "#amber")
+Participant.create(user_id: user.id, room_id: room.id)
+Participant.create(user_id: user.id, room_id: room2.id)
+
 user.rooms.each do |room|
   puts room.name
 end
@@ -257,7 +262,6 @@ end
 And the reverse, all the users in a room:
 
 ```crystal
-room = Room.first
 room.users.each do |user|
   puts user.name
 end
