@@ -5,16 +5,15 @@ require "./callbacks"
 require "./fields"
 require "./query/executors/base"
 require "./query/**"
-require "./querying"
 require "./settings"
 require "./table"
-require "./transactions"
 require "./validators"
 require "./validation_helpers/**"
 require "./migrator"
 require "./select"
 require "./version"
 require "./adapters"
+require "./integrators"
 
 # Granite::Base is the base class for your model objects.
 abstract class Granite::Base
@@ -31,6 +30,7 @@ abstract class Granite::Base
   extend Querying
   extend Query::BuilderMethods
   extend Transactions::ClassMethods
+  extend Integrators
 
   macro inherited
     include JSON::Serializable
@@ -54,9 +54,5 @@ abstract class Granite::Base
   end
 
   def initialize
-  end
-
-  def self.find_or_create_by(**args)
-    find_by(**args) || create(**args)
   end
 end
