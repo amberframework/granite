@@ -74,7 +74,7 @@ class Foo < Granite::Base
     field date_added : Time
 
     def after_initialize
-    	@date_added = Time.utc_now
+    	@date_added = Time.utc
     end
 end
    ```
@@ -94,6 +94,45 @@ end
     @new_record=true,
     @updated_at=nil>
    ```
+## on_to_yaml
+
+This method gets called when `.to_yaml` is called on the model.  This allows other fields to be serialized in additional to the model itself.  A common use-case could be including related models.
+
+```crystal
+class Person < Granite::Base
+  adapter pg
+  table_name people
+
+  belongs_to :family
+
+  primary id : Int64
+  field name : String
+end
+
+class Family < Granite::Base
+  adapter pg
+  table_name families
+
+  has_many :members, class_name: Person
+
+  primary id : Int64
+       
+  def on_to_yaml(yaml : ::YAML::Nodes::Builder)
+    yaml.scalar "members"
+    members.to_yaml yaml
+  end
+end
+
+family = ...
+family.to_yaml
+# ---
+# id: 1
+# members:
+# - id: 1
+#   name: Jim
+# - id: 2
+#   name: Mary
+```
 
 ## YAML::Serializable::Unmapped
 

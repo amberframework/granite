@@ -86,7 +86,7 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
   end
 
   private def last_val
-    return "SELECT LAST_INSERT_ROWID()"
+    "SELECT LAST_INSERT_ROWID()"
   end
 
   # This will update a row in the database.

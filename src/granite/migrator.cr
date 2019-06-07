@@ -43,16 +43,20 @@ module Granite::Migrator
     {% adapter = "#{klass}.adapter".id %}
 
     disable_granite_docs? class Migrator < Granite::Migrator::Base
-      def drop
-        {{klass}}.exec "DROP TABLE IF EXISTS #{ @quoted_table_name };"
+      def drop_sql
+        "DROP TABLE IF EXISTS #{ @quoted_table_name };"
       end
 
-      def create
+      def drop
+        {{klass}}.exec drop_sql
+      end
+
+      def create_sql
         resolve = ->(key : String) {
           {{adapter}}.class.schema_type?(key) || raise "Migrator(#{ {{adapter}}.class.name }) doesn't support '#{key}' yet."
         }
 
-        stmt = String.build do |s|
+        String.build do |s|
           s.puts "CREATE TABLE IF NOT EXISTS #{ @quoted_table_name }("
 
           # primary key
@@ -82,8 +86,10 @@ module Granite::Migrator
 
           s.puts ") #{@table_options};"
         end
+      end
 
-        {{klass}}.exec stmt
+      def create
+        {{klass}}.exec create_sql
       end
     end
 

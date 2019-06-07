@@ -75,7 +75,7 @@ describe "belongs_to" do
     book.name = "Introduction to Granite"
     book.publisher = publisher
     book.save
-    book.to_json.should eq %({"id":4,"name":"Introduction to Granite"})
+    book.to_json.should eq %({"id":#{book.id},"name":"Introduction to Granite"})
   end
 
   it "supports yaml_options" do
@@ -87,7 +87,7 @@ describe "belongs_to" do
     book.name = "Introduction to Granite"
     book.publisher = publisher
     book.save
-    book.to_yaml.should eq %(---\nid: 5\nname: Introduction to Granite\n)
+    book.to_yaml.should eq %(---\nid: #{book.id}\nname: Introduction to Granite\n)
   end
 
   it "provides a method to retrieve parent object that will raise if record is not found" do

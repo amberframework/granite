@@ -7,6 +7,9 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
 
   module Schema
     TYPES = {
+      "Float32"        => "REAL",
+      "Float64"        => "DOUBLE PRECISION",
+      "String"         => "TEXT",
       "AUTO_Int32"     => "SERIAL",
       "AUTO_Int64"     => "BIGSERIAL",
       "UUID"           => "UUID",
