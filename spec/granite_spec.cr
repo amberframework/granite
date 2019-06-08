@@ -262,6 +262,11 @@ describe Granite::Base do
   {% if env("CURRENT_ADAPTER") == "pg" %}
     describe "Array(T)" do
       describe "with values" do
+        it "should instantiate correctly" do
+          model = ArrayModel.new str_array: ["foo", "bar"]
+          model.str_array.should eq ["foo", "bar"]
+        end
+
         it "should save correctly" do
           model = ArrayModel.new
           model.id = 1
