@@ -44,7 +44,7 @@ abstract class Granite::Base
       __process_migrator
     end
 
-    def initialize(**args : DB::Any)
+    def initialize(**args : Granite::Fields::Type)
       set_attributes(args.to_h)
     end
 
