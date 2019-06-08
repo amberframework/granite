@@ -165,6 +165,8 @@ module Granite::Fields
               elsif value.to_s =~ TIME_FORMAT_REGEX
                 @{{_name.id}} = Time.parse(value.to_s, Granite::DATETIME_FORMAT, Granite.settings.default_timezone)
               end
+            {% elsif type.resolve <= Array %}
+              @{{_name.id}} = value.as({{type.id}})
             {% else %}
               @{{_name.id}} = value.to_s
             {% end %}

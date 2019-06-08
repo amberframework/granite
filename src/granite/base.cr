@@ -43,16 +43,16 @@ abstract class Granite::Base
       __process_transactions
       __process_migrator
     end
-  end
 
-  def initialize(**args : Object)
-    set_attributes(args.to_h)
-  end
+    def initialize(**args : Granite::Fields::Type)
+      set_attributes(args.to_h)
+    end
 
-  def initialize(args : Hash(Symbol | String, DB::Any))
-    set_attributes(args)
-  end
+    def initialize(args : Hash(Symbol | String, Granite::Fields::Type))
+      set_attributes(args)
+    end
 
-  def initialize
+    def initialize
+    end
   end
 end
