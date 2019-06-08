@@ -48,7 +48,7 @@ abstract class Granite::Base
       set_attributes(args.to_h)
     end
 
-    def initialize(args : Hash(Symbol | String, DB::Any))
+    def initialize(args : Hash(Symbol | String, Granite::Fields::Type))
       set_attributes(args)
     end
 
