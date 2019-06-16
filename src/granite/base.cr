@@ -14,6 +14,7 @@ require "./select"
 require "./version"
 require "./adapters"
 require "./integrators"
+require "./converters"
 
 # Granite::Base is the base class for your model objects.
 abstract class Granite::Base

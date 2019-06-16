@@ -7,9 +7,10 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
 
   module Schema
     TYPES = {
-      "Float64"    => "DOUBLE",
       "AUTO_Int32" => "INT NOT NULL AUTO_INCREMENT",
       "AUTO_Int64" => "BIGINT NOT NULL AUTO_INCREMENT",
+      "AUTO_UUID"  => "CHAR(36)",
+      "Float64"    => "DOUBLE",
       "UUID"       => "CHAR(36)",
       "created_at" => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
       "updated_at" => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",

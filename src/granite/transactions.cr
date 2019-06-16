@@ -10,7 +10,7 @@ module Granite::Transactions
       create(args.to_h)
     end
 
-    disable_granite_docs? def create(args : Hash(Symbol | String, DB::Any))
+    disable_granite_docs? def create(args : Hash(Symbol | String, Granite::Fields::Type))
       instance = new
       instance.set_attributes(args)
       instance.save
@@ -21,7 +21,7 @@ module Granite::Transactions
       create!(args.to_h)
     end
 
-    disable_granite_docs? def create!(args : Hash(Symbol | String, DB::Any))
+    disable_granite_docs? def create!(args : Hash(Symbol | String, Granite::Fields::Type))
       instance = create(args)
 
       if instance.errors.any?
@@ -98,15 +98,15 @@ module Granite::Transactions
           @{{primary_name}} = @@adapter.insert(@@table_name, fields, params, lastval: "{{primary_name}}").to_i32
         {% elsif primary_type.id == "Int64" && primary_auto == true %}
           @{{primary_name}} = @@adapter.insert(@@table_name, fields, params, lastval: "{{primary_name}}")
-        {% elsif primary_auto == true %}
-          {% raise "Failed to define #{@type.name}#save: Primary key must be Int(32|64), or set `auto: false` for natural keys.\n\n  primary #{primary_name} : #{primary_type}, auto: false\n" %}
-        {% else %}
-          {% if primary_auto == :uuid %}
-            _uuid = UUID.random.to_s
+        {% elsif primary_type.id == "UUID" && primary_auto == true %}
+            _uuid = UUID.random
             @{{primary_name}} = _uuid
             params << _uuid
             fields << "{{primary_name}}"
-          {% end %}
+            @@adapter.insert(@@table_name, fields, params, lastval: nil)
+        {% elsif primary_auto == true %}
+          {% raise "Failed to define #{@type.name}#save: Primary key must be Int(32|64) or UUID, or set `auto: false` for natural keys.\n\n  primary #{primary_name} : #{primary_type}, auto: false\n" %}
+        {% else %}
           if @{{primary_name}}
             @@adapter.insert(@@table_name, fields, params, lastval: nil)
           else
@@ -183,7 +183,7 @@ module Granite::Transactions
       update(args.to_h)
     end
 
-    disable_granite_docs? def update(args : Hash(Symbol | String, DB::Any))
+    disable_granite_docs? def update(args : Hash(Symbol | String, Granite::Fields::Type))
       set_attributes(args)
 
       save
@@ -193,7 +193,7 @@ module Granite::Transactions
       update!(args.to_h)
     end
 
-    disable_granite_docs? def update!(args : Hash(Symbol | String, DB::Any))
+    disable_granite_docs? def update!(args : Hash(Symbol | String, Granite::Fields::Type))
       set_attributes(args)
 
       save!

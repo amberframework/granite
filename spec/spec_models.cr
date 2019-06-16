@@ -352,7 +352,14 @@ require "uuid"
     adapter {{ adapter_literal }}
     table_name uuids
 
-    primary uuid : String, auto: :uuid
+    primary uuid : UUID, converter: Granite::Converters::UuidConverter
+  end
+
+  class UUIDNaturalModel < Granite::Base
+    adapter {{ adapter_literal }}
+    table_name uuids
+
+    primary uuid : UUID, converter: Granite::Converters::UuidConverter, auto: false
   end
 
   class TodoJsonOptions < Granite::Base
