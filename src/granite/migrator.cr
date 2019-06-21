@@ -62,9 +62,7 @@ module Granite::Migrator
           # primary key
           k = {{adapter}}.quote("{{primary_name}}")
           v =
-            {% if primary_auto == :uuid %}
-              resolve.call("UUID")
-            {% elsif primary_auto %}
+            {% if primary_auto %}
               resolve.call("AUTO_{{primary_type.id}}")
             {% else %}
               resolve.call("{{primary_type.id}}")
@@ -76,7 +74,9 @@ module Granite::Migrator
             s.puts ","
             k = {{adapter}}.quote("{{name}}")
             v =
-              {% if name.id == "created_at" || name.id == "updated_at" %}
+              {% if options[:column_type] %}
+                "{{options[:column_type].id}}"
+              {% elsif name.id == "created_at" || name.id == "updated_at" %}
                 resolve.call("{{name}}")
               {% else %}
                 resolve.call("{{options[:type]}}")

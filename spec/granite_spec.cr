@@ -34,8 +34,11 @@ describe Granite::Base do
     describe "with a UUID" do
       it "should instaniate correctly" do
         uuid = UUID.random
-        model = UUIDNaturalModel.new uuid: uuid
+        model = UUIDNaturalModel.new uuid: uuid, field_uuid: uuid
+        model.uuid.should be_a UUID?
+        model.field_uuid.should be_a UUID?
         model.uuid.should eq uuid
+        model.field_uuid!.should eq uuid
       end
     end
   end

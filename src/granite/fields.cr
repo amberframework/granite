@@ -169,8 +169,10 @@ module Granite::Fields
               @{{_name.id}} = value.as({{type.id}})
             {% elsif type.id == UUID.id %}
               @{{_name.id}} = value.as({{type.id}})
-            {% else %}
+            {% elsif type.id == String.id %}
               @{{_name.id}} = value.to_s
+            {% else %}
+              @{{_name.id}} = nil
             {% end %}
           {% end %}
         end
