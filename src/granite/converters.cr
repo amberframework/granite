@@ -30,7 +30,7 @@ module Granite::Converters
     def to_db(value : E?) : Granite::Fields::Type
       return nil if value.nil?
       {% if T <= Number %}
-        value.to_i
+        value.to_i64
       {% elsif T == String || T == Bytes %}
         value.to_s
       {% else %}
@@ -42,7 +42,7 @@ module Granite::Converters
       value = result.read(T?)
       return nil if value.nil?
       {% if T <= Number %}
-        E.from_value? value
+        E.from_value? value.to_i64
       {% elsif T == String %}
         E.parse? value
       {% elsif T == Bytes %}
