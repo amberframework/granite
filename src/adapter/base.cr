@@ -60,9 +60,9 @@ abstract class Granite::Adapter::Base
     log statement, elapsed_time, params
   end
 
-  # Returns a `Bool` if a record exists with the provided clause.
-  def exists?(table_name : String, clause : String, params = [] of Granite::Fields::Type) : Bool
-    statement = "SELECT EXISTS(SELECT 1 FROM #{table_name} WHERE #{ensure_clause_template(clause)})"
+  # Returns `true` if a record exists that matches *criteria*, otherwise `false`.
+  def exists?(table_name : String, criteria : String, params = [] of Granite::Fields::Type) : Bool
+    statement = "SELECT EXISTS(SELECT 1 FROM #{table_name} WHERE #{ensure_clause_template(criteria)})"
 
     exists = false
     elapsed_time = Time.measure do

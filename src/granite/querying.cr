@@ -69,25 +69,25 @@ module Granite::Querying
     find(value) || raise Granite::Querying::NotFound.new("No #{{{@type.name.stringify}}} found where #{@@primary_name} = #{value}")
   end
 
-  # Returns the first row found that matches the given criteria. Otherwise nil.
-  def find_by(**args : Granite::Fields::Type)
-    find_by args.to_h
+  # Returns the first row found that matches *criteria*. Otherwise `nil`.
+  def find_by(**criteria : Granite::Fields::Type)
+    find_by criteria.to_h
   end
 
   # :ditto:
-  def find_by(args : Hash(Symbol | String, Granite::Fields::Type))
-    clause, params = build_find_by_clause(args)
+  def find_by(criteria : Hash(Symbol | String, Granite::Fields::Type))
+    clause, params = build_find_by_clause(criteria)
     first "WHERE #{clause}", params
   end
 
-  # Returns the first row found that matches the given criteria. Otherwise raises a `NotFound` exception.
-  def find_by!(**args : Granite::Fields::Type)
-    find_by!(args.to_h)
+  # Returns the first row found that matches *criteria*. Otherwise raises a `NotFound` exception.
+  def find_by!(**criteria : Granite::Fields::Type)
+    find_by!(criteria.to_h)
   end
 
   # :ditto:
-  def find_by!(args : Hash(Symbol | String, Granite::Fields::Type))
-    find_by(args) || raise NotFound.new("No #{{{@type.name.stringify}}} found where #{args.map { |k, v| %(#{k} #{v.nil? ? "is NULL" : "= #{v}"}) }.join(" and ")}")
+  def find_by!(criteria : Hash(Symbol | String, Granite::Fields::Type))
+    find_by(criteria) || raise NotFound.new("No #{{{@type.name.stringify}}} found where #{criteria.map { |k, v| %(#{k} #{v.nil? ? "is NULL" : "= #{v}"}) }.join(" and ")}")
   end
 
   def find_each(clause = "", params = [] of Granite::Fields::Type, batch_size limit = 100, offset = 0)
@@ -111,20 +111,20 @@ module Granite::Querying
     end
   end
 
-  # Returns true if a record exists with the given PK, otherwise false.
+  # Returns `true` if a records exists with a PK of *id*, otherwise `false`.
   def exists?(id : Number | String | Nil) : Bool
     return false if id.nil?
     exec_exists "#{@@primary_name} = ?", [id]
   end
 
-  # Returns true if a records that matches the given criteria exists, otherwise false.
-  def exists?(**args : Granite::Fields::Type) : Bool
-    exists? args.to_h
+  # Returns `true` if a records exists that matches *criteria*, otherwise `false`.
+  def exists?(**criteria : Granite::Fields::Type) : Bool
+    exists? criteria.to_h
   end
 
   # :ditto:
-  def exists?(args : Hash(Symbol | String, Granite::Fields::Type)) : Bool
-    exec_exists *build_find_by_clause(args)
+  def exists?(criteria : Hash(Symbol | String, Granite::Fields::Type)) : Bool
+    exec_exists *build_find_by_clause(criteria)
   end
 
   # count returns a count of all the records
@@ -148,11 +148,11 @@ module Granite::Querying
     @@adapter.exists? quoted_table_name, clause, params
   end
 
-  private def build_find_by_clause(args : Hash(Symbol | String, Granite::Fields::Type))
-    args = args.dup
+  private def build_find_by_clause(criteria : Hash(Symbol | String, Granite::Fields::Type))
+    criteria = criteria.dup
     {
-      args.keys.map { |name| "#{quoted_table_name}.#{quote(name.to_s)} #{(args[name].nil? ? (args.delete(name); "IS NULL") : "= ?")}" }.join(" AND "),
-      args.values,
+      criteria.keys.map { |name| "#{quoted_table_name}.#{quote(name.to_s)} #{(criteria[name].nil? ? (criteria.delete(name); "IS NULL") : "= ?")}" }.join(" AND "),
+      criteria.values,
     }
   end
 end
