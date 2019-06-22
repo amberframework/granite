@@ -141,7 +141,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     log statement, elapsed_time, value
   end
 
-  def ensure_clause_template(clause : String) : String
+  protected def ensure_clause_template(clause : String) : String
     if clause.includes?("?")
       num_subs = clause.count("?")
 

@@ -94,7 +94,7 @@ describe "belongs_to" do
     book = Book.new
     book.name = "Introduction to Granite"
 
-    expect_raises Granite::Querying::NotFound, "No Company found where id = " { book.publisher! }
+    expect_raises Granite::Querying::NotFound, "No Company found where id is NULL" { book.publisher! }
   end
 
   it "provides the ability to use a custom primary key" do
