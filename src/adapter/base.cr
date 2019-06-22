@@ -37,7 +37,7 @@ abstract class Granite::Adapter::Base
   # remove all rows from a table and reset the counter on the id.
   abstract def clear(table_name)
 
-  # select performs a query against a table.  The query object containes table_name,
+  # select performs a query against a table.  The query object contains table_name,
   # fields (configured using the sql_mapping directive in your model), and an optional
   # raw query string.  The clause and params is the query and params that is passed
   # in via .all() method
@@ -67,7 +67,12 @@ abstract class Granite::Adapter::Base
     exists = false
     elapsed_time = Time.measure do
       open do |db|
-        exists = db.query_one statement, params, as: Bool
+        # TODO: Simplify once https://github.com/crystal-lang/crystal-mysql/issues/77 is resolved.
+        exists = if self.is_a? Granite::Adapter::Mysql
+                   !db.query_one(statement, params, as: Int64).zero?
+                 else
+                   db.query_one statement, params, as: Bool
+                 end
       end
     end
 
