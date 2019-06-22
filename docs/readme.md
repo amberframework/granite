@@ -26,6 +26,8 @@ dependencies:
 
 ```
 
+### Register an Adapter
+
 Next you will need to register an adapter.  This should be one of the first things in your main Crystal file, before Granite is required.
 
 ```crystal
@@ -35,6 +37,8 @@ Granite::Adapters << Granite::Adapter::Mysql.new({name: "mysql", url: "YOUR_DATA
 ```
 
 Supported adapters include `Mysql, Pg, and Sqlite`.
+
+### Example Model
 
 Here is an example Granite model using the adapter registered above.
 
