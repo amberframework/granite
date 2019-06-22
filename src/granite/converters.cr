@@ -1,4 +1,7 @@
 module Granite::Converters
+  # Converts a `UUID` to/from a database column of type `T`.
+  #
+  # Valid types for `T` include: `String`, and `Bytes`.
   module Uuid(T)
     extend self
 
@@ -24,6 +27,9 @@ module Granite::Converters
     end
   end
 
+  # Converts an Enum of type `E` to/from a database column of type `T`.
+  #
+  # Valid types for `T` include: `Number`, `String`, and `Bytes`.
   module Enum(E, T)
     extend self
 
@@ -53,6 +59,11 @@ module Granite::Converters
     end
   end
 
+  # Converts an `Object` of type `M` to/from a database column of type `T`.
+  #
+  # Valid types for `T` include: `String`, `JSON::Any`, and `Bytes`.
+  #
+  # NOTE: `M` must implement `#to_json` and `.from_json` methods.
   module Json(M, T)
     extend self
 
@@ -82,6 +93,7 @@ module Granite::Converters
     end
   end
 
+  # Converters a `PG::Numeric` value into a `Float64`.
   module PgNumeric
     extend self
 
