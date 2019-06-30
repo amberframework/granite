@@ -67,12 +67,7 @@ abstract class Granite::Adapter::Base
     exists = false
     elapsed_time = Time.measure do
       open do |db|
-        # TODO: Simplify once https://github.com/crystal-lang/crystal-mysql/issues/77 is resolved.
-        exists = if self.is_a? Granite::Adapter::Mysql
-                   !db.query_one(statement, params, as: Int64).zero?
-                 else
-                   db.query_one statement, params, as: Bool
-                 end
+        exists = db.query_one?(statement, params, as: Bool) || exists
       end
     end
 

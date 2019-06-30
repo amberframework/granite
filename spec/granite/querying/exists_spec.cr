@@ -56,7 +56,7 @@ describe ".exists?" do
     end
 
     describe "with a namedtuple of args" do
-      it "should return true" do
+      it "should return false" do
         model = Parent.new(name: "Some Name")
         model.save.should be_true
         Parent.exists?(name: "Some Other Name", id: model.id).should be_false
@@ -64,7 +64,7 @@ describe ".exists?" do
     end
 
     describe "with a hash of args" do
-      it "should return true" do
+      it "should return false" do
         model = Parent.new(name: "Some Name")
         model.save.should be_true
         Parent.exists?({:name => "Some Other Name", "id" => model.id}).should be_false
@@ -72,7 +72,7 @@ describe ".exists?" do
     end
 
     describe "with a nil value" do
-      it "should return true" do
+      it "should return false" do
         model = Student.new(name: "Jim")
         model.save.should be_true
         Student.exists?(name: nil, id: model.id).should be_false

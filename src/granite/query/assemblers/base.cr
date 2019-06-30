@@ -170,6 +170,17 @@ module Granite::Query::Assembler
       Executor::List(Model).new sql, numbered_parameters
     end
 
+    def exists? : Executor::Value(Model, Bool)
+      sql = build_sql do |s|
+        s << "SELECT EXISTS(SELECT 1 "
+        s << "FROM #{table_name} "
+        s << where
+        s << ")"
+      end
+
+      Executor::Value(Model, Bool).new sql, numbered_parameters, default: false
+    end
+
     OPERATORS = {"eq": "=", "gteq": ">=", "lteq": "<=", "neq": "!=", "ltgt": "<>", "gt": ">", "lt": "<", "ngt": "!>", "nlt": "!<", "in": "IN", "nin": "NOT IN", "like": "LIKE", "nlike": "NOT LIKE"}
 
     def sql_operator(operator : Symbol) : String

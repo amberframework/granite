@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe "#query_builder_methods" do
+describe Granite::Query::BuilderMethods do
   describe "#where" do
     describe "with array argument" do
       it "correctly queries string fields" do
@@ -45,6 +45,42 @@ describe "#query_builder_methods" do
           found[0].id.should eq review2.id
         end
       {% end %}
+    end
+  end
+
+  describe "#exists?" do
+    describe "when there is a record with that ID" do
+      describe "when querying on the PK" do
+        it "should return true" do
+          model = Parent.new(name: "Some Name")
+          model.save.should be_true
+          Parent.where(id: model.id).exists?.should be_true
+        end
+      end
+
+      describe "with multiple args" do
+        it "should return true" do
+          model = Parent.new(name: "Some Name")
+          model.save.should be_true
+          Parent.where(name: "Some Name", id: model.id).exists?.should be_true
+        end
+      end
+    end
+
+    describe "when there is not a record with that ID" do
+      describe "when querying on the PK" do
+        it "should return false" do
+          Parent.where(id: 234567).exists?.should be_false
+        end
+      end
+
+      describe "with multiple args" do
+        it "should return false" do
+          model = Parent.new(name: "Some Name")
+          model.save.should be_true
+          Parent.where(name: "Some Other Name", id: model.id).exists?.should be_false
+        end
+      end
     end
   end
 end

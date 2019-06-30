@@ -178,6 +178,10 @@ class Granite::Query::Builder(Model)
     assembler.select.run
   end
 
+  def exists? : Bool
+    assembler.exists?.run
+  end
+
   def size
     count
   end
