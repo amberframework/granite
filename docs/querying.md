@@ -125,3 +125,10 @@ Post.exists? 1 # => true
 Post.exists? {"id" => 1, :title => "My Post"} # => true
 Post.exists? {id: 1, title: "Some Post"} # => false
 ```
+
+The `exists?` method can also be used with the query builder.
+
+```crystal
+Post.where(published: true, author_id: User.first!.id).exists?
+Post.where(:created_at, :gt, Time.local - 7.days).exists?
+```
