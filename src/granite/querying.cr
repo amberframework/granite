@@ -149,10 +149,20 @@ module Granite::Querying
   end
 
   private def build_find_by_clause(criteria : Hash(Symbol | String, Granite::Fields::Type))
-    criteria = criteria.dup
-    {
-      criteria.keys.map { |name| "#{quoted_table_name}.#{quote(name.to_s)} #{(criteria[name].nil? ? (criteria.delete(name); "IS NULL") : "= ?")}" }.join(" AND "),
-      criteria.values,
-    }
+    keys = criteria.keys
+    criteria_hash = criteria.dup
+
+    clauses = keys.map do |name|
+      if criteria_hash[name]
+        matcher = "= ?"
+      else
+        matcher = "IS NULL"
+        criteria_hash.delete name
+      end
+
+      "#{quoted_table_name}.#{quote(name.to_s)} #{matcher}"
+    end
+
+    {clauses.join(" AND "), criteria_hash.values}
   end
 end
