@@ -18,7 +18,7 @@ dependencies:
 development_dependencies:
   mysql:
     github: crystal-lang/crystal-mysql
-    commit: 7c924243093077da03205ab098474046f7b2b4ac
+    version: ~> 0.7.0
 
   sqlite3:
     github: crystal-lang/crystal-sqlite3
