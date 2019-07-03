@@ -28,6 +28,7 @@ module Granite::Table
   end
 
   macro primary(decl, **options)
+    {% raise "The type of #{@type.name}##{decl.var} cannot be a Union.  The 'primary' macro declares the type as nilable by default." if decl.type.is_a? Union %}
     {% PRIMARY[:name] = decl.var %}
     {% PRIMARY[:type] = decl.type %}
     {% PRIMARY[:auto] = ([true, false, :uuid].includes? options[:auto]) ? options[:auto] : true %}
