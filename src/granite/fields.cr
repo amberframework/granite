@@ -2,7 +2,7 @@ require "json"
 
 module Granite::Fields
   alias SupportedArrayTypes = Array(String) | Array(Int16) | Array(Int32) | Array(Int64) | Array(Float32) | Array(Float64) | Array(Bool)
-  alias Type = DB::Any | SupportedArrayTypes
+  alias Type = DB::Any | SupportedArrayTypes | UUID
   TIME_FORMAT_REGEX = /\d{4,}-\d{2,}-\d{2,}\s\d{2,}:\d{2,}:\d{2,}/
 
   macro included
@@ -87,9 +87,9 @@ module Granite::Fields
     disable_granite_docs? def content_values
       parsed_params = [] of Type
       {% for name, options in CONTENT_FIELDS %}
-        parsed_params << {{name.id}}
+        parsed_params << {% if options[:converter] %} {{options[:converter]}}.to_db {{name.id}} {% else %} {{name.id}} {% end %}
       {% end %}
-      return parsed_params
+      parsed_params
     end
 
     disable_granite_docs? def to_h
@@ -168,8 +168,12 @@ module Granite::Fields
               end
             {% elsif type.resolve <= Array %}
               @{{_name.id}} = value.as({{type.id}})
-            {% else %}
+            {% elsif type.id == UUID.id %}
+              @{{_name.id}} = value.as({{type.id}})
+            {% elsif type.id == String.id %}
               @{{_name.id}} = value.to_s
+            {% else %}
+              @{{_name.id}} = nil
             {% end %}
           {% end %}
         end

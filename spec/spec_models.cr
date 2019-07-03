@@ -352,7 +352,15 @@ require "uuid"
     adapter {{ adapter_literal }}
     table_name uuids
 
-    primary uuid : String, auto: :uuid
+    primary uuid : UUID, converter: Granite::Converters::Uuid(String)
+  end
+
+  class UUIDNaturalModel < Granite::Base
+    adapter {{ adapter_literal }}
+    table_name uuids
+
+    primary uuid : UUID, converter: Granite::Converters::Uuid(String), auto: false
+    field field_uuid : UUID, converter: Granite::Converters::Uuid(String)
   end
 
   class TodoJsonOptions < Granite::Base
@@ -392,6 +400,92 @@ require "uuid"
     field name : String
     timestamps
   end
+
+  class ManualColumnType < Granite::Base
+    adapter {{ adapter_literal }}
+    table_name manual_column_types
+
+    field foo : UUID, column_type: "FOO"
+  end
+
+  struct MyType
+    include JSON::Serializable
+
+    def initialize; end
+
+    property name : String = "Jim"
+    property age : Int32 = 12
+  end
+
+  enum MyEnum
+    Zero
+    One
+    Two
+    Three
+    Four
+  end
+
+  {% if env("CURRENT_ADAPTER") == "pg" %}
+    class ConverterModel < Granite::Base
+      adapter {{ adapter_literal }}
+      table_name converters
+
+      field binary_json : MyType, column_type: "BYTEA", converter: Granite::Converters::Json(MyType, Bytes)
+      field string_json : MyType, column_type: "JSON", converter: Granite::Converters::Json(MyType, JSON::Any)
+      field string_jsonb : MyType, column_type: "JSONB", converter: Granite::Converters::Json(MyType, JSON::Any)
+
+      field smallint_enum : MyEnum, column_type: "SMALLINT", converter: Granite::Converters::Enum(MyEnum, Int16)
+      field bigint_enum : MyEnum, column_type: "BIGINT", converter: Granite::Converters::Enum(MyEnum, Int64)
+      field string_enum : MyEnum, column_type: "TEXT", converter: Granite::Converters::Enum(MyEnum, String)
+      field enum_enum : MyEnum, column_type: "my_enum_type", converter: Granite::Converters::Enum(MyEnum, Bytes)
+      field binary_enum : MyEnum, column_type: "BYTEA", converter: Granite::Converters::Enum(MyEnum, Bytes)
+
+      field string_uuid : UUID, converter: Granite::Converters::Uuid(String) # Test PG native UUID type
+      field binary_uuid : UUID, column_type: "BYTEA", converter: Granite::Converters::Uuid(Bytes)
+
+      field numeric : Float64, column_type: "DECIMAL(21, 20)", converter: Granite::Converters::PgNumeric
+    end
+    ConverterModel.exec(<<-TYPE
+      DO $$
+      BEGIN
+          IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'my_enum_type') THEN
+            CREATE TYPE my_enum_type AS ENUM ('Zero', 'One', 'Two', 'Three', 'Four');
+          END IF;
+      END$$;
+      TYPE
+    )
+  {% elsif env("CURRENT_ADAPTER") == "sqlite" %}
+    class ConverterModel < Granite::Base
+      adapter {{ adapter_literal }}
+      table_name converters
+
+      field binary_json : MyType, column_type: "BLOB", converter: Granite::Converters::Json(MyType, Bytes)
+      field string_json : MyType, column_type: "TEXT", converter: Granite::Converters::Json(MyType, String)
+
+      field int_enum : MyEnum, column_type: "INTEGER", converter: Granite::Converters::Enum(MyEnum, Int64)
+      field string_enum : MyEnum, column_type: "TEXT", converter: Granite::Converters::Enum(MyEnum, String)
+      field binary_enum : MyEnum, column_type: "BLOB", converter: Granite::Converters::Enum(MyEnum, String)
+
+      field string_uuid : UUID, column_type: "TEXT", converter: Granite::Converters::Uuid(String)
+      field binary_uuid : UUID, column_type: "BLOB", converter: Granite::Converters::Uuid(Bytes)
+    end
+  {% elsif env("CURRENT_ADAPTER") == "mysql" %}
+    class ConverterModel < Granite::Base
+      adapter {{ adapter_literal }}
+      table_name converters
+
+      field binary_json : MyType, column_type: "BLOB", converter: Granite::Converters::Json(MyType, Bytes)
+      field string_json : MyType, column_type: "TEXT", converter: Granite::Converters::Json(MyType, String)
+
+      field int_enum : MyEnum, column_type: "INTEGER", converter: Granite::Converters::Enum(MyEnum, Int32)
+      field string_enum : MyEnum, column_type: "VARCHAR(5)", converter: Granite::Converters::Enum(MyEnum, String)
+      field enum_enum : MyEnum, column_type: "ENUM('Zero', 'One', 'Two', 'Three', 'Four')", converter: Granite::Converters::Enum(MyEnum, String)
+      field binary_enum : MyEnum, column_type: "BLOB", converter: Granite::Converters::Enum(MyEnum, Bytes)
+
+      field string_uuid : UUID, column_type: "TEXT", converter: Granite::Converters::Uuid(String)
+      field binary_uuid : UUID, column_type: "BLOB", converter: Granite::Converters::Uuid(Bytes)
+    end
+  {% end %}
 
   module Validators
     class NilTest < Granite::Base
@@ -561,4 +655,5 @@ require "uuid"
   Courier.migrator.drop_and_create
   CourierService.migrator.drop_and_create
   TimeTest.migrator.drop_and_create
+  ConverterModel.migrator.drop_and_create
 {% end %}

@@ -9,6 +9,7 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
     TYPES = {
       "AUTO_Int32" => "INTEGER NOT NULL",
       "AUTO_Int64" => "INTEGER NOT NULL",
+      "AUTO_UUID"  => "CHAR(36)",
       "UUID"       => "CHAR(36)",
       "Int32"      => "INTEGER",
       "Int64"      => "INTEGER",

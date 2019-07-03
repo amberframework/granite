@@ -5,9 +5,8 @@ describe "UUID creation" do
     item = UUIDModel.new
     item.uuid.should be_nil
     item.save
-    item.uuid.should be_a(String)
-    uuid = UUID.new item.uuid!
-    uuid.version.to_s.should eq "V4"
-    uuid.variant.to_s.should eq "RFC4122"
+    item.uuid.should be_a(UUID)
+    item.uuid!.version.v4?.should be_true
+    item.uuid!.variant.rfc4122?.should be_true
   end
 end

@@ -39,6 +39,8 @@ class FakeConnection < DB::Connection
   end
 end
 
+alias EmitterType = DB::Any | PG::Numeric | JSON::Any | Int16
+
 # FieldEmitter emulates the subtle and uninformed way that
 # DB::ResultSet emits data. To be used in testing interactions
 # with raw data sets.
@@ -50,14 +52,14 @@ class FieldEmitter < DB::ResultSet
 
   @position = 0
   @field_position = 0
-  @values = [] of DB::Any
+  @values = [] of EmitterType
 
   def initialize
     @statement = FakeStatement.new FakeConnection.new
   end
 
-  def _set_values(values : Array(DB::Any))
-    @values = [] of DB::Any
+  def _set_values(values : Array(EmitterType))
+    @values = [] of EmitterType
     values.each do |v|
       @values << v
     end

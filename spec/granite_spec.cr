@@ -2,11 +2,45 @@ require "./spec_helper"
 require "logger"
 
 describe Granite::Base do
-  it "can instaniate a model with default values" do
-    model = DefaultValues.new
-    model.name.should eq "Jim"
-    model.age.should eq 0.0
-    model.is_alive.should be_true
+  describe "instantiation" do
+    describe "with default values" do
+      it "should instaniate correctly" do
+        model = DefaultValues.new
+        model.name.should eq "Jim"
+        model.age.should eq 0.0
+        model.is_alive.should be_true
+      end
+    end
+
+    describe "with a named tuple" do
+      it "should instaniate correctly" do
+        model = DefaultValues.new name: "Fred", is_alive: false
+        model.name.should eq "Fred"
+        model.age.should eq 0.0
+        model.is_alive.should be_false
+      end
+    end
+
+    describe "with a hash" do
+      it "should instaniate correctly" do
+        hash = {"name" => "Bob", "age" => 3.14}
+        model = DefaultValues.new hash
+        model.name.should eq "Bob"
+        model.age.should eq 3.14
+        model.is_alive.should be_true
+      end
+    end
+
+    describe "with a UUID" do
+      it "should instaniate correctly" do
+        uuid = UUID.random
+        model = UUIDNaturalModel.new uuid: uuid, field_uuid: uuid
+        model.uuid.should be_a UUID?
+        model.field_uuid.should be_a UUID?
+        model.uuid.should eq uuid
+        model.field_uuid!.should eq uuid
+      end
+    end
   end
 
   describe Logger do
