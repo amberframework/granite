@@ -14,6 +14,7 @@ module Granite::Fields
 
   # specify the fields you want to define and types
   macro field(decl, **options)
+    {% raise "The type of #{@type.name}##{decl.var} cannot be a Union.  The 'field' macro declares the type as nilable by default.  Use the 'field!' macro to declare a not nilable field." if decl.type.is_a? Union %}
     {% CONTENT_FIELDS[decl.var] = options || {} of Nil => Nil %}
     {% CONTENT_FIELDS[decl.var][:type] = decl.type %}
   end
