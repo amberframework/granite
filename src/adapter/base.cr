@@ -37,7 +37,7 @@ abstract class Granite::Adapter::Base
   # remove all rows from a table and reset the counter on the id.
   abstract def clear(table_name)
 
-  # select performs a query against a table.  The query object containes table_name,
+  # select performs a query against a table.  The query object contains table_name,
   # fields (configured using the sql_mapping directive in your model), and an optional
   # raw query string.  The clause and params is the query and params that is passed
   # in via .all() method
@@ -60,7 +60,23 @@ abstract class Granite::Adapter::Base
     log statement, elapsed_time, params
   end
 
-  def ensure_clause_template(clause)
+  # Returns `true` if a record exists that matches *criteria*, otherwise `false`.
+  def exists?(table_name : String, criteria : String, params = [] of Granite::Fields::Type) : Bool
+    statement = "SELECT EXISTS(SELECT 1 FROM #{table_name} WHERE #{ensure_clause_template(criteria)})"
+
+    exists = false
+    elapsed_time = Time.measure do
+      open do |db|
+        exists = db.query_one?(statement, params, as: Bool) || exists
+      end
+    end
+
+    log statement, elapsed_time, params
+
+    exists
+  end
+
+  protected def ensure_clause_template(clause : String) : String
     clause
   end
 

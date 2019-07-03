@@ -108,3 +108,27 @@ You can combine this with an argument to `all` or `first` for maximum flexibilit
 ```crystal
 results = CustomView.all("WHERE articles.author = ?", ["Noah"])
 ```
+
+## Exists?
+
+The `exists?` class method returns `true` if a record exists in the table that matches the provided *id* or *criteria*, otherwise `false`.
+
+If passed a `Number` or `String`, it will attempt to find a record with that primary key.  If passed a `Hash` or `NamedTuple`, it will find the record that matches that criteria, similar to `find_by`.
+
+```crystal
+# Assume a model named Post with a title field
+post = Post.new(title: "My Post")
+post.save
+post.id # => 1
+
+Post.exists? 1 # => true
+Post.exists? {"id" => 1, :title => "My Post"} # => true
+Post.exists? {id: 1, title: "Some Post"} # => false
+```
+
+The `exists?` method can also be used with the query builder.
+
+```crystal
+Post.where(published: true, author_id: User.first!.id).exists?
+Post.where(:created_at, :gt, Time.local - 7.days).exists?
+```
