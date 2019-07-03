@@ -64,7 +64,6 @@ describe Granite::Migrator::Base do
           "bool_array" BOOLEAN[]
           ) ;\n
           SQL
-
       {% elsif env("CURRENT_ADAPTER") == "mysql" %}
         Review.migrator.create_sql.should eq <<-SQL
           CREATE TABLE `reviews`(
@@ -96,7 +95,6 @@ describe Granite::Migrator::Base do
           CREATE TABLE `uuids`(
           `uuid` CHAR(36) PRIMARY KEY) ;\n
           SQL
-
       {% elsif env("CURRENT_ADAPTER") == "sqlite" %}
         Review.migrator.create_sql.should eq <<-SQL
           CREATE TABLE "reviews"(
@@ -128,7 +126,31 @@ describe Granite::Migrator::Base do
           CREATE TABLE "uuids"(
           "uuid" CHAR(36) PRIMARY KEY) ;\n
           SQL
+      {% end %}
+    end
 
+    it "supports a manually supplied column type" do
+      {% if env("CURRENT_ADAPTER") == "pg" %}
+        ManualColumnType.migrator.create_sql.should eq <<-SQL
+          CREATE TABLE "manual_column_types"(
+          "id" BIGSERIAL PRIMARY KEY,
+          "foo" FOO
+          ) ;\n
+          SQL
+      {% elsif env("CURRENT_ADAPTER") == "mysql" %}
+        ManualColumnType.migrator.create_sql.should eq <<-SQL
+          CREATE TABLE `manual_column_types`(
+          `id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+          `foo` FOO
+          ) ;\n
+          SQL
+      {% elsif env("CURRENT_ADAPTER") == "sqlite" %}
+        ManualColumnType.migrator.create_sql.should eq <<-SQL
+          CREATE TABLE "manual_column_types"(
+          "id" INTEGER NOT NULL PRIMARY KEY,
+          "foo" FOO
+          ) ;\n
+          SQL
       {% end %}
     end
   end

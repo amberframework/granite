@@ -18,7 +18,7 @@ module Granite::Querying
         # Loading from DB means existing records.
         @new_record = false
         \{% for name, options in FIELDS %}
-          self.\{{name.id}} = result.read(Union(\{{options[:type].id}} | Nil))
+          self.\{{name.id}} = \{% if options[:converter] %} \{{options[:converter].id}}.from_rs result \{% else %} result.read(Union(\{{options[:type].id}} | Nil)) \{% end %}
           \{% if options[:type].id == "Time".id %}
             self.\{{name.id}} = self.\{{name.id}}.not_nil!.in(Granite.settings.default_timezone) if self.\{{name.id}}
           \{% end %}

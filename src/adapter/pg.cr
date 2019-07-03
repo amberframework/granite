@@ -12,6 +12,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       "String"         => "TEXT",
       "AUTO_Int32"     => "SERIAL",
       "AUTO_Int64"     => "BIGSERIAL",
+      "AUTO_UUID"      => "UUID",
       "UUID"           => "UUID",
       "created_at"     => "TIMESTAMP",
       "updated_at"     => "TIMESTAMP",
