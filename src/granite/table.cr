@@ -42,33 +42,28 @@ module Granite::Table
     {% primary_type = PRIMARY[:type] %}
     {% primary_auto = PRIMARY[:auto] %}
 
-    @@table_name = "{{table_name}}"
-    @@primary_name = "{{primary_name}}"
-    @@primary_auto = "{{primary_auto}}"
-    @@primary_type = {{primary_type}}
-
-    disable_granite_docs? def self.table_name
-      @@table_name
+    disable_granite_docs? def self.table_name : String
+      {{table_name.stringify}}
     end
 
-    disable_granite_docs? def self.primary_name
-      @@primary_name
+    disable_granite_docs? def self.primary_name : String
+      {{primary_name.stringify}}
     end
 
     disable_granite_docs? def self.primary_type
-      @@primary_type
+      {{primary_type}}
     end
 
-    disable_granite_docs? def self.primary_auto
-      @@primary_auto
+    disable_granite_docs? def self.primary_auto : String
+      {{primary_auto.stringify}}
     end
 
-    disable_granite_docs? def self.quoted_table_name
-      @@adapter.quote(table_name)
+    disable_granite_docs? def self.quoted_table_name : String
+      adapter.quote(table_name)
     end
 
-    disable_granite_docs? def self.quote(column_name)
-      @@adapter.quote(column_name)
+    disable_granite_docs? def self.quote(column_name) : String
+      adapter.quote(column_name)
     end
   end
 end

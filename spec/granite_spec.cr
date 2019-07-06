@@ -1,7 +1,25 @@
 require "./spec_helper"
 require "logger"
 
+class SomeClass
+  def initialize(@model : Granite::Base.class); end
+
+  def valid? : Bool
+    @model.exists? 123
+  end
+
+  def table : String
+    @model.table_name
+  end
+end
+
 describe Granite::Base do
+  it "class methods should work when type restricted to `Granite::Base`" do
+    f = SomeClass.new(Teacher)
+    f.valid?.should be_false
+    f.table.should eq "teachers"
+  end
+
   describe "instantiation" do
     describe "with default values" do
       it "should instaniate correctly" do
