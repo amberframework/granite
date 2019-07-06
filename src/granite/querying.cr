@@ -30,7 +30,7 @@ module Granite::Querying
 
   def raw_all(clause = "", params = [] of Granite::Fields::Type)
     rows = [] of self
-    @@adapter.select(@@select, clause, params) do |results|
+    adapter.select(select_container, clause, params) do |results|
       results.each do
         rows << from_sql(results)
       end
@@ -61,12 +61,12 @@ module Granite::Querying
 
   # find returns the row with the primary key specified. Otherwise nil.
   def find(value)
-    first("WHERE #{@@primary_name} = ?", value)
+    first("WHERE #{primary_name} = ?", value)
   end
 
   # find returns the row with the primary key specified. Otherwise raises an exception.
   def find!(value)
-    find(value) || raise Granite::Querying::NotFound.new("No #{{{@type.name.stringify}}} found where #{@@primary_name} = #{value}")
+    find(value) || raise Granite::Querying::NotFound.new("No #{{{@type.name.stringify}}} found where #{primary_name} = #{value}")
   end
 
   # Returns the first row found that matches *criteria*. Otherwise `nil`.
@@ -114,7 +114,7 @@ module Granite::Querying
   # Returns `true` if a records exists with a PK of *id*, otherwise `false`.
   def exists?(id : Number | String | Nil) : Bool
     return false if id.nil?
-    exec_exists "#{@@primary_name} = ?", [id]
+    exec_exists "#{primary_name} = ?", [id]
   end
 
   # Returns `true` if a records exists that matches *criteria*, otherwise `false`.
@@ -133,19 +133,19 @@ module Granite::Querying
   end
 
   def exec(clause = "")
-    @@adapter.open { |db| db.exec(clause) }
+    adapter.open { |db| db.exec(clause) }
   end
 
   def query(clause = "", params = [] of Granite::Fields::Type, &block)
-    @@adapter.open { |db| yield db.query(clause, params) }
+    adapter.open { |db| yield db.query(clause, params) }
   end
 
   def scalar(clause = "", &block)
-    @@adapter.open { |db| yield db.scalar(clause) }
+    adapter.open { |db| yield db.scalar(clause) }
   end
 
   private def exec_exists(clause : String, params : Array(Granite::Fields::Type)) : Bool
-    @@adapter.exists? quoted_table_name, clause, params
+    adapter.exists? quoted_table_name, clause, params
   end
 
   private def build_find_by_clause(criteria : Hash(Symbol | String, Granite::Fields::Type))
