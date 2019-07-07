@@ -15,6 +15,7 @@ require "./version"
 require "./adapters"
 require "./integrators"
 require "./converters"
+require "./type"
 
 # Granite::Base is the base class for your model objects.
 abstract class Granite::Base
@@ -28,6 +29,10 @@ abstract class Granite::Base
   include Migrator
   include Select
 
+  extend Fields::ClassMethods
+  extend Table::ClassMethods
+  extend Granite::Migrator::ClassMethods
+
   extend Querying
   extend Query::BuilderMethods
   extend Transactions::ClassMethods
@@ -36,21 +41,34 @@ abstract class Granite::Base
   macro inherited
     include JSON::Serializable
     include YAML::Serializable
-    macro finished
-      __process_table
-      __process_fields
-      __process_select
-      __process_querying
-      __process_transactions
-      __process_migrator
+
+    @@select = Container.new(table_name: table_name, fields: fields)
+
+    def self.select_container : Container
+      @@select
+    end
+
+    # Returns true if this object hasn't been saved yet.
+    @[JSON::Field(ignore: true)]
+    @[YAML::Field(ignore: true)]
+    property? new_record : Bool = true
+
+    # Returns true if this object has been destroyed.
+    @[JSON::Field(ignore: true)]
+    @[YAML::Field(ignore: true)]
+    getter? destroyed : Bool = false
+
+    # Returns true if the record is persisted.
+    disable_granite_docs? def persisted?
+      !(new_record? || destroyed?)
     end
 
     def initialize(**args : Granite::Fields::Type)
-      set_attributes(args.to_h)
+      set_attributes(args.to_h.transform_keys(&.to_s))
     end
 
     def initialize(args : Hash(Symbol | String, Granite::Fields::Type))
-      set_attributes(args)
+      set_attributes(args.transform_keys(&.to_s))
     end
 
     def initialize

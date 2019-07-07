@@ -54,7 +54,7 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     last_id
   end
 
-  def import(table_name : String, primary_name : String, auto : String, fields, model_array, **options)
+  def import(table_name : String, primary_name : String, auto : Bool, fields, model_array, **options)
     params = [] of Granite::Fields::Type
 
     statement = String.build do |stmt|

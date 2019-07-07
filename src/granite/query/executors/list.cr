@@ -13,7 +13,7 @@ module Granite::Query::Executor
       Model.adapter.open do |db|
         db.query @sql, @args do |record_set|
           record_set.each do
-            results << Model.from_sql record_set
+            results << Model.from_rs record_set
           end
         end
       end

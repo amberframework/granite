@@ -133,6 +133,9 @@ require "uuid"
   class Review < Granite::Base
     adapter {{ adapter_literal }}
     table_name reviews
+
+    primary id : Int64
+
     field name : String
     field downvotes : Int32
     field upvotes : Int64
@@ -151,6 +154,7 @@ require "uuid"
   class ReservedWord < Granite::Base
     adapter {{ adapter_literal }}
     table_name "select"
+    primary id : Int64
     field all : String
   end
 
@@ -198,6 +202,7 @@ require "uuid"
     adapter {{ adapter_literal }}
     table_name people
 
+    primary id : Int64
     field name : String
   end
 
@@ -214,7 +219,10 @@ require "uuid"
     table_name books
     has_many :book_reviews, class_name: BookReview
     belongs_to author : Person
-    belongs_to publisher : Company, foreign_key: publisher_id : Int32, json_options: {ignore: true}, yaml_options: {ignore: true}
+
+    @[JSON::Field(ignore: true)]
+    @[YAML::Field(ignore: true)]
+    belongs_to publisher : Company, foreign_key: publisher_id : Int32
 
     primary id : Int32
     field name : String
@@ -278,6 +286,7 @@ require "uuid"
 
   class SongThread < Granite::Base
     adapter {{ env("CURRENT_ADAPTER").id }}
+    primary id : Int64
     field name : String
   end
 
@@ -294,6 +303,7 @@ require "uuid"
     adapter {{ adapter_literal }}
     table_name todos
 
+    primary id : Int64
     field name : String
     field priority : Int32
     timestamps
@@ -303,6 +313,8 @@ require "uuid"
     adapter {{ adapter_literal }}
     table_name todos
 
+    primary id : Int64
+
     field name : String
     field priority : Int32
     timestamps
@@ -311,6 +323,8 @@ require "uuid"
   class AfterInit < Granite::Base
     adapter {{ adapter_literal }}
     table_name after_json_init
+
+    primary id : Int64
 
     field name : String
     field priority : Int32
@@ -323,6 +337,7 @@ require "uuid"
   class ArticleViewModel < Granite::Base
     adapter {{ adapter_literal }}
 
+    primary id : Int64
     field articlebody : String
     field commentbody : String
 
@@ -360,41 +375,63 @@ require "uuid"
     table_name uuids
 
     primary uuid : UUID, converter: Granite::Converters::Uuid(String), auto: false
-    field field_uuid : UUID, converter: Granite::Converters::Uuid(String)
+    field! field_uuid : UUID, converter: Granite::Converters::Uuid(String)
   end
 
   class TodoJsonOptions < Granite::Base
     adapter {{ adapter_literal }}
     table_name todos_json
 
-    field name : String, json_options: {key: "task_name"}
-    field priority : Int32, json_options: {ignore: true}
-    field updated_at : Time, json_options: {ignore: true}
-    field created_at : Time, json_options: {key: "posted"}
+    primary id : Int64
+
+    @[JSON::Field(key: "task_name")]
+    field name : String
+
+    @[JSON::Field(ignore: true)]
+    field priority : Int32
+
+    @[JSON::Field(ignore: true)]
+    field updated_at : Time
+
+    @[JSON::Field(key: "posted")]
+    field created_at : Time
   end
 
   class TodoYamlOptions < Granite::Base
     adapter {{ adapter_literal }}
     table_name todos_yaml
 
-    field name : String, yaml_options: {key: "task_name"}
-    field priority : Int32, yaml_options: {ignore: true}
-    field updated_at : Time, yaml_options: {ignore: true}
-    field created_at : Time, yaml_options: {key: "posted"}
+    primary id : Int64
+
+    @[YAML::Field(key: "task_name")]
+    field name : String
+
+    @[YAML::Field(ignore: true)]
+    field priority : Int32
+
+    @[YAML::Field(ignore: true)]
+    field updated_at : Time
+
+    @[YAML::Field(key: "posted")]
+    field created_at : Time
   end
 
   class DefaultValues < Granite::Base
     adapter {{ adapter_literal }}
     table_name defaults
 
-    field name : String, default: "Jim"
-    field is_alive : Bool, default: true
-    field age : Float64, default: 0.0
+    primary id : Int64
+
+    field name : String = "Jim"
+    field is_alive : Bool = true
+    field age : Float64 = 0.0
   end
 
   class TimeTest < Granite::Base
     adapter {{ adapter_literal }}
     table_name times
+
+    primary id : Int64
 
     field test : Time
     field name : String
@@ -404,6 +441,8 @@ require "uuid"
   class ManualColumnType < Granite::Base
     adapter {{ adapter_literal }}
     table_name manual_column_types
+
+    primary id : Int64
 
     field foo : UUID, column_type: "FOO"
   end
@@ -429,6 +468,8 @@ require "uuid"
     class ConverterModel < Granite::Base
       adapter {{ adapter_literal }}
       table_name converters
+
+      primary id : Int64
 
       field binary_json : MyType, column_type: "BYTEA", converter: Granite::Converters::Json(MyType, Bytes)
       field string_json : MyType, column_type: "JSON", converter: Granite::Converters::Json(MyType, JSON::Any)
@@ -459,6 +500,8 @@ require "uuid"
       adapter {{ adapter_literal }}
       table_name converters
 
+      primary id : Int64
+
       field binary_json : MyType, column_type: "BLOB", converter: Granite::Converters::Json(MyType, Bytes)
       field string_json : MyType, column_type: "TEXT", converter: Granite::Converters::Json(MyType, String)
 
@@ -473,6 +516,8 @@ require "uuid"
     class ConverterModel < Granite::Base
       adapter {{ adapter_literal }}
       table_name converters
+
+      primary id : Int64
 
       field binary_json : MyType, column_type: "BLOB", converter: Granite::Converters::Json(MyType, Bytes)
       field string_json : MyType, column_type: "TEXT", converter: Granite::Converters::Json(MyType, String)
@@ -490,6 +535,8 @@ require "uuid"
   module Validators
     class NilTest < Granite::Base
       adapter {{ adapter_literal }}
+
+      primary id : Int64
 
       field first_name_not_nil : String
       field last_name_not_nil : String
@@ -519,6 +566,8 @@ require "uuid"
     class BlankTest < Granite::Base
       adapter {{ adapter_literal }}
 
+      primary id : Int64
+
       field first_name_not_blank : String
       field last_name_not_blank : String
 
@@ -535,6 +584,8 @@ require "uuid"
     class ChoiceTest < Granite::Base
       adapter {{ adapter_literal }}
 
+      primary id : Int64
+
       field number_symbol : Int32
       field type_array_symbol : String
 
@@ -549,6 +600,8 @@ require "uuid"
 
     class LessThanTest < Granite::Base
       adapter {{ adapter_literal }}
+
+      primary id : Int64
 
       field int_32_lt : Int32
       field float_32_lt : Float32
@@ -566,6 +619,8 @@ require "uuid"
     class GreaterThanTest < Granite::Base
       adapter {{ adapter_literal }}
 
+      primary id : Int64
+
       field int_32_lt : Int32
       field float_32_lt : Float32
 
@@ -582,6 +637,8 @@ require "uuid"
     class LengthTest < Granite::Base
       adapter {{ adapter_literal }}
 
+      primary id : Int64
+
       field title : String
       field description : String
 
@@ -592,6 +649,7 @@ require "uuid"
     class PersonUniqueness < Granite::Base
       adapter {{ adapter_literal }}
 
+      primary id : Int64
       field name : String
 
       validate_uniqueness :name
@@ -600,6 +658,7 @@ require "uuid"
     class ExclusionTest < Granite::Base
       adapter {{ adapter_literal }}
 
+      primary id : Int64
       field name : String
 
       validate_exclusion :name, ["test_name"]

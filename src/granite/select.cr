@@ -14,12 +14,4 @@ module Granite::Select
       @@select.custom
     end
   end
-
-  macro __process_select
-    @@select = Container.new(table_name: self.table_name, fields: fields)
-
-    def self.select_container : Container
-      @@select
-    end
-  end
 end

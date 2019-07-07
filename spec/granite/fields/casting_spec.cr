@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe "#casting_to_fields" do
+pending "#casting_to_fields" do
   it "casts string to int" do
     model = Review.new({"downvotes" => "32"})
     model.downvotes.should eq 32

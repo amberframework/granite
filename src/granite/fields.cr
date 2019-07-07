@@ -1,27 +1,64 @@
 require "json"
+require "uuid"
 
 module Granite::Fields
   alias SupportedArrayTypes = Array(String) | Array(Int16) | Array(Int32) | Array(Int64) | Array(Float32) | Array(Float64) | Array(Bool)
   alias Type = DB::Any | SupportedArrayTypes | UUID
   TIME_FORMAT_REGEX = /\d{4,}-\d{2,}-\d{2,}\s\d{2,}:\d{2,}:\d{2,}/
 
-  macro included
-    macro inherited
-      disable_granite_docs? CONTENT_FIELDS = {} of Nil => Nil
-      disable_granite_docs? FIELDS = {} of Nil => Nil
+  module ClassMethods
+    # All fields
+    def fields : Array(String)
+      {% begin %}
+        {% columns = @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) }.map(&.name.stringify) %}
+        {{columns.empty? ? "[] of String".id : columns}}
+      {% end %}
     end
+
+    # Fields minus the PK
+    def content_fields : Array(String)
+      {% begin %}
+        {% columns = @type.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && !ann[:primary] }.map(&.name.stringify) %}
+        {{columns.empty? ? "[] of String".id : columns}}
+      {% end %}
+    end
+  end
+
+  def content_values
+    parsed_params = [] of Type
+    {% for column in @type.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && !ann[:primary] } %}
+      {% ann = column.annotation(Granite::Column) %}
+      parsed_params << {% if ann[:converter] %} {{ann[:converter]}}.to_db {{column.name.id}} {% else %} {{column.name.id}} {% end %}
+    {% end %}
+    parsed_params
   end
 
   # specify the fields you want to define and types
   macro field(decl, **options)
     {% raise "The type of #{@type.name}##{decl.var} cannot be a Union.  The 'field' macro declares the type as nilable by default.  Use the 'field!' macro to declare a not nilable field." if decl.type.is_a? Union %}
-    {% CONTENT_FIELDS[decl.var] = options || {} of Nil => Nil %}
-    {% CONTENT_FIELDS[decl.var][:type] = decl.type %}
+    {% column_type = (options[:column_type] && !options[:column_type].nil?) ? options[:column_type] : nil %}
+    {% converter = (options[:converter] && !options[:converter].nil?) ? options[:converter] : nil %}
+    @[Granite::Column(column_type: {{column_type}}, converter: {{converter}})]
+    property {{decl.var}} : {{decl.type}}? {% if decl.value %} = {{decl.value}} {% end %}
+
+    def {{decl.var.id}}! : {{decl.type}}
+      raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{decl.var.stringify}} + " cannot be nil" if @{{decl.var}}.nil?
+      @{{decl.var}}.not_nil!
+    end
   end
 
   # specify the raise-on-nil fields you want to define and types
   macro field!(decl, **options)
-    field {{decl}}, {{options.double_splat(", ")}}raise_on_nil: true
+    {% raise "The type of #{@type.name}##{decl.var} cannot be a Union.  The 'field' macro declares the type as nilable by default.  Use the 'field!' macro to declare a not nilable field." if decl.type.is_a? Union %}
+    {% column_type = (options[:column_type] && !options[:column_type].nil?) ? options[:column_type] : nil %}
+    {% converter = (options[:converter] && !options[:converter].nil?) ? options[:converter] : nil %}
+    @[Granite::Column(column_type: {{column_type}}, converter: {{converter}})]
+    property {{decl.var}} : {{decl.type}}? {% if decl.value %} = {{decl.value}} {% end %}
+
+    def {{decl.var.id}} : {{decl.type}}
+      raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{decl.var.stringify}} + " cannot be nil" if @{{decl.var}}.nil?
+      @{{decl.var}}.not_nil!
+    end
   end
 
   # include created_at and updated_at that will automatically be updated
@@ -30,156 +67,53 @@ module Granite::Fields
     field updated_at : Time
   end
 
-  macro __process_fields
-    # merge PK and CONTENT_FIELDS into FIELDS
-    {% FIELDS[PRIMARY[:name]] = PRIMARY %}
-    {% for name, options in CONTENT_FIELDS %}
-      {% FIELDS[name] = options %}
-    {% end %}
+  def to_h
+    fields = {} of String => Type
 
-    # Create the properties
-    {% for name, options in FIELDS %}
-      {% type = options[:type] %}
-      {% suffixes = options[:raise_on_nil] ? ["?", ""] : ["", "!"] %}
-
-      # Override options after setting required variables
-      # to get to the user supplied options
-      {% if options[:options] %}
-        {% options = options[:options] %}
-      {% end %}
-
-      # Set each user supplied annotation on the property
-      {% if options[:annotations] %}
-        {% for ann in options[:annotations] %}
-          {{ann.id}}
-        {% end %}
-      {% end %}
-
-      # Apply JSON/YAML serialization option annotations
-      {% if options[:json_options] %}
-         @[JSON::Field({{**options[:json_options]}})]
-      {% end %}
-      {% if options[:yaml_options] %}
-         @[YAML::Field({{**options[:yaml_options]}})]
-      {% end %}
-
-      # Apply property comment if exists
-      {% if options[:comment] %}
-         {{options[:comment].id}}
-      {% end %}
-      property{{suffixes[0].id}} {{name.id}} : Union({{type.id}} | Nil){% if options[:default] %} = {{options[:default]}} {% end %}
-      disable_granite_docs? def {{name.id}}{{suffixes[1].id}}
-        raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{name.stringify}} + " cannot be nil" if @{{name.id}}.nil?
-        @{{name.id}}.not_nil!
-      end
-    {% end %}
-
-    # keep a hash of the fields to be used for mapping
-    disable_granite_docs? def self.fields : Array(String)
-      @@fields ||= {{ FIELDS.empty? ? "[] of String".id : FIELDS.keys.map(&.id.stringify) }}
-    end
-
-    disable_granite_docs? def self.content_fields : Array(String)
-      @@content_fields ||= {{ CONTENT_FIELDS.empty? ? "[] of String".id : CONTENT_FIELDS.keys.map(&.id.stringify) }}
-    end
-
-    # keep a hash of the params that will be passed to the adapter.
-    disable_granite_docs? def content_values
-      parsed_params = [] of Type
-      {% for name, options in CONTENT_FIELDS %}
-        parsed_params << {% if options[:converter] %} {{options[:converter]}}.to_db {{name.id}} {% else %} {{name.id}} {% end %}
-      {% end %}
-      parsed_params
-    end
-
-    disable_granite_docs? def to_h
-      fields = {} of String => Type
-
-      {% for name, options in FIELDS %}
-        {% type = options[:type] %}
-        {% if type.id == Time.id %}
-          fields["{{name}}"] = {{name.id}}.try(&.in(Granite.settings.default_timezone).to_s(Granite::DATETIME_FORMAT))
-        {% elsif type.id == Slice.id %}
-          fields["{{name}}"] = {{name.id}}.try(&.to_s(""))
+    {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
+        {% if column.type.id == Time.id %}
+          fields["{{column.name}}"] = {{column.name.id}}.try(&.in(Granite.settings.default_timezone).to_s(Granite::DATETIME_FORMAT))
+        {% elsif column.type.id == Slice.id %}
+          fields["{{column.name}}"] = {{column.name.id}}.try(&.to_s(""))
         {% else %}
-          fields["{{name}}"] = {{name.id}}
+          fields["{{column.name}}"] = {{column.name.id}}
         {% end %}
       {% end %}
 
-      return fields
-    end
+    fields
+  end
 
-    disable_granite_docs? def read_attribute(attribute_name : Symbol | String) : DB::Any
-      {% begin %}
-        case attribute_name.to_s
-        {% for name, options in FIELDS %}
-          when "{{ name }}" then @{{ name.id }}
-        {% end %}
+  def set_attributes(hash : Hash(String | Symbol, Type)) : self
+    {% for column in @type.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && (!ann[:primary] || (ann[:primary] && ann[:auto] == false)) } %}
+      if hash.has_key?({{column.stringify}}) && !hash[{{column.stringify}}].nil?
+        val = Granite::Type.convert_type hash[{{column.stringify}}], {{column.type}}
+        if !val.is_a? {{column.type}}
+          errors << Granite::Error.new({{column.name.stringify}}, "Expected {{column.id}} to be {{column.type}} but got #{typeof(val)}.")
         else
-          raise "Cannot read attribute #{attribute_name}, invalid attribute"
+          @{{column.id}} = val
         end
-      {% end %}
-    end
-
-    disable_granite_docs? def primary_key_value : {{PRIMARY[:type].id}} | Nil
-      {{PRIMARY[:name].id}}
-    end
-
-    disable_granite_docs? def set_attributes(args : Hash(String | Symbol, Type))
-      args.each do |k, v|
-        cast_to_field(k, v.as(Type))
       end
-    end
+    {% end %}
+    self
+  end
 
-    disable_granite_docs? def set_attributes(**args)
-      set_attributes(args.to_h)
-    end
-
-    # Casts params and sets fields
-    private def cast_to_field(name, value : Type)
-      {% unless FIELDS.empty? %}
-        case name.to_s
-          {% for _name, options in FIELDS %}
-            {% type = options[:type] %}
-          when "{{_name.id}}"
-            if "{{_name.id}}" == "{{PRIMARY[:name]}}"
-              {% unless PRIMARY[:auto] %}
-                @{{PRIMARY[:name]}} = value.as({{PRIMARY[:type]}})
-              {% end %}
-              return
-            end
-
-            return @{{_name.id}} = nil if value.nil?
-            {% if type.id == Int32.id %}
-              @{{_name.id}} = value.is_a?(String) ? value.to_i32(strict: false) : value.is_a?(Int64) ? value.to_i32 : value.as(Int32)
-            {% elsif type.id == Int64.id %}
-              @{{_name.id}} = value.is_a?(String) ? value.to_i64(strict: false) : value.as(Int64)
-            {% elsif type.id == Float32.id %}
-              @{{_name.id}} = value.is_a?(String) ? value.to_f32(strict: false) : value.is_a?(Float64) ? value.to_f32 : value.as(Float32)
-            {% elsif type.id == Float64.id %}
-              @{{_name.id}} = value.is_a?(String) ? value.to_f64(strict: false) : value.as(Float64)
-            {% elsif type.id == Bool.id %}
-              @{{_name.id}} = ["1", "yes", "true", true, 1].includes?(value)
-            {% elsif type.id == Time.id %}
-              if value.is_a?(Time)
-                @{{_name.id}} = value.in(Granite.settings.default_timezone)
-              elsif value.to_s =~ TIME_FORMAT_REGEX
-                @{{_name.id}} = Time.parse(value.to_s, Granite::DATETIME_FORMAT, Granite.settings.default_timezone)
-              end
-            {% elsif type.resolve <= Array %}
-              @{{_name.id}} = value.as({{type.id}})
-            {% elsif type.id == UUID.id %}
-              @{{_name.id}} = value.as({{type.id}})
-            {% elsif type.id == String.id %}
-              @{{_name.id}} = value.to_s
-            {% else %}
-              @{{_name.id}} = nil
-            {% end %}
-          {% end %}
-        end
+  def read_attribute(attribute_name : Symbol | String) : DB::Any
+    {% begin %}
+      case attribute_name.to_s
+      {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
+        when "{{ column.name }}" then @{{ column.name.id }}
       {% end %}
-    rescue ex
-      errors << Granite::Error.new(name, ex.message)
-    end
+      else
+        raise "Cannot read attribute #{attribute_name}, invalid attribute"
+      end
+    {% end %}
+  end
+
+  def primary_key_value
+    {% begin %}
+      {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
+      {% raise raise "A primary key must be defined for #{@type.name}." unless primary_key %}
+      {{primary_key.id}}
+    {% end %}
   end
 end

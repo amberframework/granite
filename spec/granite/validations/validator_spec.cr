@@ -4,6 +4,7 @@ require "../../spec_helper"
   {% adapter_literal = env("CURRENT_ADAPTER").id %}
   class NameTest < Granite::Base
     adapter {{ adapter_literal }}
+    primary id : Int64
     field name : String
 
     validate :name, "cannot be blank", ->(s : NameTest) do
@@ -13,6 +14,7 @@ require "../../spec_helper"
 
   class EmailTest < Granite::Base
     adapter {{ adapter_literal }}
+    primary id : Int64
     field email : String
 
     validate :email, "cannot be blank" do |email_test|
@@ -22,6 +24,7 @@ require "../../spec_helper"
 
   class PasswordTest < Granite::Base
     adapter {{ adapter_literal }}
+    primary id : Int64
     field password : String
     field password_validation : String
 

@@ -2,14 +2,14 @@ require "./spec_helper"
 require "logger"
 
 class SomeClass
-  def initialize(@model : Granite::Base.class); end
+  def initialize(@model_class : Granite::Base.class); end
 
   def valid? : Bool
-    @model.exists? 123
+    @model_class.exists? 123
   end
 
   def table : String
-    @model.table_name
+    @model_class.table_name
   end
 end
 
@@ -56,12 +56,12 @@ describe Granite::Base do
         model.uuid.should be_a UUID?
         model.field_uuid.should be_a UUID?
         model.uuid.should eq uuid
-        model.field_uuid!.should eq uuid
+        model.field_uuid.should eq uuid
       end
     end
   end
 
-  describe Logger do
+  pending Logger do
     describe "when logger is set to IO" do
       it "should be logged as DEBUG" do
         IO.pipe do |r, w|
@@ -173,7 +173,7 @@ describe Granite::Base do
         model.to_json.should eq %({"task_name":"The Task"})
       end
 
-      context "when using timestamp fields" do
+      pending "when using timestamp fields" do
         TodoJsonOptions.import([
           TodoJsonOptions.new(name: "first todo", priority: 200),
           TodoJsonOptions.new(name: "second todo", priority: 500),
@@ -278,7 +278,7 @@ describe Granite::Base do
         model.to_yaml.should eq %(---\ntask_name: The Task\n)
       end
 
-      context "when using timestamp fields" do
+      pending "when using timestamp fields" do
         TodoYamlOptions.import([
           TodoYamlOptions.new(name: "first todo", priority: 200),
           TodoYamlOptions.new(name: "second todo", priority: 500),

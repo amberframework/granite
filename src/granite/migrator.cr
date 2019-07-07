@@ -16,11 +16,14 @@ require "./error"
 # # => "CREATE TABLE ... ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 # ```
 module Granite::Migrator
-  class Base
-    @quoted_table_name : String
+  module ClassMethods
+    def migrator(**args)
+      Migrator(self).new(**args)
+    end
+  end
 
-    def initialize(klass, @table_options = "")
-      @quoted_table_name = klass.quoted_table_name
+  class Migrator(Model)
+    def initialize(@table_options = "")
     end
 
     def drop_and_create
@@ -28,73 +31,59 @@ module Granite::Migrator
       create
     end
 
+    def drop_sql
+      "DROP TABLE IF EXISTS #{Model.quoted_table_name};"
+    end
+
     def drop
+      Model.exec drop_sql
+    end
+
+    def create_sql
+      resolve = ->(key : String) {
+        Model.adapter.class.schema_type?(key) || raise "Migrator(#{Model.adapter.class.name}) doesn't support '#{key}' yet."
+      }
+
+      String.build do |s|
+        s.puts "CREATE TABLE #{Model.quoted_table_name}("
+
+        # primary key
+        {% begin %}
+          {% primary_key = Model.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
+          {% raise raise "A primary key must be defined for #{@type.name}." unless primary_key %}
+          {% ann = primary_key.annotation(Granite::Column) %}
+          k = Model.adapter.quote("{{primary_key.name}}")
+          v =
+            {% if ann[:auto] %}
+              resolve.call("AUTO_{{primary_key.type.union_types.find { |t| t != Nil }.id}}")
+            {% else %}
+              resolve.call("{{ivar.type.union_types.find { |t| t != Nil }.id}}")
+            {% end %}
+          s.print "#{k} #{v} PRIMARY KEY"
+        {% end %}
+
+        # content fields
+        {% for ivar in Model.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && !ann[:primary] } %}
+          {% ann = ivar.annotation(Granite::Column) %}
+          s.puts ","
+          k = Model.adapter.quote("{{ivar.name}}")
+          v =
+            {% if ann[:column_type] %}
+              "{{ann[:column_type].id}}"
+            {% elsif ivar.name.id == "created_at" || ivar.name.id == "updated_at" %}
+              resolve.call("{{ivar.name}}")
+            {% else %}
+              resolve.call("{{ivar.type.union_types.find { |t| t != Nil }.id}}")
+            {% end %}
+          s.puts "#{k} #{v}"
+        {% end %}
+
+        s.puts ") #{@table_options};"
+      end
     end
 
     def create
-    end
-  end
-
-  macro __process_migrator
-    {% primary_name = PRIMARY[:name] %}
-    {% primary_type = PRIMARY[:type] %}
-    {% primary_auto = PRIMARY[:auto] %}
-    {% klass = @type.name %}
-    {% adapter = "#{klass}.adapter".id %}
-
-    disable_granite_docs? class Migrator < Granite::Migrator::Base
-      def drop_sql
-        "DROP TABLE IF EXISTS #{ @quoted_table_name };"
-      end
-
-      def drop
-        {{klass}}.exec drop_sql
-      end
-
-      def create_sql
-        resolve = ->(key : String) {
-          {{adapter}}.class.schema_type?(key) || raise "Migrator(#{ {{adapter}}.class.name }) doesn't support '#{key}' yet."
-        }
-
-        String.build do |s|
-          s.puts "CREATE TABLE #{ @quoted_table_name }("
-
-          # primary key
-          k = {{adapter}}.quote("{{primary_name}}")
-          v =
-            {% if primary_auto %}
-              resolve.call("AUTO_{{primary_type.id}}")
-            {% else %}
-              resolve.call("{{primary_type.id}}")
-            {% end %}
-          s.print "#{k} #{v} PRIMARY KEY"
-
-          # content fields
-          {% for name, options in CONTENT_FIELDS %}
-            s.puts ","
-            k = {{adapter}}.quote("{{name}}")
-            v =
-              {% if options[:column_type] %}
-                "{{options[:column_type].id}}"
-              {% elsif name.id == "created_at" || name.id == "updated_at" %}
-                resolve.call("{{name}}")
-              {% else %}
-                resolve.call("{{options[:type]}}")
-              {% end %}
-            s.puts "#{k} #{v}"
-          {% end %}
-
-          s.puts ") #{@table_options};"
-        end
-      end
-
-      def create
-        {{klass}}.exec create_sql
-      end
-    end
-
-    disable_granite_docs? def self.migrator(**args)
-      Migrator.new(self, **args)
+      Model.exec create_sql
     end
   end
 end

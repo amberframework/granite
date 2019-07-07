@@ -2,37 +2,22 @@ module Granite::Querying
   class NotFound < Exception
   end
 
-  macro extended
-    macro __process_querying
-      \{% primary_name = PRIMARY[:name] %}
-      \{% primary_type = PRIMARY[:type] %}
-
-      # Create the from_sql method
-      disable_granite_docs? def self.from_sql(result)
-        model = \{{@type.name.id}}.new
-        model.set_attributes(result)
-        model
-      end
-
-      disable_granite_docs? def set_attributes(result : DB::ResultSet)
-        # Loading from DB means existing records.
-        @new_record = false
-        \{% for name, options in FIELDS %}
-          self.\{{name.id}} = \{% if options[:converter] %} \{{options[:converter].id}}.from_rs result \{% else %} result.read(Union(\{{options[:type].id}} | Nil)) \{% end %}
-          \{% if options[:type].id == "Time".id %}
-            self.\{{name.id}} = self.\{{name.id}}.not_nil!.in(Granite.settings.default_timezone) if self.\{{name.id}}
-          \{% end %}
-        \{% end %}
-        self
-      end
-    end
+  # Create the from_sql method
+  def from_rs(result : DB::ResultSet) : self
+    model = new
+    model.new_record = false
+    {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
+      {% ann = column.annotation(Granite::Column) %}
+      model.{{column.id}} = {% if ann[:converter] %} {{ann[:converter]}}.from_rs result {% else %} Granite::Type.from_rs result, {{column.type}} {% end %}
+    {% end %}
+    model
   end
 
   def raw_all(clause = "", params = [] of Granite::Fields::Type)
     rows = [] of self
     adapter.select(select_container, clause, params) do |results|
       results.each do
-        rows << from_sql(results)
+        rows << from_rs(results)
       end
     end
     rows

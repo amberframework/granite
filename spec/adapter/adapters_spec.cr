@@ -2,6 +2,8 @@ require "../spec_helper"
 
 class Foo < Granite::Base
   adapter mysql
+
+  primary id : Int64
 end
 
 describe Granite::Adapters do

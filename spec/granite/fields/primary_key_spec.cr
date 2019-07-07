@@ -12,7 +12,7 @@ end
 
 describe "#new(primary_key: value)" do
   it "ignores the value in default" do
-    Parent.new(id: 1).id.should eq(nil)
+    Parent.new(id: 1_i64).id.should eq(nil)
   end
 
   it "sets the value when the primary is defined as `auto: false`" do
