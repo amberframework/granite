@@ -22,7 +22,7 @@ abstract class Granite::Base
   include Associations
   include Callbacks
   include Columns
-  include Table
+  include Tables
   include Transactions
   include Validators
   include ValidationHelpers
@@ -30,7 +30,7 @@ abstract class Granite::Base
   include Select
 
   extend Columns::ClassMethods
-  extend Table::ClassMethods
+  extend Tables::ClassMethods
   extend Granite::Migrator::ClassMethods
 
   extend Querying

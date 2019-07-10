@@ -306,15 +306,6 @@ require "uuid"
     column name : String?
   end
 
-  class Column < Granite::Base
-    adapter {{ env("CURRENT_ADAPTER").id }}
-    table custom_table_name
-
-    column id : Int64, primary: true
-    column nilable : Int32?
-    column not_nilable : String
-  end
-
   @[JSON::Serializable::Options(emit_nulls: true)]
   @[YAML::Serializable::Options(emit_nulls: true)]
   class TodoEmitNull < Granite::Base
@@ -727,5 +718,4 @@ require "uuid"
   CourierService.migrator.drop_and_create
   TimeTest.migrator.drop_and_create
   ConverterModel.migrator.drop_and_create
-  Column.migrator.drop_and_create
 {% end %}

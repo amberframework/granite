@@ -49,11 +49,13 @@ module Granite::Columns
     {% auto = (options[:auto] && !options[:auto].nil?) ? options[:auto] : false %}
     {% auto = (!options || (options && options[:auto] == nil)) && primary %}
 
-    # Nilable or primary, define normal and raise on nil getters
-    {% if (type.is_a?(Path) ? type.resolve.nilable? : (type.is_a?(Union) ? type.types.any?(&.resolve.nilable?) : type.nilable?)) || primary %}
-      @[Granite::Column(column_type: {{column_type}}, converter: {{converter}}, auto: {{auto}}, primary: {{primary}}, nilable: true)]
-      @{{decl.var}} : {{decl.type}}? {% if decl.value %} = {{decl.value}} {% end %}
+    {% nilable = (type.is_a?(Path) ? type.resolve.nilable? : (type.is_a?(Union) ? type.types.any?(&.resolve.nilable?) : (type.is_a?(Generic) ? type.resolve.nilable? : type.nilable?))) %}
 
+    @[Granite::Column(column_type: {{column_type}}, converter: {{converter}}, auto: {{auto}}, primary: {{primary}}, nilable: {{nilable}})]
+    @{{decl.var}} : {{decl.type}}? {% if !decl.value.is_a? Nop %} = {{decl.value}} {% end %}
+
+    # Nilable or primary, define normal and raise on nil getters
+    {% if nilable || primary %}
       def {{decl.var.id}}=(@{{decl.var.id}} : {{type.id}}?); end
 
       def {{decl.var.id}} : {{decl.type}}?
@@ -66,9 +68,6 @@ module Granite::Columns
       end
     # Not nilable, define raise on nil getter
     {% else %}
-      @[Granite::Column(column_type: {{column_type}}, converter: {{converter}}, auto: {{auto}}, primary: {{primary}}, nilable: false)]
-      @{{decl.var}} : {{decl.type}}? {% if decl.value %} = {{decl.value}} {% end %}
-
       def {{decl.var.id}}=(@{{decl.var.id}} : {{type.id}}); end
 
       def {{decl.var.id}} : {{type.id}}

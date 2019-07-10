@@ -6,7 +6,7 @@ module Granite
   DATETIME_FORMAT = "%F %X%z"
 
   annotation Column; end
-  annotation Model; end
+  annotation Table; end
 end
 
 require "./granite/base"

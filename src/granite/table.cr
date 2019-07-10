@@ -8,7 +8,7 @@ macro disable_granite_docs?(stmt)
   {% end %}
 end
 
-module Granite::Table
+module Granite::Tables
   module ClassMethods
     def primary_name : String?
       {% begin %}
@@ -31,14 +31,14 @@ module Granite::Table
     # defaults to the model's name underscored + 's'.
     def table_name : String
       {% begin %}
-        {% table_ann = @type.annotation(Granite::Model) %}
-        {{table_ann && !table_ann[:table].nil? ? table_ann[:table] : @type.name.underscore.stringify}}
+        {% table_ann = @type.annotation(Granite::Table) %}
+        {{table_ann && !table_ann[:name].nil? ? table_ann[:name] : @type.name.underscore.stringify}}
       {% end %}
     end
   end
 
   macro table(name)
-    @[Granite::Model(table: {{(name.is_a?(StringLiteral) ? name : name.stringify) || nil}})]
+    @[Granite::Table(name: {{(name.is_a?(StringLiteral) ? name : name.stringify) || nil}})]
     class ::{{@type.name.id}}; end
   end
 

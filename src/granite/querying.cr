@@ -11,7 +11,7 @@ module Granite::Querying
       model.{{column.id}} = {% if ann[:converter] %}
         {{ann[:converter]}}.from_rs result
       {% else %}
-          Granite::Type.from_rs result, {{ann[:nilable] ? column.type : column.type.union_types.reject { |t| t == Nil }.first}} {% if column.has_default_value? %} || {{column.default_value}} {% end %}
+        Granite::Type.from_rs(result, ({{ann[:nilable] ? column.type : column.type.union_types.reject { |t| t == Nil }.first}})) {% if column.has_default_value? && !column.default_value.nil? %} || {{column.default_value}} {% end %}
       {% end %}
     {% end %}
     model
