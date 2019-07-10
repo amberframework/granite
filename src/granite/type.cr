@@ -19,6 +19,11 @@ module Granite::Type
   }
 
   {% for type, method in PRIMITIVES %}
+    # Converts a `DB::ResultSet` to `{{type}}`.
+    def from_rs(result : DB::ResultSet, t : {{type.id}}.class) : {{type.id}}
+      result{{method.id}} {{type}}
+    end
+
     # Converts a `DB::ResultSet` to `{{type}}?`.
     def from_rs(result : DB::ResultSet, t : {{type.id}}?.class) : {{type.id}}?
       result{{method.id}} {{type}}?

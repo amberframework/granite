@@ -49,20 +49,32 @@ module Granite::Columns
     {% auto = (options[:auto] && !options[:auto].nil?) ? options[:auto] : false %}
     {% auto = (!options || (options && options[:auto] == nil)) && primary %}
 
-    @[Granite::Column(column_type: {{column_type}}, converter: {{converter}}, auto: {{auto}}, primary: {{primary}})]
-    property {{decl.var}} : {{decl.type}}? {% if decl.value %} = {{decl.value}} {% end %}
+    # Nilable or primary, define normal and raise on nil getters
+    {% if (type.is_a?(Path) ? type.resolve.nilable? : (type.is_a?(Union) ? type.types.any?(&.resolve.nilable?) : type.nilable?)) || primary %}
+      @[Granite::Column(column_type: {{column_type}}, converter: {{converter}}, auto: {{auto}}, primary: {{primary}}, nilable: true)]
+      @{{decl.var}} : {{decl.type}}? {% if decl.value %} = {{decl.value}} {% end %}
 
-    {% if type.is_a?(Path) ? type.resolve.nilable? : (type.is_a?(Union) ? type.types.any?(&.resolve.nilable?) : type.nilable?) %}
-      def {{decl.var.id}}! : {{decl.type}}
+      def {{decl.var.id}}=(@{{decl.var.id}} : {{type.id}}?); end
+
+      def {{decl.var.id}} : {{decl.type}}?
+        @{{decl.var}}
+      end
+
+      def {{decl.var.id}}! : {{type.id}}
         raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{decl.var.stringify}} + " cannot be nil" if @{{decl.var}}.nil?
         @{{decl.var}}.not_nil!
       end
-    {% elsif !primary %}
-      def {{decl.var.id}} : {{decl.type}}
+    # Not nilable, define raise on nil getter
+    {% else %}
+      @[Granite::Column(column_type: {{column_type}}, converter: {{converter}}, auto: {{auto}}, primary: {{primary}}, nilable: false)]
+      @{{decl.var}} : {{decl.type}}? {% if decl.value %} = {{decl.value}} {% end %}
+
+      def {{decl.var.id}}=(@{{decl.var.id}} : {{type.id}}); end
+
+      def {{decl.var.id}} : {{type.id}}
         raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{decl.var.stringify}} + " cannot be nil" if @{{decl.var}}.nil?
         @{{decl.var}}.not_nil!
       end
-      {% else %}
     {% end %}
   end
 
