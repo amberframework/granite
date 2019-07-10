@@ -10,7 +10,7 @@ module Granite::Transactions
       create(args.to_h)
     end
 
-    def create(args : Hash(Symbol | String, Granite::Fields::Type))
+    def create(args : Hash(Symbol | String, Granite::Columns::Type))
       instance = new
       instance.set_attributes(args.transform_keys(&.to_s))
       instance.save
@@ -21,7 +21,7 @@ module Granite::Transactions
       create!(args.to_h)
     end
 
-    def create!(args : Hash(Symbol | String, Granite::Fields::Type))
+    def create!(args : Hash(Symbol | String, Granite::Columns::Type))
       instance = create(args)
 
       if instance.errors.any?
@@ -93,6 +93,7 @@ module Granite::Transactions
     {% begin %}
       {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
       {% raise raise "A primary key must be defined for #{@type.name}." unless primary_key %}
+      {% raise "Composite primary keys are not yet supported for '#{@type.name}'." if @type.instance_vars.select { |ivar| ann = ivar.annotation(Granite::Column); ann && ann[:primary] }.size > 1 %}
       {% ann = primary_key.annotation(Granite::Column) %}
 
       set_timestamps
@@ -206,7 +207,7 @@ module Granite::Transactions
     update(args.to_h)
   end
 
-  def update(args : Hash(Symbol | String, Granite::Fields::Type))
+  def update(args : Hash(Symbol | String, Granite::Columns::Type))
     set_attributes(args.transform_keys(&.to_s))
 
     save
@@ -216,7 +217,7 @@ module Granite::Transactions
     update!(args.to_h)
   end
 
-  def update!(args : Hash(Symbol | String, Granite::Fields::Type))
+  def update!(args : Hash(Symbol | String, Granite::Columns::Type))
     set_attributes(args.transform_keys(&.to_s))
 
     save!

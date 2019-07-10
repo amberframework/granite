@@ -2,7 +2,7 @@ module Granite::Query::Executor
   class List(Model)
     include Shared
 
-    def initialize(@sql : String, @args = [] of Granite::Fields::Type)
+    def initialize(@sql : String, @args = [] of Granite::Columns::Type)
     end
 
     def run : Array(Model)

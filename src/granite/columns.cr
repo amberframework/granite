@@ -1,7 +1,7 @@
 require "json"
 require "uuid"
 
-module Granite::Fields
+module Granite::Columns
   alias SupportedArrayTypes = Array(String) | Array(Int16) | Array(Int32) | Array(Int64) | Array(Float32) | Array(Float64) | Array(Bool)
   alias Type = DB::Any | SupportedArrayTypes | UUID
   TIME_FORMAT_REGEX = /\d{4,}-\d{2,}-\d{2,}\s\d{2,}:\d{2,}:\d{2,}/
@@ -15,7 +15,7 @@ module Granite::Fields
       {% end %}
     end
 
-    # Fields minus the PK
+    # Columns minus the PK
     def content_fields : Array(String)
       {% begin %}
         {% columns = @type.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && !ann[:primary] }.map(&.name.stringify) %}
@@ -33,38 +33,43 @@ module Granite::Fields
     parsed_params
   end
 
-  # specify the fields you want to define and types
-  macro field(decl, **options)
-    {% raise "The type of #{@type.name}##{decl.var} cannot be a Union.  The 'field' macro declares the type as nilable by default.  Use the 'field!' macro to declare a not nilable field." if decl.type.is_a? Union %}
+  # Defines a column *decl* with the given *options*.
+  macro column(decl, **options)
+    {% type = decl.type %}
+
+    # Raise an exception if the delc type has more than 2 union types or if it has 2 types without nil
+    # This prevents having a column typed to String | Int32 etc.
+    {% if type.is_a?(Union) && (type.types.size > 2 || (type.types.size == 2 && !type.types.any?(&.resolve.nilable?))) %}
+      {% raise "The type of #{@type.name}##{decl.var} cannot be a Union.  The 'field' macro declares the type as nilable by default.  Use the 'field!' macro to declare a not nilable field." %}
+    {% end %}
+
     {% column_type = (options[:column_type] && !options[:column_type].nil?) ? options[:column_type] : nil %}
     {% converter = (options[:converter] && !options[:converter].nil?) ? options[:converter] : nil %}
-    @[Granite::Column(column_type: {{column_type}}, converter: {{converter}})]
+    {% primary = (options[:primary] && !options[:primary].nil?) ? options[:primary] : false %}
+    {% auto = (options[:auto] && !options[:auto].nil?) ? options[:auto] : false %}
+    {% auto = (!options || (options && options[:auto] == nil)) && primary %}
+
+    @[Granite::Column(column_type: {{column_type}}, converter: {{converter}}, auto: {{auto}}, primary: {{primary}})]
     property {{decl.var}} : {{decl.type}}? {% if decl.value %} = {{decl.value}} {% end %}
 
-    def {{decl.var.id}}! : {{decl.type}}
-      raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{decl.var.stringify}} + " cannot be nil" if @{{decl.var}}.nil?
-      @{{decl.var}}.not_nil!
-    end
-  end
-
-  # specify the raise-on-nil fields you want to define and types
-  macro field!(decl, **options)
-    {% raise "The type of #{@type.name}##{decl.var} cannot be a Union.  The 'field' macro declares the type as nilable by default.  Use the 'field!' macro to declare a not nilable field." if decl.type.is_a? Union %}
-    {% column_type = (options[:column_type] && !options[:column_type].nil?) ? options[:column_type] : nil %}
-    {% converter = (options[:converter] && !options[:converter].nil?) ? options[:converter] : nil %}
-    @[Granite::Column(column_type: {{column_type}}, converter: {{converter}})]
-    property {{decl.var}} : {{decl.type}}? {% if decl.value %} = {{decl.value}} {% end %}
-
-    def {{decl.var.id}} : {{decl.type}}
-      raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{decl.var.stringify}} + " cannot be nil" if @{{decl.var}}.nil?
-      @{{decl.var}}.not_nil!
-    end
+    {% if type.is_a?(Path) ? type.resolve.nilable? : (type.is_a?(Union) ? type.types.any?(&.resolve.nilable?) : type.nilable?) %}
+      def {{decl.var.id}}! : {{decl.type}}
+        raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{decl.var.stringify}} + " cannot be nil" if @{{decl.var}}.nil?
+        @{{decl.var}}.not_nil!
+      end
+    {% elsif !primary %}
+      def {{decl.var.id}} : {{decl.type}}
+        raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{decl.var.stringify}} + " cannot be nil" if @{{decl.var}}.nil?
+        @{{decl.var}}.not_nil!
+      end
+      {% else %}
+    {% end %}
   end
 
   # include created_at and updated_at that will automatically be updated
   macro timestamps
-    field created_at : Time
-    field updated_at : Time
+    column created_at : Time?
+    column updated_at : Time?
   end
 
   def to_h

@@ -7,11 +7,11 @@ module Granite::Query::Assembler
     @group_by : String?
 
     def initialize(@query : Builder(Model))
-      @numbered_parameters = [] of Granite::Fields::Type
+      @numbered_parameters = [] of Granite::Columns::Type
       @aggregate_fields = [] of String
     end
 
-    abstract def add_parameter(value : Granite::Fields::Type) : String
+    abstract def add_parameter(value : Granite::Columns::Type) : String
 
     def numbered_parameters
       @numbered_parameters

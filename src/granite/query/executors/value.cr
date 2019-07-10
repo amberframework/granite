@@ -2,7 +2,7 @@ module Granite::Query::Executor
   class Value(Model, Scalar)
     include Shared
 
-    def initialize(@sql : String, @args = [] of Granite::Fields::Type, @default : Scalar = nil)
+    def initialize(@sql : String, @args = [] of Granite::Columns::Type, @default : Scalar = nil)
     end
 
     def run : Scalar

@@ -31,7 +31,7 @@ require "../spec_helper"
 
         assembler = query.assembler
         assembler.where
-        assembler.numbered_parameters.should eq [] of Granite::Fields::Type
+        assembler.numbered_parameters.should eq [] of Granite::Columns::Type
       end
 
       it "property defines IN query with numbers" do
@@ -41,7 +41,7 @@ require "../spec_helper"
 
         assembler = query.assembler
         assembler.where
-        assembler.numbered_parameters.should eq [] of Granite::Fields::Type
+        assembler.numbered_parameters.should eq [] of Granite::Columns::Type
       end
 
       it "property defines IN query with booleans" do
@@ -51,7 +51,7 @@ require "../spec_helper"
 
         assembler = query.assembler
         assembler.where
-        assembler.numbered_parameters.should eq [] of Granite::Fields::Type
+        assembler.numbered_parameters.should eq [] of Granite::Columns::Type
       end
     end
 

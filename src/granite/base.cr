@@ -2,7 +2,7 @@ require "./collection"
 require "./association_collection"
 require "./associations"
 require "./callbacks"
-require "./fields"
+require "./columns"
 require "./query/executors/base"
 require "./query/**"
 require "./settings"
@@ -21,7 +21,7 @@ require "./type"
 abstract class Granite::Base
   include Associations
   include Callbacks
-  include Fields
+  include Columns
   include Table
   include Transactions
   include Validators
@@ -29,7 +29,7 @@ abstract class Granite::Base
   include Migrator
   include Select
 
-  extend Fields::ClassMethods
+  extend Columns::ClassMethods
   extend Table::ClassMethods
   extend Granite::Migrator::ClassMethods
 
@@ -63,11 +63,11 @@ abstract class Granite::Base
       !(new_record? || destroyed?)
     end
 
-    def initialize(**args : Granite::Fields::Type)
+    def initialize(**args : Granite::Columns::Type)
       set_attributes(args.to_h.transform_keys(&.to_s))
     end
 
-    def initialize(args : Hash(Symbol | String, Granite::Fields::Type))
+    def initialize(args : Hash(Symbol | String, Granite::Columns::Type))
       set_attributes(args.transform_keys(&.to_s))
     end
 

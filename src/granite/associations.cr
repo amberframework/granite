@@ -10,10 +10,10 @@ module Granite::Associations
 
     {% if options[:foreign_key] && options[:foreign_key].is_a? TypeDeclaration %}
       {% foreign_key = options[:foreign_key].var %}
-      field {{options[:foreign_key]}}
+      column {{options[:foreign_key]}}
     {% else %}
       {% foreign_key = method_name + "_id" %}
-      field {{foreign_key}} : Int64
+      column {{foreign_key}} : Int64?
     {% end %}
     {% primary_key = options[:primary_key] || "id" %}
 

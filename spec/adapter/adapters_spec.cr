@@ -3,7 +3,7 @@ require "../spec_helper"
 class Foo < Granite::Base
   adapter mysql
 
-  primary id : Int64
+  column id : Int64, primary: true
 end
 
 describe Granite::Adapters do

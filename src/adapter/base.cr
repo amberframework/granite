@@ -61,7 +61,7 @@ abstract class Granite::Adapter::Base
   end
 
   # Returns `true` if a record exists that matches *criteria*, otherwise `false`.
-  def exists?(table_name : String, criteria : String, params = [] of Granite::Fields::Type) : Bool
+  def exists?(table_name : String, criteria : String, params = [] of Granite::Columns::Type) : Bool
     statement = "SELECT EXISTS(SELECT 1 FROM #{table_name} WHERE #{ensure_clause_template(criteria)})"
 
     exists = false

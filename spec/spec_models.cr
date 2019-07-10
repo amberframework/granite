@@ -9,11 +9,11 @@ require "uuid"
   {% adapter_literal = env("CURRENT_ADAPTER").id %}
 
   class Parent < Granite::Base
-    primary id : Int64
     adapter {{ adapter_literal }}
-    table_name parents
+    table parents
 
-    field name : String
+    column id : Int64, primary: true
+    column name : String?
     timestamps
 
     has_many :students, class_name: Student
@@ -24,31 +24,32 @@ require "uuid"
   end
 
   class Teacher < Granite::Base
-    primary id : Int64
     adapter {{ adapter_literal }}
-    table_name teachers
+    table teachers
 
-    field name : String
+    column id : Int64, primary: true
+    column name : String?
 
     has_many :klasses, class_name: Klass
   end
 
   class Student < Granite::Base
-    primary id : Int64
     adapter {{ adapter_literal }}
-    table_name students
+    table students
 
-    field name : String
+    column id : Int64, primary: true
+    column name : String?
 
     has_many :enrollments, class_name: Enrollment
     has_many :klasses, class_name: Klass, through: :enrollments
   end
 
   class Klass < Granite::Base
-    primary id : Int64
     adapter {{ adapter_literal }}
-    table_name klasses
-    field name : String
+    table klasses
+
+    column id : Int64, primary: true
+    column name : String?
 
     belongs_to teacher : Teacher
 
@@ -57,9 +58,10 @@ require "uuid"
   end
 
   class Enrollment < Granite::Base
-    primary id : Int64
     adapter {{ adapter_literal }}
-    table_name enrollments
+    table enrollments
+
+    column id : Int64, primary: true
 
     belongs_to :student
     belongs_to :klass
@@ -67,36 +69,36 @@ require "uuid"
 
   class School < Granite::Base
     adapter {{ adapter_literal }}
-    primary custom_id : Int64
-    field name : String
+    table schools
 
-    table_name schools
+    column custom_id : Int64, primary: true
+    column name : String?
   end
 
   class User < Granite::Base
     adapter {{ adapter_literal }}
-    primary id : Int64
-    field email : String
+    table users
+
+    column id : Int64, primary: true
+    column email : String?
 
     has_one :profile
-
-    table_name users
   end
 
   class Character < Granite::Base
     adapter {{ adapter_literal }}
-    table_name characters
+    table characters
 
-    primary character_id : Int32
-    field! name : String
+    column character_id : Int32, primary: true
+    column name : String
   end
 
   class Courier < Granite::Base
     adapter {{ adapter_literal }}
-    table_name couriers
+    table couriers
 
-    primary courier_id : Int32, auto: false
-    field! issuer_id : Int32
+    column courier_id : Int32, primary: true, auto: false
+    column issuer_id : Int32
 
     belongs_to service : CourierService, primary_key: "owner_id"
     has_one issuer : Character, primary_key: "issuer_id", foreign_key: "character_id"
@@ -104,65 +106,67 @@ require "uuid"
 
   class CourierService < Granite::Base
     adapter {{ adapter_literal }}
-    table_name services
+    table services
+
+    column owner_id : Int64, primary: true, auto: false
+    column name : String
 
     has_many :couriers, class_name: Courier, foreign_key: "service_id"
-
-    primary owner_id : Int64, auto: false
-    field! name : String
   end
 
   class Profile < Granite::Base
     adapter {{ adapter_literal }}
-    primary id : Int64
-    field name : String
+    table profiles
+
+    column id : Int64, primary: true
+    column name : String?
 
     belongs_to :user
-
-    table_name profiles
   end
 
   class Nation::County < Granite::Base
     adapter {{ adapter_literal }}
-    primary id : Int64
-    table_name nation_counties
+    table nation_counties
 
-    field name : String
+    column id : Int64, primary: true
+    column name : String?
   end
 
   class Review < Granite::Base
     adapter {{ adapter_literal }}
-    table_name reviews
+    table reviews
 
-    primary id : Int64
-
-    field name : String
-    field downvotes : Int32
-    field upvotes : Int64
-    field sentiment : Float32
-    field interest : Float64
-    field published : Bool
-    field created_at : Time
+    column id : Int64, primary: true
+    column name : String?
+    column downvotes : Int32?
+    column upvotes : Int64?
+    column sentiment : Float32?
+    column interest : Float64?
+    column published : Bool?
+    column created_at : Time?
   end
 
   class Empty < Granite::Base
     adapter {{ adapter_literal }}
-    table_name empties
-    primary id : Int64
+    table empties
+
+    column id : Int64, primary: true
   end
 
   class ReservedWord < Granite::Base
     adapter {{ adapter_literal }}
-    table_name "select"
-    primary id : Int64
-    field all : String
+    table "select"
+
+    column id : Int64, primary: true
+    column all : String?
   end
 
   class Callback < Granite::Base
     adapter {{ adapter_literal }}
-    table_name callbacks
-    primary id : Int64
-    field name : String
+    table callbacks
+
+    column id : Int64, primary: true
+    column name : String?
 
     property history : IO::Memory = IO::Memory.new
 
@@ -176,10 +180,11 @@ require "uuid"
 
   class CallbackWithAbort < Granite::Base
     adapter {{ adapter_literal }}
-    table_name callbacks_with_abort
-    primary abort_at : String, auto: false
-    field do_abort : Bool
-    field name : String
+    table callbacks_with_abort
+
+    column abort_at : String, primary: true, auto: false
+    column do_abort : Bool?
+    column name : String?
 
     property history : IO::Memory = IO::Memory.new
 
@@ -193,56 +198,58 @@ require "uuid"
 
   class Kvs < Granite::Base
     adapter {{ adapter_literal }}
-    table_name kvs
-    primary k : String, auto: false
-    field v : String
+    table kvs
+
+    column k : String, primary: true, auto: false
+    column v : String?
   end
 
   class Person < Granite::Base
     adapter {{ adapter_literal }}
-    table_name people
+    table people
 
-    primary id : Int64
-    field name : String
+    column id : Int64, primary: true
+    column name : String?
   end
 
   class Company < Granite::Base
     adapter {{ adapter_literal }}
-    table_name companies
+    table companies
 
-    primary id : Int32
-    field name : String
+    column id : Int32, primary: true
+    column name : String?
   end
 
   class Book < Granite::Base
     adapter {{ adapter_literal }}
-    table_name books
-    has_many :book_reviews, class_name: BookReview
-    belongs_to author : Person
+    table books
+
+    column id : Int32, primary: true
+    column name : String?
 
     @[JSON::Field(ignore: true)]
     @[YAML::Field(ignore: true)]
-    belongs_to publisher : Company, foreign_key: publisher_id : Int32
-
-    primary id : Int32
-    field name : String
+    belongs_to publisher : Company, foreign_key: publisher_id : Int32?
+    has_many :book_reviews, class_name: BookReview
+    belongs_to author : Person
   end
 
   class BookReview < Granite::Base
     adapter {{ adapter_literal }}
-    table_name book_reviews
-    belongs_to book : Book, foreign_key: book_id : Int32
+    table book_reviews
 
-    primary id : Int32
-    field body : String
+    column id : Int32, primary: true
+    column body : String?
+
+    belongs_to book : Book, foreign_key: book_id : Int32?
   end
 
   class Item < Granite::Base
     adapter {{ adapter_literal }}
-    table_name items
+    table items
 
-    primary item_id : String, auto: false
-    field item_name : String
+    column item_id : String, primary: true, auto: false
+    column item_name : String?
 
     before_create :generate_uuid
 
@@ -253,81 +260,90 @@ require "uuid"
 
   class NonAutoDefaultPK < Granite::Base
     adapter {{ adapter_literal }}
-    table_name non_auto_default_pk
+    table non_auto_default_pk
 
-    primary id : Int64, auto: false
-    field name : String
+    column id : Int64, primary: true, auto: false
+    column name : String?
   end
 
   class NonAutoCustomPK < Granite::Base
     adapter {{ adapter_literal }}
-    table_name non_auto_custom_pk
+    table non_auto_custom_pk
 
-    primary custom_id : Int64, auto: false
-    field name : String
+    column custom_id : Int64, primary: true, auto: false
+    column name : String?
   end
 
   class Article < Granite::Base
     adapter {{ adapter_literal }}
-    table_name articles
+    table articles
 
-    primary id : Int64
-    field articlebody : String
+    column id : Int64, primary: true
+    column articlebody : String?
   end
 
   class Comment < Granite::Base
     adapter {{ adapter_literal }}
-    table_name comments
+    table comments
 
-    primary id : Int64
-    field commentbody : String
-    field articleid : Int64
+    column id : Int64, primary: true
+    column commentbody : String?
+    column articleid : Int64?
   end
 
   class SongThread < Granite::Base
     adapter {{ env("CURRENT_ADAPTER").id }}
-    primary id : Int64
-    field name : String
+
+    column id : Int64, primary: true
+    column name : String?
   end
 
   class CustomSongThread < Granite::Base
     adapter {{ env("CURRENT_ADAPTER").id }}
-    table_name custom_table_name
-    primary custom_primary_key : Int64
-    field name : String
+    table custom_table_name
+
+    column custom_primary_key : Int64, primary: true
+    column name : String?
+  end
+
+  class Column < Granite::Base
+    adapter {{ env("CURRENT_ADAPTER").id }}
+    table custom_table_name
+
+    column id : Int64, primary: true
+    column nilable : Int32?
+    column not_nilable : String
   end
 
   @[JSON::Serializable::Options(emit_nulls: true)]
   @[YAML::Serializable::Options(emit_nulls: true)]
   class TodoEmitNull < Granite::Base
     adapter {{ adapter_literal }}
-    table_name todos
+    table todos
 
-    primary id : Int64
-    field name : String
-    field priority : Int32
+    column id : Int64, primary: true
+    column name : String?
+    column priority : Int32?
     timestamps
   end
 
   class Todo < Granite::Base
     adapter {{ adapter_literal }}
-    table_name todos
+    table todos
 
-    primary id : Int64
-
-    field name : String
-    field priority : Int32
+    column id : Int64, primary: true
+    column name : String?
+    column priority : Int32?
     timestamps
   end
 
   class AfterInit < Granite::Base
     adapter {{ adapter_literal }}
-    table_name after_json_init
+    table after_json_init
 
-    primary id : Int64
-
-    field name : String
-    field priority : Int32
+    column id : Int64, primary: true
+    column name : String?
+    column priority : Int32?
 
     def after_initialize
       @priority = 1000
@@ -337,9 +353,9 @@ require "uuid"
   class ArticleViewModel < Granite::Base
     adapter {{ adapter_literal }}
 
-    primary id : Int64
-    field articlebody : String
-    field commentbody : String
+    column id : Int64, primary: true
+    column articlebody : String?
+    column commentbody : String?
 
     select_statement <<-SQL
       SELECT articles.id, articles.articlebody, comments.commentbody FROM articles JOIN comments ON comments.articleid = articles.id
@@ -351,100 +367,97 @@ require "uuid"
     class ArrayModel < Granite::Base
       adapter {{ adapter_literal }}
 
-      primary id : Int32
-      field str_array : Array(String)
-      field i16_array : Array(Int16)
-      field i32_array : Array(Int32)
-      field i64_array : Array(Int64)
-      field f32_array : Array(Float32)
-      field f64_array : Array(Float64), default: [] of Float64
-      field bool_array : Array(Bool)
+      column id : Int32, primary: true
+      column str_array : Array(String)?
+      column i16_array : Array(Int16)?
+      column i32_array : Array(Int32)?
+      column i64_array : Array(Int64)?
+      column f32_array : Array(Float32)?
+      column f64_array : Array(Float64)? = [] of Float64
+      column bool_array : Array(Bool)?
     end
     ArrayModel.migrator.drop_and_create
   {% end %}
 
   class UUIDModel < Granite::Base
     adapter {{ adapter_literal }}
-    table_name uuids
+    table uuids
 
-    primary uuid : UUID, converter: Granite::Converters::Uuid(String)
+    column uuid : UUID?, primary: true, converter: Granite::Converters::Uuid(String)
   end
 
   class UUIDNaturalModel < Granite::Base
     adapter {{ adapter_literal }}
-    table_name uuids
+    table uuids
 
-    primary uuid : UUID, converter: Granite::Converters::Uuid(String), auto: false
-    field! field_uuid : UUID, converter: Granite::Converters::Uuid(String)
+    column uuid : UUID, primary: true, converter: Granite::Converters::Uuid(String), auto: false
+    column field_uuid : UUID?, converter: Granite::Converters::Uuid(String)
   end
 
   class TodoJsonOptions < Granite::Base
     adapter {{ adapter_literal }}
-    table_name todos_json
+    table todos_json
 
-    primary id : Int64
+    column id : Int64, primary: true
 
     @[JSON::Field(key: "task_name")]
-    field name : String
+    column name : String?
 
     @[JSON::Field(ignore: true)]
-    field priority : Int32
+    column priority : Int32?
 
     @[JSON::Field(ignore: true)]
-    field updated_at : Time
+    column updated_at : Time?
 
     @[JSON::Field(key: "posted")]
-    field created_at : Time
+    column created_at : Time?
   end
 
   class TodoYamlOptions < Granite::Base
     adapter {{ adapter_literal }}
-    table_name todos_yaml
+    table todos_yaml
 
-    primary id : Int64
+    column id : Int64, primary: true
 
     @[YAML::Field(key: "task_name")]
-    field name : String
+    column name : String?
 
     @[YAML::Field(ignore: true)]
-    field priority : Int32
+    column priority : Int32?
 
     @[YAML::Field(ignore: true)]
-    field updated_at : Time
+    column updated_at : Time?
 
     @[YAML::Field(key: "posted")]
-    field created_at : Time
+    column created_at : Time?
   end
 
   class DefaultValues < Granite::Base
     adapter {{ adapter_literal }}
-    table_name defaults
+    table defaults
 
-    primary id : Int64
-
-    field name : String = "Jim"
-    field is_alive : Bool = true
-    field age : Float64 = 0.0
+    column id : Int64, primary: true
+    column name : String = "Jim"
+    column is_alive : Bool = true
+    column age : Float64 = 0.0
   end
 
   class TimeTest < Granite::Base
     adapter {{ adapter_literal }}
-    table_name times
+    table times
 
-    primary id : Int64
-
-    field test : Time
-    field name : String
+    column id : Int64, primary: true
+    column test : Time?
+    column name : String?
     timestamps
   end
 
   class ManualColumnType < Granite::Base
     adapter {{ adapter_literal }}
-    table_name manual_column_types
+    table manual_column_types
 
-    primary id : Int64
-
-    field foo : UUID, column_type: "FOO"
+    column id : Int64, primary: true
+    column foo : UUID?, column_type: "FOO"
   end
 
   struct MyType
@@ -467,24 +480,24 @@ require "uuid"
   {% if env("CURRENT_ADAPTER") == "pg" %}
     class ConverterModel < Granite::Base
       adapter {{ adapter_literal }}
-      table_name converters
+      table converters
 
-      primary id : Int64
+      column id : Int64, primary: true
 
-      field binary_json : MyType, column_type: "BYTEA", converter: Granite::Converters::Json(MyType, Bytes)
-      field string_json : MyType, column_type: "JSON", converter: Granite::Converters::Json(MyType, JSON::Any)
-      field string_jsonb : MyType, column_type: "JSONB", converter: Granite::Converters::Json(MyType, JSON::Any)
+      column binary_json : MyType?, column_type: "BYTEA", converter: Granite::Converters::Json(MyType, Bytes)
+      column string_json : MyType?, column_type: "JSON", converter: Granite::Converters::Json(MyType, JSON::Any)
+      column string_jsonb : MyType?, column_type: "JSONB", converter: Granite::Converters::Json(MyType, JSON::Any)
 
-      field smallint_enum : MyEnum, column_type: "SMALLINT", converter: Granite::Converters::Enum(MyEnum, Int16)
-      field bigint_enum : MyEnum, column_type: "BIGINT", converter: Granite::Converters::Enum(MyEnum, Int64)
-      field string_enum : MyEnum, column_type: "TEXT", converter: Granite::Converters::Enum(MyEnum, String)
-      field enum_enum : MyEnum, column_type: "my_enum_type", converter: Granite::Converters::Enum(MyEnum, Bytes)
-      field binary_enum : MyEnum, column_type: "BYTEA", converter: Granite::Converters::Enum(MyEnum, Bytes)
+      column smallint_enum : MyEnum?, column_type: "SMALLINT", converter: Granite::Converters::Enum(MyEnum, Int16)
+      column bigint_enum : MyEnum?, column_type: "BIGINT", converter: Granite::Converters::Enum(MyEnum, Int64)
+      column string_enum : MyEnum?, column_type: "TEXT", converter: Granite::Converters::Enum(MyEnum, String)
+      column enum_enum : MyEnum?, column_type: "my_enum_type", converter: Granite::Converters::Enum(MyEnum, Bytes)
+      column binary_enum : MyEnum?, column_type: "BYTEA", converter: Granite::Converters::Enum(MyEnum, Bytes)
 
-      field string_uuid : UUID, converter: Granite::Converters::Uuid(String) # Test PG native UUID type
-      field binary_uuid : UUID, column_type: "BYTEA", converter: Granite::Converters::Uuid(Bytes)
+      column string_uuid : UUID?, converter: Granite::Converters::Uuid(String) # Test PG native UUID type
+      column binary_uuid : UUID?, column_type: "BYTEA", converter: Granite::Converters::Uuid(Bytes)
 
-      field numeric : Float64, column_type: "DECIMAL(21, 20)", converter: Granite::Converters::PgNumeric
+      column numeric : Float64?, column_type: "DECIMAL(21, 20)", converter: Granite::Converters::PgNumeric
     end
     ConverterModel.exec(<<-TYPE
       DO $$
@@ -498,37 +511,37 @@ require "uuid"
   {% elsif env("CURRENT_ADAPTER") == "sqlite" %}
     class ConverterModel < Granite::Base
       adapter {{ adapter_literal }}
-      table_name converters
+      table converters
 
-      primary id : Int64
+      column id : Int64, primary: true
 
-      field binary_json : MyType, column_type: "BLOB", converter: Granite::Converters::Json(MyType, Bytes)
-      field string_json : MyType, column_type: "TEXT", converter: Granite::Converters::Json(MyType, String)
+      column binary_json : MyType?, column_type: "BLOB", converter: Granite::Converters::Json(MyType, Bytes)
+      column string_json : MyType?, column_type: "TEXT", converter: Granite::Converters::Json(MyType, String)
 
-      field int_enum : MyEnum, column_type: "INTEGER", converter: Granite::Converters::Enum(MyEnum, Int64)
-      field string_enum : MyEnum, column_type: "TEXT", converter: Granite::Converters::Enum(MyEnum, String)
-      field binary_enum : MyEnum, column_type: "BLOB", converter: Granite::Converters::Enum(MyEnum, String)
+      column int_enum : MyEnum?, column_type: "INTEGER", converter: Granite::Converters::Enum(MyEnum, Int64)
+      column string_enum : MyEnum?, column_type: "TEXT", converter: Granite::Converters::Enum(MyEnum, String)
+      column binary_enum : MyEnum?, column_type: "BLOB", converter: Granite::Converters::Enum(MyEnum, String)
 
-      field string_uuid : UUID, column_type: "TEXT", converter: Granite::Converters::Uuid(String)
-      field binary_uuid : UUID, column_type: "BLOB", converter: Granite::Converters::Uuid(Bytes)
+      column string_uuid : UUID?, column_type: "TEXT", converter: Granite::Converters::Uuid(String)
+      column binary_uuid : UUID?, column_type: "BLOB", converter: Granite::Converters::Uuid(Bytes)
     end
   {% elsif env("CURRENT_ADAPTER") == "mysql" %}
     class ConverterModel < Granite::Base
       adapter {{ adapter_literal }}
-      table_name converters
+      table converters
 
-      primary id : Int64
+      column id : Int64, primary: true
 
-      field binary_json : MyType, column_type: "BLOB", converter: Granite::Converters::Json(MyType, Bytes)
-      field string_json : MyType, column_type: "TEXT", converter: Granite::Converters::Json(MyType, String)
+      column binary_json : MyType?, column_type: "BLOB", converter: Granite::Converters::Json(MyType, Bytes)
+      column string_json : MyType?, column_type: "TEXT", converter: Granite::Converters::Json(MyType, String)
 
-      field int_enum : MyEnum, column_type: "INTEGER", converter: Granite::Converters::Enum(MyEnum, Int32)
-      field string_enum : MyEnum, column_type: "VARCHAR(5)", converter: Granite::Converters::Enum(MyEnum, String)
-      field enum_enum : MyEnum, column_type: "ENUM('Zero', 'One', 'Two', 'Three', 'Four')", converter: Granite::Converters::Enum(MyEnum, String)
-      field binary_enum : MyEnum, column_type: "BLOB", converter: Granite::Converters::Enum(MyEnum, Bytes)
+      column int_enum : MyEnum?, column_type: "INTEGER", converter: Granite::Converters::Enum(MyEnum, Int32)
+      column string_enum : MyEnum?, column_type: "VARCHAR(5)", converter: Granite::Converters::Enum(MyEnum, String)
+      column enum_enum : MyEnum?, column_type: "ENUM('Zero', 'One', 'Two', 'Three', 'Four')", converter: Granite::Converters::Enum(MyEnum, String)
+      column binary_enum : MyEnum?, column_type: "BLOB", converter: Granite::Converters::Enum(MyEnum, Bytes)
 
-      field string_uuid : UUID, column_type: "TEXT", converter: Granite::Converters::Uuid(String)
-      field binary_uuid : UUID, column_type: "BLOB", converter: Granite::Converters::Uuid(Bytes)
+      column string_uuid : UUID?, column_type: "TEXT", converter: Granite::Converters::Uuid(String)
+      column binary_uuid : UUID?, column_type: "BLOB", converter: Granite::Converters::Uuid(Bytes)
     end
   {% end %}
 
@@ -536,19 +549,19 @@ require "uuid"
     class NilTest < Granite::Base
       adapter {{ adapter_literal }}
 
-      primary id : Int64
+      column id : Int64, primary: true
 
-      field first_name_not_nil : String
-      field last_name_not_nil : String
-      field age_not_nil : Int32
-      field born_not_nil : Bool
-      field value_not_nil : Float32
+      column first_name_not_nil : String?
+      column last_name_not_nil : String?
+      column age_not_nil : Int32?
+      column born_not_nil : Bool?
+      column value_not_nil : Float32?
 
-      field first_name : String
-      field last_name : String
-      field age : Int32
-      field born : Bool
-      field value : Float32
+      column first_name : String?
+      column last_name : String?
+      column age : Int32?
+      column born : Bool?
+      column value : Float32?
 
       validate_not_nil "first_name_not_nil"
       validate_not_nil :last_name_not_nil
@@ -566,13 +579,13 @@ require "uuid"
     class BlankTest < Granite::Base
       adapter {{ adapter_literal }}
 
-      primary id : Int64
+      column id : Int64, primary: true
 
-      field first_name_not_blank : String
-      field last_name_not_blank : String
+      column first_name_not_blank : String?
+      column last_name_not_blank : String?
 
-      field first_name_is_blank : String
-      field last_name_is_blank : String
+      column first_name_is_blank : String?
+      column last_name_is_blank : String?
 
       validate_not_blank "first_name_not_blank"
       validate_not_blank "last_name_not_blank"
@@ -584,13 +597,13 @@ require "uuid"
     class ChoiceTest < Granite::Base
       adapter {{ adapter_literal }}
 
-      primary id : Int64
+      column id : Int64, primary: true
 
-      field number_symbol : Int32
-      field type_array_symbol : String
+      column number_symbol : Int32?
+      column type_array_symbol : String?
 
-      field number_string : Int32
-      field type_array_string : String
+      column number_string : Int32?
+      column type_array_string : String?
 
       validate_is_valid_choice :number_symbol, [1, 2, 3]
       validate_is_valid_choice :type_array_symbol, [:internal, :external, :third_party]
@@ -601,13 +614,13 @@ require "uuid"
     class LessThanTest < Granite::Base
       adapter {{ adapter_literal }}
 
-      primary id : Int64
+      column id : Int64, primary: true
 
-      field int_32_lt : Int32
-      field float_32_lt : Float32
+      column int_32_lt : Int32?
+      column float_32_lt : Float32?
 
-      field int_32_lte : Int32
-      field float_32_lte : Float32
+      column int_32_lte : Int32?
+      column float_32_lte : Float32?
 
       validate_less_than "int_32_lt", 10
       validate_less_than :float_32_lt, 20.5
@@ -619,13 +632,13 @@ require "uuid"
     class GreaterThanTest < Granite::Base
       adapter {{ adapter_literal }}
 
-      primary id : Int64
+      column id : Int64, primary: true
 
-      field int_32_lt : Int32
-      field float_32_lt : Float32
+      column int_32_lt : Int32?
+      column float_32_lt : Float32?
 
-      field int_32_lte : Int32
-      field float_32_lte : Float32
+      column int_32_lte : Int32?
+      column float_32_lte : Float32?
 
       validate_greater_than "int_32_lt", 10
       validate_greater_than :float_32_lt, 20.5
@@ -637,10 +650,9 @@ require "uuid"
     class LengthTest < Granite::Base
       adapter {{ adapter_literal }}
 
-      primary id : Int64
-
-      field title : String
-      field description : String
+      column id : Int64, primary: true
+      column title : String?
+      column description : String?
 
       validate_min_length :title, 5
       validate_max_length :description, 25
@@ -649,8 +661,8 @@ require "uuid"
     class PersonUniqueness < Granite::Base
       adapter {{ adapter_literal }}
 
-      primary id : Int64
-      field name : String
+      column id : Int64, primary: true
+      column name : String?
 
       validate_uniqueness :name
     end
@@ -658,8 +670,8 @@ require "uuid"
     class ExclusionTest < Granite::Base
       adapter {{ adapter_literal }}
 
-      primary id : Int64
-      field name : String
+      column id : Int64, primary: true
+      column name : String?
 
       validate_exclusion :name, ["test_name"]
     end
@@ -715,4 +727,5 @@ require "uuid"
   CourierService.migrator.drop_and_create
   TimeTest.migrator.drop_and_create
   ConverterModel.migrator.drop_and_create
+  Column.migrator.drop_and_create
 {% end %}

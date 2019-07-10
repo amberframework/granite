@@ -55,7 +55,7 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
   end
 
   def import(table_name : String, primary_name : String, auto : Bool, fields, model_array, **options)
-    params = [] of Granite::Fields::Type
+    params = [] of Granite::Columns::Type
 
     statement = String.build do |stmt|
       stmt << "INSERT"

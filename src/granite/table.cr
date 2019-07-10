@@ -37,7 +37,7 @@ module Granite::Table
     end
   end
 
-  macro table_name(name)
+  macro table(name)
     @[Granite::Model(table: {{(name.is_a?(StringLiteral) ? name : name.stringify) || nil}})]
     class ::{{@type.name.id}}; end
   end
@@ -46,19 +46,5 @@ module Granite::Table
   # mysql, pg, sqlite, etc.
   macro adapter(name)
     class_getter adapter : Granite::Adapter::Base = Granite::Adapters.registered_adapters.find { |adapter| adapter.name == {{name.stringify}} } || raise "No registered adapter with the name '{{name.id}}'"
-  end
-
-  macro primary(decl, **options)
-    {% raise "The type of #{@type.name}##{decl.var} cannot be a Union.  The 'primary' macro declares the type as nilable by default." if decl.type.is_a? Union %}
-    {% auto = ([true, false].includes? options[:auto]) ? options[:auto] : true %}
-    {% converter = (options[:converter] && !options[:converter].nil?) ? options[:converter] : nil %}
-
-    @[Granite::Column(primary: true, auto: {{auto}}, converter: {{converter}})]
-    property {{decl.var}} : {{decl.type}}?
-
-    def {{decl.var.id}}! : {{decl.type}}
-      raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{decl.var.stringify}} + " cannot be nil" if @{{decl.var}}.nil?
-      @{{decl.var}}.not_nil!
-    end
   end
 end
