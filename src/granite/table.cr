@@ -42,9 +42,8 @@ module Granite::Tables
     class ::{{@type.name.id}}; end
   end
 
-  # specify the database adapter you will be using for this model.
-  # mysql, pg, sqlite, etc.
-  macro adapter(name)
-    class_getter adapter : Granite::Adapter::Base = Granite::Adapters.registered_adapters.find { |adapter| adapter.name == {{name.stringify}} } || raise "No registered adapter with the name '{{name.id}}'"
+  # specify the database connection you will be using for this model.
+  macro connection(name)
+    class_getter adapter : Granite::Adapter::Base = Granite::Connections.get_connection({{(name.is_a?(StringLiteral) ? name : name.stringify)}}) || raise "No registered connection with the name '{{name.id}}'"
   end
 end

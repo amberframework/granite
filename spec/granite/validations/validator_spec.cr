@@ -3,7 +3,7 @@ require "../../spec_helper"
 {% begin %}
   {% adapter_literal = env("CURRENT_ADAPTER").id %}
   class NameTest < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
 
     column id : Int64, primary: true
     column name : String?
@@ -14,7 +14,7 @@ require "../../spec_helper"
   end
 
   class EmailTest < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
 
     column id : Int64, primary: true
     column email : String?
@@ -25,7 +25,7 @@ require "../../spec_helper"
   end
 
   class PasswordTest < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
 
     column id : Int64, primary: true
     column password : String?

@@ -17,9 +17,7 @@ abstract class Granite::Adapter::Base
     SELECT SET TABLE THEN TRUE UNION UNIQUE UPDATE USING VALUES WHEN WHERE
   ))
 
-  def initialize(connection_hash : NamedTuple(url: String, name: String))
-    @name = connection_hash[:name]
-    @url = connection_hash[:url]
+  def initialize(@name : String, @url : String)
   end
 
   def database : DB::Database

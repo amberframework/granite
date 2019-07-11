@@ -9,7 +9,7 @@ require "uuid"
   {% adapter_literal = env("CURRENT_ADAPTER").id %}
 
   class Parent < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table parents
 
     column id : Int64, primary: true
@@ -24,7 +24,7 @@ require "uuid"
   end
 
   class Teacher < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table teachers
 
     column id : Int64, primary: true
@@ -34,7 +34,7 @@ require "uuid"
   end
 
   class Student < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table students
 
     column id : Int64, primary: true
@@ -45,7 +45,7 @@ require "uuid"
   end
 
   class Klass < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table klasses
 
     column id : Int64, primary: true
@@ -58,7 +58,7 @@ require "uuid"
   end
 
   class Enrollment < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table enrollments
 
     column id : Int64, primary: true
@@ -68,7 +68,7 @@ require "uuid"
   end
 
   class School < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table schools
 
     column custom_id : Int64, primary: true
@@ -76,7 +76,7 @@ require "uuid"
   end
 
   class User < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table users
 
     column id : Int64, primary: true
@@ -86,7 +86,7 @@ require "uuid"
   end
 
   class Character < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table characters
 
     column character_id : Int32, primary: true
@@ -94,7 +94,7 @@ require "uuid"
   end
 
   class Courier < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table couriers
 
     column courier_id : Int32, primary: true, auto: false
@@ -105,7 +105,7 @@ require "uuid"
   end
 
   class CourierService < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table services
 
     column owner_id : Int64, primary: true, auto: false
@@ -115,7 +115,7 @@ require "uuid"
   end
 
   class Profile < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table profiles
 
     column id : Int64, primary: true
@@ -125,7 +125,7 @@ require "uuid"
   end
 
   class Nation::County < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table nation_counties
 
     column id : Int64, primary: true
@@ -133,7 +133,7 @@ require "uuid"
   end
 
   class Review < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table reviews
 
     column id : Int64, primary: true
@@ -147,14 +147,14 @@ require "uuid"
   end
 
   class Empty < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table empties
 
     column id : Int64, primary: true
   end
 
   class ReservedWord < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table "select"
 
     column id : Int64, primary: true
@@ -162,7 +162,7 @@ require "uuid"
   end
 
   class Callback < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table callbacks
 
     column id : Int64, primary: true
@@ -179,7 +179,7 @@ require "uuid"
   end
 
   class CallbackWithAbort < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table callbacks_with_abort
 
     column abort_at : String, primary: true, auto: false
@@ -197,7 +197,7 @@ require "uuid"
   end
 
   class Kvs < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table kvs
 
     column k : String, primary: true, auto: false
@@ -205,7 +205,7 @@ require "uuid"
   end
 
   class Person < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table people
 
     column id : Int64, primary: true
@@ -213,7 +213,7 @@ require "uuid"
   end
 
   class Company < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table companies
 
     column id : Int32, primary: true
@@ -221,7 +221,7 @@ require "uuid"
   end
 
   class Book < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table books
 
     column id : Int32, primary: true
@@ -235,7 +235,7 @@ require "uuid"
   end
 
   class BookReview < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table book_reviews
 
     column id : Int32, primary: true
@@ -245,7 +245,7 @@ require "uuid"
   end
 
   class Item < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table items
 
     column item_id : String, primary: true, auto: false
@@ -259,7 +259,7 @@ require "uuid"
   end
 
   class NonAutoDefaultPK < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table non_auto_default_pk
 
     column id : Int64, primary: true, auto: false
@@ -267,7 +267,7 @@ require "uuid"
   end
 
   class NonAutoCustomPK < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table non_auto_custom_pk
 
     column custom_id : Int64, primary: true, auto: false
@@ -275,7 +275,7 @@ require "uuid"
   end
 
   class Article < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table articles
 
     column id : Int64, primary: true
@@ -283,7 +283,7 @@ require "uuid"
   end
 
   class Comment < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table comments
 
     column id : Int64, primary: true
@@ -292,14 +292,14 @@ require "uuid"
   end
 
   class SongThread < Granite::Base
-    adapter {{ env("CURRENT_ADAPTER").id }}
+    connection {{ env("CURRENT_ADAPTER").id }}
 
     column id : Int64, primary: true
     column name : String?
   end
 
   class CustomSongThread < Granite::Base
-    adapter {{ env("CURRENT_ADAPTER").id }}
+    connection {{ env("CURRENT_ADAPTER").id }}
     table custom_table_name
 
     column custom_primary_key : Int64, primary: true
@@ -309,7 +309,7 @@ require "uuid"
   @[JSON::Serializable::Options(emit_nulls: true)]
   @[YAML::Serializable::Options(emit_nulls: true)]
   class TodoEmitNull < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table todos
 
     column id : Int64, primary: true
@@ -319,7 +319,7 @@ require "uuid"
   end
 
   class Todo < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table todos
 
     column id : Int64, primary: true
@@ -329,7 +329,7 @@ require "uuid"
   end
 
   class AfterInit < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table after_json_init
 
     column id : Int64, primary: true
@@ -342,7 +342,7 @@ require "uuid"
   end
 
   class ArticleViewModel < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
 
     column id : Int64, primary: true
     column articlebody : String?
@@ -356,7 +356,7 @@ require "uuid"
   # Only PG supports array types
   {% if env("CURRENT_ADAPTER") == "pg" %}
     class ArrayModel < Granite::Base
-      adapter {{ adapter_literal }}
+      connection {{ adapter_literal }}
 
       column id : Int32, primary: true
       column str_array : Array(String)?
@@ -371,14 +371,14 @@ require "uuid"
   {% end %}
 
   class UUIDModel < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table uuids
 
     column uuid : UUID?, primary: true, converter: Granite::Converters::Uuid(String)
   end
 
   class UUIDNaturalModel < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table uuids
 
     column uuid : UUID, primary: true, converter: Granite::Converters::Uuid(String), auto: false
@@ -386,7 +386,7 @@ require "uuid"
   end
 
   class TodoJsonOptions < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table todos_json
 
     column id : Int64, primary: true
@@ -405,7 +405,7 @@ require "uuid"
   end
 
   class TodoYamlOptions < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table todos_yaml
 
     column id : Int64, primary: true
@@ -424,7 +424,7 @@ require "uuid"
   end
 
   class DefaultValues < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table defaults
 
     column id : Int64, primary: true
@@ -434,7 +434,7 @@ require "uuid"
   end
 
   class TimeTest < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table times
 
     column id : Int64, primary: true
@@ -444,7 +444,7 @@ require "uuid"
   end
 
   class ManualColumnType < Granite::Base
-    adapter {{ adapter_literal }}
+    connection {{ adapter_literal }}
     table manual_column_types
 
     column id : Int64, primary: true
@@ -470,7 +470,7 @@ require "uuid"
 
   {% if env("CURRENT_ADAPTER") == "pg" %}
     class ConverterModel < Granite::Base
-      adapter {{ adapter_literal }}
+      connection {{ adapter_literal }}
       table converters
 
       column id : Int64, primary: true
@@ -501,7 +501,7 @@ require "uuid"
     )
   {% elsif env("CURRENT_ADAPTER") == "sqlite" %}
     class ConverterModel < Granite::Base
-      adapter {{ adapter_literal }}
+      connection {{ adapter_literal }}
       table converters
 
       column id : Int64, primary: true
@@ -518,7 +518,7 @@ require "uuid"
     end
   {% elsif env("CURRENT_ADAPTER") == "mysql" %}
     class ConverterModel < Granite::Base
-      adapter {{ adapter_literal }}
+      connection {{ adapter_literal }}
       table converters
 
       column id : Int64, primary: true
@@ -538,7 +538,7 @@ require "uuid"
 
   module Validators
     class NilTest < Granite::Base
-      adapter {{ adapter_literal }}
+      connection {{ adapter_literal }}
 
       column id : Int64, primary: true
 
@@ -568,7 +568,7 @@ require "uuid"
     end
 
     class BlankTest < Granite::Base
-      adapter {{ adapter_literal }}
+      connection {{ adapter_literal }}
 
       column id : Int64, primary: true
 
@@ -586,7 +586,7 @@ require "uuid"
     end
 
     class ChoiceTest < Granite::Base
-      adapter {{ adapter_literal }}
+      connection {{ adapter_literal }}
 
       column id : Int64, primary: true
 
@@ -603,7 +603,7 @@ require "uuid"
     end
 
     class LessThanTest < Granite::Base
-      adapter {{ adapter_literal }}
+      connection {{ adapter_literal }}
 
       column id : Int64, primary: true
 
@@ -621,7 +621,7 @@ require "uuid"
     end
 
     class GreaterThanTest < Granite::Base
-      adapter {{ adapter_literal }}
+      connection {{ adapter_literal }}
 
       column id : Int64, primary: true
 
@@ -639,7 +639,7 @@ require "uuid"
     end
 
     class LengthTest < Granite::Base
-      adapter {{ adapter_literal }}
+      connection {{ adapter_literal }}
 
       column id : Int64, primary: true
       column title : String?
@@ -650,7 +650,7 @@ require "uuid"
     end
 
     class PersonUniqueness < Granite::Base
-      adapter {{ adapter_literal }}
+      connection {{ adapter_literal }}
 
       column id : Int64, primary: true
       column name : String?
@@ -659,7 +659,7 @@ require "uuid"
     end
 
     class ExclusionTest < Granite::Base
-      adapter {{ adapter_literal }}
+      connection {{ adapter_literal }}
 
       column id : Int64, primary: true
       column name : String?
