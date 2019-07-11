@@ -61,7 +61,7 @@ describe Granite::Base do
     end
   end
 
-  pending Logger do
+  describe Logger do
     describe "when logger is set to IO" do
       it "should be logged as DEBUG" do
         IO.pipe do |r, w|

@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-pending Granite::Migrator do
+describe Granite::Migrator do
   describe "#drop_sql" do
     it "generates correct SQL with #{{{ env("CURRENT_ADAPTER") }}} adapter" do
       {% if env("CURRENT_ADAPTER") == "mysql" %}
