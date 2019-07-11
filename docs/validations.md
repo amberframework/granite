@@ -1,6 +1,6 @@
 # Errors
 
-All database errors are added to the `errors` array used by Granite::Validators with the symbol ':base'
+All database errors are added to the `errors` array used by `Granite::Validators` with the symbol `:base`
 
 ```crystal
 post = Post.new
@@ -17,9 +17,10 @@ For example, asserting that the title on a post is not blank:
 
 ```Crystal
 class Post < Granite::Base
-  adapter mysql
+  connection mysql
 
-  field title : String
+  column id : Int64, primary: true
+  column title : String
 
   validate :title, "can't be blank" do |post|
     !post.title.to_s.blank?
@@ -58,9 +59,10 @@ Using the helpers, the previous example could have been written like:
 
 ```Crystal
 class Post < Granite::Base
-  adapter mysql
+  connection mysql
 
-  field title : String
+  column id : Int64, primary: true
+  column title : String
 
   validate_not_blank :title
 end

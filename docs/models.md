@@ -2,28 +2,28 @@
 
 ## Multiple Adapters
 
-It is possible to register multiple adapters with different names/URLs, for example:
+It is possible to register multiple connections, for example:
 
 ```Crystal
-Granite::Adapters << Granite::Adapter::Mysql.new({name: "legacy_db", url: "LEGACY_DB_URL"})
-Granite::Adapters << Granite::Adapter::Pg.new({name: "new_db", url: "NEW_DB_URL"})
+Granite::Connections << Granite::Adapter::Mysql.new(name: "legacy_db", url: "LEGACY_DB_URL")
+Granite::Connections << Granite::Adapter::Pg.new(name: "new_db", url: "NEW_DB_URL")
 
 class Foo < Granite::Base
-  adapter legacy_db
+  connection legacy_db
   
   # model fields
 end
 
 class Bar < Granite::Base
-  adapter new_db
+  connection "new_db"
   
   # model fields
 end
 ```
 
-In this example, model `Foo`, is connecting to a MySQL DB at the URL of `LEGACY_DB_URL` while model `Bar` is connecting to a Postgres DB at the URL `NEW_DB_URL`.  The adapter name given in the model maps to the name of a registered adapter. 
+In this example, we defined two connections.  One to a MySQL database named "legacy_db", and another to a PG database named "new_db".  The connection name given in the model maps to the name of a registered connection. 
 
-> **NOTE:** How you store/supply each adapter's URL is up to you; Granite only cares that it gets registered via `Granite::Adapters << adapter_object`.
+> **NOTE:** How you store/supply each connection's URL is up to you; Granite only cares that it gets registered via `Granite::Connections << adapter_object`.
 
 ## timestamps
 
@@ -31,7 +31,8 @@ The `timestamps` macro defines `created_at` and `updated_at` field for you.
 
 ```crystal
 class Bar < Granite::Base
-  adapter mysql
+  connection mysql
+
   # Other fields
   timestamps
 end
@@ -41,50 +42,51 @@ Would be equivalent to:
 
 ```crystal
 class Bar < Granite::Base
-  adapter mysql
-    
-  field created_at : Time
-  field updated_at : Time
+  connection mysql
+
+  column created_at : Time?
+  column updated_at : Time?
 end
 ```
 
-## Custom Primary Key
+## Primary Keys
 
-For legacy database mappings, you may already have a table and the primary key is not named `id` or `Int64`.
+Each model is required to have a primary key defined.  Use the `column` macro with the `primary: true` option to denote the primary key. 
 
-Use the `primary` macro to define your own primary key
+> **NOTE:** Composite primary keys are not yet supported.
 
 ```crystal
 class Site < Granite::Base
-  adapter mysql
-  primary custom_id : Int32
-  field name : String
+  connection mysql
+
+  column custom_id : Int32, primary: true
+  column name : String
 end
 ```
 
-This will override the default primary key of `id : Int64`.
+### Natural Keys
 
-## Natural Keys
-
-For natural keys, you can set `auto: false` option to disable auto increment.
+Primary keys are defined as auto incrementing by default.  For natural keys, you can set `auto: false` option.
 
 ```crystal
 class Site < Granite::Base
-  adapter mysql
-  primary code : String, auto: false
-  field name : String
+  connection mysql
+
+  column custom_id : Int32, primary: true, auto: false
+  column name : String
 end
 ```
 
-## UUIDs
+### UUIDs
 
 For databases that utilize UUIDs as the primary key, the type of the primary key can be set to `UUID`.  This will generate a secure UUID when the model is saved.
 
 ```crystal
 class Book < Granite::Base
-  adapter mysql
-  primary isbn : UUID
-  field name : String
+  connection mysql
+
+  column isbn : UUID, primary: true
+  column name : String
 end
 
 book = Book.new
@@ -95,44 +97,39 @@ book.isbn # => RFC4122 V4 UUID string
 ```
 ## Default values
 
-A default value can be assigned to a field that will be used if another value is not specified/supplies.
+A default value can be defined that will be used if another value is not specified/supplied.
 
 ```Crystal
 class Book < Granite::Base
-  adapter mysql
-  
-  field name : String, default: "DefaultBook"
+  connection mysql
+
+  column id : Int64, primary: true
+  column name : String = "DefaultBook"
 end
 
 book = Book.new
 book.name # => "DefaultBook"
 ```
 
+## Annotations
 
-## Generating Documentation
-
-By default, running `crystal docs` will **not** include Granite methods, constants, and properties.  To include these, have an ENV variable: `DISABLE_GRANITE_DOCS=false` set before running `crystal docs`.
-
-The `field` and `primary` macros have a comment option that will specify the documentation comment to apply to that property's getter and setter.
-
-`field age : Int32, comment: "# Number of seconds since the post was posted"`
-
-## Third-Party Annotations
-
-Annotations can be a powerful method of adding property specific features with minimal amounts of code.  Since Granite utilizes the `property` keyword for its fields, annotations are able to be applied easily.  This is accomplished by using the `annotations` option on a field, similar to the `comment` option above.  It is used in the form of `annotations: ["annotation1", "annotation2"]`, for example:
+Annotations can be a powerful method of adding property specific features with minimal amounts of code.  Since Granite utilizes the `property` keyword for its columns, annotations are able to be applied easily.  These can either be `JSON::Field`, `YAML::Field`, or third party annotations.
 
 ```Crystal
 class Foo < Granite::Base
-  adapter mysql
-  table_name foos
+  connection mysql
+  table foos
 
-  field name : String
-  field password : String, annotations: ["@[Foo::Options(option1: true)]", "@[Bar::Settings(other_option: 7)]"]
-  field age : Int32
+  column id : Int64, primary: true
+  
+  @[JSON::Field(ignore: true)]
+  @[Bar::Settings(other_option: 7)]
+  column password : String
+
+  column name : String
+  column age : Int32
 end
 ```
-
-Notice the values of the array are exactly as what you would put on a normal property, just as strings.  In this case, Granite will apply the two annotations to the `password` property only.
 
 ## Converters
 
@@ -158,10 +155,14 @@ enum OrderStatus
 end
 
 class Order < Granite::Base
-  adapter mysql
-  table_name foos
+  connection mysql
+  table foos
 
   # Other fields
-  field status : OrderStatus, converter: Granite::Converters::Enum(OrderStatus, String) 
+  column status : OrderStatus, converter: Granite::Converters::Enum(OrderStatus, String) 
 end
 ```
+
+## Serialization
+
+Granite implements [JSON::Serializable](https://crystal-lang.org/api/JSON/Serializable.html) and [YAML::Serializable](https://crystal-lang.org/api/YAML/Serializable.html) by default.  As such, models can be serialized to/from JSON/YAML via the `#to_json`/`#to_yaml` and `.from_json`/`.from_yaml` methods.

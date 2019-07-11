@@ -6,8 +6,10 @@ Provides `drop`, `create` and `drop_and_create` methods
 
    ```crystal
    class User < Granite::Base
-     adapter mysql
-     field name : String
+     connection mysql
+  
+  	 column id : Int64, primary: true
+     column name : String
    end
    
    User.migrator.drop_and_create
@@ -19,7 +21,7 @@ Provides `drop`, `create` and `drop_and_create` methods
    ```
 ## Database Migrations with micrate
 
-If you're using Granite ORM to query your data you likely want to manage your database schema as well. Migrations are a great way to do that, so let's take a look at [micrate](https://github.com/juanedi/micrate), a project to manage migrations. We'll use it as a dependency instead of a pre-build binary.
+If you're using Granite to query your data, you likely want to manage your database schema as well. Migrations are a great way to do that, so let's take a look at [micrate](https://github.com/juanedi/micrate), a project to manage migrations. We'll use it as a dependency instead of a pre-build binary.
 
 ### Install
 
