@@ -6,13 +6,20 @@ module Granite::Querying
   def from_rs(result : DB::ResultSet) : self
     model = new
     model.new_record = false
-    {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
-      {% ann = column.annotation(Granite::Column) %}
-      model.{{column.id}} = {% if ann[:converter] %}
-        {{ann[:converter]}}.from_rs result
-      {% else %}
-        Granite::Type.from_rs(result, ({{ann[:nilable] ? column.type : column.type.union_types.reject { |t| t == Nil }.first}})) {% if column.has_default_value? && !column.default_value.nil? %} || {{column.default_value}} {% end %}
-      {% end %}
+    {% begin %}
+      result.column_names.each do |col|
+        case col
+        {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
+          {% ann = column.annotation(Granite::Column) %}
+          when {{column.name.stringify}}
+            model.{{column.id}} = {% if ann[:converter] %}
+              {{ann[:converter]}}.from_rs result
+            {% else %}
+              Granite::Type.from_rs(result, {{ann[:nilable] ? column.type : column.type.union_types.reject { |t| t == Nil }.first}}) {% if column.has_default_value? && !column.default_value.nil? %} || {{column.default_value}} {% end %}
+            {% end %}
+        {% end %}
+        end
+      end
     {% end %}
     model
   end

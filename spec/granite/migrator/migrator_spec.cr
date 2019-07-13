@@ -134,21 +134,21 @@ describe Granite::Migrator do
         ManualColumnType.migrator.create_sql.should eq <<-SQL
           CREATE TABLE "manual_column_types"(
           "id" BIGSERIAL PRIMARY KEY,
-          "foo" FOO
+          "foo" my_enum_type
           ) ;\n
           SQL
       {% elsif env("CURRENT_ADAPTER") == "mysql" %}
         ManualColumnType.migrator.create_sql.should eq <<-SQL
           CREATE TABLE `manual_column_types`(
           `id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-          `foo` FOO
+          `foo` my_enum_type
           ) ;\n
           SQL
       {% elsif env("CURRENT_ADAPTER") == "sqlite" %}
         ManualColumnType.migrator.create_sql.should eq <<-SQL
           CREATE TABLE "manual_column_types"(
           "id" INTEGER NOT NULL PRIMARY KEY,
-          "foo" FOO
+          "foo" my_enum_type
           ) ;\n
           SQL
       {% end %}

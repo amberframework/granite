@@ -1,9 +1,9 @@
+require "uuid"
+
 class Granite::Base
   def self.drop_and_create
   end
 end
-
-require "uuid"
 
 {% begin %}
   {% adapter_literal = env("CURRENT_ADAPTER").id %}
@@ -448,7 +448,20 @@ require "uuid"
     table manual_column_types
 
     column id : Int64, primary: true
-    column foo : UUID?, column_type: "FOO"
+    column foo : UUID?, column_type: "my_enum_type"
+  end
+
+  class EventCon < Granite::Base
+    connection {{ adapter_literal }}
+    table "event_cons"
+
+    column id : Int64, primary: true
+    column con_name : String
+    column event_name : String?
+
+    select_statement <<-SQL
+    select con_name FROM event_cons
+    SQL
   end
 
   struct MyType
@@ -666,56 +679,9 @@ require "uuid"
 
       validate_exclusion :name, ["test_name"]
     end
-
-    BlankTest.migrator.drop_and_create
-    ChoiceTest.migrator.drop_and_create
-    ExclusionTest.migrator.drop_and_create
-    GreaterThanTest.migrator.drop_and_create
-    LengthTest.migrator.drop_and_create
-    LessThanTest.migrator.drop_and_create
-    NilTest.migrator.drop_and_create
-    PersonUniqueness.migrator.drop_and_create
   end
+{% end %}
 
-  AfterInit.migrator.drop_and_create
-  Article.migrator.drop_and_create
-  Book.migrator.drop_and_create
-  BookReview.migrator.drop_and_create
-  Callback.migrator.drop_and_create
-  CallbackWithAbort.migrator.drop_and_create
-  Character.migrator.drop_and_create
-  Comment.migrator.drop_and_create
-  Company.migrator.drop_and_create
-  Courier.migrator.drop_and_create
-  CourierService.migrator.drop_and_create
-  CustomSongThread.migrator.drop_and_create
-  DefaultValues.migrator.drop_and_create
-  Empty.migrator.drop_and_create
-  Enrollment.migrator.drop_and_create
-  Item.migrator.drop_and_create
-  Klass.migrator.drop_and_create
-  Kvs.migrator.drop_and_create
-  Nation::County.migrator.drop_and_create
-  NonAutoCustomPK.migrator.drop_and_create
-  NonAutoDefaultPK.migrator.drop_and_create
-  Parent.migrator.drop_and_create
-  Person.migrator.drop_and_create
-  Profile.migrator.drop_and_create
-  ReservedWord.migrator.drop_and_create
-  Review.migrator.drop_and_create
-  School.migrator.drop_and_create
-  SongThread.migrator.drop_and_create
-  Student.migrator.drop_and_create
-  Teacher.migrator.drop_and_create
-  Todo.migrator.drop_and_create
-  TodoEmitNull.migrator.drop_and_create
-  TodoJsonOptions.migrator.drop_and_create
-  TodoYamlOptions.migrator.drop_and_create
-  User.migrator.drop_and_create
-  UUIDModel.migrator.drop_and_create
-  Character.migrator.drop_and_create
-  Courier.migrator.drop_and_create
-  CourierService.migrator.drop_and_create
-  TimeTest.migrator.drop_and_create
-  ConverterModel.migrator.drop_and_create
+{% for model in Granite::Base.all_subclasses %}
+  {{model.id}}.migrator.drop_and_create
 {% end %}
