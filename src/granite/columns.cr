@@ -56,9 +56,9 @@ module Granite::Columns
     @{{decl.var}} : {{decl.type}}? {% unless decl.value.is_a? Nop %} = {{decl.value}} {% end %}
 
     {% if nilable || primary %}
-      def {{decl.var.id}}=(@{{decl.var.id}} : {{type}}?); end
+      def {{decl.var.id}}=(@{{decl.var.id}} : {{not_nilable_type}}?); end
 
-      def {{decl.var.id}} : {% if primary %} {{not_nilable_type}}? {% else %} {{type}} {% end %}
+      def {{decl.var.id}} : {{not_nilable_type}}?
         @{{decl.var}}
       end
 
