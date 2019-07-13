@@ -37,6 +37,7 @@ abstract class Granite::Base
   extend Query::BuilderMethods
   extend Transactions::ClassMethods
   extend Integrators
+  extend Select
 
   macro inherited
     include JSON::Serializable
@@ -44,34 +45,30 @@ abstract class Granite::Base
 
     @@select = Container.new(table_name: table_name, fields: fields)
 
-    def self.select_container : Container
-      @@select
-    end
-
     # Returns true if this object hasn't been saved yet.
     @[JSON::Field(ignore: true)]
     @[YAML::Field(ignore: true)]
-    property? new_record : Bool = true
+    disable_granite_docs? property? new_record : Bool = true
 
     # Returns true if this object has been destroyed.
     @[JSON::Field(ignore: true)]
     @[YAML::Field(ignore: true)]
-    getter? destroyed : Bool = false
+    disable_granite_docs? getter? destroyed : Bool = false
 
     # Returns true if the record is persisted.
     disable_granite_docs? def persisted?
       !(new_record? || destroyed?)
     end
 
-    def initialize(**args : Granite::Columns::Type)
+    disable_granite_docs? def initialize(**args : Granite::Columns::Type)
       set_attributes(args.to_h.transform_keys(&.to_s))
     end
 
-    def initialize(args : Hash(Symbol | String, Granite::Columns::Type))
+    disable_granite_docs? def initialize(args : Hash(Symbol | String, Granite::Columns::Type))
       set_attributes(args.transform_keys(&.to_s))
     end
 
-    def initialize
+    disable_granite_docs? def initialize
     end
   end
 end

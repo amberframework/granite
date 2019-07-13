@@ -36,6 +36,7 @@ module Granite::Columns
   # Defines a column *decl* with the given *options*.
   macro column(decl, **options)
     {% type = decl.type %}
+    {% not_nilable_type = type.is_a?(Path) ? type.resolve : (type.is_a?(Union) ? type.types.reject(&.resolve.nilable?).first : (type.is_a?(Generic) ? type.resolve : type)) %}
 
     # Raise an exception if the delc type has more than 2 union types or if it has 2 types without nil
     # This prevents having a column typed to String | Int32 etc.
@@ -52,21 +53,19 @@ module Granite::Columns
     {% nilable = (type.is_a?(Path) ? type.resolve.nilable? : (type.is_a?(Union) ? type.types.any?(&.resolve.nilable?) : (type.is_a?(Generic) ? type.resolve.nilable? : type.nilable?))) %}
 
     @[Granite::Column(column_type: {{column_type}}, converter: {{converter}}, auto: {{auto}}, primary: {{primary}}, nilable: {{nilable}})]
-    @{{decl.var}} : {{decl.type}}? {% if !decl.value.is_a? Nop %} = {{decl.value}} {% end %}
+    @{{decl.var}} : {{decl.type}}? {% unless decl.value.is_a? Nop %} = {{decl.value}} {% end %}
 
-    # Nilable or primary, define normal and raise on nil getters
     {% if nilable || primary %}
-      def {{decl.var.id}}=(@{{decl.var.id}} : {{type.id}}?); end
+      def {{decl.var.id}}=(@{{decl.var.id}} : {{type}}?); end
 
-      def {{decl.var.id}} : {{decl.type}}?
+      def {{decl.var.id}} : {% if primary %} {{not_nilable_type}}? {% else %} {{type}} {% end %}
         @{{decl.var}}
       end
 
-      def {{decl.var.id}}! : {{type.id}}
+      def {{decl.var.id}}! : {{not_nilable_type}}
         raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{decl.var.stringify}} + " cannot be nil" if @{{decl.var}}.nil?
         @{{decl.var}}.not_nil!
       end
-    # Not nilable, define raise on nil getter
     {% else %}
       def {{decl.var.id}}=(@{{decl.var.id}} : {{type.id}}); end
 

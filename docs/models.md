@@ -111,6 +111,17 @@ book = Book.new
 book.name # => "DefaultBook"
 ```
 
+## Generating Documentation
+
+By default, running `crystal docs` will **not** include Granite methods, constants, and properties.  To include these, use the `granite_docs` flag when generating the documentation.  E.x. `crystal docs -D granite_docs`.
+
+Doc block comments can be applied above the `column` macro.
+
+```crystal
+# If the item is public.
+column published : Bool
+```
+
 ## Annotations
 
 Annotations can be a powerful method of adding property specific features with minimal amounts of code.  Since Granite utilizes the `property` keyword for its columns, annotations are able to be applied easily.  These can either be `JSON::Field`, `YAML::Field`, or third party annotations.

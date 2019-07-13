@@ -14,4 +14,8 @@ module Granite::Select
       @@select.custom
     end
   end
+
+  def select_container : Container
+    @@select
+  end
 end

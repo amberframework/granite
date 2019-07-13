@@ -1,6 +1,6 @@
 # Adds a :nodoc: to granite methods/constants if `DISABLE_GRANTE_DOCS` ENV var is true
 macro disable_granite_docs?(stmt)
-  {% unless env("DISABLE_GRANITE_DOCS") == "false" %}
+  {% unless flag?(:granite_docs) %}
     # :nodoc:
     {{stmt.id}}
   {% else %}
