@@ -448,7 +448,7 @@ end
     table manual_column_types
 
     column id : Int64, primary: true
-    column foo : UUID?, column_type: "my_enum_type"
+    column foo : UUID?, column_type: "DECIMAL(12, 10)"
   end
 
   class EventCon < Granite::Base
