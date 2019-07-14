@@ -50,7 +50,7 @@ module Granite::Migrator
         # primary key
         {% begin %}
           {% primary_key = Model.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
-          {% raise raise "A primary key must be defined for #{@type.name}." unless primary_key %}
+          {% raise raise "A primary key must be defined for #{Model.name}." unless primary_key %}
           {% ann = primary_key.annotation(Granite::Column) %}
           k = Model.adapter.quote("{{primary_key.name}}")
           v =

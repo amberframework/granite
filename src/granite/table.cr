@@ -10,11 +10,20 @@ end
 
 module Granite::Tables
   module ClassMethods
-    def primary_name : String?
+    def primary_name
       {% begin %}
       {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
       {% if pk = primary_key %}
         {{pk.name.stringify}}
+      {% end %}
+    {% end %}
+    end
+
+    def primary_type
+      {% begin %}
+      {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
+      {% if pk = primary_key %}
+        {{pk.type}}
       {% end %}
     {% end %}
     end

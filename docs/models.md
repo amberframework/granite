@@ -1,22 +1,22 @@
 # Model Usage
 
-## Multiple Adapters
+## Multiple Connections
 
 It is possible to register multiple connections, for example:
 
-```Crystal
+```crystal
 Granite::Connections << Granite::Adapter::Mysql.new(name: "legacy_db", url: "LEGACY_DB_URL")
 Granite::Connections << Granite::Adapter::Pg.new(name: "new_db", url: "NEW_DB_URL")
 
 class Foo < Granite::Base
   connection legacy_db
-  
+
   # model fields
 end
 
 class Bar < Granite::Base
-  connection "new_db"
-  
+  connection new_db
+
   # model fields
 end
 ```
@@ -54,6 +54,18 @@ end
 Each model is required to have a primary key defined.  Use the `column` macro with the `primary: true` option to denote the primary key. 
 
 > **NOTE:** Composite primary keys are not yet supported.
+```crystal
+class Site < Granite::Base
+  connection mysql
+
+  column id : Int64, primary: true
+  column name : String
+end
+```
+
+### Custom
+
+The name and type of the primary key can also be changed from the recommended `id : Int64`.
 
 ```crystal
 class Site < Granite::Base
@@ -99,7 +111,7 @@ book.isbn # => RFC4122 V4 UUID string
 
 A default value can be defined that will be used if another value is not specified/supplied.
 
-```Crystal
+```crystal
 class Book < Granite::Base
   connection mysql
 
@@ -126,13 +138,13 @@ column published : Bool
 
 Annotations can be a powerful method of adding property specific features with minimal amounts of code.  Since Granite utilizes the `property` keyword for its columns, annotations are able to be applied easily.  These can either be `JSON::Field`, `YAML::Field`, or third party annotations.
 
-```Crystal
+```crystal
 class Foo < Granite::Base
   connection mysql
   table foos
 
   column id : Int64, primary: true
-  
+
   @[JSON::Field(ignore: true)]
   @[Bar::Settings(other_option: 7)]
   column password : String

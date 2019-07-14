@@ -24,13 +24,32 @@ module Granite::Columns
     end
   end
 
-  def content_values
+  def content_values : Array(Granite::Columns::Type)
     parsed_params = [] of Type
     {% for column in @type.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && !ann[:primary] } %}
       {% ann = column.annotation(Granite::Column) %}
       parsed_params << {% if ann[:converter] %} {{ann[:converter]}}.to_db {{column.name.id}} {% else %} {{column.name.id}} {% end %}
     {% end %}
     parsed_params
+  end
+
+  # Consumes the result set to set self's property values.
+  def from_rs(result : DB::ResultSet) : Nil
+    {% begin %}
+      result.column_names.each do |col|
+        case col
+        {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
+          {% ann = column.annotation(Granite::Column) %}
+          when {{column.name.stringify}}
+            @{{column.id}} = {% if ann[:converter] %}
+              {{ann[:converter]}}.from_rs result
+            {% else %}
+              Granite::Type.from_rs(result, {{ann[:nilable] ? column.type : column.type.union_types.reject { |t| t == Nil }.first}}) {% if column.has_default_value? && !column.default_value.nil? %} || {{column.default_value}} {% end %}
+            {% end %}
+        {% end %}
+        end
+      end
+    {% end %}
   end
 
   # Defines a column *decl* with the given *options*.
