@@ -106,7 +106,7 @@ Delete a specific record.
 ```crystal
 post = Post.find 1
 post.destroy if post
-puts "deleted" post.destroyed?
+puts "deleted" if post.destroyed?
 
 post = Post.find 1
 post.destroy! # raises when delete failed
