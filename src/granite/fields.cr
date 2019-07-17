@@ -1,4 +1,5 @@
 require "json"
+require "uuid"
 
 module Granite::Fields
   alias SupportedArrayTypes = Array(String) | Array(Int16) | Array(Int32) | Array(Int64) | Array(Float32) | Array(Float64) | Array(Bool)
