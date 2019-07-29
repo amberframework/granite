@@ -57,7 +57,7 @@ module Granite::Querying
   end
 
   # :ditto:
-  def find_by(criteria : Hash(Symbol | String, Granite::Columns::Type))
+  def find_by(criteria : Granite::ModelArgs)
     clause, params = build_find_by_clause(criteria)
     first "WHERE #{clause}", params
   end
@@ -68,7 +68,7 @@ module Granite::Querying
   end
 
   # :ditto:
-  def find_by!(criteria : Hash(Symbol | String, Granite::Columns::Type))
+  def find_by!(criteria : Granite::ModelArgs)
     find_by(criteria) || raise NotFound.new("No #{{{@type.name.stringify}}} found where #{criteria.map { |k, v| %(#{k} #{v.nil? ? "is NULL" : "= #{v}"}) }.join(" and ")}")
   end
 
@@ -105,7 +105,7 @@ module Granite::Querying
   end
 
   # :ditto:
-  def exists?(criteria : Hash(Symbol | String, Granite::Columns::Type)) : Bool
+  def exists?(criteria : Granite::ModelArgs) : Bool
     exec_exists *build_find_by_clause(criteria)
   end
 
@@ -130,7 +130,7 @@ module Granite::Querying
     adapter.exists? quoted_table_name, clause, params
   end
 
-  private def build_find_by_clause(criteria : Hash(Symbol | String, Granite::Columns::Type))
+  private def build_find_by_clause(criteria : Granite::ModelArgs)
     keys = criteria.keys
     criteria_hash = criteria.dup
 

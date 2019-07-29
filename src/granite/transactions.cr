@@ -10,7 +10,7 @@ module Granite::Transactions
       create(args.to_h)
     end
 
-    def create(args : Hash(Symbol | String, Granite::Columns::Type))
+    def create(args : Granite::ModelArgs)
       instance = new
       instance.set_attributes(args.transform_keys(&.to_s))
       instance.save
@@ -21,7 +21,7 @@ module Granite::Transactions
       create!(args.to_h)
     end
 
-    def create!(args : Hash(Symbol | String, Granite::Columns::Type))
+    def create!(args : Granite::ModelArgs)
       instance = create(args)
 
       if instance.errors.any?
@@ -207,7 +207,7 @@ module Granite::Transactions
     update(args.to_h)
   end
 
-  def update(args : Hash(Symbol | String, Granite::Columns::Type))
+  def update(args : Granite::ModelArgs)
     set_attributes(args.transform_keys(&.to_s))
 
     save
@@ -217,7 +217,7 @@ module Granite::Transactions
     update!(args.to_h)
   end
 
-  def update!(args : Hash(Symbol | String, Granite::Columns::Type))
+  def update!(args : Granite::ModelArgs)
     set_attributes(args.transform_keys(&.to_s))
 
     save!

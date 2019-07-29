@@ -7,7 +7,7 @@ module Granite
       @@registered_connections << adapter
     end
 
-    def self.get_connection(name : String) : Granite::Adapter::Base?
+    def self.[](name : String) : Granite::Adapter::Base?
       registered_connections.find { |conn| conn.name == name }
     end
   end

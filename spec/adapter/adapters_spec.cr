@@ -11,9 +11,9 @@ describe Granite::Connections do
     it "should allow connections to be be saved and looked up" do
       Granite::Connections.registered_connections.size.should eq 3
 
-      Granite::Connections.get_connection("mysql").not_nil!.url.should eq ENV["MYSQL_DATABASE_URL"]
-      Granite::Connections.get_connection("pg").not_nil!.url.should eq ENV["PG_DATABASE_URL"]
-      Granite::Connections.get_connection("sqlite").not_nil!.url.should eq ENV["SQLITE_DATABASE_URL"]
+      Granite::Connections["mysql"].not_nil!.url.should eq ENV["MYSQL_DATABASE_URL"]
+      Granite::Connections["pg"].not_nil!.url.should eq ENV["PG_DATABASE_URL"]
+      Granite::Connections["sqlite"].not_nil!.url.should eq ENV["SQLITE_DATABASE_URL"]
     end
 
     it "should disallow multiple connections with the same name" do

@@ -53,6 +53,6 @@ module Granite::Tables
 
   # specify the database connection you will be using for this model.
   macro connection(name)
-    class_getter adapter : Granite::Adapter::Base = Granite::Connections.get_connection({{(name.is_a?(StringLiteral) ? name : name.stringify)}}) || raise "No registered connection with the name '{{name.id}}'"
+    class_getter adapter : Granite::Adapter::Base = Granite::Connections[{{(name.is_a?(StringLiteral) ? name : name.stringify)}}] || raise "No registered connection with the name '{{name.id}}'"
   end
 end

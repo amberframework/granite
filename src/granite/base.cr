@@ -64,7 +64,7 @@ abstract class Granite::Base
       set_attributes(args.to_h.transform_keys(&.to_s))
     end
 
-    disable_granite_docs? def initialize(args : Hash(Symbol | String, Granite::Columns::Type))
+    disable_granite_docs? def initialize(args : Granite::ModelArgs)
       set_attributes(args.transform_keys(&.to_s))
     end
 

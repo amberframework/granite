@@ -4,7 +4,6 @@ require "uuid"
 module Granite::Columns
   alias SupportedArrayTypes = Array(String) | Array(Int16) | Array(Int32) | Array(Int64) | Array(Float32) | Array(Float64) | Array(Bool)
   alias Type = DB::Any | SupportedArrayTypes | UUID
-  TIME_FORMAT_REGEX = /\d{4,}-\d{2,}-\d{2,}\s\d{2,}:\d{2,}:\d{2,}/
 
   module ClassMethods
     # All fields
