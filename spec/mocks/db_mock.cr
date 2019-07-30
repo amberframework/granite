@@ -3,7 +3,7 @@ class FakeStatement < DB::Statement
     FieldEmitter.new
   end
 
-  protected def perform_exec(args : Enumerable)
+  protected def perform_exec(args : Enumerable) : DB::ExecResult
     DB::ExecResult.new 0_i64, 0_i64
   end
 end
@@ -11,11 +11,11 @@ end
 class FakeContext
   include DB::ConnectionContext
 
-  def uri
+  def uri : URI
     URI.new ""
   end
 
-  def prepared_statements?
+  def prepared_statements? : Bool
     false
   end
 
@@ -30,11 +30,11 @@ class FakeConnection < DB::Connection
     @prepared_statements = false
   end
 
-  def build_unprepared_statement(query : String)
+  def build_unprepared_statement(query : String) : FakeStatement
     FakeStatement.new self
   end
 
-  def build_prepared_statement(query : String)
+  def build_prepared_statement(query : String) : FakeStatement
     FakeStatement.new self
   end
 end
@@ -65,9 +65,10 @@ class FieldEmitter < DB::ResultSet
     end
   end
 
-  def move_next
+  def move_next : Bool
     @position += 1
     @field_position = 0
+    @position < @values.size
   end
 
   def read
@@ -80,11 +81,11 @@ class FieldEmitter < DB::ResultSet
     end
   end
 
-  def column_count
+  def column_count : Int32
     @values.size
   end
 
-  def column_name(index : Int32)
+  def column_name(index : Int32) : String
     "Column #{index}"
   end
 end

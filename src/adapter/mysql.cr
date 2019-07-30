@@ -30,7 +30,7 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
     log statement, elapsed_time
   end
 
-  def insert(table_name : String, fields, params, lastval)
+  def insert(table_name : String, fields, params, lastval) : Int64
     statement = String.build do |stmt|
       stmt << "INSERT INTO #{quote(table_name)} ("
       stmt << fields.map { |name| "#{quote(name)}" }.join(", ")
