@@ -1,8 +1,12 @@
 require "../spec_helper"
 
 class Foo < Granite::Base
-  connection mysql
+  connection sqlite
 
+  column id : Int64, primary: true
+end
+
+class Bar < Granite::Base
   column id : Int64, primary: true
 end
 
@@ -24,6 +28,12 @@ describe Granite::Connections do
 
     it "should assign the correct connections to a model" do
       adapter = Foo.adapter
+      adapter.name.should eq "sqlite"
+      adapter.url.should eq ENV["SQLITE_DATABASE_URL"]
+    end
+
+    it "should use the first registered connection if none are specified" do
+      adapter = Bar.adapter
       adapter.name.should eq "mysql"
       adapter.url.should eq ENV["MYSQL_DATABASE_URL"]
     end

@@ -10,6 +10,10 @@ end
 
 module Granite::Tables
   module ClassMethods
+    def adapter : Granite::Adapter::Base
+      Granite::Connections.registered_connections.first? || raise "No connections have been registered."
+    end
+
     def primary_name
       {% begin %}
       {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
