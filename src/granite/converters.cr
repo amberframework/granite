@@ -10,7 +10,13 @@ module Granite::Converters
       {% if T == String %}
         value.to_s
       {% elsif T == Bytes %}
-        value.to_slice.dup
+        {% if compare_versions(Crystal::VERSION, "0.30.0-0") >= 0 %}
+          # we need a heap allocated slice
+          v = value.bytes.each.to_a
+          Slice.new(v.to_unsafe, v.size)
+        {% else %}
+          value.to_slice.dup
+        {% end %}
       {% else %}
         {% raise "#{@type.name}#to_db does not support #{T} yet." %}
       {% end %}
