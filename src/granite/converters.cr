@@ -10,7 +10,9 @@ module Granite::Converters
       {% if T == String %}
         value.to_s
       {% elsif T == Bytes %}
-        value.to_slice.dup
+        # we need a heap allocated slice
+        v = value.bytes.each.to_a
+        Slice.new(v.to_unsafe, v.size)
       {% else %}
         {% raise "#{@type.name}#to_db does not support #{T} yet." %}
       {% end %}
