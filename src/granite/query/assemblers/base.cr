@@ -150,7 +150,7 @@ module Granite::Query::Assembler
         s << where
         s << order
         s << "LIMIT #{n}"
-        s << offset 
+        s << offset
       end
 
       Executor::List(Model).new sql, numbered_parameters
