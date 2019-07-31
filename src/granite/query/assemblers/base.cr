@@ -125,11 +125,22 @@ module Granite::Query::Assembler
         s << "SELECT COUNT(*)"
         s << "FROM #{table_name}"
         s << where
-        s << group_by
         s << order(use_default_order: false)
       end
 
       Executor::Value(Model, Int64).new sql, numbered_parameters, default: 0_i64
+    end
+
+    def counts
+      sql = build_sql do |s|
+        s << "SELECT COUNT(*)"
+        s << "FROM #{table_name}"
+        s << where
+        s << group_by
+        s << order(use_default_order: false)
+      end
+
+      Executor::MultiValue(Model, Int64).new sql, numbered_parameters, default: 0_i64
     end
 
     def first(n : Int32 = 1) : Executor::List(Model)
@@ -139,7 +150,7 @@ module Granite::Query::Assembler
         s << where
         s << order
         s << "LIMIT #{n}"
-        s << offset
+        s << offset 
       end
 
       Executor::List(Model).new sql, numbered_parameters

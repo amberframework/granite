@@ -157,6 +157,10 @@ class Granite::Query::Builder(Model)
     assembler.count
   end
 
+  def counts
+    assembler.counts.run
+  end
+
   # TODO: replace `querying.first` with this
   # def first : Model?
   #   first(1).first?
