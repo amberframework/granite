@@ -131,7 +131,7 @@ module Granite::Query::Assembler
       Executor::Value(Model, Int64).new sql, numbered_parameters, default: 0_i64
     end
 
-    def counts
+    def counts : Executor::MultiValue(Model, Int64)
       sql = build_sql do |s|
         s << "SELECT COUNT(*)"
         s << "FROM #{table_name}"

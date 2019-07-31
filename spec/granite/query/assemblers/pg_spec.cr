@@ -2,14 +2,25 @@ require "../spec_helper"
 
 {% if env("CURRENT_ADAPTER").id == "pg" %}
   describe Granite::Query::Assembler::Pg(Model) do
-    context "count" do
-      it "adds group_by fields for where/count queries" do
-        sql = "select count(*) from table where name = $1 group by name"
+	context "count" do
+      it "counts for where/count queries" do
+        sql = "select count(*) from table where name = $1"
         builder.where(name: "bob").count.raw_sql.should match ignore_whitespace sql
       end
 
-      it "counts without group_by fields for simple counts" do
+      it "simple counts" do
         builder.count.raw_sql.should match ignore_whitespace "select count(*) from table"
+      end
+    end
+
+	context "counts" do
+      it "adds group_by fields for where/count queries" do
+        sql = "select count(*) from table where name = $1 group by name"
+        builder.where(name: "bob").counts.raw_sql.should match ignore_whitespace sql
+      end
+
+      it "counts without group_by fields for simple counts" do
+        builder.counts.raw_sql.should match ignore_whitespace "select count(*) from table"
       end
     end
 

@@ -157,8 +157,8 @@ class Granite::Query::Builder(Model)
     assembler.count
   end
 
-  def counts
-    assembler.counts.run
+  def counts : Executor::MultiValue(Model, Int64)
+    assembler.counts
   end
 
   # TODO: replace `querying.first` with this
