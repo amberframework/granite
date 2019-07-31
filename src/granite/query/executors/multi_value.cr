@@ -11,12 +11,7 @@ module Granite::Query::Executor
       # https://github.com/crystal-lang/crystal-db/blob/7d30e9f50e478cb6404d16d2ce91e639b6f9c476/src/db/statement.cr#L18
 
       raise "No default provided" if @default.nil?
-
-      #Model.adapter.open do |db|
-	  #	db.query_one?(@sql, @args, as: Scalar) || @default.not_nil!
-      #end
-
-	  results = [] of Scalar
+      results = [] of Scalar
 
       Model.adapter.open do |db|
         db.query @sql, @args do |record_set|
