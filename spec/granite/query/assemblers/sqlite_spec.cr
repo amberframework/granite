@@ -9,18 +9,18 @@ require "../spec_helper"
       end
 
       it "simple counts" do
-        builder.count.raw_sql.should match ignore_whitespace "select count(*) from table"
+				sql = "select count(*) from table"
+        builder.count.raw_sql.should match ignore_whitespace sql
       end
-    end
 
-	context "counts" do
-      it "adds group_by fields for where/count queries" do
+			it "adds group_by fields for where/count queries" do
         sql = "select count(*) from table where name = ? group by name"
-        builder.where(name: "bob").counts.raw_sql.should match ignore_whitespace sql
+        builder.where(name: "bob").count(true).raw_sql.should match ignore_whitespace sql
       end
 
       it "counts without group_by fields for simple counts" do
-        builder.counts.raw_sql.should match ignore_whitespace "select count(*) from table"
+				sql = "select count(*) from table where name = ?"
+        builder.where(name: "bob").count(false).raw_sql.should match ignore_whitespace sql
       end
     end
 

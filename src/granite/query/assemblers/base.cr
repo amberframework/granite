@@ -120,27 +120,20 @@ module Granite::Query::Assembler
                     end
     end
 
-    def count : Executor::Value(Model, Int64)
+    def count(use_group_by : Bool = false) : (Executor::MultiValue(Model, Int64) | Executor::Value(Model, Int64))
       sql = build_sql do |s|
         s << "SELECT COUNT(*)"
         s << "FROM #{table_name}"
         s << where
+        s << group_by if use_group_by
         s << order(use_default_order: false)
       end
 
-      Executor::Value(Model, Int64).new sql, numbered_parameters, default: 0_i64
-    end
-
-    def counts : Executor::MultiValue(Model, Int64)
-      sql = build_sql do |s|
-        s << "SELECT COUNT(*)"
-        s << "FROM #{table_name}"
-        s << where
-        s << group_by
-        s << order(use_default_order: false)
+      if use_group_by
+        Executor::MultiValue(Model, Int64).new sql, numbered_parameters, default: 0_i64
+      else
+        Executor::Value(Model, Int64).new sql, numbered_parameters, default: 0_i64
       end
-
-      Executor::MultiValue(Model, Int64).new sql, numbered_parameters, default: 0_i64
     end
 
     def first(n : Int32 = 1) : Executor::List(Model)

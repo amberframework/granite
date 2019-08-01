@@ -153,12 +153,8 @@ class Granite::Query::Builder(Model)
     assembler.select.raw_sql
   end
 
-  def count : Executor::Value(Model, Int64)
-    assembler.count
-  end
-
-  def counts : Executor::MultiValue(Model, Int64)
-    assembler.counts
+  def count(use_group_by : Bool = false) : (Executor::MultiValue(Model, Int64) | Executor::Value(Model, Int64))
+    assembler.count(use_group_by)
   end
 
   # TODO: replace `querying.first` with this

@@ -7,8 +7,6 @@ module Granite::Query::Executor
 
     def run : Array(Scalar)
       log @sql, @args
-      # db.scalar raises when a query returns 0 results, so I'm using query_one?
-      # https://github.com/crystal-lang/crystal-db/blob/7d30e9f50e478cb6404d16d2ce91e639b6f9c476/src/db/statement.cr#L18
 
       raise "No default provided" if @default.nil?
       results = [] of Scalar
