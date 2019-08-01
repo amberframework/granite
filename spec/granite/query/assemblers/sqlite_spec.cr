@@ -18,7 +18,7 @@ require "../spec_helper"
         builder.where(name: "bob").group_by(:name).count.raw_sql.should match ignore_whitespace sql
       end
     end
-    
+
     context "group_by" do
       it "adds group_by for select query" do
         sql = "select #{query_fields} from table desc group by name order by id desc"
