@@ -38,16 +38,16 @@ With direction
 Post.order(created_at: :desc, title: :asc)
 ```
 
-## Group
+## Group By
 
 Group is using the QueryBuilder and supports providing an GROUP BY clause:
 ```crystal
-posts = Post.group(:published)
+posts = Post.group_by(:published)
 ```
 
 Multiple fields
 ```crystal
-Post.group([:published, :author_id])
+Post.group_by([:published, :author_id])
 ```
 
 ## Limit
