@@ -4,7 +4,7 @@ module Granite::Query::Assembler
     @order : String?
     @limit : String?
     @offset : String?
-    @group : String?
+    @group_by : String?
 
     def initialize(@query : Builder(Model))
       @numbered_parameters = [] of Granite::Fields::Type
@@ -95,18 +95,15 @@ module Granite::Query::Assembler
       @order = "ORDER BY #{order_clauses.join ", "}"
     end
 
-    def group
-      return @group if @group
-
+    def group_by
+      return @group_by if @group_by
       group_fields = @query.group_fields
-
       return nil if group_fields.none?
-
       group_clauses = group_fields.map do |expression|
         "#{expression[:field]}"
       end
 
-      @group = "GROUP BY #{group_clauses.join ", "}"
+      @group_by = "GROUP BY #{group_clauses.join ", "}"
     end
 
     def limit
@@ -133,7 +130,7 @@ module Granite::Query::Assembler
         s << "SELECT COUNT(*)"
         s << "FROM #{table_name}"
         s << where
-        s << group
+        s << group_by
         s << order(use_default_order: false)
         s << limit
         s << offset
@@ -151,7 +148,7 @@ module Granite::Query::Assembler
         s << "SELECT #{field_list}"
         s << "FROM #{table_name}"
         s << where
-        s << group
+        s << group_by
         s << order
         s << "LIMIT #{n}"
         s << offset
@@ -177,7 +174,7 @@ module Granite::Query::Assembler
         s << "SELECT #{field_list}"
         s << "FROM #{table_name}"
         s << where
-        s << group
+        s << group_by
         s << order
         s << limit
         s << offset

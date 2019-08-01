@@ -138,25 +138,25 @@ class Granite::Query::Builder(Model)
     self
   end
 
-  def group(field : Symbol)
+  def group_by(field : Symbol)
     @group_fields << {field: field.to_s}
 
     self
   end
 
-  def group(fields : Array(Symbol))
+  def group_by(fields : Array(Symbol))
     fields.each do |field|
-      group field
+      group_by field
     end
 
     self
   end
 
-  def group(**dsl)
-    group(dsl)
+  def group_by(**dsl)
+    group_by(dsl)
   end
 
-  def group(dsl)
+  def group_by(dsl)
     dsl.each do |field|
       @group_fields << {field: field.to_s}
     end
