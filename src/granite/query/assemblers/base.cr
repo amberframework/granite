@@ -136,7 +136,7 @@ module Granite::Query::Assembler
         s << offset
       end
 
-      if group
+      if group_by
         Executor::MultiValue(Model, Int64).new sql, numbered_parameters, default: 0_i64
       else
         Executor::Value(Model, Int64).new sql, numbered_parameters, default: 0_i64
