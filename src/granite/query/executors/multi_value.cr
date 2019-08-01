@@ -22,7 +22,7 @@ module Granite::Query::Executor
       results
     end
 
-    delegate :<, :>, :<=, :>=, to: :run
     delegate :to_i, :to_s, to: :run
+    delegate :<, :>, :<=, :>=, to: :run
   end
 end

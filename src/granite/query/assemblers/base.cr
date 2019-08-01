@@ -4,7 +4,7 @@ module Granite::Query::Assembler
     @order : String?
     @limit : String?
     @offset : String?
-    @group_by : String?
+    @group : String?
 
     def initialize(@query : Builder(Model))
       @numbered_parameters = [] of Granite::Fields::Type
@@ -95,6 +95,20 @@ module Granite::Query::Assembler
       @order = "ORDER BY #{order_clauses.join ", "}"
     end
 
+    def group
+      return @group if @group
+
+      group_fields = @query.group_fields
+
+      return nil if group_fields.none?
+
+      group_clauses = group_fields.map do |expression|
+        "#{expression[:field]}"
+      end
+
+      @group = "GROUP BY #{group_clauses.join ", "}"
+    end
+
     def limit
       @limit ||= if limit = @query.limit
                    "LIMIT #{limit}"
@@ -114,22 +128,18 @@ module Granite::Query::Assembler
       [{field: Model.primary_name, direction: "ASC"}]
     end
 
-    def group_by
-      @group_by ||= if @aggregate_fields.any?
-                      "GROUP BY #{@aggregate_fields.join ", "}"
-                    end
-    end
-
-    def count(use_group_by : Bool = false) : (Executor::MultiValue(Model, Int64) | Executor::Value(Model, Int64))
+    def count : (Executor::MultiValue(Model, Int64) | Executor::Value(Model, Int64))
       sql = build_sql do |s|
         s << "SELECT COUNT(*)"
         s << "FROM #{table_name}"
         s << where
-        s << group_by if use_group_by
+        s << group
         s << order(use_default_order: false)
+        s << limit
+        s << offset
       end
-
-      if use_group_by
+      pp sql
+      if group
         Executor::MultiValue(Model, Int64).new sql, numbered_parameters, default: 0_i64
       else
         Executor::Value(Model, Int64).new sql, numbered_parameters, default: 0_i64
@@ -141,6 +151,7 @@ module Granite::Query::Assembler
         s << "SELECT #{field_list}"
         s << "FROM #{table_name}"
         s << where
+        s << group
         s << order
         s << "LIMIT #{n}"
         s << offset
@@ -166,6 +177,7 @@ module Granite::Query::Assembler
         s << "SELECT #{field_list}"
         s << "FROM #{table_name}"
         s << where
+        s << group
         s << order
         s << limit
         s << offset

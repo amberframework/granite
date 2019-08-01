@@ -30,6 +30,7 @@ class Granite::Query::Builder(Model)
   getter db_type : DbType
   getter where_fields = [] of NamedTuple(join: Symbol, field: String, operator: Symbol, value: Granite::Fields::Type)
   getter order_fields = [] of NamedTuple(field: String, direction: Sort)
+  getter group_fields = [] of NamedTuple(field: String)
   getter offset : Int64?
   getter limit : Int64?
 
@@ -137,6 +138,32 @@ class Granite::Query::Builder(Model)
     self
   end
 
+  def group(field : Symbol)
+    @group_fields << {field: field.to_s}
+
+    self
+  end
+
+  def group(fields : Array(Symbol))
+    fields.each do |field|
+      group field
+    end
+
+    self
+  end
+
+  def group(**dsl)
+    group(dsl)
+  end
+
+  def group(dsl)
+    dsl.each do |field|
+      @group_fields << {field: field.to_s}
+    end
+
+    self
+  end
+
   def offset(num)
     @offset = num.to_i64
 
@@ -153,9 +180,9 @@ class Granite::Query::Builder(Model)
     assembler.select.raw_sql
   end
 
-  def count(use_group_by : Bool = false) : (Executor::MultiValue(Model, Int64) | Executor::Value(Model, Int64))
-    assembler.count(use_group_by)
-  end
+  # def count : (Executor::MultiValue(Model, Int64) | Executor::Value(Model, Int64))
+  #  assembler.count
+  # end
 
   # TODO: replace `querying.first` with this
   # def first : Model?
@@ -176,6 +203,10 @@ class Granite::Query::Builder(Model)
 
   def select
     assembler.select.run
+  end
+
+  def count
+    assembler.count.run
   end
 
   def exists? : Bool

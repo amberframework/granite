@@ -65,7 +65,7 @@ end
 post = Post.first! # raises when no records exist
 ```
 
-### where, order, limit, offset
+### where, order, limit, offset, group
 
 See [querying](./querying.md) for more details of using the QueryBuilder.
 
