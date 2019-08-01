@@ -4,24 +4,18 @@ require "../spec_helper"
   describe Granite::Query::Assembler::Pg(Model) do
 		context "count" do
 			it "counts for where/count queries" do
-				_builder = builder
-        _builder.where(name: "bob").count
 				sql = "select count(*) from table where name = $1"
-				_builder.raw_sql.should match ignore_whitespace sql
+				builder.where(name: "bob").assembler.count.raw_sql.should match ignore_whitespace sql
       end
 
       it "simple counts" do
-				_builder = builder
-        _builder.count
 				sql = "select count(*) from table"
-				_builder.raw_sql.should match ignore_whitespace sql
+				builder.assembler.count.raw_sql.should match ignore_whitespace sql
       end
 
 			it "adds group_by fields for where/count queries" do
-				_builder = builder
-        _builder.where(name: "bob").group(:name).count
 				sql = "select count(*) from table where name = $1 group by name"
-				_builder.raw_sql.should match ignore_whitespace sql
+				builder.where(name: "bob").group(:name).assembler.count.raw_sql.should match ignore_whitespace sql
       end
     end
 
