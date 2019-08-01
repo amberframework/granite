@@ -202,7 +202,7 @@ class Granite::Query::Builder(Model)
   end
 
   def count
-    assembler.count.run
+    assembler.count
   end
 
   def exists? : Bool

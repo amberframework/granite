@@ -40,14 +40,14 @@ Post.order(created_at: :desc, title: :asc)
 
 ## Group
 
-Order is using the QueryBuilder and supports providing an GROUP BY clause:
+Group is using the QueryBuilder and supports providing an GROUP BY clause:
 ```crystal
 posts = Post.group(:published)
 ```
 
 Multiple fields
 ```crystal
-Post.order([:published, :author_id])
+Post.group([:published, :author_id])
 ```
 
 ## Limit
