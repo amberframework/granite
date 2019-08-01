@@ -138,7 +138,6 @@ module Granite::Query::Assembler
         s << limit
         s << offset
       end
-      pp sql
       if group
         Executor::MultiValue(Model, Int64).new sql, numbered_parameters, default: 0_i64
       else
