@@ -15,7 +15,7 @@ require "../spec_helper"
 
       it "adds group_by fields for where/count queries" do
         sql = "select count(*) from table where name = $1 group by name"
-        builder.where(name: "bob").group(:name).count.raw_sql.should match ignore_whitespace sql
+        builder.where(name: "bob").group_by(:name).count.raw_sql.should match ignore_whitespace sql
       end
     end
 
