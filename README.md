@@ -29,11 +29,7 @@ The test suite depends on access to a PostgreSQL, MySQL, and SQLite database to 
 There is a self-contained testing environment provided via the `docker-compose.yml` file in this repository.
 We are testing against multiple databases so you have to specify which docker-compose file you would like to use.
 Replace "{database_type}" with "mysql" or "pg" or "sqlite". Before you can run the docker configuration you have to set the appropriate
-env variables. To do so you can either load them yourself or load the .env file
-
-```
-$ source .env
-```
+env variables. To do so you can either load them yourself or modify the `.env` file that docker-compose loads by default.
 
 You can find postgres versions at https://hub.docker.com/_/postgres/
 You can find mysql versions at https://hub.docker.com/_/mysql/
