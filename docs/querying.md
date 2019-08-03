@@ -90,9 +90,11 @@ The `select_statement` macro allows you to customize the entire query, including
 
 ```crystal
 class CustomView < Granite:Base
-  adapter pg
-  field articlebody : String
-  field commentbody : String
+  connection pg
+
+  column id : Int64, primary: true
+  column articlebody : String
+  column commentbody : String
 
   select_statement <<-SQL
     SELECT articles.articlebody, comments.commentbody

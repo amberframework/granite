@@ -19,18 +19,4 @@ describe Granite::Table do
       SongThread.primary_name.should eq "id"
     end
   end
-
-  describe ".primary_type" do
-    describe "for a custom primary key" do
-      it "returns the class of the primary key's type" do
-        Kvs.primary_type.should eq String
-      end
-    end
-
-    describe "for the default primary key" do
-      it "returns the class of the primary key's type for a defautl type" do
-        Person.primary_type.should eq Int64
-      end
-    end
-  end
 end

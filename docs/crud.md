@@ -4,7 +4,7 @@
 
 Combination of object creation and insertion into database.
 
-```
+```crystal
 Post.create(name: "Granite Rocks!", body: "Check this out.") # Set attributes and call save
 Post.create!(name: "Granite Rocks!", body: "Check this out.") # Set attributes and call save!. Will throw an exception when the save failed
 ```

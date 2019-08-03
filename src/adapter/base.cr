@@ -17,9 +17,7 @@ abstract class Granite::Adapter::Base
     SELECT SET TABLE THEN TRUE UNION UNIQUE UPDATE USING VALUES WHEN WHERE
   ))
 
-  def initialize(connection_hash : NamedTuple(url: String, name: String))
-    @name = connection_hash[:name]
-    @url = connection_hash[:url]
+  def initialize(@name : String, @url : String)
   end
 
   def database : DB::Database
@@ -61,7 +59,7 @@ abstract class Granite::Adapter::Base
   end
 
   # Returns `true` if a record exists that matches *criteria*, otherwise `false`.
-  def exists?(table_name : String, criteria : String, params = [] of Granite::Fields::Type) : Bool
+  def exists?(table_name : String, criteria : String, params = [] of Granite::Columns::Type) : Bool
     statement = "SELECT EXISTS(SELECT 1 FROM #{table_name} WHERE #{ensure_clause_template(criteria)})"
 
     exists = false
@@ -84,7 +82,7 @@ abstract class Granite::Adapter::Base
   abstract def insert(table_name, fields, params, lastval) : Int64
 
   # This will insert an array of models as one insert statement
-  abstract def import(table_name : String, primary_name : String, auto : String, fields, model_array, **options)
+  abstract def import(table_name : String, primary_name : String, auto : Bool, fields, model_array, **options)
 
   # This will update a row in the database.
   abstract def update(table_name, primary_name, fields, params)

@@ -18,12 +18,12 @@ macro build_review_emitter
 end
 
 def method_which_takes_any_model(model : Granite::Base.class)
-  model.as(Granite::Base).from_sql build_review_emitter
+  model.as(Granite::Base).from_rs build_review_emitter
 end
 
-describe "#from_sql" do
+describe ".from_rs" do
   it "Builds a model from a resultset" do
-    model = Review.from_sql build_review_emitter
+    model = Review.from_rs build_review_emitter
     model.class.should eq Review
   end
 end

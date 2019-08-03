@@ -1,6 +1,6 @@
 # Adds a :nodoc: to granite methods/constants if `DISABLE_GRANTE_DOCS` ENV var is true
 macro disable_granite_docs?(stmt)
-  {% unless env("DISABLE_GRANITE_DOCS") == "false" %}
+  {% unless flag?(:granite_docs) %}
     # :nodoc:
     {{stmt.id}}
   {% else %}
@@ -8,62 +8,55 @@ macro disable_granite_docs?(stmt)
   {% end %}
 end
 
-module Granite::Table
-  macro included
-    macro inherited
-      disable_granite_docs? SETTINGS = {} of Nil => Nil
-      disable_granite_docs? PRIMARY = {name: id, type: Int64, auto: true}
-    end
-  end
-
-  # specify the database adapter you will be using for this model.
-  # mysql, pg, sqlite, etc.
-  macro adapter(name)
-    class_getter adapter : Granite::Adapter::Base = Granite::Adapters.registered_adapters.find { |adapter| adapter.name == {{name.stringify}} } || raise "No registered adapter with the name '{{name.id}}'"
-  end
-
-  # specify the table name to use otherwise it will use the model's name
-  macro table_name(name)
-    {% SETTINGS[:table_name] = name.id %}
-  end
-
-  macro primary(decl, **options)
-    {% raise "The type of #{@type.name}##{decl.var} cannot be a Union.  The 'primary' macro declares the type as nilable by default." if decl.type.is_a? Union %}
-    {% PRIMARY[:name] = decl.var %}
-    {% PRIMARY[:type] = decl.type %}
-    {% PRIMARY[:auto] = ([true, false, :uuid].includes? options[:auto]) ? options[:auto] : true %}
-    {% PRIMARY[:options] = options %}
-  end
-
-  macro __process_table
-    {% name_space = @type.name.gsub(/::/, "_").underscore.id %}
-    {% table_name = SETTINGS[:table_name] || name_space %}
-    {% primary_name = PRIMARY[:name] %}
-    {% primary_type = PRIMARY[:type] %}
-    {% primary_auto = PRIMARY[:auto] %}
-
-    disable_granite_docs? def self.table_name : String
-      {{table_name.stringify}}
+module Granite::Tables
+  module ClassMethods
+    def adapter : Granite::Adapter::Base
+      Granite::Connections.registered_connections.first? || raise "No connections have been registered."
     end
 
-    disable_granite_docs? def self.primary_name : String
-      {{primary_name.stringify}}
+    def primary_name
+      {% begin %}
+      {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
+      {% if pk = primary_key %}
+        {{pk.name.stringify}}
+      {% end %}
+    {% end %}
     end
 
-    disable_granite_docs? def self.primary_type
-      {{primary_type}}
+    def primary_type
+      {% begin %}
+      {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
+      {% if pk = primary_key %}
+        {{pk.type}}
+      {% end %}
+    {% end %}
     end
 
-    disable_granite_docs? def self.primary_auto : String
-      {{primary_auto.stringify}}
-    end
-
-    disable_granite_docs? def self.quoted_table_name : String
+    def quoted_table_name : String
       adapter.quote(table_name)
     end
 
-    disable_granite_docs? def self.quote(column_name) : String
+    def quote(column_name) : String
       adapter.quote(column_name)
     end
+
+    # Returns the name of the table for `self`
+    # defaults to the model's name underscored + 's'.
+    def table_name : String
+      {% begin %}
+        {% table_ann = @type.annotation(Granite::Table) %}
+        {{table_ann && !table_ann[:name].nil? ? table_ann[:name] : @type.name.underscore.stringify}}
+      {% end %}
+    end
+  end
+
+  macro table(name)
+    @[Granite::Table(name: {{(name.is_a?(StringLiteral) ? name : name.stringify) || nil}})]
+    class ::{{@type.name.id}}; end
+  end
+
+  # specify the database connection you will be using for this model.
+  macro connection(name)
+    class_getter adapter : Granite::Adapter::Base = Granite::Connections[{{(name.is_a?(StringLiteral) ? name : name.stringify)}}] || raise "No registered connection with the name '{{name.id}}'"
   end
 end

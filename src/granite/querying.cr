@@ -2,37 +2,19 @@ module Granite::Querying
   class NotFound < Exception
   end
 
-  macro extended
-    macro __process_querying
-      \{% primary_name = PRIMARY[:name] %}
-      \{% primary_type = PRIMARY[:type] %}
-
-      # Create the from_sql method
-      disable_granite_docs? def self.from_sql(result)
-        model = \{{@type.name.id}}.new
-        model.set_attributes(result)
-        model
-      end
-
-      disable_granite_docs? def set_attributes(result : DB::ResultSet)
-        # Loading from DB means existing records.
-        @new_record = false
-        \{% for name, options in FIELDS %}
-          self.\{{name.id}} = \{% if options[:converter] %} \{{options[:converter].id}}.from_rs result \{% else %} result.read(Union(\{{options[:type].id}} | Nil)) \{% end %}
-          \{% if options[:type].id == "Time".id %}
-            self.\{{name.id}} = self.\{{name.id}}.not_nil!.in(Granite.settings.default_timezone) if self.\{{name.id}}
-          \{% end %}
-        \{% end %}
-        self
-      end
-    end
+  # Entrypoint for creating a new object from a result set.
+  def from_rs(result : DB::ResultSet) : self
+    model = new
+    model.new_record = false
+    model.from_rs result
+    model
   end
 
-  def raw_all(clause = "", params = [] of Granite::Fields::Type)
+  def raw_all(clause = "", params = [] of Granite::Columns::Type)
     rows = [] of self
     adapter.select(select_container, clause, params) do |results|
       results.each do
-        rows << from_sql(results)
+        rows << from_rs(results)
       end
     end
     rows
@@ -46,16 +28,16 @@ module Granite::Querying
   # that you are using so you are not restricted or dummied down to support a
   # DSL.
   # Lazy load prevent running unnecessary queries from unused variables.
-  def all(clause = "", params = [] of Granite::Fields::Type)
+  def all(clause = "", params = [] of Granite::Columns::Type)
     Collection(self).new(->{ raw_all(clause, params) })
   end
 
   # First adds a `LIMIT 1` clause to the query and returns the first result
-  def first(clause = "", params = [] of Granite::Fields::Type)
+  def first(clause = "", params = [] of Granite::Columns::Type)
     all([clause.strip, "LIMIT 1"].join(" "), params).first?
   end
 
-  def first!(clause = "", params = [] of Granite::Fields::Type)
+  def first!(clause = "", params = [] of Granite::Columns::Type)
     first(clause, params) || raise NotFound.new("No #{{{@type.name.stringify}}} found with first(#{clause})")
   end
 
@@ -70,27 +52,27 @@ module Granite::Querying
   end
 
   # Returns the first row found that matches *criteria*. Otherwise `nil`.
-  def find_by(**criteria : Granite::Fields::Type)
+  def find_by(**criteria : Granite::Columns::Type)
     find_by criteria.to_h
   end
 
   # :ditto:
-  def find_by(criteria : Hash(Symbol | String, Granite::Fields::Type))
+  def find_by(criteria : Granite::ModelArgs)
     clause, params = build_find_by_clause(criteria)
     first "WHERE #{clause}", params
   end
 
   # Returns the first row found that matches *criteria*. Otherwise raises a `NotFound` exception.
-  def find_by!(**criteria : Granite::Fields::Type)
+  def find_by!(**criteria : Granite::Columns::Type)
     find_by!(criteria.to_h)
   end
 
   # :ditto:
-  def find_by!(criteria : Hash(Symbol | String, Granite::Fields::Type))
+  def find_by!(criteria : Granite::ModelArgs)
     find_by(criteria) || raise NotFound.new("No #{{{@type.name.stringify}}} found where #{criteria.map { |k, v| %(#{k} #{v.nil? ? "is NULL" : "= #{v}"}) }.join(" and ")}")
   end
 
-  def find_each(clause = "", params = [] of Granite::Fields::Type, batch_size limit = 100, offset = 0)
+  def find_each(clause = "", params = [] of Granite::Columns::Type, batch_size limit = 100, offset = 0)
     find_in_batches(clause, params, batch_size: limit, offset: offset) do |batch|
       batch.each do |record|
         yield record
@@ -98,7 +80,7 @@ module Granite::Querying
     end
   end
 
-  def find_in_batches(clause = "", params = [] of Granite::Fields::Type, batch_size limit = 100, offset = 0)
+  def find_in_batches(clause = "", params = [] of Granite::Columns::Type, batch_size limit = 100, offset = 0)
     if limit < 1
       raise ArgumentError.new("batch_size must be >= 1")
     end
@@ -118,12 +100,12 @@ module Granite::Querying
   end
 
   # Returns `true` if a records exists that matches *criteria*, otherwise `false`.
-  def exists?(**criteria : Granite::Fields::Type) : Bool
+  def exists?(**criteria : Granite::Columns::Type) : Bool
     exists? criteria.to_h
   end
 
   # :ditto:
-  def exists?(criteria : Hash(Symbol | String, Granite::Fields::Type)) : Bool
+  def exists?(criteria : Granite::ModelArgs) : Bool
     exec_exists *build_find_by_clause(criteria)
   end
 
@@ -136,7 +118,7 @@ module Granite::Querying
     adapter.open { |db| db.exec(clause) }
   end
 
-  def query(clause = "", params = [] of Granite::Fields::Type, &block)
+  def query(clause = "", params = [] of Granite::Columns::Type, &block)
     adapter.open { |db| yield db.query(clause, params) }
   end
 
@@ -144,11 +126,11 @@ module Granite::Querying
     adapter.open { |db| yield db.scalar(clause) }
   end
 
-  private def exec_exists(clause : String, params : Array(Granite::Fields::Type)) : Bool
+  private def exec_exists(clause : String, params : Array(Granite::Columns::Type)) : Bool
     adapter.exists? quoted_table_name, clause, params
   end
 
-  private def build_find_by_clause(criteria : Hash(Symbol | String, Granite::Fields::Type))
+  private def build_find_by_clause(criteria : Granite::ModelArgs)
     keys = criteria.keys
     criteria_hash = criteria.dup
 

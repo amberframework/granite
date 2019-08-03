@@ -2,7 +2,7 @@ require "./collection"
 require "./association_collection"
 require "./associations"
 require "./callbacks"
-require "./fields"
+require "./columns"
 require "./query/executors/base"
 require "./query/**"
 require "./settings"
@@ -12,48 +12,63 @@ require "./validation_helpers/**"
 require "./migrator"
 require "./select"
 require "./version"
-require "./adapters"
+require "./connections"
 require "./integrators"
 require "./converters"
+require "./type"
 
 # Granite::Base is the base class for your model objects.
 abstract class Granite::Base
   include Associations
   include Callbacks
-  include Fields
-  include Table
+  include Columns
+  include Tables
   include Transactions
   include Validators
   include ValidationHelpers
   include Migrator
   include Select
 
+  extend Columns::ClassMethods
+  extend Tables::ClassMethods
+  extend Granite::Migrator::ClassMethods
+
   extend Querying
   extend Query::BuilderMethods
   extend Transactions::ClassMethods
   extend Integrators
+  extend Select
 
   macro inherited
     include JSON::Serializable
     include YAML::Serializable
-    macro finished
-      __process_table
-      __process_fields
-      __process_select
-      __process_querying
-      __process_transactions
-      __process_migrator
+
+    @@select = Container.new(table_name: table_name, fields: fields)
+
+    # Returns true if this object hasn't been saved yet.
+    @[JSON::Field(ignore: true)]
+    @[YAML::Field(ignore: true)]
+    disable_granite_docs? property? new_record : Bool = true
+
+    # Returns true if this object has been destroyed.
+    @[JSON::Field(ignore: true)]
+    @[YAML::Field(ignore: true)]
+    disable_granite_docs? getter? destroyed : Bool = false
+
+    # Returns true if the record is persisted.
+    disable_granite_docs? def persisted?
+      !(new_record? || destroyed?)
     end
 
-    def initialize(**args : Granite::Fields::Type)
-      set_attributes(args.to_h)
+    disable_granite_docs? def initialize(**args : Granite::Columns::Type)
+      set_attributes(args.to_h.transform_keys(&.to_s))
     end
 
-    def initialize(args : Hash(Symbol | String, Granite::Fields::Type))
-      set_attributes(args)
+    disable_granite_docs? def initialize(args : Granite::ModelArgs)
+      set_attributes(args.transform_keys(&.to_s))
     end
 
-    def initialize
+    disable_granite_docs? def initialize
     end
   end
 end
