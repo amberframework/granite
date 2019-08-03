@@ -5,7 +5,7 @@ module Granite::Converters
   module Uuid(T)
     extend self
 
-    def to_db(value : ::UUID?) : Granite::Fields::Type
+    def to_db(value : ::UUID?) : Granite::Columns::Type
       return nil if value.nil?
       {% if T == String %}
         value.to_s
@@ -33,7 +33,7 @@ module Granite::Converters
   module Enum(E, T)
     extend self
 
-    def to_db(value : E?) : Granite::Fields::Type
+    def to_db(value : E?) : Granite::Columns::Type
       return nil if value.nil?
       {% if T <= Number %}
         value.to_i64
@@ -67,7 +67,7 @@ module Granite::Converters
   module Json(M, T)
     extend self
 
-    def to_db(value : M?) : Granite::Fields::Type
+    def to_db(value : M?) : Granite::Columns::Type
       return nil if value.nil?
       {% if T == String || T == JSON::Any %}
         value.to_json
@@ -97,7 +97,7 @@ module Granite::Converters
   module PgNumeric
     extend self
 
-    def self.to_db(value) : Granite::Fields::Type
+    def self.to_db(value) : Granite::Columns::Type
       value ? value : nil
     end
 

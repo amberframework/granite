@@ -22,6 +22,18 @@ describe "custom select" do
     viewmodel.first.commentbody.should eq "The Comment Body"
   end
 
+  it "allow only selecting specific columns" do
+    EventCon.create(con_name: "Con0", event_name: "Event0")
+    EventCon.create(con_name: "Con1", event_name: "Event1")
+    EventCon.create(con_name: "Con2", event_name: "Event2")
+
+    EventCon.all.each_with_index do |env, idx|
+      env.id.should be_nil
+      env.con_name.should eq "Con#{idx}"
+      env.event_name.should be_nil
+    end
+  end
+
   # TODO:  `find` on this ViewModel fails because "id" is ambiguous in a complex SELECT.
 
   # it "uses custom SQL to populate a view model - #find" do

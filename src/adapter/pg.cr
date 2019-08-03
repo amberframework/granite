@@ -66,11 +66,11 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     last_id
   end
 
-  def import(table_name : String, primary_name : String, auto : String, fields, model_array, **options)
-    params = [] of Granite::Fields::Type
+  def import(table_name : String, primary_name : String, auto : Bool, fields, model_array, **options)
+    params = [] of Granite::Columns::Type
     # PG fails when inserting null into AUTO INCREMENT PK field.
     # If AUTO INCREMENT is TRUE AND all model's pk are nil, remove PK from fields list for AUTO INCREMENT to work properly
-    fields.reject! { |field| field == primary_name } if model_array.all? { |m| m.to_h[primary_name].nil? } && auto == "true"
+    fields.reject! { |field| field == primary_name } if model_array.all? { |m| m.to_h[primary_name].nil? } && auto
     index = 0
 
     statement = String.build do |stmt|

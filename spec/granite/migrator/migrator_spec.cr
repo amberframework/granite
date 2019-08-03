@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe Granite::Migrator::Base do
+describe Granite::Migrator do
   describe "#drop_sql" do
     it "generates correct SQL with #{{{ env("CURRENT_ADAPTER") }}} adapter" do
       {% if env("CURRENT_ADAPTER") == "mysql" %}
@@ -134,21 +134,21 @@ describe Granite::Migrator::Base do
         ManualColumnType.migrator.create_sql.should eq <<-SQL
           CREATE TABLE "manual_column_types"(
           "id" BIGSERIAL PRIMARY KEY,
-          "foo" FOO
+          "foo" DECIMAL(12, 10)
           ) ;\n
           SQL
       {% elsif env("CURRENT_ADAPTER") == "mysql" %}
         ManualColumnType.migrator.create_sql.should eq <<-SQL
           CREATE TABLE `manual_column_types`(
           `id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-          `foo` FOO
+          `foo` DECIMAL(12, 10)
           ) ;\n
           SQL
       {% elsif env("CURRENT_ADAPTER") == "sqlite" %}
         ManualColumnType.migrator.create_sql.should eq <<-SQL
           CREATE TABLE "manual_column_types"(
           "id" INTEGER NOT NULL PRIMARY KEY,
-          "foo" FOO
+          "foo" DECIMAL(12, 10)
           ) ;\n
           SQL
       {% end %}

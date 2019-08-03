@@ -8,12 +8,13 @@ Here is an example:
 require "granite/adapter/pg"
 
 class Post < Granite::Base
-  adapter pg
+  connection pg
 
   before_save :upcase_title
 
-  field title : String
-  field content : String
+  column id : Int64, primary: true
+  column title : String
+  column content : String
   timestamps
 
   def upcase_title

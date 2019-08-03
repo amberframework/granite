@@ -118,8 +118,8 @@ require "../../spec_helper"
 
         parent1_edited = Parent.find_by!(name: "ParentOneEdited")
         parent1_edited.name.should eq "ParentOneEdited"
-        parent1_edited.created_at!.should eq import_time
-        parent1_edited.updated_at!.should eq update_time
+        parent1_edited.created_at!.should be_close(import_time, 1.second)
+        parent1_edited.updated_at!.should be_close(update_time, 1.second)
       end
     end
   end

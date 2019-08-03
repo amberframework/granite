@@ -3,8 +3,10 @@ require "../../spec_helper"
 {% begin %}
   {% adapter_literal = env("CURRENT_ADAPTER").id %}
   class NameTest < Granite::Base
-    adapter {{ adapter_literal }}
-    field name : String
+    connection {{ adapter_literal }}
+
+    column id : Int64, primary: true
+    column name : String?
 
     validate :name, "cannot be blank", ->(s : NameTest) do
       !s.name.to_s.blank?
@@ -12,8 +14,10 @@ require "../../spec_helper"
   end
 
   class EmailTest < Granite::Base
-    adapter {{ adapter_literal }}
-    field email : String
+    connection {{ adapter_literal }}
+
+    column id : Int64, primary: true
+    column email : String?
 
     validate :email, "cannot be blank" do |email_test|
       !email_test.email.to_s.blank?
@@ -21,9 +25,11 @@ require "../../spec_helper"
   end
 
   class PasswordTest < Granite::Base
-    adapter {{ adapter_literal }}
-    field password : String
-    field password_validation : String
+    connection {{ adapter_literal }}
+
+    column id : Int64, primary: true
+    column password : String?
+    column password_validation : String?
 
     validate "password and validation should match" do |password_test|
       password_test.password == password_test.password_validation

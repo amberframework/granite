@@ -26,30 +26,32 @@ dependencies:
 
 ```
 
-### Register an Adapter
+### Register a Connection
 
-Next you will need to register an adapter.  This should be one of the first things in your main Crystal file, before Granite is required.
+Next you will need to register a connection.  This should be one of the first things in your main Crystal file, before Granite is required.
 
 ```crystal
-Granite::Adapters << Granite::Adapter::Mysql.new({name: "mysql", url: "YOUR_DATABASE_URL"})
+Granite::Connections << Granite::Adapter::Mysql.new(name: "mysql", url: "YOUR_DATABASE_URL")
 
 # Rest of code...
 ```
 
-Supported adapters include `Mysql, Pg, and Sqlite`.
+Supported adapters include: `Mysql, Pg, and Sqlite`.
 
 ### Example Model
 
-Here is an example Granite model using the adapter registered above.
+Here is an example Granite model using the connection registered above.
 
 ```crystal
 require "granite/adapter/mysql"
 
 class Post < Granite::Base
-  adapter mysql
-  # Primary key, unless explicitly specified, is assumed to be Int64 AUTO INCREMENT
-  field name : String # Nilable field
-  field! body : String # Not nil field
+  connection mysql
+  table posts # Name of the table to use for the model, defaults to class name snake cased
+
+  column id : Int64, primary: true # Primary key, defaults to AUTO INCREMENT
+  column name : String? # Nilable field
+  column body : String # Not nil field
 end
 ```
 
@@ -70,7 +72,3 @@ end
 [Migrations](./migrations.md)
 
 [Imports](./imports.md)
-
-[JSON Support](./json_support.md)
-
-[YAML Support](./yaml_support.md)

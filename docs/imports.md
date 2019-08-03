@@ -2,9 +2,9 @@
 
 ## Import
 
-**Note:  Imports do not trigger callbacks automatically.  See [Running Callbacks](#running-callbacks).**
+>  **Note:**  Imports do not trigger callbacks automatically.  See [Running Callbacks](#running-callbacks).
 
-Each model has an `import` class level method to import an array of models in one bulk insert statement.
+Each model has an `.import` method that will save an array of models in one bulk insert statement.
    ```Crystal
    models = [
      Model.new(id: 1, name: "Fred", age: 14),
@@ -86,11 +86,11 @@ Since the `import` method runs on the class level, callbacks are not triggered a
    require "uuid"
    
    class Item < Granite::Base
-     adapter mysql
-     table_name items
+     connection mysql
+     table items
    
-     primary item_id : String, auto: false
-     field item_name : String
+     column item_id : String, primary: true, auto: false
+     column item_name : String
    
      before_create :generate_uuid
    
@@ -122,4 +122,4 @@ Since the `import` method runs on the class level, callbacks are not triggered a
    item.save
    ```
 
-**Note:  Manually running your callbacks is mainly aimed at bulk imports.  Running them before a normal `.save`, for example, would run your callbacks twice.**
+> **Note:**  Manually running your callbacks is mainly aimed at bulk imports.  Running them before a normal `.save`, for example, would run your callbacks twice.
