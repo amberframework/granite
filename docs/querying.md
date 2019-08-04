@@ -38,6 +38,18 @@ With direction
 Post.order(created_at: :desc, title: :asc)
 ```
 
+## Group By
+
+Group is using the QueryBuilder and supports providing an GROUP BY clause:
+```crystal
+posts = Post.group_by(:published)
+```
+
+Multiple fields
+```crystal
+Post.group_by([:published, :author_id])
+```
+
 ## Limit
 
 Limit is using the QueryBuilder and provides the ability to limit the number of tuples returned:
