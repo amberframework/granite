@@ -25,7 +25,7 @@ describe Granite::Converters::Uuid do
     describe ".to_db" do
       it "should convert a UUID enum into Bytes" do
         uuid = UUID.random
-        Granite::Converters::Uuid(Bytes).to_db(uuid).should eq uuid.to_slice
+        Granite::Converters::Uuid(Bytes).to_db(uuid).should eq uuid.bytes.to_slice
       end
     end
 
@@ -34,7 +34,7 @@ describe Granite::Converters::Uuid do
         uuid = UUID.new "cfe37f98-fdbf-43a3-b3d8-9c3288fb9ba6"
 
         rs = FieldEmitter.new.tap do |e|
-          e._set_values([uuid.to_slice])
+          e._set_values([uuid.bytes.to_slice])
         end
 
         Granite::Converters::Uuid(Bytes).from_rs(rs).should eq uuid
