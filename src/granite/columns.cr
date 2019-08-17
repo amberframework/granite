@@ -119,12 +119,19 @@ module Granite::Columns
   def set_attributes(hash : Hash(String | Symbol, Type)) : self
     {% for column in @type.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && (!ann[:primary] || (ann[:primary] && ann[:auto] == false)) } %}
       if hash.has_key?({{column.stringify}}) && !hash[{{column.stringify}}].nil?
-        val = Granite::Type.convert_type hash[{{column.stringify}}], {{column.type}}
-        if !val.is_a? {{column.type}}
-          errors << Granite::Error.new({{column.name.stringify}}, "Expected {{column.id}} to be {{column.type}} but got #{typeof(val)}.")
-        else
-          @{{column.id}} = val
+        begin
+          val = Granite::Type.convert_type hash[{{column.stringify}}], {{column.type}}
+        rescue ex : ArgumentError
+          error =  Granite::ConversionError.new({{column.name.stringify}}, ex.message)
         end
+
+        if !val.is_a? {{column.type}}
+          error = Granite::ConversionError.new({{column.name.stringify}}, "Expected {{column.id}} to be {{column.type}} but got #{typeof(val)}.")
+        else
+          @{{column}} = val
+        end
+
+        errors << error if error
       end
     {% end %}
     self

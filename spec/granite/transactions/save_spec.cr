@@ -15,6 +15,12 @@ describe "#save" do
     parent.persisted?.should be_false
   end
 
+  it "does not save a model with type conversion errors" do
+    model = Comment.new(articleid: "foo")
+    model.errors.size.should eq 1
+    model.save.should be_false
+  end
+
   it "updates an existing object" do
     Parent.clear
     parent = Parent.new

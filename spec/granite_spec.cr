@@ -59,6 +59,25 @@ describe Granite::Base do
         model.field_uuid.should eq uuid
       end
     end
+
+    describe "with string numeric values" do
+      it "should instaniate correctly" do
+        hash = {"user_id" => "1", "int32" => "17", "float32" => "3.14", "float" => "92342.2342342"}
+        model = StringConversion.new hash
+
+        model.user_id.should be_a Int64
+        model.user_id.should eq 1
+
+        model.int32.should be_a Int32
+        model.int32.should eq 17
+
+        model.float32.should be_a Float32
+        model.float32.should eq 3.14_f32
+
+        model.float.should be_a Float64
+        model.float.should eq 92342.2342342
+      end
+    end
   end
 
   describe Logger do

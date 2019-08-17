@@ -464,6 +464,18 @@ end
     SQL
   end
 
+  class StringConversion < Granite::Base
+    connection {{ adapter_literal }}
+    table "string_conversions"
+
+    belongs_to :user
+
+    column id : Int64, primary: true
+    column int32 : Int32
+    column float32 : Float32
+    column float : Float64
+  end
+
   struct MyType
     include JSON::Serializable
 

@@ -12,3 +12,6 @@ class Granite::Error
     end
   end
 end
+
+class Granite::ConversionError < Granite::Error
+end
