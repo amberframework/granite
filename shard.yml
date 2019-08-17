@@ -1,6 +1,6 @@
 name: granite
 
-version: --help
+version: 0.17.2
 
 crystal: 0.30.0
 

@@ -1,3 +1,3 @@
 module Granite
-  VERSION = "--help"
+  VERSION = "0.17.2"
 end
