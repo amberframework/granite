@@ -43,6 +43,10 @@ module Granite::Validators
   end
 
   def valid?
+    # Return false if any `ConversionError` were added
+    # when setting model properties
+    return false if errors.any? ConversionError
+
     errors.clear
 
     @@validators.each do |validator|
