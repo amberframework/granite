@@ -41,8 +41,7 @@ describe Granite::Base do
 
     describe "with a hash" do
       it "should instaniate correctly" do
-        hash = {"name" => "Bob", "age" => 3.14}
-        model = DefaultValues.new hash
+        model = DefaultValues.new({"name" => "Bob", "age" => 3.14})
         model.name.should eq "Bob"
         model.age.should eq 3.14
         model.is_alive.should be_true
@@ -62,8 +61,7 @@ describe Granite::Base do
 
     describe "with string numeric values" do
       it "should instaniate correctly" do
-        hash = {"user_id" => "1", "int32" => "17", "float32" => "3.14", "float" => "92342.2342342"}
-        model = StringConversion.new hash
+        model = StringConversion.new({"user_id" => "1", "int32" => "17", "float32" => "3.14", "float" => "92342.2342342"})
 
         model.user_id.should be_a Int64
         model.user_id.should eq 1
@@ -112,7 +110,7 @@ describe Granite::Base do
         review = Review.from_json(json_str)
         review.name.should eq "json::anyReview"
         review.upvotes.should eq 2
-        review.sentiment.should eq 1.23.to_f32
+        review.sentiment.should eq 1.23_f32
         review.interest.should eq 4.56
         review.published.should eq true
         review.created_at.should be_nil
@@ -124,14 +122,14 @@ describe Granite::Base do
         review = Array(Review).from_json(json_str)
         review[0].name.should eq "json1"
         review[0].upvotes.should eq 2
-        review[0].sentiment.should eq 1.23.to_f32
+        review[0].sentiment.should eq 1.23_f32
         review[0].interest.should eq 4.56
         review[0].published.should be_true
         review[0].created_at.should be_nil
 
         review[1].name.should eq "json2"
         review[1].upvotes.should eq 0
-        review[1].sentiment.should eq 5.00.to_f32
+        review[1].sentiment.should eq 5.00_f32
         review[1].interest.should eq 6.99
         review[1].published.should be_false
         review[1].created_at.should be_nil
@@ -326,6 +324,12 @@ describe Granite::Base do
       s = Item.new(item_name: "Hacker News")
       s.item_id = "three"
       s.to_h.should eq({"item_name" => "Hacker News", "item_id" => "three"})
+    end
+
+    it "works with enums" do
+      model = EnumModel.new
+      model.my_enum = MyEnum::One
+      model.to_h.should eq({"id" => nil, "my_enum" => MyEnum::One})
     end
   end
 
