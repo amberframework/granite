@@ -165,7 +165,7 @@ module Granite::Query::Assembler
 
       log sql, numbered_parameters
       Model.adapter.open do |db|
-        db.exec sql, numbered_parameters
+        db.exec sql, args: numbered_parameters
       end
     end
 
