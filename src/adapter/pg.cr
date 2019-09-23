@@ -54,9 +54,9 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     elapsed_time = Time.measure do
       open do |db|
         if lastval
-          last_id = db.scalar(statement, params).as(Int32 | Int64).to_i64
+          last_id = db.scalar(statement, args: params).as(Int32 | Int64).to_i64
         else
-          db.exec statement, params
+          db.exec statement, args: params
         end
       end
     end
@@ -105,7 +105,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
 
     elapsed_time = Time.measure do
       open do |db|
-        db.exec statement, params
+        db.exec statement, args: params
       end
     end
 
@@ -122,7 +122,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
 
     elapsed_time = Time.measure do
       open do |db|
-        db.exec statement, params
+        db.exec statement, args: params
       end
     end
 

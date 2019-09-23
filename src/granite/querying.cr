@@ -43,7 +43,7 @@ module Granite::Querying
 
   # find returns the row with the primary key specified. Otherwise nil.
   def find(value)
-    first("WHERE #{primary_name} = ?", value)
+    first("WHERE #{primary_name} = ?", [value])
   end
 
   # find returns the row with the primary key specified. Otherwise raises an exception.
@@ -119,7 +119,7 @@ module Granite::Querying
   end
 
   def query(clause = "", params = [] of Granite::Columns::Type, &block)
-    adapter.open { |db| yield db.query(clause, params) }
+    adapter.open { |db| yield db.query(clause, args: params) }
   end
 
   def scalar(clause = "", &block)

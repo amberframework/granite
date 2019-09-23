@@ -13,7 +13,7 @@ module Granite::Query::Executor
       raise "No default provided" if @default.nil?
 
       Model.adapter.open do |db|
-        db.query_one?(@sql, @args, as: Scalar) || @default.not_nil!
+        db.query_one?(@sql, args: @args, as: Scalar) || @default.not_nil!
       end
     end
 

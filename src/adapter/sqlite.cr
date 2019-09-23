@@ -43,7 +43,7 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
     last_id = -1_i64
     elapsed_time = Time.measure do
       open do |db|
-        db.exec statement, params
+        db.exec statement, args: params
         last_id = db.scalar(last_val()).as(Int64) if lastval
       end
     end
@@ -79,7 +79,7 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
 
     elapsed_time = Time.measure do
       open do |db|
-        db.exec statement, params
+        db.exec statement, args: params
       end
     end
 
@@ -100,7 +100,7 @@ class Granite::Adapter::Sqlite < Granite::Adapter::Base
 
     elapsed_time = Time.measure do
       open do |db|
-        db.exec statement, params
+        db.exec statement, args: params
       end
     end
 

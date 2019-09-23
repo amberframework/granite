@@ -49,7 +49,7 @@ abstract class Granite::Adapter::Base
 
     elapsed_time = Time.measure do
       open do |db|
-        db.query statement, params do |rs|
+        db.query statement, args: params do |rs|
           yield rs
         end
       end
@@ -65,7 +65,7 @@ abstract class Granite::Adapter::Base
     exists = false
     elapsed_time = Time.measure do
       open do |db|
-        exists = db.query_one?(statement, params, as: Bool) || exists
+        exists = db.query_one?(statement, args: params, as: Bool) || exists
       end
     end
 
