@@ -59,7 +59,7 @@ module Granite::Columns
     # Raise an exception if the delc type has more than 2 union types or if it has 2 types without nil
     # This prevents having a column typed to String | Int32 etc.
     {% if type.is_a?(Union) && (type.types.size > 2 || (type.types.size == 2 && !type.types.any?(&.resolve.nilable?))) %}
-      {% raise "The type of #{@type.name}##{decl.var} cannot be a Union.  The 'field' macro declares the type as nilable by default.  Use the 'field!' macro to declare a not nilable field." %}
+      {% raise "The column #{@type.name}##{decl.var} cannot consist of a Union with a type other than `Nil`." %}
     {% end %}
 
     {% column_type = (options[:column_type] && !options[:column_type].nil?) ? options[:column_type] : nil %}
@@ -101,7 +101,7 @@ module Granite::Columns
   end
 
   def to_h
-    fields = {} of String => Type
+    fields = {{"Hash(String, Union(#{@type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) }.map(&.type.id).splat})).new".id}}
 
     {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
         {% if column.type.id == Time.id %}

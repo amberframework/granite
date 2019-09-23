@@ -493,6 +493,14 @@ end
     Four
   end
 
+  class EnumModel < Granite::Base
+    connection {{ adapter_literal }}
+    table enum_model
+
+    column id : Int64, primary: true
+    column my_enum : MyEnum?, column_type: "TEXT", converter: Granite::Converters::Enum(MyEnum, String)
+  end
+
   {% if env("CURRENT_ADAPTER") == "pg" %}
     class ConverterModel < Granite::Base
       connection {{ adapter_literal }}

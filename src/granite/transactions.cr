@@ -114,7 +114,7 @@ module Granite::Transactions
           fields << {{primary_key.name.stringify}}
           self.class.adapter.insert(self.class.table_name, fields, params, lastval: nil)
       {% elsif ann[:auto] == true %}
-        {% raise "Failed to define #{@type.name}#save: Primary key must be Int(32|64) or UUID, or set `auto: false` for natural keys.\n\n  primary #{primary_key.name} : #{primary_key.type}, auto: false\n" %}
+        {% raise "Failed to define #{@type.name}#save: Primary key must be Int(32|64) or UUID, or set `auto: false` for natural keys.\n\n  column #{primary_key.name} : #{primary_key.type}, primary: true, auto: false\n" %}
       {% else %}
         if @{{primary_key.name.id}}
           self.class.adapter.insert(self.class.table_name, fields, params, lastval: nil)
