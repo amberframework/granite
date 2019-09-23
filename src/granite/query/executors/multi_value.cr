@@ -12,7 +12,7 @@ module Granite::Query::Executor
       results = [] of Scalar
 
       Model.adapter.open do |db|
-        db.query @sql, @args do |record_set|
+        db.query @sql, args: @args do |record_set|
           record_set.each do
             results << record_set.read(Scalar)
           end

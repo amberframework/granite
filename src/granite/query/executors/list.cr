@@ -11,7 +11,7 @@ module Granite::Query::Executor
       results = [] of Model
 
       Model.adapter.open do |db|
-        db.query @sql, @args do |record_set|
+        db.query @sql, args: @args do |record_set|
           record_set.each do
             results << Model.from_rs record_set
           end
