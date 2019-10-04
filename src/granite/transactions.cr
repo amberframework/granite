@@ -6,23 +6,22 @@ module Granite::Transactions
       adapter.clear table_name
     end
 
-    def create(**args)
-      create(args.to_h)
-    end
+    # def create(**args)
+    #   create(args.to_h)
+    # end
 
-    def create(args : Granite::ModelArgs)
-      instance = new
-      instance.set_attributes(args.transform_keys(&.to_s))
+    def create(*args, **named_args)
+      instance = new(*args, **named_args)
       instance.save
       instance
     end
 
-    def create!(**args)
-      create!(args.to_h)
+    def create!(*args, **named_args)
+      create! *args, **named_args
     end
 
-    def create!(args : Granite::ModelArgs)
-      instance = create(args)
+    def create!(*args, **named_args)
+      instance = create(*args, **named_args)
 
       if instance.errors.any?
         raise Granite::RecordNotSaved.new(self.name, instance)
@@ -170,15 +169,11 @@ module Granite::Transactions
   # will call the update method, otherwise it will call the create method.
   # This will update the timestamps appropriately.
   def save
-    {% begin %}
-    {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
-    {% raise raise "A primary key must be defined for #{@type.name}." unless primary_key %}
-    {% ann = primary_key.annotation(Granite::Column) %}
     return false unless valid?
 
     begin
       __before_save
-      if @{{primary_key.name.id}} && !new_record?
+      if primary_key_value && !new_record?
         __before_update
         __update
         __after_update
@@ -196,7 +191,6 @@ module Granite::Transactions
       return false
     end
     true
-  {% end %}
   end
 
   def save!
@@ -207,7 +201,7 @@ module Granite::Transactions
     update(args.to_h)
   end
 
-  def update(args : Granite::ModelArgs)
+  def update(args)
     set_attributes(args.transform_keys(&.to_s))
 
     save
@@ -217,7 +211,7 @@ module Granite::Transactions
     update!(args.to_h)
   end
 
-  def update!(args : Granite::ModelArgs)
+  def update!(args)
     set_attributes(args.transform_keys(&.to_s))
 
     save!

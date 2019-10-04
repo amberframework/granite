@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe "#update" do
+pending "#update" do
   it "updates an object" do
     parent = Parent.new(name: "New Parent")
     parent.save!
@@ -43,7 +43,7 @@ describe "#update" do
   end
 end
 
-describe "#update!" do
+pending "#update!" do
   it "updates an object" do
     parent = Parent.new(name: "New Parent")
     parent.save!

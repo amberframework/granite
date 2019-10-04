@@ -23,7 +23,7 @@ module Granite::Columns
     end
   end
 
-  def content_values : Array(Granite::Columns::Type)
+  def content_values
     parsed_params = [] of Type
     {% for column in @type.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && !ann[:primary] } %}
       {% ann = column.annotation(Granite::Column) %}
@@ -32,30 +32,9 @@ module Granite::Columns
     parsed_params
   end
 
-  # Consumes the result set to set self's property values.
-  def from_rs(result : DB::ResultSet) : Nil
-    {% begin %}
-      result.column_names.each do |col|
-        case col
-        {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
-          {% ann = column.annotation(Granite::Column) %}
-          when {{column.name.stringify}}
-            @{{column.id}} = {% if ann[:converter] %}
-              {{ann[:converter]}}.from_rs result
-            {% else %}
-              Granite::Type.from_rs(result, {{ann[:nilable] ? column.type : column.type.union_types.reject { |t| t == Nil }.first}}) {% if column.has_default_value? && !column.default_value.nil? %} || {{column.default_value}} {% end %}
-            {% end %}
-        {% end %}
-        end
-      end
-    {% end %}
-  end
-
   # Defines a column *decl* with the given *options*.
   macro column(decl, **options)
     {% type = decl.type %}
-    {% not_nilable_type = type.is_a?(Path) ? type.resolve : (type.is_a?(Union) ? type.types.reject(&.resolve.nilable?).first : (type.is_a?(Generic) ? type.resolve : type)) %}
-
     # Raise an exception if the delc type has more than 2 union types or if it has 2 types without nil
     # This prevents having a column typed to String | Int32 etc.
     {% if type.is_a?(Union) && (type.types.size > 2 || (type.types.size == 2 && !type.types.any?(&.resolve.nilable?))) %}
@@ -70,28 +49,12 @@ module Granite::Columns
 
     {% nilable = (type.is_a?(Path) ? type.resolve.nilable? : (type.is_a?(Union) ? type.types.any?(&.resolve.nilable?) : (type.is_a?(Generic) ? type.resolve.nilable? : type.nilable?))) %}
 
-    @[Granite::Column(column_type: {{column_type}}, converter: {{converter}}, auto: {{auto}}, primary: {{primary}}, nilable: {{nilable}})]
-    @{{decl.var}} : {{decl.type}}? {% unless decl.value.is_a? Nop %} = {{decl.value}} {% end %}
-
-    {% if nilable || primary %}
-      def {{decl.var.id}}=(@{{decl.var.id}} : {{not_nilable_type}}?); end
-
-      def {{decl.var.id}} : {{not_nilable_type}}?
-        @{{decl.var}}
-      end
-
-      def {{decl.var.id}}! : {{not_nilable_type}}
-        raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{decl.var.stringify}} + " cannot be nil" if @{{decl.var}}.nil?
-        @{{decl.var}}.not_nil!
-      end
-    {% else %}
-      def {{decl.var.id}}=(@{{decl.var.id}} : {{type.id}}); end
-
-      def {{decl.var.id}} : {{type.id}}
-        raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{decl.var.stringify}} + " cannot be nil" if @{{decl.var}}.nil?
-        @{{decl.var}}.not_nil!
-      end
+    {% if primary && !type.resolve.nilable? %}
+      {% raise "Primary key of #{@type} must be nilable" %}
     {% end %}
+
+    @[Granite::Column(column_type: {{column_type}}, converter: {{converter}}, auto: {{auto}}, primary: {{primary}}, nilable: {{nilable}})]
+    {% if !primary || (primary && !auto) %} property {% else %} getter {% end %} {{decl.var}} : {{decl.type}} {% unless decl.value.is_a? Nop %} = {{decl.value}} {% end %}
   end
 
   # include created_at and updated_at that will automatically be updated
@@ -114,27 +77,6 @@ module Granite::Columns
       {% end %}
 
     fields
-  end
-
-  def set_attributes(hash : Hash(String | Symbol, Type)) : self
-    {% for column in @type.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && (!ann[:primary] || (ann[:primary] && ann[:auto] == false)) } %}
-      if hash.has_key?({{column.stringify}}) && !hash[{{column.stringify}}].nil?
-        begin
-          val = Granite::Type.convert_type hash[{{column.stringify}}], {{column.type}}
-        rescue ex : ArgumentError
-          error =  Granite::ConversionError.new({{column.name.stringify}}, ex.message)
-        end
-
-        if !val.is_a? {{column.type}}
-          error = Granite::ConversionError.new({{column.name.stringify}}, "Expected {{column.id}} to be {{column.type}} but got #{typeof(val)}.")
-        else
-          @{{column}} = val
-        end
-
-        errors << error if error
-      end
-    {% end %}
-    self
   end
 
   def read_attribute(attribute_name : Symbol | String) : DB::Any

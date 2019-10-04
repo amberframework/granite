@@ -4,9 +4,8 @@ module Granite::Querying
 
   # Entrypoint for creating a new object from a result set.
   def from_rs(result : DB::ResultSet) : self
-    model = new
+    model = new result
     model.new_record = false
-    model.from_rs result
     model
   end
 
@@ -52,23 +51,23 @@ module Granite::Querying
   end
 
   # Returns the first row found that matches *criteria*. Otherwise `nil`.
-  def find_by(**criteria : Granite::Columns::Type)
+  def find_by(**criteria)
     find_by criteria.to_h
   end
 
   # :ditto:
-  def find_by(criteria : Granite::ModelArgs)
+  def find_by(criteria)
     clause, params = build_find_by_clause(criteria)
     first "WHERE #{clause}", params
   end
 
   # Returns the first row found that matches *criteria*. Otherwise raises a `NotFound` exception.
-  def find_by!(**criteria : Granite::Columns::Type)
+  def find_by!(**criteria)
     find_by!(criteria.to_h)
   end
 
   # :ditto:
-  def find_by!(criteria : Granite::ModelArgs)
+  def find_by!(criteria)
     find_by(criteria) || raise NotFound.new("No #{{{@type.name.stringify}}} found where #{criteria.map { |k, v| %(#{k} #{v.nil? ? "is NULL" : "= #{v}"}) }.join(" and ")}")
   end
 
@@ -105,7 +104,7 @@ module Granite::Querying
   end
 
   # :ditto:
-  def exists?(criteria : Granite::ModelArgs) : Bool
+  def exists?(criteria) : Bool
     exec_exists *build_find_by_clause(criteria)
   end
 
@@ -130,7 +129,7 @@ module Granite::Querying
     adapter.exists? quoted_table_name, clause, params
   end
 
-  private def build_find_by_clause(criteria : Granite::ModelArgs)
+  private def build_find_by_clause(criteria)
     keys = criteria.keys
     criteria_hash = criteria.dup
 

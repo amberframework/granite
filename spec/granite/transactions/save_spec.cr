@@ -15,7 +15,7 @@ describe "#save" do
     parent.persisted?.should be_false
   end
 
-  it "does not save a model with type conversion errors" do
+  pending "does not save a model with type conversion errors" do
     model = Comment.new(articleid: "foo")
     model.errors.size.should eq 1
     model.save.should be_false
@@ -46,7 +46,7 @@ describe "#save" do
     parent.name.should eq "Test Parent"
   end
 
-  it "does not update when the conflicted primary key is given to the new record" do
+  pending "does not update when the conflicted primary key is given to the new record" do
     parent1 = Parent.new
     parent1.name = "Test Parent"
     parent1.save.should be_true

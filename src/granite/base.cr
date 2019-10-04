@@ -40,9 +40,6 @@ abstract class Granite::Base
   extend Select
 
   macro inherited
-    include JSON::Serializable
-    include YAML::Serializable
-
     @@select = Container.new(table_name: table_name, fields: fields)
 
     # Returns true if this object hasn't been saved yet.
@@ -60,15 +57,36 @@ abstract class Granite::Base
       !(new_record? || destroyed?)
     end
 
-    disable_granite_docs? def initialize(**args : Granite::Columns::Type)
-      set_attributes(args.to_h.transform_keys(&.to_s))
-    end
+  # Consumes the result set to set self's property values.
+  disable_granite_docs? def initialize(result : DB::ResultSet) : Nil
+    {% verbatim do %}
+      {% begin %}
+        {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
+          {% ann = column.annotation(Granite::Column) %}
+          @{{column.id}} = {% if ann[:converter] %} {{ann[:converter]}}.from_rs result {% else %} Granite::Type.from_rs(result, {{column.type}}) {% end %}
+        {% end %}
+      {% end %}
+    {% end %}
+  end
 
-    disable_granite_docs? def initialize(args : Granite::ModelArgs)
-      set_attributes(args.transform_keys(&.to_s))
-    end
-
-    disable_granite_docs? def initialize
+    disable_granite_docs? def initialize(*args, **named_args)
+      {% verbatim do %}
+        {% begin %}
+          {% for column, idx in @type.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && (!ann[:primary] || (ann[:primary] && ann[:auto] == false)) } %}
+            @{{column.id}} = if (val = args[{{idx}}]?) || (val = named_args[{{column.name.stringify}}]?)
+              val
+            else
+              {% if column.has_default_value? %}
+                {{column.default_value}}
+              {% elsif !column.type.nilable? %}
+                raise "Missing required property {{column}}"
+              {% else %}
+                nil
+              {% end %}
+            end
+          {% end %}
+        {% end %}
+      {% end %}
     end
   end
 end
