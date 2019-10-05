@@ -118,7 +118,7 @@ module Granite::Columns
 
   def set_attributes(hash : Hash(String | Symbol, Type)) : self
     {% for column in @type.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && (!ann[:primary] || (ann[:primary] && ann[:auto] == false)) } %}
-      if hash.has_key?({{column.stringify}}) && !hash[{{column.stringify}}].nil?
+      if hash.has_key?({{column.stringify}})
         begin
           val = Granite::Type.convert_type hash[{{column.stringify}}], {{column.type}}
         rescue ex : ArgumentError
