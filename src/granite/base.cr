@@ -61,10 +61,14 @@ abstract class Granite::Base
   disable_granite_docs? def initialize(result : DB::ResultSet) : Nil
     {% verbatim do %}
       {% begin %}
-        {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
-          {% ann = column.annotation(Granite::Column) %}
-          @{{column.id}} = {% if ann[:converter] %} {{ann[:converter]}}.from_rs result {% else %} Granite::Type.from_rs(result, {{column.type}}) {% end %}
-        {% end %}
+        result.column_names.each do |col|
+          case col
+          {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
+            {% ann = column.annotation(Granite::Column) %}
+            when {{column.name.stringify}} then @{{column.id}} = {% if ann[:converter] %} {{ann[:converter]}}.from_rs result {% else %} Granite::Type.from_rs(result, {{column.type}}) {% end %}
+          {% end %}
+          end
+        end
       {% end %}
     {% end %}
   end
@@ -73,16 +77,13 @@ abstract class Granite::Base
       {% verbatim do %}
         {% begin %}
           {% for column, idx in @type.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && (!ann[:primary] || (ann[:primary] && ann[:auto] == false)) } %}
-            @{{column.id}} = if (val = args[{{idx}}]?) || (val = named_args[{{column.name.stringify}}]?)
-              val
-            else
-              {% if column.has_default_value? %}
-                {{column.default_value}}
-              {% elsif !column.type.nilable? %}
-                raise "Missing required property {{column}}"
-              {% else %}
-                nil
-              {% end %}
+            %args_val{idx} = args[{{idx}}]?
+            %named_args_val{idx} = named_args[{{column.name.stringify}}]?
+
+            if !%args_val{idx}.nil?
+              @{{column.id}} = Granite::Type.convert_type %args_val{idx}, {{column.type}}
+            elsif !%named_args_val{idx}.nil?
+              @{{column.id}} = Granite::Type.convert_type %named_args_val{idx}, {{column.type}}
             end
           {% end %}
         {% end %}

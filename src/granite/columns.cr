@@ -35,26 +35,23 @@ module Granite::Columns
   # Defines a column *decl* with the given *options*.
   macro column(decl, **options)
     {% type = decl.type %}
-    # Raise an exception if the delc type has more than 2 union types or if it has 2 types without nil
-    # This prevents having a column typed to String | Int32 etc.
     {% if type.is_a?(Union) && (type.types.size > 2 || (type.types.size == 2 && !type.types.any?(&.resolve.nilable?))) %}
       {% raise "The column #{@type.name}##{decl.var} cannot consist of a Union with a type other than `Nil`." %}
     {% end %}
 
+    {% nilable = type.resolve.nilable? %}
     {% column_type = (options[:column_type] && !options[:column_type].nil?) ? options[:column_type] : nil %}
     {% converter = (options[:converter] && !options[:converter].nil?) ? options[:converter] : nil %}
     {% primary = (options[:primary] && !options[:primary].nil?) ? options[:primary] : false %}
     {% auto = (options[:auto] && !options[:auto].nil?) ? options[:auto] : false %}
     {% auto = (!options || (options && options[:auto] == nil)) && primary %}
 
-    {% nilable = (type.is_a?(Path) ? type.resolve.nilable? : (type.is_a?(Union) ? type.types.any?(&.resolve.nilable?) : (type.is_a?(Generic) ? type.resolve.nilable? : type.nilable?))) %}
-
-    {% if primary && !type.resolve.nilable? %}
+    {% if primary && !nilable %}
       {% raise "Primary key of #{@type} must be nilable" %}
     {% end %}
 
     @[Granite::Column(column_type: {{column_type}}, converter: {{converter}}, auto: {{auto}}, primary: {{primary}}, nilable: {{nilable}})]
-    {% if !primary || (primary && !auto) %} property {% else %} getter {% end %} {{decl.var}} : {{decl.type}} {% unless decl.value.is_a? Nop %} = {{decl.value}} {% end %}
+    {% if !primary || (primary && !auto) %} property{{(nilable || !decl.value.is_a?(Nop) ? "" : '!').id}} {% else %} getter {% end %} {{decl.var}} : {{decl.type}} {% unless decl.value.is_a? Nop %} = {{decl.value}} {% end %}
   end
 
   # include created_at and updated_at that will automatically be updated

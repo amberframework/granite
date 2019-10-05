@@ -48,4 +48,20 @@ module Granite::Type
   def from_rs(result : DB::ResultSet, t : Time?.class) : Time?
     result.read(Time?).try &.in(Granite.settings.default_timezone)
   end
+
+  def convert_type(value, type)
+    value
+  end
+
+  # Allow converting from interger based boolean to a `Bool` instance; such as for Sqlite.
+  def convert_type(value, type : Bool.class) : Bool
+    value == true || value == 1
+  end
+
+  # :ditto:
+  def convert_type(value, type : Bool?.class) : Bool?
+    return nil if value.nil?
+
+    value == true || value == 1
+  end
 end
