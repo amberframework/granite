@@ -78,7 +78,6 @@ abstract class Granite::Base
 
             @{{column.id}} = %args_val{idx} || %named_args_val{idx} || {{column.has_default_value? ? column.default_value : nil}}
           {% end %}
-          {{debug}}
         {% end %}
       {% end %}
     end
