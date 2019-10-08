@@ -11,6 +11,16 @@ pending "#update" do
     Parent.find!(parent.id).name.should eq "Other parent"
   end
 
+  it "allows setting a value to nil" do
+    model = Teacher.create!(name: "New Parent")
+
+    model.update(name: nil)
+
+    model.name.should be_nil
+
+    Teacher.find!(model.id).name.should be_nil
+  end
+
   it "does not update an invalid object" do
     parent = Parent.new(name: "New Parent")
     parent.save!

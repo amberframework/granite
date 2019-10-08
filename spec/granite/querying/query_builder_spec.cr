@@ -26,8 +26,8 @@ describe Granite::Query::BuilderMethods do
       {% if env("CURRENT_ADAPTER") == "sqlite" %}
         it "correctly queries bool fields" do
           Review.clear
-          Review.create(name: "one", published: 1)
-          review2 = Review.create(name: "two", published: 0)
+          Review.create(name: "one", published: true)
+          review2 = Review.create(name: "two", published: false)
 
           found = Review.where(published: [0]).select
 

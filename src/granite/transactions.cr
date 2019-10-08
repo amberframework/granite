@@ -6,10 +6,6 @@ module Granite::Transactions
       adapter.clear table_name
     end
 
-    # def create(**args)
-    #   create(args.to_h)
-    # end
-
     def create(*args, **named_args)
       instance = new(*args, **named_args)
       instance.save
@@ -17,15 +13,9 @@ module Granite::Transactions
     end
 
     def create!(*args, **named_args)
-      create! *args, **named_args
-    end
-
-    def create!(*args, **named_args)
       instance = create(*args, **named_args)
 
-      if instance.errors.any?
-        raise Granite::RecordNotSaved.new(self.name, instance)
-      end
+      raise Granite::RecordNotSaved.new(self.name, instance) if instance.errors.any?
 
       instance
     end
@@ -197,23 +187,13 @@ module Granite::Transactions
     save || raise Granite::RecordNotSaved.new(self.class.name, self)
   end
 
-  def update(**args)
-    update(args.to_h)
-  end
-
-  def update(args)
-    set_attributes(args.transform_keys(&.to_s))
-
+  def update(*args, **named_args)
+    initialize(*args, **named_args)
     save
   end
 
-  def update!(**args)
-    update!(args.to_h)
-  end
-
-  def update!(args)
-    set_attributes(args.transform_keys(&.to_s))
-
+  def update!(*args, **named_args)
+    initialize(*args, **named_args)
     save!
   end
 
