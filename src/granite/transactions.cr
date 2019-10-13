@@ -6,17 +6,15 @@ module Granite::Transactions
       adapter.clear table_name
     end
 
-    def create(*args, **named_args)
+    def create(*args, **named_args) : self
       instance = new(*args, **named_args)
       instance.save
       instance
     end
 
-    def create!(*args, **named_args)
+    def create!(*args, **named_args) : self
       instance = create(*args, **named_args)
-
-      raise Granite::RecordNotSaved.new(self.name, instance) if instance.errors.any?
-
+      instance.save!
       instance
     end
 
@@ -124,35 +122,35 @@ module Granite::Transactions
 
   private def __update
     {% begin %}
-    {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
-    {% raise raise "A primary key must be defined for #{@type.name}." unless primary_key %}
-    {% ann = primary_key.annotation(Granite::Column) %}
-    set_timestamps mode: :update
-    fields = self.class.content_fields.dup
-    params = content_values + [@{{primary_key.name.id}}]
+      {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
+      {% raise raise "A primary key must be defined for #{@type.name}." unless primary_key %}
+      {% ann = primary_key.annotation(Granite::Column) %}
+      set_timestamps mode: :update
+      fields = self.class.content_fields.dup
+      params = content_values + [@{{primary_key.name.id}}]
 
-    # Do not update created_at on update
-    if created_at_index = fields.index("created_at")
-      fields.delete_at created_at_index
-      params.delete_at created_at_index
-    end
+      # Do not update created_at on update
+      if created_at_index = fields.index("created_at")
+        fields.delete_at created_at_index
+        params.delete_at created_at_index
+      end
 
-    begin
-     self.class.adapter.update(self.class.table_name, self.class.primary_name, fields, params)
-    rescue err
-      raise DB::Error.new(err.message)
-    end
-  {% end %}
+      begin
+       self.class.adapter.update(self.class.table_name, self.class.primary_name, fields, params)
+      rescue err
+        raise DB::Error.new(err.message)
+      end
+    {% end %}
   end
 
   private def __destroy
     {% begin %}
-    {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
-    {% raise raise "A primary key must be defined for #{@type.name}." unless primary_key %}
-    {% ann = primary_key.annotation(Granite::Column) %}
-    self.class.adapter.delete(self.class.table_name, self.class.primary_name, @{{primary_key.name.id}})
-    @destroyed = true
-  {% end %}
+      {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
+      {% raise raise "A primary key must be defined for #{@type.name}." unless primary_key %}
+      {% ann = primary_key.annotation(Granite::Column) %}
+      self.class.adapter.delete(self.class.table_name, self.class.primary_name, @{{primary_key.name.id}})
+      @destroyed = true
+    {% end %}
   end
 
   # The save method will check to see if the primary exists yet. If it does it
@@ -187,16 +185,6 @@ module Granite::Transactions
     save || raise Granite::RecordNotSaved.new(self.class.name, self)
   end
 
-  def update(*args, **named_args)
-    initialize(*args, **named_args)
-    save
-  end
-
-  def update!(*args, **named_args)
-    initialize(*args, **named_args)
-    save!
-  end
-
   # Destroy will remove this from the database.
   def destroy
     begin
@@ -217,20 +205,20 @@ module Granite::Transactions
     destroy || raise Granite::RecordNotDestroyed.new(self.class.name, self)
   end
 
-  # Saves the record with the *updated_at*/*names* fields updated to the current time.
-  def touch(*fields) : Bool
+  # Saves the record with the *updated_at*/*columns* updated to the current time.
+  def touch(*columns) : Bool
     raise "Cannot touch on a new record object" unless persisted?
     {% begin %}
-      fields.each do |field|
-        case field.to_s
+      columns.each do |column|
+        case column.to_s
           {% for time_field in @type.instance_vars.select { |ivar| ivar.type == Time? } %}
             when {{time_field.stringify}} then @{{time_field.id}} = Time.local(Granite.settings.default_timezone).at_beginning_of_second
           {% end %}
         else
-          if {{@type.instance_vars.map(&.name.stringify)}}.includes? field.to_s
-            raise "{{@type.name}}.#{field} cannot be touched.  It is not of type `Time`."
+          if {{@type.instance_vars.map(&.name.stringify)}}.includes? column.to_s
+            raise "{{@type.name}}.#{column} cannot be touched.  It is not of type `Time`."
           else
-            raise "Field '#{field}' does not exist on type '{{@type.name}}'."
+            raise "Column '#{column}' does not exist on type '{{@type.name}}'."
           end
         end
       end

@@ -15,12 +15,6 @@ describe "#save" do
     parent.persisted?.should be_false
   end
 
-  pending "does not save a model with type conversion errors" do
-    model = Comment.new(articleid: "foo")
-    model.errors.size.should eq 1
-    model.save.should be_false
-  end
-
   it "updates an existing object" do
     Parent.clear
     parent = Parent.new
@@ -44,17 +38,6 @@ describe "#save" do
     parent.save
     parent = Parent.find! parent.id
     parent.name.should eq "Test Parent"
-  end
-
-  pending "does not update when the conflicted primary key is given to the new record" do
-    parent1 = Parent.new
-    parent1.name = "Test Parent"
-    parent1.save.should be_true
-
-    parent2 = Parent.new
-    parent2.id = parent1.id
-    parent2.name = "Test Parent2"
-    parent2.save.should be_false
   end
 
   describe "with a custom primary key" do

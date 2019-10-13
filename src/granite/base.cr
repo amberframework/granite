@@ -69,17 +69,6 @@ abstract class Granite::Base
       {% end %}
     end
 
-    disable_granite_docs? def initialize(*args, **named_args)
-      {% verbatim do %}
-        {% begin %}
-          {% for column, idx in @type.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && (!ann[:primary] || (ann[:primary] && ann[:auto] == false)) } %}
-            %args_val{idx} = args[{{idx}}]?
-            %named_args_val{idx} = named_args[{{column.name.stringify}}]? || named_args[{{column.name.symbolize}}]?
-
-            @{{column.id}} = %args_val{idx} || %named_args_val{idx} || {{column.has_default_value? ? column.default_value : nil}}
-          {% end %}
-        {% end %}
-      {% end %}
-    end
+    def initialize; end
   end
 end

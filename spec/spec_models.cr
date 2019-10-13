@@ -12,6 +12,8 @@ end
     connection {{ adapter_literal }}
     table parents
 
+    def initialize(@name : String?); end
+
     column id : Int64?, primary: true
     column name : String?
     timestamps
@@ -37,6 +39,8 @@ end
     connection {{ adapter_literal }}
     table students
 
+    def initialize(@name : String?); end
+
     column id : Int64?, primary: true
     column name : String?
 
@@ -47,6 +51,8 @@ end
   class Klass < Granite::Base
     connection {{ adapter_literal }}
     table klasses
+
+    def initialize(@name : String?); end
 
     column id : Int64?, primary: true
     column name : String?
@@ -70,6 +76,8 @@ end
   class School < Granite::Base
     connection {{ adapter_literal }}
     table schools
+
+    def initialize(@name : String?); end
 
     column custom_id : Int64?, primary: true
     column name : String?
@@ -128,6 +136,8 @@ end
     connection {{ adapter_literal }}
     table nation_counties
 
+    def initialize(@name : String?); end
+
     column id : Int64?, primary: true
     column name : String?
   end
@@ -135,6 +145,16 @@ end
   class Review < Granite::Base
     connection {{ adapter_literal }}
     table reviews
+
+    def initialize(
+        @name : String? = nil,
+        @downvotes : Int32? = nil,
+        @upvotes : Int64? = nil,
+        @sentiment : Float32? = nil,
+        @interest : Float64? = nil,
+        @published : Bool? = nil
+      )
+    end
 
     column id : Int64?, primary: true
     column name : String?
@@ -157,6 +177,8 @@ end
     connection {{ adapter_literal }}
     table "select"
 
+    def initialize(@all : String?); end
+
     column id : Int64?, primary: true
     column all : String?
   end
@@ -164,6 +186,8 @@ end
   class Callback < Granite::Base
     connection {{ adapter_literal }}
     table callbacks
+
+    def initialize(@name : String?); end
 
     column id : Int64?, primary: true
     column name : String?
@@ -182,6 +206,8 @@ end
     connection {{ adapter_literal }}
     table callbacks_with_abort
 
+    def initialize(@name : String? = nil, @abort_at : String? = nil, @do_abort : Bool? = nil); end
+
     column abort_at : String?, primary: true, auto: false
     column do_abort : Bool?
     column name : String?
@@ -199,6 +225,8 @@ end
   class Kvs < Granite::Base
     connection {{ adapter_literal }}
     table kvs
+
+    def initialize(@k : String, @v : String? = nil); end
 
     column k : String?, primary: true, auto: false
     column v : String?
@@ -224,11 +252,11 @@ end
     connection {{ adapter_literal }}
     table books
 
+    def initialize(@name : String?); end
+
     column id : Int32?, primary: true
     column name : String?
 
-    @[JSON::Field(ignore: true)]
-    @[YAML::Field(ignore: true)]
     belongs_to publisher : Company, foreign_key: publisher_id : Int32?
     has_many :book_reviews, class_name: BookReview
     belongs_to author : Person
@@ -248,6 +276,8 @@ end
     connection {{ adapter_literal }}
     table items
 
+    def initialize(@item_name : String?, @item_id : String? = nil); end
+
     column item_id : String?, primary: true, auto: false
     column item_name : String?
 
@@ -262,6 +292,8 @@ end
     connection {{ adapter_literal }}
     table non_auto_default_pk
 
+    def initialize(@name : String? = nil, @id : Int64? = nil); end
+
     column id : Int64?, primary: true, auto: false
     column name : String?
   end
@@ -269,6 +301,8 @@ end
   class NonAutoCustomPK < Granite::Base
     connection {{ adapter_literal }}
     table non_auto_custom_pk
+
+    def initialize(@name : String? = nil, @custom_id : Int64? = nil); end
 
     column custom_id : Int64?, primary: true, auto: false
     column name : String?
@@ -285,6 +319,8 @@ end
   class Comment < Granite::Base
     connection {{ adapter_literal }}
     table comments
+
+    def initialize(@commentbody : String? = nil, @articleid : Int64? = nil); end
 
     column id : Int64?, primary: true
     column commentbody : String?
@@ -321,6 +357,8 @@ end
   class Todo < Granite::Base
     connection {{ adapter_literal }}
     table todos
+
+    def initialize(@name : String?, @priority : Int32?); end
 
     column id : Int64?, primary: true
     column name : String?
@@ -381,6 +419,8 @@ end
     connection {{ adapter_literal }}
     table uuids
 
+    def initialize(@uuid : UUID?, @field_uuid : UUID?); end
+
     column uuid : UUID?, primary: true, converter: Granite::Converters::Uuid(String), auto: false
     column field_uuid : UUID?, converter: Granite::Converters::Uuid(String)
   end
@@ -427,15 +467,19 @@ end
     connection {{ adapter_literal }}
     table defaults
 
+    def initialize(@name : String = "Jim", @is_alive : Bool = true, @age : Float64 = 0.0); end
+
     column id : Int64?, primary: true
-    column name : String = "Jim"
-    column is_alive : Bool = true
-    column age : Float64 = 0.0
+    column name : String
+    column is_alive : Bool
+    column age : Float64
   end
 
   class TimeTest < Granite::Base
     connection {{ adapter_literal }}
     table times
+
+    def initialize(@test : Time? = nil, @name : String? = nil); end
 
     column id : Int64?, primary: true
     column test : Time?
@@ -454,6 +498,8 @@ end
   class EventCon < Granite::Base
     connection {{ adapter_literal }}
     table "event_cons"
+
+    def initialize(@con_name : String, @event_name : String?); end
 
     column id : Int64?, primary: true
     column con_name : String
@@ -536,6 +582,8 @@ end
     class ConverterModel < Granite::Base
       connection {{ adapter_literal }}
       table converters
+
+      def initialize(@binary_uuid : UUID?, @string_uuid : UUID?); end
 
       column id : Int64?, primary: true
 

@@ -6,7 +6,7 @@ describe "#touch" do
   end
 
   it "should raise on non existent field" do
-    expect_raises Exception, "Field 'foo' does not exist on type 'TimeTest'." do
+    expect_raises Exception, "Column 'foo' does not exist on type 'TimeTest'." do
       model = TimeTest.create(name: "foo")
       model.touch(:foo)
     end
