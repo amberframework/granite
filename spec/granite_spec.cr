@@ -51,6 +51,18 @@ describe Granite::Base do
     end
   end
 
+  describe JSON do
+    it "should not include internal ivars" do
+      DefaultValues.new.to_json.should eq %({"name":"Jim","is_alive":true,"age":0.0})
+    end
+  end
+
+  describe YAML do
+    it "should not include internal ivars" do
+      DefaultValues.new.to_yaml.should eq %(---\nname: Jim\nis_alive: true\nage: 0.0\n)
+    end
+  end
+
   describe Logger do
     describe "when logger is set to IO" do
       it "should be logged as DEBUG" do

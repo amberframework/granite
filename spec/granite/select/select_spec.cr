@@ -28,7 +28,7 @@ describe "custom select" do
     EventCon.create(con_name: "Con2", event_name: "Event2")
 
     EventCon.all.each_with_index do |env, idx|
-      env.id.should be_nil
+      env.id?.should be_nil
       env.con_name.should eq "Con#{idx}"
       env.event_name.should be_nil
     end

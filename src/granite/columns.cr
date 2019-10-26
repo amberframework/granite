@@ -46,12 +46,12 @@ module Granite::Columns
     {% auto = (options[:auto] && !options[:auto].nil?) ? options[:auto] : false %}
     {% auto = (!options || (options && options[:auto] == nil)) && primary %}
 
-    {% if primary && !nilable %}
-      {% raise "Primary key of #{@type} must be nilable" %}
+    {% if primary && nilable %}
+      {% raise "Primary key of #{@type} must be not-nilable" %}
     {% end %}
 
     @[Granite::Column(column_type: {{column_type}}, converter: {{converter}}, auto: {{auto}}, primary: {{primary}}, nilable: {{nilable}})]
-    {% if !primary || (primary && !auto) %} property{{(nilable || !decl.value.is_a?(Nop) ? "" : '!').id}} {% else %} getter {% end %} {{decl.var}} : {{decl.type}} {% unless decl.value.is_a? Nop %} = {{decl.value}} {% end %}
+    {% if !primary || (primary && !auto) %} property{{(nilable || !decl.value.is_a?(Nop) ? "" : '!').id}} {% else %} getter! {% end %} {{decl.var}} : {{decl.type}} {% unless decl.value.is_a? Nop %} = {{decl.value}} {% end %}
   end
 
   # include created_at and updated_at that will automatically be updated
@@ -64,12 +64,14 @@ module Granite::Columns
     fields = {{"Hash(String, Union(#{@type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) }.map(&.type.id).splat})).new".id}}
 
     {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
+        {% ann = column.annotation(Granite::Column) %}
+
         {% if column.type.id == Time.id %}
-          fields["{{column.name}}"] = {{column.name.id}}.try(&.in(Granite.settings.default_timezone).to_s(Granite::DATETIME_FORMAT))
+          fields["{{column}}"] = {{column.id}}.try(&.in(Granite.settings.default_timezone).to_s(Granite::DATETIME_FORMAT))
         {% elsif column.type.id == Slice.id %}
-          fields["{{column.name}}"] = {{column.name.id}}.try(&.to_s(""))
+          fields["{{column}}"] = {{column.id}}.try(&.to_s(""))
         {% else %}
-          fields["{{column.name}}"] = {{column.name.id}}
+          fields["{{column}}"] = @{{column.id}}
         {% end %}
       {% end %}
 
@@ -92,7 +94,7 @@ module Granite::Columns
     {% begin %}
       {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
       {% raise raise "A primary key must be defined for #{@type.name}." unless primary_key %}
-      {{primary_key.id}}
+      {{primary_key.id}}?
     {% end %}
   end
 end

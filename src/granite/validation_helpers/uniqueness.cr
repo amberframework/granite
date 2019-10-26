@@ -5,7 +5,7 @@ module Granite::ValidationHelpers
 
       instance = self.find_by({{field.id}}: model.{{field.id}})
 
-      !(instance && instance.id != model.id)
+      !(instance && instance.id? != model.id?)
     end
   end
 end

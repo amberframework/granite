@@ -14,7 +14,7 @@ end
 
     def initialize(@name : String?); end
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column name : String?
     timestamps
 
@@ -29,7 +29,7 @@ end
     connection {{ adapter_literal }}
     table teachers
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column name : String?
 
     has_many :klasses, class_name: Klass
@@ -41,7 +41,7 @@ end
 
     def initialize(@name : String?); end
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column name : String?
 
     has_many :enrollments, class_name: Enrollment
@@ -54,7 +54,7 @@ end
 
     def initialize(@name : String?); end
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column name : String?
 
     belongs_to teacher : Teacher
@@ -67,7 +67,7 @@ end
     connection {{ adapter_literal }}
     table enrollments
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
 
     belongs_to :student
     belongs_to :klass
@@ -79,7 +79,7 @@ end
 
     def initialize(@name : String?); end
 
-    column custom_id : Int64?, primary: true
+    column custom_id : Int64, primary: true
     column name : String?
   end
 
@@ -87,7 +87,7 @@ end
     connection {{ adapter_literal }}
     table users
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column email : String?
 
     has_one :profile
@@ -97,7 +97,7 @@ end
     connection {{ adapter_literal }}
     table characters
 
-    column character_id : Int32?, primary: true, auto: false
+    column character_id : Int32, primary: true, auto: false
     column name : String
   end
 
@@ -105,7 +105,7 @@ end
     connection {{ adapter_literal }}
     table couriers
 
-    column courier_id : Int32?, primary: true, auto: false
+    column courier_id : Int32, primary: true, auto: false
     column issuer_id : Int32
 
     belongs_to service : CourierService, primary_key: "owner_id"
@@ -116,7 +116,7 @@ end
     connection {{ adapter_literal }}
     table services
 
-    column owner_id : Int64?, primary: true, auto: false
+    column owner_id : Int64, primary: true, auto: false
     column name : String
 
     has_many :couriers, class_name: Courier, foreign_key: "service_id"
@@ -126,7 +126,7 @@ end
     connection {{ adapter_literal }}
     table profiles
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column name : String?
 
     belongs_to :user
@@ -138,7 +138,7 @@ end
 
     def initialize(@name : String?); end
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column name : String?
   end
 
@@ -156,7 +156,7 @@ end
       )
     end
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column name : String?
     column downvotes : Int32?
     column upvotes : Int64?
@@ -170,7 +170,7 @@ end
     connection {{ adapter_literal }}
     table empties
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
   end
 
   class ReservedWord < Granite::Base
@@ -179,7 +179,7 @@ end
 
     def initialize(@all : String?); end
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column all : String?
   end
 
@@ -189,7 +189,7 @@ end
 
     def initialize(@name : String?); end
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column name : String?
 
     property history : IO::Memory = IO::Memory.new
@@ -208,7 +208,7 @@ end
 
     def initialize(@name : String? = nil, @abort_at : String? = nil, @do_abort : Bool? = nil); end
 
-    column abort_at : String?, primary: true, auto: false
+    column abort_at : String, primary: true, auto: false
     column do_abort : Bool?
     column name : String?
 
@@ -228,7 +228,7 @@ end
 
     def initialize(@k : String, @v : String? = nil); end
 
-    column k : String?, primary: true, auto: false
+    column k : String, primary: true, auto: false
     column v : String?
   end
 
@@ -236,7 +236,7 @@ end
     connection {{ adapter_literal }}
     table people
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column name : String?
   end
 
@@ -244,7 +244,7 @@ end
     connection {{ adapter_literal }}
     table companies
 
-    column id : Int32?, primary: true
+    column id : Int32, primary: true
     column name : String?
   end
 
@@ -254,7 +254,7 @@ end
 
     def initialize(@name : String?); end
 
-    column id : Int32?, primary: true
+    column id : Int32, primary: true
     column name : String?
 
     belongs_to publisher : Company, foreign_key: publisher_id : Int32?
@@ -266,7 +266,7 @@ end
     connection {{ adapter_literal }}
     table book_reviews
 
-    column id : Int32?, primary: true
+    column id : Int32, primary: true
     column body : String?
 
     belongs_to book : Book, foreign_key: book_id : Int32?
@@ -278,7 +278,7 @@ end
 
     def initialize(@item_name : String?, @item_id : String? = nil); end
 
-    column item_id : String?, primary: true, auto: false
+    column item_id : String, primary: true, auto: false
     column item_name : String?
 
     before_create :generate_uuid
@@ -294,7 +294,7 @@ end
 
     def initialize(@name : String? = nil, @id : Int64? = nil); end
 
-    column id : Int64?, primary: true, auto: false
+    column id : Int64, primary: true, auto: false
     column name : String?
   end
 
@@ -304,7 +304,7 @@ end
 
     def initialize(@name : String? = nil, @custom_id : Int64? = nil); end
 
-    column custom_id : Int64?, primary: true, auto: false
+    column custom_id : Int64, primary: true, auto: false
     column name : String?
   end
 
@@ -312,7 +312,7 @@ end
     connection {{ adapter_literal }}
     table articles
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column articlebody : String?
   end
 
@@ -322,7 +322,7 @@ end
 
     def initialize(@commentbody : String? = nil, @articleid : Int64? = nil); end
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column commentbody : String?
     column articleid : Int64?
   end
@@ -330,7 +330,7 @@ end
   class SongThread < Granite::Base
     connection {{ env("CURRENT_ADAPTER").id }}
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column name : String?
   end
 
@@ -338,7 +338,7 @@ end
     connection {{ env("CURRENT_ADAPTER").id }}
     table custom_table_name
 
-    column custom_primary_key : Int64?, primary: true
+    column custom_primary_key : Int64, primary: true
     column name : String?
   end
 
@@ -348,7 +348,7 @@ end
     connection {{ adapter_literal }}
     table todos
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column name : String?
     column priority : Int32?
     timestamps
@@ -360,7 +360,7 @@ end
 
     def initialize(@name : String?, @priority : Int32?); end
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column name : String?
     column priority : Int32?
     timestamps
@@ -370,7 +370,7 @@ end
     connection {{ adapter_literal }}
     table after_json_init
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column name : String?
     column priority : Int32?
 
@@ -382,7 +382,7 @@ end
   class ArticleViewModel < Granite::Base
     connection {{ adapter_literal }}
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column articlebody : String?
     column commentbody : String?
 
@@ -396,7 +396,7 @@ end
     class ArrayModel < Granite::Base
       connection {{ adapter_literal }}
 
-      column id : Int32?, primary: true
+      column id : Int32, primary: true
       column str_array : Array(String)?
       column i16_array : Array(Int16)?
       column i32_array : Array(Int32)?
@@ -412,7 +412,7 @@ end
     connection {{ adapter_literal }}
     table uuids
 
-    column uuid : UUID?, primary: true, converter: Granite::Converters::Uuid(String)
+    column uuid : UUID, primary: true, converter: Granite::Converters::Uuid(String)
   end
 
   class UUIDNaturalModel < Granite::Base
@@ -421,7 +421,7 @@ end
 
     def initialize(@uuid : UUID?, @field_uuid : UUID?); end
 
-    column uuid : UUID?, primary: true, converter: Granite::Converters::Uuid(String), auto: false
+    column uuid : UUID, primary: true, converter: Granite::Converters::Uuid(String), auto: false
     column field_uuid : UUID?, converter: Granite::Converters::Uuid(String)
   end
 
@@ -429,7 +429,7 @@ end
     connection {{ adapter_literal }}
     table todos_json
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
 
     @[JSON::Field(key: "task_name")]
     column name : String?
@@ -448,7 +448,7 @@ end
     connection {{ adapter_literal }}
     table todos_yaml
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
 
     @[YAML::Field(key: "task_name")]
     column name : String?
@@ -464,12 +464,15 @@ end
   end
 
   class DefaultValues < Granite::Base
+    include JSON::Serializable
+    include YAML::Serializable
+
     connection {{ adapter_literal }}
     table defaults
 
     def initialize(@name : String = "Jim", @is_alive : Bool = true, @age : Float64 = 0.0); end
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column name : String
     column is_alive : Bool
     column age : Float64
@@ -481,7 +484,7 @@ end
 
     def initialize(@test : Time? = nil, @name : String? = nil); end
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column test : Time?
     column name : String?
     timestamps
@@ -491,7 +494,7 @@ end
     connection {{ adapter_literal }}
     table manual_column_types
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column foo : UUID?, column_type: "DECIMAL(12, 10)"
   end
 
@@ -501,7 +504,7 @@ end
 
     def initialize(@con_name : String, @event_name : String?); end
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column con_name : String
     column event_name : String?
 
@@ -516,7 +519,7 @@ end
 
     belongs_to :user
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column int32 : Int32
     column float32 : Float32
     column float : Float64
@@ -543,7 +546,7 @@ end
     connection {{ adapter_literal }}
     table enum_model
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column my_enum : MyEnum?, column_type: "TEXT", converter: Granite::Converters::Enum(MyEnum, String)
   end
 
@@ -552,7 +555,7 @@ end
       connection {{ adapter_literal }}
       table converters
 
-      column id : Int64?, primary: true
+      column id : Int64, primary: true
 
       column binary_json : MyType?, column_type: "BYTEA", converter: Granite::Converters::Json(MyType, Bytes)
       column string_json : MyType?, column_type: "JSON", converter: Granite::Converters::Json(MyType, JSON::Any)
@@ -585,7 +588,7 @@ end
 
       def initialize(@binary_uuid : UUID?, @string_uuid : UUID?); end
 
-      column id : Int64?, primary: true
+      column id : Int64, primary: true
 
       column binary_json : MyType?, column_type: "BLOB", converter: Granite::Converters::Json(MyType, Bytes)
       column string_json : MyType?, column_type: "TEXT", converter: Granite::Converters::Json(MyType, String)
@@ -602,7 +605,7 @@ end
       connection {{ adapter_literal }}
       table converters
 
-      column id : Int64?, primary: true
+      column id : Int64, primary: true
 
       column binary_json : MyType?, column_type: "BLOB", converter: Granite::Converters::Json(MyType, Bytes)
       column string_json : MyType?, column_type: "TEXT", converter: Granite::Converters::Json(MyType, String)
@@ -621,7 +624,7 @@ end
     class NilTest < Granite::Base
       connection {{ adapter_literal }}
 
-      column id : Int64?, primary: true
+      column id : Int64, primary: true
 
       column first_name_not_nil : String?
       column last_name_not_nil : String?
@@ -651,7 +654,7 @@ end
     class BlankTest < Granite::Base
       connection {{ adapter_literal }}
 
-      column id : Int64?, primary: true
+      column id : Int64, primary: true
 
       column first_name_not_blank : String?
       column last_name_not_blank : String?
@@ -669,7 +672,7 @@ end
     class ChoiceTest < Granite::Base
       connection {{ adapter_literal }}
 
-      column id : Int64?, primary: true
+      column id : Int64, primary: true
 
       column number_symbol : Int32?
       column type_array_symbol : String?
@@ -686,7 +689,7 @@ end
     class LessThanTest < Granite::Base
       connection {{ adapter_literal }}
 
-      column id : Int64?, primary: true
+      column id : Int64, primary: true
 
       column int_32_lt : Int32?
       column float_32_lt : Float32?
@@ -704,7 +707,7 @@ end
     class GreaterThanTest < Granite::Base
       connection {{ adapter_literal }}
 
-      column id : Int64?, primary: true
+      column id : Int64, primary: true
 
       column int_32_lt : Int32?
       column float_32_lt : Float32?
@@ -722,7 +725,7 @@ end
     class LengthTest < Granite::Base
       connection {{ adapter_literal }}
 
-      column id : Int64?, primary: true
+      column id : Int64, primary: true
       column title : String?
       column description : String?
 
@@ -733,7 +736,7 @@ end
     class PersonUniqueness < Granite::Base
       connection {{ adapter_literal }}
 
-      column id : Int64?, primary: true
+      column id : Int64, primary: true
       column name : String?
 
       validate_uniqueness :name
@@ -742,7 +745,7 @@ end
     class ExclusionTest < Granite::Base
       connection {{ adapter_literal }}
 
-      column id : Int64?, primary: true
+      column id : Int64, primary: true
       column name : String?
 
       validate_exclusion :name, ["test_name"]

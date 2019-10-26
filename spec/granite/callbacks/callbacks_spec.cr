@@ -59,7 +59,7 @@ describe "(callback feature)" do
     context "on a single model" do
       it "should successfully trigger the callback" do
         item = Item.new(item_name: "item1")
-        item.item_id.should be_nil
+        item.item_id?.should be_nil
 
         item.before_create
 
@@ -75,7 +75,7 @@ describe "(callback feature)" do
         items << Item.new(item_name: "item3")
         items << Item.new(item_name: "item4")
 
-        items.all? { |item| item.item_id.nil? }.should be_true
+        items.all? { |item| item.item_id?.nil? }.should be_true
 
         items.each(&.before_create)
 

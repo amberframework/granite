@@ -5,7 +5,7 @@ require "../../spec_helper"
   class NameTest < Granite::Base
     connection {{ adapter_literal }}
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column name : String?
 
     validate :name, "cannot be blank", ->(s : NameTest) do
@@ -16,7 +16,7 @@ require "../../spec_helper"
   class EmailTest < Granite::Base
     connection {{ adapter_literal }}
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column email : String?
 
     validate :email, "cannot be blank" do |email_test|
@@ -27,7 +27,7 @@ require "../../spec_helper"
   class PasswordTest < Granite::Base
     connection {{ adapter_literal }}
 
-    column id : Int64?, primary: true
+    column id : Int64, primary: true
     column password : String?
     column password_validation : String?
 

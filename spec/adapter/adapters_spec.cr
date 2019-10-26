@@ -3,11 +3,11 @@ require "../spec_helper"
 class Foo < Granite::Base
   connection sqlite
 
-  column id : Int64?, primary: true
+  column id : Int64, primary: true
 end
 
 class Bar < Granite::Base
-  column id : Int64?, primary: true
+  column id : Int64, primary: true
 end
 
 describe Granite::Connections do

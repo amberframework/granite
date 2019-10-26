@@ -42,9 +42,13 @@ abstract class Granite::Base
   macro inherited
     @@select = Container.new(table_name: table_name, fields: fields)
 
+    @[JSON::Field(ignore: true)]
+    @[YAML::Field(ignore: true)]
     # Returns true if this object hasn't been saved yet.
     disable_granite_docs? property? new_record : Bool = true
 
+    @[JSON::Field(ignore: true)]
+    @[YAML::Field(ignore: true)]
     # Returns true if this object has been destroyed.
     disable_granite_docs? getter? destroyed : Bool = false
 
