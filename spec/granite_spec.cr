@@ -20,6 +20,16 @@ describe Granite::Base do
     f.table.should eq "teachers"
   end
 
+  it "should allow false as a column value" do
+    model = BoolModel.create active: false
+
+    model.active.should be_false
+    model.id.should eq 1
+
+    fetched_model = BoolModel.find! model.id
+    fetched_model.active.should be_false
+  end
+
   describe "instantiation" do
     describe "with default values" do
       it "should instaniate correctly" do
