@@ -56,26 +56,52 @@ module Granite::Associations
   end
 
   macro has_one(model, **options)
-    {% if model.is_a? TypeDeclaration %}
-      {% method_name = model.var %}
-      {% class_name = model.type %}
-    {% else %}
-      {% method_name = model.id %}
-      {% class_name = options[:class_name] || model.id.camelcase %}
-    {% end %}
-    {% foreign_key = options[:foreign_key] || @type.stringify.split("::").last.underscore + "_id" %}
-    {% primary_key = options[:primary_key] || "id" %}
+    {%
+      nilable = false
+      if model.is_a? TypeDeclaration
+        name = model.var.id
+        type = model.type
+      else
+        name = model.id
+        type = options[:class_name] || name.camelcase
+      end
+      if type.is_a? Union
+        nilable = type.types.any?(&.resolve?.== Nil)
+        type = type.types.find(&.resolve?.!= Nil)
+      end
+      if nilable
+        nilable_method = name
+        not_nil_method = name + "!"
+      else
+        nilable_method = name + "?"
+        not_nil_method = name
+      end
+      type = type.id
+    %}
 
-    def {{method_name}} : {{class_name}}?
-      {{class_name.id}}.find_by({{foreign_key.id}}: self.{{primary_key.id}})
+    {% foreign_key = (options[:foreign_key] || @type.stringify.split("::").last.underscore + "_id").id %}
+    {% primary_key = (options[:primary_key] || "id").id %}
+
+    @[JSON::Field(ignore: true)]
+    @[YAML::Field(ignore: true)]
+    @{{name}} : {{type}}?
+
+    def {{nilable_method}} : {{type}}?
+      @{{name}} ||= {{type}}.find_by({{foreign_key}}: self.{{primary_key}})
     end
 
-    def {{method_name}}! : {{class_name}}
-      {{class_name.id}}.find_by!({{foreign_key.id}}: self.{{primary_key.id}})
+    def {{not_nil_method}} : {{type}}
+      @{{name}} ||= {{type}}.find_by!({{foreign_key}}: self.{{primary_key}})
     end
 
-    def {{method_name}}=(child)
+    def {{name}}=(child : {{type}}) : {{type}}
       child.{{foreign_key.id}} = self.{{primary_key.id}}
+      @{{name}} = child
+    end
+
+    def reload_{{name}} : {{type}}?
+      @{{name}} = nil
+      {{nilable_method}}
     end
   end
 

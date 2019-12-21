@@ -101,7 +101,7 @@ end
     column issuer_id : Int32
 
     belongs_to service : CourierService?, primary_key: "owner_id"
-    has_one issuer : Character, primary_key: "issuer_id", foreign_key: "character_id"
+    has_one issuer : Character?, primary_key: "issuer_id", foreign_key: "character_id"
   end
 
   class CourierService < Granite::Base
