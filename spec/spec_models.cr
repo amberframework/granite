@@ -476,6 +476,14 @@ end
     column float : Float64
   end
 
+  class BoolModel < Granite::Base
+    connection {{ adapter_literal }}
+    table "bool_model"
+
+    column id : Int64, primary: true
+    column active : Bool = true
+  end
+
   struct MyType
     include JSON::Serializable
 
