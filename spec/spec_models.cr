@@ -100,7 +100,7 @@ end
     column courier_id : Int32, primary: true, auto: false
     column issuer_id : Int32
 
-    belongs_to service : CourierService, primary_key: "owner_id"
+    belongs_to service : CourierService?, primary_key: "owner_id"
     has_one issuer : Character, primary_key: "issuer_id", foreign_key: "character_id"
   end
 
@@ -229,7 +229,7 @@ end
 
     @[JSON::Field(ignore: true)]
     @[YAML::Field(ignore: true)]
-    belongs_to publisher : Company, foreign_key: publisher_id : Int32?
+    belongs_to publisher : Company?, foreign_key: publisher_id : Int32?
     has_many :book_reviews, class_name: BookReview
     belongs_to author : Person
   end

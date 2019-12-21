@@ -1,7 +1,7 @@
 require "../../spec_helper"
 
 describe "belongs_to" do
-  it "provides a getter for the foreign entity" do
+  it "provides getters for the foreign entity" do
     teacher = Teacher.new
     teacher.name = "Test teacher"
     teacher.save
@@ -12,6 +12,33 @@ describe "belongs_to" do
     klass.save
 
     klass.teacher.id.should eq teacher.id
+    klass.teacher?.try(&.id).should eq teacher.id
+  end
+
+  it "provides getters that return cached foreign entity" do
+    teacher = Teacher.new
+    teacher.name = "Test teacher"
+    teacher.save
+
+    klass = Klass.new
+    klass.name = "Test klass"
+    klass.teacher_id = teacher.id
+    klass.save
+
+    klass.teacher.hash.should eq klass.teacher?.hash
+  end
+
+  it "provides a method to reload cache" do
+    teacher = Teacher.new
+    teacher.name = "Test teacher"
+    teacher.save
+
+    klass = Klass.new
+    klass.name = "Test klass"
+    klass.teacher_id = teacher.id
+    klass.save
+
+    klass.teacher.hash.should_not eq klass.reload_teacher.hash
   end
 
   it "provides a setter for the foreign entity" do
@@ -63,7 +90,7 @@ describe "belongs_to" do
     book.publisher = publisher
     book.save
 
-    book.publisher.name.should eq "Amber Framework"
+    book.publisher!.name.should eq "Amber Framework"
   end
 
   it "supports json_options" do
@@ -91,9 +118,13 @@ describe "belongs_to" do
   end
 
   it "provides a method to retrieve parent object that will raise if record is not found" do
+    klass = Klass.new
+    klass.name = "Test klass"
+
     book = Book.new
     book.name = "Introduction to Granite"
 
+    expect_raises Granite::Querying::NotFound, "No Teacher found where id is NULL" { klass.teacher }
     expect_raises Granite::Querying::NotFound, "No Company found where id is NULL" { book.publisher! }
   end
 
