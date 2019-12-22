@@ -10,6 +10,11 @@ class Granite::AssociationCollection(Owner, Target)
     @collection ||= Target.all(query, [owner.primary_key_value])
   end
 
+  def reload
+    @collection = nil
+    all
+  end
+
   def all(clause, params = [] of DB::Any)
     Target.all(
       [query, clause].join(" "),

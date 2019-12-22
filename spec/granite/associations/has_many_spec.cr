@@ -67,6 +67,7 @@ describe "has_many" do
 
     teacher.klasses.hash.should_not eq teacher.reload_klasses.hash
     teacher.klasses.all.hash.should_not eq teacher.reload_klasses.all.hash
+    teacher.klasses.all.hash.should_not eq teacher.klasses.reload.hash
   end
 
   context "querying association" do
