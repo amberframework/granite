@@ -23,6 +23,52 @@ describe "has_many" do
     teacher.klasses.size.should eq 2
   end
 
+  it "provides a getter that returns cached associated objects" do
+    teacher = Teacher.new
+    teacher.name = "test teacher"
+    teacher.save
+
+    class1 = Klass.new
+    class1.name = "Test class 1"
+    class1.teacher = teacher
+    class1.save
+
+    class2 = Klass.new
+    class2.name = "Test class 2"
+    class2.teacher = teacher
+    class2.save
+
+    class3 = Klass.new
+    class3.name = "Test class 3"
+    class3.save
+
+    teacher.klasses.hash.should eq teacher.klasses.hash
+    teacher.klasses.all.hash.should eq teacher.klasses.all.hash
+  end
+
+  it "provides a method to reload cache" do
+    teacher = Teacher.new
+    teacher.name = "test teacher"
+    teacher.save
+
+    class1 = Klass.new
+    class1.name = "Test class 1"
+    class1.teacher = teacher
+    class1.save
+
+    class2 = Klass.new
+    class2.name = "Test class 2"
+    class2.teacher = teacher
+    class2.save
+
+    class3 = Klass.new
+    class3.name = "Test class 3"
+    class3.save
+
+    teacher.klasses.hash.should_not eq teacher.reload_klasses.hash
+    teacher.klasses.all.hash.should_not eq teacher.reload_klasses.all.hash
+  end
+
   context "querying association" do
     it "#all" do
       teacher = Teacher.new

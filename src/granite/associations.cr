@@ -106,17 +106,30 @@ module Granite::Associations
   end
 
   macro has_many(model, **options)
-    {% if model.is_a? TypeDeclaration %}
-      {% method_name = model.var %}
-      {% class_name = model.type %}
-    {% else %}
-      {% method_name = model.id %}
-      {% class_name = options[:class_name] || model.id.camelcase %}
-    {% end %}
-    {% foreign_key = options[:foreign_key] || @type.stringify.split("::").last.underscore + "_id" %}
-    {% through = options[:through] %}
-    def {{method_name.id}}
-      Granite::AssociationCollection(self, {{class_name.id}}).new(self, {{foreign_key}}, {{through}})
+    {%
+      if model.is_a? TypeDeclaration
+        name = model.var.id
+        type = model.type
+      else
+        name = model.id
+        type = options[:class_name] || model.id.camelcase
+      end
+    %}
+    {%
+      type = type.id
+      foreign_key = (options[:foreign_key] || @type.stringify.split("::").last.underscore + "_id").id
+      through = options[:through] && options[:through].id.stringify
+    %}
+
+    @{{name}} : Granite::AssociationCollection(self, {{type}})?
+
+    def {{name}} : Granite::AssociationCollection(self, {{type}})
+      @{{name}} ||= Granite::AssociationCollection(self, {{type}}).new(self, "{{foreign_key}}", {{through}})
+    end
+
+    def reload_{{name}} : Granite::AssociationCollection(self, {{type}})
+      @{{name}} = nil
+      {{name}}
     end
   end
 end

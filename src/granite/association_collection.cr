@@ -1,10 +1,16 @@
 class Granite::AssociationCollection(Owner, Target)
   forward_missing_to all
 
+  @collection : Collection(Target)?
+
   def initialize(@owner : Owner, @foreign_key : (Symbol | String), @through : (Symbol | String | Nil) = nil)
   end
 
-  def all(clause = "", params = [] of DB::Any)
+  def all
+    @collection ||= Target.all(query, [owner.primary_key_value])
+  end
+
+  def all(clause, params = [] of DB::Any)
     Target.all(
       [query, clause].join(" "),
       [owner.primary_key_value] + params
