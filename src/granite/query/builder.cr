@@ -31,6 +31,7 @@ class Granite::Query::Builder(Model)
   getter where_fields = [] of NamedTuple(join: Symbol, field: String, operator: Symbol, value: Granite::Columns::Type)
   getter order_fields = [] of NamedTuple(field: String, direction: Sort)
   getter group_fields = [] of NamedTuple(field: String)
+  getter includes = Set(Symbol).new
   getter offset : Int64?
   getter limit : Int64?
 
@@ -160,6 +161,12 @@ class Granite::Query::Builder(Model)
     dsl.each do |field|
       @group_fields << {field: field.to_s}
     end
+
+    self
+  end
+
+  def includes(association)
+    @includes << association
 
     self
   end

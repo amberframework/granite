@@ -2,7 +2,7 @@ module Granite::Query::Executor
   class List(Model)
     include Shared
 
-    def initialize(@sql : String, @args = [] of Granite::Columns::Type)
+    def initialize(@sql : String, @args = [] of Granite::Columns::Type, @includes = Set(Symbol).new)
     end
 
     def run : Array(Model)
@@ -16,6 +16,10 @@ module Granite::Query::Executor
             results << Model.from_rs record_set
           end
         end
+      end
+
+      @includes.each do |i|
+        Model::INCLUDERS[i].call(results)
       end
 
       results

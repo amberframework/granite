@@ -143,4 +143,18 @@ describe "belongs_to" do
 
     courier.service!.owner_id.should eq 123_321
   end
+
+  it "works with includes that preloads parents" do
+    ids = Array(Int64).new(3) do
+      teacher = Teacher.create(name: "teacher for includes")
+      klass = Klass.new(name: "class for includes")
+      klass.teacher = teacher
+      klass.save
+      teacher.id!
+    end
+
+    Klass.includes(:teacher).where(name: "class for includes").order(:teacher_id).select.each_with_index do |klass, i|
+      klass.@teacher.not_nil!.id.should eq ids[i]
+    end
+  end
 end

@@ -180,7 +180,7 @@ module Granite::Query::Assembler
         s << offset
       end
 
-      Executor::List(Model).new sql, numbered_parameters
+      Executor::List(Model).new sql, numbered_parameters, @query.includes
     end
 
     def exists? : Executor::Value(Model, Bool)

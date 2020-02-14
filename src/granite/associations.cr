@@ -1,4 +1,22 @@
 module Granite::Associations
+  macro included
+    macro inherited
+      macro finished
+        \\{% if !@type.constant(:INCLUDERS.id) %}
+          disable_granite_docs? INCLUDERS = NamedTuple.new
+        \\{% end %}
+      end
+    end
+  end
+
+  macro __new_includer(name, includer)
+    {% if @type.constant(:INCLUDERS.id) %}
+      {% INCLUDERS[name.id] = includer %}
+    {% else %}
+      disable_granite_docs? INCLUDERS = { "{{name.id}}": {{includer}} }
+    {% end %}
+  end
+
   macro belongs_to(model, **options)
     {%
       nilable = false
@@ -36,6 +54,16 @@ module Granite::Associations
     @[YAML::Field(ignore: true)]
     @{{name}} : {{type}}?
 
+    __new_includer(:{{name}}, ->(children : Array({{@type}})) {
+      parents = {} of Int64 | Nil => {{type}}
+      {{type}}.where({{primary_key}}: children.compact_map(&.{{foreign_key}})).select.each do |parent|
+        parents[parent.{{primary_key}}.try &.to_i64] = parent
+      end
+      children.each do |child|
+        child.__set_{{name}}(parents[child.{{foreign_key}}]?)
+      end
+    })
+
     def {{nilable_method}} : {{type}}?
       @{{name}} ||= {{type}}.find_by({{primary_key}}: {{foreign_key}})
     end
@@ -52,6 +80,10 @@ module Granite::Associations
     def reload_{{name}} : {{type}}?
       @{{name}} = nil
       {{nilable_method}}
+    end
+
+    def __set_{{name}}(parent : {{type}}?) : {{type}}?
+      @{{name}} = parent
     end
   end
 
@@ -86,6 +118,16 @@ module Granite::Associations
     @[YAML::Field(ignore: true)]
     @{{name}} : {{type}}?
 
+    __new_includer(:{{name}}, ->(parents : Array({{@type}})) {
+      children = {} of Int64 | Nil => {{type}}
+      {{type}}.where({{foreign_key}}: parents.compact_map(&.{{primary_key}})).select.each do |child|
+        children[child.{{foreign_key}}.try &.to_i64] = child
+      end
+      parents.each do |parent|
+        parent.__set_{{name}}(children[parent.{{primary_key}}]?)
+      end
+    })
+
     def {{nilable_method}} : {{type}}?
       @{{name}} ||= {{type}}.find_by({{foreign_key}}: self.{{primary_key}})
     end
@@ -95,13 +137,17 @@ module Granite::Associations
     end
 
     def {{name}}=(child : {{type}}) : {{type}}
-      child.{{foreign_key.id}} = self.{{primary_key.id}}
+      child.{{foreign_key}} = self.{{primary_key}}
       @{{name}} = child
     end
 
     def reload_{{name}} : {{type}}?
       @{{name}} = nil
       {{nilable_method}}
+    end
+
+    def __set_{{name}}(child : {{type}}?) : {{type}}?
+      @{{name}} = child
     end
   end
 

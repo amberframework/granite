@@ -92,4 +92,18 @@ describe "has_one" do
 
     courier.issuer!.character_id.should eq 999
   end
+
+  it "works with includes that preloads children" do
+    ids = Array(Int64).new(3) do
+      user = User.create(email: "user@for.includes")
+      profile = Profile.new(name: "profile for includes")
+      user.profile = profile
+      profile.save
+      profile.id!
+    end
+
+    User.where(email: "user@for.includes").order(:id).includes(:profile).select.each_with_index do |user, i|
+      user.@profile.not_nil!.id.should eq ids[i]
+    end
+  end
 end

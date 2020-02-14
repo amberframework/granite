@@ -38,6 +38,13 @@ describe Granite::Query::Builder(Model) do
     query.where_fields.should eq expected
   end
 
+  it "stores includes" do
+    query = builder.includes(:children).includes(:parent)
+    expected = Set{:children, :parent}
+
+    query.includes.should eq expected
+  end
+
   it "stores limit" do
     query = builder.limit(7)
     query.limit.should eq 7
