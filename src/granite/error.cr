@@ -4,11 +4,11 @@ class Granite::Error
   def initialize(@field : (String | Symbol | JSON::Any), @message : String? = "")
   end
 
-  def to_s
-    if @field == :base
-      @message
+  def to_s(io)
+    if field == :base
+      io << message
     else
-      "#{@field.to_s.capitalize} #{message}"
+      io << field.to_s.capitalize << " " << message
     end
   end
 end
