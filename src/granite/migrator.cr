@@ -49,7 +49,7 @@ module Granite::Migrator
 
         # primary key
         {% begin %}
-          {% primary_key = Model.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
+          {% primary_key = Model.instance_vars.find { |v| (ann = v.annotation(Granite::Column)) && ann[:primary] } %}
           {% raise raise "A primary key must be defined for #{Model.name}." unless primary_key %}
           {% ann = primary_key.annotation(Granite::Column) %}
           k = Model.adapter.quote("{{primary_key.name}}")
@@ -63,7 +63,7 @@ module Granite::Migrator
         {% end %}
 
         # content fields
-        {% for ivar in Model.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && !ann[:primary] } %}
+        {% for ivar in Model.instance_vars.select { |v| (ann = v.annotation(Granite::Column)) && !ann[:primary] } %}
           {% ann = ivar.annotation(Granite::Column) %}
           s.puts ","
           k = Model.adapter.quote("{{ivar.name}}")
