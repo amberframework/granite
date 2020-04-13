@@ -10,3 +10,5 @@ services:
       - pg
   pg:
     image: postgres:${PG_VERSION}
+    environment:
+      POSTGRES_PASSWORD: pass

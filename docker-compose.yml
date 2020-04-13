@@ -5,7 +5,7 @@ services:
     command: 'bash -c "cd /app/user && bin/ameba && crystal tool format --check && crystal spec --warnings all"'
     working_dir: /app/user
     environment:
-      PG_DATABASE_URL: 'postgres://postgres:@pg:5432/postgres'
+      PG_DATABASE_URL: 'postgres://postgres:pass@pg:5432/postgres'
       MYSQL_DATABASE_URL: 'mysql://user:pass@mysql:3306/test'
       SQLITE_DATABASE_URL: 'sqlite3:./test.db'
       CURRENT_ADAPTER: sqlite
