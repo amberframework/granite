@@ -82,5 +82,25 @@ describe Granite::Query::BuilderMethods do
         end
       end
     end
+
+    describe "#group_by" do
+      describe "when records are similar" do
+        it "should return them grouped" do
+          p1 = Parent.new(name: "Some Name")
+          p2 = Parent.new(name: "Some Name")
+          p3 = Parent.new(name: "Some Other Name")
+
+          p1.save.should be_true
+          p2.save.should be_true
+          p3.save.should be_true
+
+          result = Parent.group_by(:name).select
+
+          result.size.should eq 2
+          result[0].id.should eq p3.id
+          result[1].id.should eq p2.id
+        end
+      end
+    end
   end
 end
