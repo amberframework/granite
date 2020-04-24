@@ -45,7 +45,7 @@ module Granite::Tables
     def table_name : String
       {% begin %}
         {% table_ann = @type.annotation(Granite::Table) %}
-        {{table_ann && !table_ann[:name].nil? ? table_ann[:name] : @type.name.underscore.stringify}}
+        {{table_ann && !table_ann[:name].nil? ? table_ann[:name] : @type.name.underscore.stringify.split("::").last}}
       {% end %}
     end
   end

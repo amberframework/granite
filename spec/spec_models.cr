@@ -509,6 +509,10 @@ end
     column my_enum : MyEnum?, column_type: "TEXT", converter: Granite::Converters::Enum(MyEnum, String)
   end
 
+  class MyApp::Namespace::Model < Granite::Base
+    column id : Int64, primary: true
+  end
+
   {% if env("CURRENT_ADAPTER") == "pg" %}
     class ConverterModel < Granite::Base
       connection {{ adapter_literal }}
