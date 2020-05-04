@@ -29,7 +29,7 @@ abstract class Granite::Adapter::Base
   end
 
   def log(query : String, elapsed_time : Time::Span, params = [] of String) : Nil
-    Granite.settings.logger.debug { colorize query, params, elapsed_time.total_seconds }
+    Log.debug { colorize query, params, elapsed_time.total_seconds }
   end
 
   # remove all rows from a table and reset the counter on the id.
