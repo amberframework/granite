@@ -5,9 +5,7 @@ module Granite::Query::Executor
     end
 
     def log(*messages)
-      if logger = Granite.settings.logger
-        messages.each { |message| logger.info message }
-      end
+      messages.each { |message| Log.info { message } }
     end
   end
 end
