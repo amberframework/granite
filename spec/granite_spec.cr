@@ -1,5 +1,4 @@
 require "./spec_helper"
-require "logger"
 
 class SomeClass
   def initialize(@model_class : Granite::Base.class); end
@@ -88,27 +87,22 @@ describe Granite::Base do
     end
   end
 
-  describe Logger do
-    describe "when logger is set to IO" do
-      it "should be logged as DEBUG" do
-        IO.pipe do |r, w|
-          Granite.settings.logger = Logger.new(w, Logger::Severity::DEBUG)
+  describe Log do
+    it "should be logged as DEBUG" do
+      backend = Log::MemoryBackend.new
 
-          Person.first
+      Log.builder.bind "granite", :debug, backend
 
-          r.gets.should match /D, \[.*\] DEBUG -- : .*SELECT.*people.*id.*FROM.*people.*LIMIT.*1.*: .*\[\]/
-        end
-      end
+      Person.first
+
+      backend.entries.first.severity.debug?.should be_true
+      backend.entries.first.message.should match /.*SELECT.*people.*id.*FROM.*people.*LIMIT.*1.*: .*\[\]/
     end
 
-    describe "when logger is set to nil" do
-      it "should not be logged" do
-        Granite.settings.logger = Logger.new nil
-
-        a = 0
-        Granite.settings.logger.info { a = 1 }
-        a.should eq 0
-      end
+    it "should not be logged" do
+      a = 0
+      Log.for("granite.test").info { a = 1 }
+      a.should eq 0
     end
   end
 
