@@ -510,6 +510,8 @@ end
   end
 
   class MyApp::Namespace::Model < Granite::Base
+    connection {{ adapter_literal }}
+
     column id : Int64, primary: true
   end
 
