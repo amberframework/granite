@@ -9,6 +9,10 @@ describe Granite::Table do
     it "sets the table name based on class name if not specified" do
       SongThread.table_name.should eq "song_thread"
     end
+
+    it "strips the namespace when defining the default table now" do
+      MyApp::Namespace::Model.table_name.should eq "model"
+    end
   end
 
   describe ".primary_name" do
