@@ -190,7 +190,7 @@ module Granite::Transactions
       __after_save
     rescue ex : DB::Error | Granite::Callbacks::Abort
       if message = ex.message
-        Granite.settings.logger.error { "Save Exception: #{message}" }
+        Log.error { "Save Exception: #{message}" }
         errors << Granite::Error.new(:base, message)
       end
       return false
@@ -231,7 +231,7 @@ module Granite::Transactions
       __after_destroy
     rescue ex : DB::Error | Granite::Callbacks::Abort
       if message = ex.message
-        Granite.settings.logger.error { "Destroy Exception: #{message}" }
+        Log.error { "Destroy Exception: #{message}" }
         errors << Granite::Error.new(:base, message)
       end
       return false

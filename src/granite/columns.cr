@@ -52,6 +52,8 @@ module Granite::Columns
               value
             {% end %}
         {% end %}
+        else
+          # Skip
         end
       end
     {% end %}
