@@ -36,10 +36,10 @@ class Granite::AssociationCollection(Owner, Target)
 
   private def query
     if through.nil?
-      "WHERE #{Target.table_name}.#{@foreign_key.to_s} = ?"
+      "WHERE #{Target.table_name}.#{@foreign_key} = ?"
     else
-      "JOIN #{through.to_s} ON #{through.to_s}.#{Target.to_s.underscore}_id = #{Target.table_name}.#{Target.primary_name} " \
-      "WHERE #{through.to_s}.#{@foreign_key.to_s} = ?"
+      "JOIN #{through} ON #{through}.#{Target.to_s.underscore}_id = #{Target.table_name}.#{Target.primary_name} " \
+      "WHERE #{through}.#{@foreign_key} = ?"
     end
   end
 end
