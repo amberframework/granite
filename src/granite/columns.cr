@@ -145,7 +145,7 @@ module Granite::Columns
     self
   end
 
-  def read_attribute(attribute_name : Symbol | String) : DB::Any
+  def read_attribute(attribute_name : Symbol | String) : Type
     {% begin %}
       case attribute_name.to_s
       {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
