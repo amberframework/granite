@@ -41,26 +41,36 @@ module Granite::Query::Assembler
       clauses = ["WHERE"]
 
       @query.where_fields.each do |expression|
-        add_aggregate_field expression[:field]
-
         clauses << expression[:join].to_s.upcase unless clauses.size == 1
 
-        if expression[:value].nil?
-          clauses << "#{expression[:field]} IS NULL"
-        elsif expression[:value].is_a?(Array)
-          in_stmt = String.build do |str|
-            str << '('
-            expression[:value].as(Array).each_with_index do |val, idx|
-              str << '\'' if expression[:value].is_a?(Array(String))
-              str << val
-              str << '\'' if expression[:value].is_a?(Array(String))
-              str << ',' if expression[:value].as(Array).size - 1 != idx
+        if expression[:field]?.nil? # custom SQL
+          expression = expression.as(NamedTuple(join: Symbol, stmt: String, value: Granite::Columns::Type))
+
+          param_token = add_parameter expression[:value]
+          clause = expression[:stmt].sub("?", param_token)
+
+          clauses << clause
+        else # standard where query builder
+          expression = expression.as(NamedTuple(join: Symbol, field: String, operator: Symbol, value: Granite::Columns::Type))
+          add_aggregate_field expression[:field]
+
+          if expression[:value].nil?
+            clauses << "#{expression[:field]} IS NULL"
+          elsif expression[:value].is_a?(Array)
+            in_stmt = String.build do |str|
+              str << '('
+              expression[:value].as(Array).each_with_index do |val, idx|
+                str << '\'' if expression[:value].is_a?(Array(String))
+                str << val
+                str << '\'' if expression[:value].is_a?(Array(String))
+                str << ',' if expression[:value].as(Array).size - 1 != idx
+              end
+              str << ')'
             end
-            str << ')'
+            clauses << "#{expression[:field]} #{sql_operator(expression[:operator])} #{in_stmt}"
+          else
+            clauses << "#{expression[:field]} #{sql_operator(expression[:operator])} #{add_parameter expression[:value]}"
           end
-          clauses << "#{expression[:field]} #{sql_operator(expression[:operator])} #{in_stmt}"
-        else
-          clauses << "#{expression[:field]} #{sql_operator(expression[:operator])} #{add_parameter expression[:value]}"
         end
       end
 
