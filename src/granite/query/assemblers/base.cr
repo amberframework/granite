@@ -47,10 +47,10 @@ module Granite::Query::Assembler
           expression = expression.as(NamedTuple(join: Symbol, stmt: String, value: Granite::Columns::Type))
 
           param_token = add_parameter expression[:value]
-          clause = expression[:stmt].sub("?", param_token)
+          clause = expression[:stmt].gsub("?", param_token)
 
           clauses << clause
-        else # standard where query builder
+        else # standard where query
           expression = expression.as(NamedTuple(join: Symbol, field: String, operator: Symbol, value: Granite::Columns::Type))
           add_aggregate_field expression[:field]
 
