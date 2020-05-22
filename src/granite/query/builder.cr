@@ -117,6 +117,12 @@ class Granite::Query::Builder(Model)
     self
   end
 
+  def or(stmt : String, value : Granite::Columns::Type)
+    @where_fields << {join: :or, stmt: stmt, value: value}
+
+    self
+  end
+
   def order(field : Symbol)
     @order_fields << {field: field.to_s, direction: Sort::Ascending}
 
