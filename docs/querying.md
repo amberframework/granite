@@ -16,10 +16,11 @@ Post.where(:created_at, :gt, Time.local - 7.days)
 
 Supported operators are :eq, :gteq, :lteq, :neq, :gt, :lt, :nlt, :ngt, :ltgt, :in, :nin, :like, :nlike
 
-Alternatively, where accepts a raw SQL clause, with "?" as a placeholder to avoid SQL Injection.
+Alternatively, `#where`, `#and`, and `#or` accept a raw SQL clause, with an optional placeholder (`?` for MySQL/SQLite, `$` for Postgres) to avoid SQL Injection.
 ```crystal
+# Example using Postgres adapter
 Post.where(:created_at, :gt, Time.local - 7.days)
-  .where("LOWER(author_name) = ?", name)
+  .where("LOWER(author_name) = $", name)
   .where("tags @> '{"Journal", "Book"}') # PG's array contains operator
 ```
 This is useful for building more sophisticated queries, including queries dependent on database specific features not supported by the operators above. However, **clauses built with this method are not validated.**
