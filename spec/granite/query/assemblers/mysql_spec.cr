@@ -78,13 +78,13 @@ require "../spec_helper"
       end
 
       it "handles custom SQL" do
-        sql = "select #{query_fields} from table where name = ? and age = ? order by id desc"
-        query = builder.where("name = ?", "bob").where("age = ?", 23)
+        sql = "select #{query_fields} from table where name = 'bob' and age = ? order by id desc"
+        query = builder.where("name = 'bob'").where("age = ?", 23)
         query.raw_sql.should match ignore_whitespace sql
 
         assembler = query.assembler
         assembler.where
-        assembler.numbered_parameters.should eq ["bob", 23]
+        assembler.numbered_parameters.should eq [23]
       end
     end
 

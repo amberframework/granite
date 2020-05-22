@@ -71,7 +71,7 @@ class Granite::Query::Builder(Model)
     and(field: field.to_s, operator: operator, value: value)
   end
 
-  def where(stmt : String, value : Granite::Columns::Type)
+  def where(stmt : String, value : Granite::Columns::Type = nil)
     and(stmt: stmt, value: value)
   end
 
@@ -93,7 +93,7 @@ class Granite::Query::Builder(Model)
     self
   end
 
-  def and(stmt : String, value : Granite::Columns::Type)
+  def and(stmt : String, value : Granite::Columns::Type = nil)
     @where_fields << {join: :and, stmt: stmt, value: value}
 
     self
@@ -117,7 +117,7 @@ class Granite::Query::Builder(Model)
     self
   end
 
-  def or(stmt : String, value : Granite::Columns::Type)
+  def or(stmt : String, value : Granite::Columns::Type = nil)
     @where_fields << {join: :or, stmt: stmt, value: value}
 
     self

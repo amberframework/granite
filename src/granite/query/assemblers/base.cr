@@ -46,8 +46,12 @@ module Granite::Query::Assembler
         if expression[:field]?.nil? # custom SQL
           expression = expression.as(NamedTuple(join: Symbol, stmt: String, value: Granite::Columns::Type))
 
-          param_token = add_parameter expression[:value]
-          clause = expression[:stmt].gsub("?", param_token)
+          if !expression[:value].nil?
+            param_token = add_parameter expression[:value]
+            clause = expression[:stmt].gsub("?", param_token)
+          else
+            clause = expression[:stmt]
+          end
 
           clauses << clause
         else # standard where query
