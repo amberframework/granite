@@ -1,5 +1,6 @@
 module Granite::Query::Assembler
   abstract class Base(Model)
+    @placeholder : String = ""
     @where : String?
     @order : String?
     @limit : String?
@@ -48,7 +49,7 @@ module Granite::Query::Assembler
 
           if !expression[:value].nil?
             param_token = add_parameter expression[:value]
-            clause = expression[:stmt].gsub("?", param_token)
+            clause = expression[:stmt].gsub(@placeholder, param_token)
           else
             clause = expression[:stmt]
           end

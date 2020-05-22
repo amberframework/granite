@@ -77,14 +77,14 @@ require "../spec_helper"
         assembler.numbered_parameters.should eq [] of Granite::Columns::Type
       end
 
-      it "handles custom SQL" do
-        sql = "select #{query_fields} from table where name = 'bob' and age = ? order by id desc"
-        query = builder.where("name = 'bob'").where("age = ?", 23)
+      it "handles raw SQL" do
+        sql = "select #{query_fields} from table where name = 'bob' and age = ? and color = ? order by id desc"
+        query = builder.where("name = 'bob'").where("age = ?", 23).where("color = ?", "red")
         query.raw_sql.should match ignore_whitespace sql
 
         assembler = query.assembler
         assembler.where
-        assembler.numbered_parameters.should eq [23]
+        assembler.numbered_parameters.should eq [23, "red"]
       end
     end
 
