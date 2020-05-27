@@ -47,4 +47,36 @@ describe Granite::Query::Builder(Model) do
     query = builder.offset(17)
     query.offset.should eq 17
   end
+
+  context "raw SQL builder" do
+    placeholders = {
+      Granite::Query::Builder::DbType::Mysql  => "?",
+      Granite::Query::Builder::DbType::Sqlite => "?",
+      Granite::Query::Builder::DbType::Pg     => "$",
+    }
+
+    it "chains where statements" do
+      placeholder = placeholders[builder.db_type]
+      query = builder.where("name = #{placeholder}", "bob").where("age = #{placeholder}", 23)
+      expected = [{join: :and, stmt: "name = #{placeholder}", value: "bob"}, {join: :and, stmt: "age = #{placeholder}", value: 23}]
+
+      query.where_fields.should eq expected
+    end
+
+    it "chains and statements" do
+      placeholder = placeholders[builder.db_type]
+      query = builder.where("name = #{placeholder}", "bob").and("age = #{placeholder}", 23)
+      expected = [{join: :and, stmt: "name = #{placeholder}", value: "bob"}, {join: :and, stmt: "age = #{placeholder}", value: 23}]
+
+      query.where_fields.should eq expected
+    end
+
+    it "chains or statements" do
+      placeholder = placeholders[builder.db_type]
+      query = builder.where("name = #{placeholder}", "bob").or("age = #{placeholder}", 23)
+      expected = [{join: :and, stmt: "name = #{placeholder}", value: "bob"}, {join: :or, stmt: "age = #{placeholder}", value: 23}]
+
+      query.where_fields.should eq expected
+    end
+  end
 end

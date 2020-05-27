@@ -76,6 +76,16 @@ require "../spec_helper"
         assembler.where
         assembler.numbered_parameters.should eq [] of Granite::Columns::Type
       end
+
+      it "handles raw SQL" do
+        sql = "select #{query_fields} from table where name = 'bob' and age = ? and color = ? order by id desc"
+        query = builder.where("name = 'bob'").where("age = ?", 23).where("color = ?", "red")
+        query.raw_sql.should match ignore_whitespace sql
+
+        assembler = query.assembler
+        assembler.where
+        assembler.numbered_parameters.should eq [23, "red"]
+      end
     end
 
     context "order" do

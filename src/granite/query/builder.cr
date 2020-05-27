@@ -28,7 +28,8 @@ class Granite::Query::Builder(Model)
   end
 
   getter db_type : DbType
-  getter where_fields = [] of NamedTuple(join: Symbol, field: String, operator: Symbol, value: Granite::Columns::Type)
+  getter where_fields = [] of (NamedTuple(join: Symbol, field: String, operator: Symbol, value: Granite::Columns::Type) |
+                               NamedTuple(join: Symbol, stmt: String, value: Granite::Columns::Type))
   getter order_fields = [] of NamedTuple(field: String, direction: Sort)
   getter group_fields = [] of NamedTuple(field: String)
   getter offset : Int64?
@@ -70,6 +71,10 @@ class Granite::Query::Builder(Model)
     and(field: field.to_s, operator: operator, value: value)
   end
 
+  def where(stmt : String, value : Granite::Columns::Type = nil)
+    and(stmt: stmt, value: value)
+  end
+
   def and(**matches)
     and(matches)
   end
@@ -88,6 +93,12 @@ class Granite::Query::Builder(Model)
     self
   end
 
+  def and(stmt : String, value : Granite::Columns::Type = nil)
+    @where_fields << {join: :and, stmt: stmt, value: value}
+
+    self
+  end
+
   def or(**matches)
     or(matches)
   end
@@ -102,6 +113,12 @@ class Granite::Query::Builder(Model)
 
   def or(field : (Symbol | String), operator : Symbol, value : Granite::Columns::Type)
     @where_fields << {join: :or, field: field.to_s, operator: operator, value: value}
+
+    self
+  end
+
+  def or(stmt : String, value : Granite::Columns::Type = nil)
+    @where_fields << {join: :or, stmt: stmt, value: value}
 
     self
   end
