@@ -43,7 +43,7 @@ abstract class Granite::Base
     include JSON::Serializable
     include YAML::Serializable
 
-    @@select = Container.new(table_name: table_name, fields: fields)
+    class_getter select : Container { Container.new(table_name: table_name, fields: fields) }
 
     # Returns true if this object hasn't been saved yet.
     @[JSON::Field(ignore: true)]

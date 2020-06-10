@@ -8,14 +8,14 @@ module Granite::Select
   end
 
   macro select_statement(text)
-    @@select.custom = {{text.strip}}
+    self.select.custom = {{text.strip}}
 
     def self.select
-      @@select.custom
+      self.select.custom
     end
   end
 
   def select_container : Container
-    @@select
+    self.select
   end
 end
