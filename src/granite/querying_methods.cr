@@ -4,6 +4,6 @@ module Granite::QueringMethods
   end
 
   delegate from_rs, raw_all, all, first, first!, find,
-	   find!, find_by, find_by!, find_each, find_in_batches,
-           exists?, count, exec, query, scalar,  to: __quering
+    find!, find_by, find_by!, find_each, find_in_batches,
+    exists?, count, exec, query, scalar, to: __quering
 end
