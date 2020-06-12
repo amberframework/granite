@@ -3,7 +3,7 @@ require "../../spec_helper"
 describe Granite::Query::BuilderMethods do
   describe "#where" do
     describe "with array argument" do
-      it "errors queries string fields" do
+      it "errors queries ids fields" do
         review1 = Review.create(name: "one")
         review2 = Review.create(name: "two")
 
