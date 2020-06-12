@@ -11,6 +11,14 @@ describe Granite::Query::BuilderMethods do
         found[0].id.should eq review2.id
         found[1].id.should eq review1.id
       end
+
+      it "correctly queries with ids fields which doest exists" do
+        review1 = Review.create(name: "one")
+        review2 = Review.create(name: "two")
+
+        found = Review.where(id: [1001, 1002]).select
+	found.size.should eq 0
+      end
       it "correctly queries string fields" do
         review1 = Review.create(name: "one")
         review2 = Review.create(name: "two")
