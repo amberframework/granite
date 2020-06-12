@@ -58,13 +58,17 @@ class Granite::Query::Builder(Model)
   def where(matches)
     matches.each do |field, value|
       if value.is_a?(Array)
-        and(field: field.to_s, operator: :in, value: value)
+	and(field: field.to_s, operator: :in, value: value)
       else
         and(field: field.to_s, operator: :eq, value: value)
       end
     end
 
     self
+  end
+
+  def where(field : (Symbol | String), operator : Symbol, value : Array(Int32 | Int64 | String))
+    and(field: field.to_s, operator: operator, value: value.join(","))
   end
 
   def where(field : (Symbol | String), operator : Symbol, value : Granite::Columns::Type)
@@ -80,10 +84,6 @@ class Granite::Query::Builder(Model)
   end
 
   def and(matches)
-    matches.each do |field, value|
-      and(field: field.to_s, operator: :eq, value: value)
-    end
-
     self
   end
 
