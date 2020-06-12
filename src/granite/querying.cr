@@ -9,14 +9,17 @@ class Granite::Querying(Model)
   getter quoted_table_name
   getter name
 
-  def initialize(@select_container : Granite::Select::Container, @adapter : Granite::Adapter::Base, @primary_name : String | Nil, @quoted_table_name : String, @name : String)
+  def initialize(@select_container : Granite::Select::Container, @adapter : Granite::Adapter::Base, @primary_name : String | Nil, @quoted_table_name : String, @name : String, @includes : Array(Symbol) = [] of Symbol)
+    @eager_loading_container = Granite::EagerLoading::Container.new(@includes)
   end
 
   # Entrypoint for creating a new object from a result set.
   def from_rs(result : DB::ResultSet) : Model
     model = Model.new
     model.new_record = false
+    model.set_eager_loading_container(@eager_loading_container)
     model.from_rs result
+    model.get_eager_loading_container.add_id(model.id)
     model
   end
 

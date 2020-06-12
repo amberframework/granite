@@ -31,6 +31,7 @@ abstract class Granite::Base
   include ValidationHelpers
   include Migrator
   include Select
+  include EagerLoading::InstanceMethods
 
   extend Columns::ClassMethods
   extend Tables::ClassMethods
@@ -41,7 +42,7 @@ abstract class Granite::Base
   extend QueryingMethods
   extend Integrators
   extend Select
-  extend EagerLoading
+  extend EagerLoading::ClassMethods
 
   macro inherited
     protected class_getter select_container : Container = Container.new(table_name: table_name, fields: fields)

@@ -5,12 +5,21 @@ describe Granite::Query::BuilderMethods do
     describe "with single argument" do
       it "correctly includes one model" do
         [Book, BookReview].each { |model| model.clear }
-        book = Book.create(name: "War and Peace")
-        BookReview.create(body: "Great book!", book_id: book.id)
-        BookReview.create(body: "Cool", book_id: book.id)
-        books = Book.includes(:book_reviews).all
-        books[0].id.should eq book.id
-        books[0].book_reviews.size.should eq 2
+        book1 = Book.create(name: "War and Peace")
+        book2 = Book.create(name: "Anna Karenina")
+        BookReview.create(body: "Great book!", book_id: book1.id)
+        BookReview.create(body: "Cool", book_id: book2.id)
+	books = Book.where(id: [book1.id, book2.id]).select
+
+	backend = Log::MemoryBackend.new
+	Log.builder.bind "granite", :debug, backend
+
+        books[0].id.should eq book1.id
+        books[0].book_reviews.size.should eq 1
+
+        books[1].id.should eq book2.id
+        books[0].book_reviews.size.should eq 1
+	backend.entries.size.should eq 2
       end
     end
   end

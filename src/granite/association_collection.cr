@@ -5,6 +5,9 @@ class Granite::AssociationCollection(Owner, Target)
   end
 
   def all(clause = "", params = [] of DB::Any)
+    puts @owner.inspect
+    result = @owner.get_eager_loading_container.resolve(Target, @foreign_key, @through).call
+    return result if result
     Target.all(
       [query, clause].join(" "),
       [owner.primary_key_value] + params
@@ -12,6 +15,7 @@ class Granite::AssociationCollection(Owner, Target)
   end
 
   def find_by(**args)
+    puts "FindBy"
     Target.first(
       "#{query} AND #{args.map { |arg| "#{Target.quote(Target.table_name)}.#{Target.quote(arg.to_s)} = ?" }.join(" AND ")}",
       [owner.primary_key_value] + args.values.to_a
@@ -19,14 +23,17 @@ class Granite::AssociationCollection(Owner, Target)
   end
 
   def find_by!(**args)
+    puts "FindBy!"
     find_by(**args) || raise Granite::Querying::NotFound.new("No #{Target.name} found where #{args.map { |k, v| "#{k} = #{v}" }.join(" and ")}")
   end
 
   def find(value)
+    puts "Find"
     Target.find(value)
   end
 
   def find!(value)
+    puts "Find!"
     Target.find!(value)
   end
 
