@@ -58,7 +58,7 @@ class Granite::Query::Builder(Model)
   def where(matches)
     matches.each do |field, value|
       if value.is_a?(Array)
-	and(field: field.to_s, operator: :in, value: value)
+        and(field: field.to_s, operator: :in, value: value)
       else
         and(field: field.to_s, operator: :eq, value: value)
       end
