@@ -17,7 +17,7 @@ describe Granite::Query::BuilderMethods do
         review2 = Review.create(name: "two")
 
         found = Review.where(id: [1001, 1002]).select
-	found.size.should eq 0
+        found.size.should eq 0
       end
       it "correctly queries string fields" do
         review1 = Review.create(name: "one")
