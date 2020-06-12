@@ -1,9 +1,8 @@
 require "./transactions"
-require "./querying_methods"
 
 module Granite::Integrators
   include Transactions::ClassMethods
-  include QueringMethods
+  include QueryingMethods
 
   def find_or_create_by(**args)
     find_by(**args) || create(**args)

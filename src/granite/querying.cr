@@ -3,10 +3,13 @@ class Granite::Querying(Model)
   end
 
   getter select_container
+  getter adapter
+  getter primary_name
+  getter quote
+  getter quoted_table_name
+  getter name
 
-  delegate adapter, primary_name, quote, quoted_table_name, name, to: Model
-
-  def initialize(@select_container : Granite::Select::Container)
+  def initialize(@select_container : Granite::Select::Container, @adapter : Granite::Adapter::Base, @primary_name : String | Nil, @quoted_table_name : String, @name : String)
   end
 
   # Entrypoint for creating a new object from a result set.
@@ -149,7 +152,7 @@ class Granite::Querying(Model)
         criteria_hash.delete name
       end
 
-      "#{quoted_table_name}.#{quote(name.to_s)} #{matcher}"
+      "#{quoted_table_name}.#{adapter.quote(name.to_s)} #{matcher}"
     end
 
     {clauses.join(" AND "), criteria_hash.values}

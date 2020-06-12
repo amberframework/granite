@@ -5,6 +5,8 @@ require "./callbacks"
 require "./columns"
 require "./query/executors/base"
 require "./query/**"
+require "./querying"
+require "./querying_methods"
 require "./settings"
 require "./table"
 require "./validators"
@@ -14,7 +16,6 @@ require "./select"
 require "./version"
 require "./connections"
 require "./integrators"
-require "./querying"
 require "./converters"
 require "./type"
 require "./eager_loading"
@@ -35,9 +36,9 @@ abstract class Granite::Base
   extend Tables::ClassMethods
   extend Granite::Migrator::ClassMethods
 
-  extend QueringMethods
   extend Query::BuilderMethods
   extend Transactions::ClassMethods
+  extend QueryingMethods
   extend Integrators
   extend Select
   extend EagerLoading
