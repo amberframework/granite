@@ -1,6 +1,19 @@
 require "../../spec_helper"
 
 describe Granite::Query::BuilderMethods do
+  describe "#includes" do
+    describe "with single argument" do
+      it "correctly includes one model" do
+	[Book, BookReview].each{|model| model.clear}
+        book = Book.create(name: "War and Peace")
+	review1 = BookReview.create(body: "Great book!", book_id: book.id)
+	review2 = BookReview.create(body: "Cool", book_id: book.id)
+	books = Book.includes(:book_reviews).all
+	books[0].id.should eq book.id
+	books[0].book_reviews.size.should eq 2
+      end
+    end
+  end
   describe "#where" do
     describe "with array arguments" do
       it "correctly queries all rows with a list of id values" do

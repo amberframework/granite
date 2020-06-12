@@ -14,8 +14,10 @@ require "./select"
 require "./version"
 require "./connections"
 require "./integrators"
+require "./querying"
 require "./converters"
 require "./type"
+require "./eager_loading"
 
 # Granite::Base is the base class for your model objects.
 abstract class Granite::Base
@@ -33,11 +35,12 @@ abstract class Granite::Base
   extend Tables::ClassMethods
   extend Granite::Migrator::ClassMethods
 
-  extend Querying
+  extend QueringMethods
   extend Query::BuilderMethods
   extend Transactions::ClassMethods
   extend Integrators
   extend Select
+  extend EagerLoading
 
   macro inherited
     protected class_getter select_container : Container = Container.new(table_name: table_name, fields: fields)

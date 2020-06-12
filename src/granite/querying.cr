@@ -1,17 +1,24 @@
-module Granite::Querying
+class Granite::Querying(Model)
   class NotFound < Exception
   end
 
+  getter select_container
+
+  delegate adapter, primary_name, quote, quoted_table_name, name, to: Model
+
+  def initialize(@select_container : Granite::Select::Container)
+  end
+
   # Entrypoint for creating a new object from a result set.
-  def from_rs(result : DB::ResultSet) : self
-    model = new
+  def from_rs(result : DB::ResultSet) : Model
+    model = Model.new
     model.new_record = false
     model.from_rs result
     model
   end
 
   def raw_all(clause = "", params = [] of Granite::Columns::Type)
-    rows = [] of self
+    rows = [] of Model
     adapter.select(select_container, clause, params) do |results|
       results.each do
         rows << from_rs(results)
@@ -29,7 +36,7 @@ module Granite::Querying
   # DSL.
   # Lazy load prevent running unnecessary queries from unused variables.
   def all(clause = "", params = [] of Granite::Columns::Type)
-    Collection(self).new(->{ raw_all(clause, params) })
+    Collection(Model).new(->{ raw_all(clause, params) })
   end
 
   # First adds a `LIMIT 1` clause to the query and returns the first result
@@ -38,7 +45,7 @@ module Granite::Querying
   end
 
   def first!(clause = "", params = [] of Granite::Columns::Type)
-    first(clause, params) || raise NotFound.new("No #{{{@type.name.stringify}}} found with first(#{clause})")
+    first(clause, params) || raise NotFound.new("No #{{{Model.name.stringify}}} found with first(#{clause})")
   end
 
   # find returns the row with the primary key specified. Otherwise nil.
@@ -48,7 +55,7 @@ module Granite::Querying
 
   # find returns the row with the primary key specified. Otherwise raises an exception.
   def find!(value)
-    find(value) || raise Granite::Querying::NotFound.new("No #{{{@type.name.stringify}}} found where #{primary_name} = #{value}")
+    find(value) || raise Granite::Querying::NotFound.new("No #{{{Model.name.stringify}}} found where #{primary_name} = #{value}")
   end
 
   # Returns the first row found that matches *criteria*. Otherwise `nil`.
@@ -69,7 +76,7 @@ module Granite::Querying
 
   # :ditto:
   def find_by!(criteria : Granite::ModelArgs)
-    find_by(criteria) || raise NotFound.new("No #{{{@type.name.stringify}}} found where #{criteria.map { |k, v| %(#{k} #{v.nil? ? "is NULL" : "= #{v}"}) }.join(" and ")}")
+    find_by(criteria) || raise NotFound.new("No #{{{Model.name.stringify}}} found where #{criteria.map { |k, v| %(#{k} #{v.nil? ? "is NULL" : "= #{v}"}) }.join(" and ")}")
   end
 
   def find_each(clause = "", params = [] of Granite::Columns::Type, batch_size limit = 100, offset = 0)
