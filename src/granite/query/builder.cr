@@ -67,10 +67,6 @@ class Granite::Query::Builder(Model)
     self
   end
 
-  def where(field : (Symbol | String), operator : Symbol, value : Array(Int32 | Int64 | String))
-    and(field: field.to_s, operator: operator, value: value.join(","))
-  end
-
   def where(field : (Symbol | String), operator : Symbol, value : Granite::Columns::Type)
     and(field: field.to_s, operator: operator, value: value)
   end
@@ -79,15 +75,13 @@ class Granite::Query::Builder(Model)
     and(stmt: stmt, value: value)
   end
 
-  def and(**matches)
-    and(matches)
-  end
+  def and(field : (Symbol | String), operator : Symbol, value : Granite::Columns::Type)
+    @where_fields << {join: :and, field: field.to_s, operator: operator, value: value}
 
-  def and(matches)
     self
   end
 
-  def and(field : (Symbol | String), operator : Symbol, value : Granite::Columns::Type)
+  def and(field : (Symbol | String), operator : Symbol, value : Array(String | Int32 | Int64))
     @where_fields << {join: :and, field: field.to_s, operator: operator, value: value}
 
     self
@@ -99,14 +93,37 @@ class Granite::Query::Builder(Model)
     self
   end
 
+  def and(**matches)
+    and(matches)
+  end
+
+  def and(matches)
+    value = matches[:value]
+    if value.is_a?(Array)
+      and(matches[:field].to_s, matches[:operator], value.compact)
+    else
+      and(matches[:field].to_s, matches[:operator] || :eq, value)
+    end
+
+    self
+  end
+
   def or(**matches)
     or(matches)
   end
 
   def or(matches)
-    matches.each do |field, value|
-      or(field: field.to_s, operator: :eq, value: value)
+    value = matches[:value]
+    if value.is_a?(Array)
+      or(matches[:field].to_s, matches[:operator], value.compact)
+    else
+      or(matches[:field].to_s, matches[:operator] || :eq, value)
     end
+    self
+  end
+
+  def or(field : (Symbol | String), operator : Symbol, value : Array(String | Int32 | Int64))
+    @where_fields << {join: :or, field: field.to_s, operator: operator, value: value}
 
     self
   end
