@@ -13,8 +13,8 @@ describe Granite::Query::BuilderMethods do
       end
 
       it "correctly queries with ids fields which doest exists" do
-        review1 = Review.create(name: "one")
-        review2 = Review.create(name: "two")
+        Review.create(name: "one")
+        Review.create(name: "two")
 
         found = Review.where(id: [1001, 1002]).select
         found.size.should eq 0
