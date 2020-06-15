@@ -116,12 +116,6 @@ class Granite::Query::Builder(Model)
     self
   end
 
-  def or(field : (Symbol | String), operator : Symbol, value : Array(String | Int32 | Int64))
-    @where_fields << {join: :or, field: field.to_s, operator: operator, value: value}
-
-    self
-  end
-
   def or(field : (Symbol | String), operator : Symbol, value : Granite::Columns::Type)
     @where_fields << {join: :or, field: field.to_s, operator: operator, value: value}
 
