@@ -81,12 +81,6 @@ class Granite::Query::Builder(Model)
     self
   end
 
-  # def and(field : (Symbol | String), operator : Symbol, value : Array(String | Int32 | Int64))
-  #   @where_fields << {join: :and, field: field.to_s, operator: operator, value: value}
-
-  #   self
-  # end
-
   def and(stmt : String, value : Granite::Columns::Type = nil)
     @where_fields << {join: :and, stmt: stmt, value: value}
 
