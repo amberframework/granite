@@ -58,7 +58,7 @@ class Granite::Query::Builder(Model)
   def where(matches)
     matches.each do |field, value|
       if value.is_a?(Array)
-        and(field: field.to_s, operator: :in, value: value)
+        and(field: field.to_s, operator: :in, value: value.compact)
       else
         and(field: field.to_s, operator: :eq, value: value)
       end
@@ -92,13 +92,13 @@ class Granite::Query::Builder(Model)
   end
 
   def and(matches)
-    value = matches[:value]
-    if value.is_a?(Array)
-      and(matches[:field].to_s, matches[:operator], value.compact)
-    else
-      and(matches[:field].to_s, matches[:operator] || :eq, value)
+    matches.each do |field, value|
+      if value.is_a?(Array)
+        and(field: field.to_s, operator: :in, value: value.compact)
+      else
+        and(field: field.to_s, operator: :eq, value: value)
+      end
     end
-
     self
   end
 
@@ -107,11 +107,12 @@ class Granite::Query::Builder(Model)
   end
 
   def or(matches)
-    value = matches[:value]
-    if value.is_a?(Array)
-      or(matches[:field].to_s, matches[:operator], value.compact)
-    else
-      or(matches[:field].to_s, matches[:operator] || :eq, value)
+    matches.each do |field, value|
+      if value.is_a?(Array)
+        or(field: field.to_s, operator: :in, value: value.compact)
+      else
+        or(field: field.to_s, operator: :eq, value: value)
+      end
     end
     self
   end
