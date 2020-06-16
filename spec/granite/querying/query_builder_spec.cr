@@ -2,7 +2,45 @@ require "../../spec_helper"
 
 describe Granite::Query::BuilderMethods do
   describe "#where" do
-    describe "with array argument" do
+    describe "with array arguments" do
+      it "correctly queries all rows with a list of id values" do
+        review1 = Review.create(name: "one")
+        review2 = Review.create(name: "two")
+
+        found = Review.where(id: [review1.id, review2.id]).select
+        found[0].id.should eq review2.id
+        found[1].id.should eq review1.id
+      end
+
+      it "correctly queries all rows with a list of id values and names" do
+        review1 = Review.create(name: "one")
+        review2 = Review.create(name: "two")
+
+        found = Review.where(name: ["one", "two"]).and(id: [review1.id, review2.id]).select
+        found[0].id.should eq review2.id
+        found[1].id.should eq review1.id
+      end
+
+      it "correctly queries all rows with a list of id values or names" do
+        review1 = Review.create(name: "one")
+        review2 = Review.create(name: "two")
+
+        found = Review.where(id: [1001, 1002]).or(name: ["one", "two"]).select
+        found[0].id.should eq review2.id
+        found[1].id.should eq review1.id
+
+        found = Review.where(name: ["one", "two"]).or(id: [1001, 1002]).select
+        found[0].id.should eq review2.id
+        found[1].id.should eq review1.id
+      end
+
+      it "correctly queries with ids fields which doest exists" do
+        Review.create(name: "one")
+        Review.create(name: "two")
+
+        found = Review.where(id: [1001, 1002]).select
+        found.size.should eq 0
+      end
       it "correctly queries string fields" do
         review1 = Review.create(name: "one")
         review2 = Review.create(name: "two")
