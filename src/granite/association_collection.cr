@@ -5,8 +5,7 @@ class Granite::AssociationCollection(Owner, Target)
   end
 
   def all(clause = "", params = [] of DB::Any)
-    puts @owner.inspect
-    result = @owner.get_eager_loading_container.resolve(Target, @foreign_key, @through).call
+    result = @owner.get_eager_loading_container.resolve(Target, @foreign_key, @through, @owner.id)
     return result if result
     Target.all(
       [query, clause].join(" "),

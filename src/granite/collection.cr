@@ -1,8 +1,7 @@
 class Granite::Collection(M)
   forward_missing_to collection
 
-  def initialize(@loader : -> Array(M))
-    @loaded = false
+  def initialize(@loader : -> Array(M), @loaded : Bool = false)
     @collection = [] of M
   end
 

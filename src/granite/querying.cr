@@ -33,6 +33,10 @@ class Granite::Querying(Model)
     rows
   end
 
+  def none
+    rows = [] of Model
+  end
+
   # All will return all rows in the database. The clause allows you to specify
   # a WHERE, JOIN, GROUP BY, ORDER BY and any other SQL92 compatible query to
   # your table. The result will be a Collection(Model) object which lazy loads

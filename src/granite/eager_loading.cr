@@ -2,7 +2,7 @@ module Granite::EagerLoading
   module InstanceMethods
     def set_eager_loading_container(@__eager_loading_container : Container = Granite::EagerLoading::Container.new())
     end
-    def get_eager_loading_container
+    def get_eager_loading_container()
       @__eager_loading_container || Granite::EagerLoading::Container.new()
     end
   end
@@ -13,33 +13,39 @@ module Granite::EagerLoading
     end
   end
 
+  class ModelWrapper
+    forward_missing_to model
+    def initialize(@model : Granite::Base)
+    end
+  end
+
   class Container
     def initialize(@includes : Array(Symbol) = [] of Symbol, @ids : Array(Int64 | Int32) = [] of Int64 | Int32)
+      @collection = [] of ModelWrapper
     end
 
     def load_collection(class_name, key)
-      coond = Hash(Symbol | String, Array(Int64|Int32)).new
-      return if @ids.size == 0
-      coond[key] = @ids
-      puts coond.inspect
-      #result = class_name.where(coond)
+      coond = Hash(Symbol, Array(Int32)).new
+      return class_name.none if @ids.size == 0
+      coond[:book_id] = [1,2]
+      #coond[key] = @ids
+      @collection = class_name.where(coond).select.map{|item| ModelWrapper.new(item)}
       @ids = [] of Int32 | Int64
-      nil
+      @collection
     end
 
     def add_id(id : Nil)
     end
 
-    def add_id(id : Int64)
+    def add_id(id : Int64 | Int32)
       @ids << id
     end
 
-    def add_id(id : Int32 | Nil)
-      @ids << id if id
-    end
-
-    def resolve(class_name, key, through)
-      -> { load_collection(class_name, key) }
+    def resolve(class_name, key, through, id)
+      items = load_collection(class_name, key)
+      result = items.select{ |item| item.book_id == id}
+      puts result.inspect
+      result
     end
   end
 end

@@ -9,7 +9,7 @@ describe Granite::Query::BuilderMethods do
         book2 = Book.create(name: "Anna Karenina")
         BookReview.create(body: "Great book!", book_id: book1.id)
         BookReview.create(body: "Cool", book_id: book2.id)
-	books = Book.where(id: [book1.id, book2.id]).select
+	books = Book.includes(:book_reviews).all
 
 	backend = Log::MemoryBackend.new
 	Log.builder.bind "granite", :debug, backend
@@ -18,7 +18,7 @@ describe Granite::Query::BuilderMethods do
         books[0].book_reviews.size.should eq 1
 
         books[1].id.should eq book2.id
-        books[0].book_reviews.size.should eq 1
+        books[1].book_reviews.size.should eq 0
 	backend.entries.size.should eq 2
       end
     end
