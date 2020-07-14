@@ -1,6 +1,25 @@
 module Granite
   abstract class Migration
     class Fields
+      CRYSTAL_TYPES = {
+        "serial"     => "AUTO_Int32",
+        "bigserial"  => "AUTO_Int64",
+        "uuid"       => "UUID",
+        "string"     => "String",
+        "text"       => "String",
+        "bool"       => "Bool",
+        "boolean"    => "Bool",
+        "reference"  => "Int64",
+        "int"        => "Int32",
+        "integer"    => "Int32",
+        "bigint"     => "Int64",
+        "biginteger" => "Int64",
+        "float"      => "Float32",
+        "real"       => "Float64",
+        "time"       => "Time",
+        "timestamp"  => "Time",
+      }
+
       property connection : Granite::Adapter::Base
       property fields = Array(String).new
 
@@ -8,32 +27,32 @@ module Granite
       end
 
       def primary(name : Symbol)
-        db_type = connection.class.schema_type?("Int64")
+        db_type = convert_type_to_db_type(:bigserial)
         fields << "#{name} #{db_type} PRIMARY KEY"
       end
 
       def serial(name : Symbol)
-        db_type = connection.class.schema_type?("AUTO_Int32")
+        db_type = convert_type_to_db_type(:serial)
         fields << "#{name} #{db_type}"
       end
 
       def bigserial(name : Symbol)
-        db_type = connection.class.schema_type?("AUTO_Int64")
+        db_type = convert_type_to_db_type(:bigserial)
         fields << "#{name} #{db_type}"
       end
 
       def uuid(name : Symbol)
-        db_type = connection.class.schema_type?("UUID")
+        db_type = convert_type_to_db_type(:uuid)
         fields << "#{name} #{db_type}"
       end
 
       def string(name : Symbol)
-        db_type = connection.class.schema_type?("String")
+        db_type = convert_type_to_db_type(:string)
         fields << "#{name} #{db_type}"
       end
 
       def text(name : Symbol)
-        db_type = connection.class.schema_type?("String")
+        db_type = convert_type_to_db_type(:text)
         fields << "#{name} #{db_type}"
       end
 
@@ -42,7 +61,7 @@ module Granite
       end
 
       def boolean(name : Symbol)
-        db_type = connection.class.schema_type?("Bool")
+        db_type = convert_type_to_db_type(:boolean)
         fields << "#{name} #{db_type}"
       end
 
@@ -55,7 +74,7 @@ module Granite
       end
 
       def integer(name : Symbol)
-        db_type = connection.class.schema_type?("Int32")
+        db_type = convert_type_to_db_type(:integer)
         fields << "#{name} #{db_type}"
       end
 
@@ -64,17 +83,17 @@ module Granite
       end
 
       def biginteger(name : Symbol)
-        db_type = connection.class.schema_type?("Int64")
+        db_type = convert_type_to_db_type(:biginteger)
         fields << "#{name} #{db_type}"
       end
 
       def float(name : Symbol)
-        db_type = connection.class.schema_type?("Float32")
+        db_type = convert_type_to_db_type(:float)
         fields << "#{name} #{db_type}"
       end
 
       def real(name : Symbol)
-        db_type = connection.class.schema_type?("Float64")
+        db_type = convert_type_to_db_type(:real)
         fields << "#{name} #{db_type}"
       end
 
@@ -83,7 +102,7 @@ module Granite
       end
 
       def timestamp(name : Symbol)
-        db_type = connection.class.schema_type?("Time")
+        db_type = convert_type_to_db_type(:timestamp)
         fields << "#{name} #{db_type}"
       end
 
@@ -98,6 +117,11 @@ module Granite
 
       def to_sql
         fields.join(", ")
+      end
+
+      def convert_type_to_db_type(type : Symbol)
+        crystal_type = CRYSTAL_TYPES[type.to_s]
+        connection.class.schema_type?(crystal_type)
       end
     end
 
@@ -120,13 +144,14 @@ module Granite
         fields = Fields.new(@@connection.not_nil!)
         yield fields
 
-        ddl << "CREATE TABLE #{table} ("
+        ddl << "CREATE TABLE \"#{table.to_s}\" ("
         ddl << fields.to_sql
         ddl << ")"
       end
     end
 
-    def rename_table
+    def rename_table(old_table : Symbol, new_table : Symbol)
+      statements << "ALTER TABLE \"#{old_table.to_s}\" RENAME TO \"#{new_table.to_s}\""
     end
 
     def drop_table(table : Symbol)
@@ -151,23 +176,32 @@ module Granite
       statements << "DROP INDEX \"#{name.to_s}\""
     end
 
-    def add_column
+    def add_column(table : Symbol, column : Symbol, type : Symbol)
+      fields = Fields.new(@@connection.not_nil!)
+      db_type = fields.convert_type_to_db_type(type)
+      statements << "ALTER TABLE \"#{table.to_s}\" ADD COLUMN \"#{column.to_s}\" #{db_type}"
     end
 
-    def rename_column
+    def rename_column(table : Symbol, old_column : Symbol, new_column : Symbol)
+      statements << "ALTER TABLE \"#{table.to_s}\" RENAME COLUMN \"#{old_column.to_s}\" TO \"#{new_column.to_s}\""
     end
 
-    def remove_column
+    def remove_column(table : Symbol, column : Symbol)
+      statements << "ALTER TABLE \"#{table.to_s}\" DROP COLUMN \"#{column.to_s}\""
     end
 
-    def add_foreign_key
-    end
-
-    def remove_foreign_key
+    def drop_index(table : Symbol, field : Symbol)
+      drop_index(table, [field])
     end
 
     def to_sql
       statements.join("; ") + ";"
+    end
+
+    def generate_sql(direction : Symbol)
+      statements.clear
+      direction == :up ? up : down
+      to_sql
     end
   end
 end
