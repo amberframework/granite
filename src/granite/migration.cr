@@ -71,6 +71,10 @@ module Granite
         fields << "#{name} #{db_type}"
       end
 
+      def ref(name : Symbol)
+        bigint(name)
+      end
+
       def reference(name : Symbol)
         bigint(name)
       end
@@ -150,18 +154,18 @@ module Granite
         fields = Fields.new(@@connection.not_nil!)
         yield fields
 
-        ddl << "CREATE TABLE \"#{table.to_s}\" ("
+        ddl << "CREATE TABLE \"#{table}\" ("
         ddl << fields.to_sql
         ddl << ")"
       end
     end
 
     def rename_table(old_table : Symbol, new_table : Symbol)
-      statements << "ALTER TABLE \"#{old_table.to_s}\" RENAME TO \"#{new_table.to_s}\""
+      statements << "ALTER TABLE \"#{old_table}\" RENAME TO \"#{new_table}\""
     end
 
     def drop_table(table : Symbol)
-      statements << "DROP TABLE IF EXISTS \"#{table.to_s}\""
+      statements << "DROP TABLE IF EXISTS \"#{table}\""
     end
 
     def create_index(table : Symbol, field : Symbol)
@@ -170,7 +174,7 @@ module Granite
 
     def create_index(table : Symbol, fields : Array(Symbol))
       name = "#{table}-#{fields.join("-")}-idx"
-      statements << "CREATE INDEX \"#{name.to_s}\" ON \"#{table.to_s}\" (#{fields.join(", ")})"
+      statements << "CREATE INDEX \"#{name}\" ON \"#{table}\" (#{fields.join(", ")})"
     end
 
     def drop_index(table : Symbol, field : Symbol)
@@ -179,25 +183,21 @@ module Granite
 
     def drop_index(table : Symbol, fields : Array(Symbol))
       name = "#{table}-#{fields.join("-")}-idx"
-      statements << "DROP INDEX \"#{name.to_s}\""
+      statements << "DROP INDEX \"#{name}\""
     end
 
     def add_column(table : Symbol, column : Symbol, type : Symbol)
       fields = Fields.new(@@connection.not_nil!)
       db_type = fields.convert_type_to_db_type(type)
-      statements << "ALTER TABLE \"#{table.to_s}\" ADD COLUMN \"#{column.to_s}\" #{db_type}"
+      statements << "ALTER TABLE \"#{table}\" ADD COLUMN \"#{column}\" #{db_type}"
     end
 
     def rename_column(table : Symbol, old_column : Symbol, new_column : Symbol)
-      statements << "ALTER TABLE \"#{table.to_s}\" RENAME COLUMN \"#{old_column.to_s}\" TO \"#{new_column.to_s}\""
+      statements << "ALTER TABLE \"#{table}\" RENAME COLUMN \"#{old_column}\" TO \"#{new_column}\""
     end
 
     def remove_column(table : Symbol, column : Symbol)
-      statements << "ALTER TABLE \"#{table.to_s}\" DROP COLUMN \"#{column.to_s}\""
-    end
-
-    def drop_index(table : Symbol, field : Symbol)
-      drop_index(table, [field])
+      statements << "ALTER TABLE \"#{table}\" DROP COLUMN \"#{column}\""
     end
 
     def to_sql
