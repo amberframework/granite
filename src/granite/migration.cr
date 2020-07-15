@@ -5,10 +5,12 @@ module Granite
         "serial"     => "AUTO_Int32",
         "bigserial"  => "AUTO_Int64",
         "uuid"       => "UUID",
+        "password"   => "String",
         "string"     => "String",
         "text"       => "String",
         "bool"       => "Bool",
         "boolean"    => "Bool",
+        "ref"        => "Int64",
         "reference"  => "Int64",
         "int"        => "Int32",
         "integer"    => "Int32",
@@ -44,6 +46,10 @@ module Granite
       def uuid(name : Symbol)
         db_type = convert_type_to_db_type(:uuid)
         fields << "#{name} #{db_type}"
+      end
+
+      def password(name : Symbol)
+        string(name)
       end
 
       def string(name : Symbol)
@@ -164,7 +170,7 @@ module Granite
 
     def create_index(table : Symbol, fields : Array(Symbol))
       name = "#{table}-#{fields.join("-")}-idx"
-      statements << "CREATE INDEX \"#{name.to_s}\" (#{fields.join(", ")})"
+      statements << "CREATE INDEX \"#{name.to_s}\" ON \"#{table.to_s}\" (#{fields.join(", ")})"
     end
 
     def drop_index(table : Symbol, field : Symbol)
