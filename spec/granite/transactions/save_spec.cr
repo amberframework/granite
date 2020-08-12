@@ -15,6 +15,20 @@ describe "#save" do
     parent.persisted?.should be_false
   end
 
+  it "create an invalid object with validation disabled" do
+    parent = Parent.new
+    parent.name = ""
+    parent.save(validate: false)
+    parent.persisted?.should be_true
+  end
+
+  it "does not create an invalid object with validation explicitly enabled" do
+    parent = Parent.new
+    parent.name = ""
+    parent.save(validate: true)
+    parent.persisted?.should be_false
+  end
+
   it "does not save a model with type conversion errors" do
     model = Comment.new(articleid: "foo")
     model.errors.size.should eq 1
@@ -42,6 +56,31 @@ describe "#save" do
     parent.save
     parent.name = ""
     parent.save
+    parent = Parent.find! parent.id
+    parent.name.should eq "Test Parent"
+  end
+
+  it "update an invalid object with validation disabled" do
+    Parent.clear
+    parent = Parent.new
+    parent.name = "Test Parent"
+    parent.save
+    parent.name = ""
+    parent.save(validate: false)
+
+    parents = Parent.all
+    parents.size.should eq 1
+
+    found = Parent.first!
+    found.name.should eq parent.name
+  end
+
+  it "does not update an invalid object with validation explicitly enabled" do
+    parent = Parent.new
+    parent.name = "Test Parent"
+    parent.save
+    parent.name = ""
+    parent.save(validate: true)
     parent = Parent.find! parent.id
     parent.name.should eq "Test Parent"
   end
