@@ -64,7 +64,7 @@ CREATE TABLE coaches (
   updated_at TIMESTAMP
 );
 
-CREATE INDEX 'team_id_idx' ON coaches (team_id);
+CREATE INDEX team_id_idx ON coaches (team_id);
 ```
 
 Foreign key is inferred from the class name of the Model which uses `has_one`. In above case `team_id` is assumed to be present in `coaches` table. In case its different you can specify one like this:
@@ -181,7 +181,7 @@ CREATE TABLE posts (
   updated_at TIMESTAMP
 );
 
-CREATE INDEX 'user_id_idx' ON posts (user_id);
+CREATE INDEX user_id_idx ON posts (user_id);
 ```
 
 ## Many to Many
@@ -230,8 +230,8 @@ CREATE TABLE participants (
   updated_at TIMESTAMP
 );
 
-CREATE INDEX 'user_id_idx' ON TABLE participants (user_id);
-CREATE INDEX 'room_id_idx' ON TABLE participants (room_id);
+CREATE INDEX user_id_idx ON TABLE participants (user_id);
+CREATE INDEX room_id_idx ON TABLE participants (room_id);
 ```
 
 ## has_many through:
