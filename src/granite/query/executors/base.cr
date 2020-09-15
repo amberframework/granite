@@ -5,7 +5,7 @@ module Granite::Query::Executor
     end
 
     def log(*messages)
-      messages.each { |message| Log.info { message } }
+      messages.each { |message| Log.debug { message } }
     end
   end
 end
