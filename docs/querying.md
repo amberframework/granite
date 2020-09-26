@@ -111,7 +111,7 @@ posts = Post.all("JOIN comments c ON c.post_id = post.id
 The `select_statement` macro allows you to customize the entire query, including the SELECT portion.  This shouldn't be necessary in most cases, but allows you to craft more complex (i.e. cross-table) queries if needed:
 
 ```crystal
-class CustomView < Granite:Base
+class CustomView < Granite::Base
   connection pg
 
   column id : Int64, primary: true

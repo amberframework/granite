@@ -33,11 +33,11 @@ This will add a `team` and `team=` instance method to the coach.
 For example:
 
 ```crystal
-team = Team.find 1
+team = Team.find! 1
 # has_one side..
 puts team.coach
 
-coach = Coach.find 1
+coach = Coach.find! 1
 # belongs_to side...
 puts coach.team
 
@@ -64,7 +64,7 @@ CREATE TABLE coaches (
   updated_at TIMESTAMP
 );
 
-CREATE INDEX 'team_id_idx' ON coaches (team_id);
+CREATE INDEX team_id_idx ON coaches (team_id);
 ```
 
 Foreign key is inferred from the class name of the Model which uses `has_one`. In above case `team_id` is assumed to be present in `coaches` table. In case its different you can specify one like this:
@@ -158,12 +158,12 @@ This will add a `user` and `user=` instance method to the post.
 For example:
 
 ```crystal
-user = User.find 1
+user = User.find! 1
 user.posts.each do |post|
   puts post.title
 end
 
-post = Post.find 1
+post = Post.find! 1
 puts post.user
 
 post.user = user
@@ -181,7 +181,7 @@ CREATE TABLE posts (
   updated_at TIMESTAMP
 );
 
-CREATE INDEX 'user_id_idx' ON posts (user_id);
+CREATE INDEX user_id_idx ON posts (user_id);
 ```
 
 ## Many to Many
@@ -230,8 +230,8 @@ CREATE TABLE participants (
   updated_at TIMESTAMP
 );
 
-CREATE INDEX 'user_id_idx' ON TABLE participants (user_id);
-CREATE INDEX 'room_id_idx' ON TABLE participants (room_id);
+CREATE INDEX user_id_idx ON TABLE participants (user_id);
+CREATE INDEX room_id_idx ON TABLE participants (room_id);
 ```
 
 ## has_many through:
