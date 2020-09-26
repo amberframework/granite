@@ -45,6 +45,13 @@ describe Granite::Migrator do
           "uuid" UUID PRIMARY KEY) ;\n
           SQL
 
+        Character.migrator.create_sql.should eq <<-SQL
+          CREATE TABLE "characters"(
+          "character_id" SERIAL PRIMARY KEY,
+          "name" TEXT NOT NULL
+          ) ;\n
+          SQL
+
         # Also check Array types for pg
         ArrayModel.migrator.create_sql.should eq <<-SQL
           CREATE TABLE "array_model"(
@@ -91,6 +98,13 @@ describe Granite::Migrator do
           ) ;\n
           SQL
 
+        Character.migrator.create_sql.should eq <<-SQL
+          CREATE TABLE `characters`(
+          `character_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+          `name` VARCHAR(255) NOT NULL
+          ) ;\n
+          SQL
+
         UUIDModel.migrator.create_sql.should eq <<-SQL
           CREATE TABLE `uuids`(
           `uuid` CHAR(36) PRIMARY KEY) ;\n
@@ -119,6 +133,13 @@ describe Granite::Migrator do
           CREATE TABLE "kvs"(
           "k" VARCHAR(255) PRIMARY KEY,
           "v" VARCHAR(255)
+          ) ;\n
+          SQL
+
+        Character.migrator.create_sql.should eq <<-SQL
+          CREATE TABLE "characters"(
+          "character_id" INTEGER NOT NULL PRIMARY KEY,
+          "name" VARCHAR(255) NOT NULL
           ) ;\n
           SQL
 
