@@ -169,12 +169,12 @@ module Granite::Transactions
   # The save method will check to see if the primary exists yet. If it does it
   # will call the update method, otherwise it will call the create method.
   # This will update the timestamps appropriately.
-  def save
+  def save(*, validate : Bool = true)
     {% begin %}
     {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
     {% raise raise "A primary key must be defined for #{@type.name}." unless primary_key %}
     {% ann = primary_key.annotation(Granite::Column) %}
-    return false unless valid?
+    return false if validate && !valid?
 
     begin
       __before_save
@@ -199,8 +199,8 @@ module Granite::Transactions
   {% end %}
   end
 
-  def save!
-    save || raise Granite::RecordNotSaved.new(self.class.name, self)
+  def save!(*, validate : Bool = true)
+    save(validate: validate) || raise Granite::RecordNotSaved.new(self.class.name, self)
   end
 
   def update(**args)
