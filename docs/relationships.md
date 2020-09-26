@@ -33,11 +33,11 @@ This will add a `team` and `team=` instance method to the coach.
 For example:
 
 ```crystal
-team = Team.find 1
+team = Team.find! 1
 # has_one side..
 puts team.coach
 
-coach = Coach.find 1
+coach = Coach.find! 1
 # belongs_to side...
 puts coach.team
 
@@ -158,12 +158,12 @@ This will add a `user` and `user=` instance method to the post.
 For example:
 
 ```crystal
-user = User.find 1
+user = User.find! 1
 user.posts.each do |post|
   puts post.title
 end
 
-post = Post.find 1
+post = Post.find! 1
 puts post.user
 
 post.user = user
