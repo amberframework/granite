@@ -166,8 +166,8 @@ module Granite::Transactions
   {% end %}
   end
 
-  # The save method will check to see if the primary exists yet. If it does it
-  # will call the update method, otherwise it will call the create method.
+  # The save method will check to see if the primary key exists yet. If it does
+  # it will call the update method, otherwise it will call the create method.
   # This will update the timestamps appropriately.
   def save(*, validate : Bool = true)
     {% begin %}
