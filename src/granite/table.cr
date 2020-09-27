@@ -51,12 +51,12 @@ module Granite::Tables
   end
 
   macro table(name)
-    @[Granite::Table(name: {{(name.is_a?(StringLiteral) ? name : name.stringify) || nil}})]
+    @[Granite::Table(name: {{(name.is_a?(StringLiteral) ? name : name.id.stringify) || nil}})]
     class ::{{@type.name.id}}; end
   end
 
   # specify the database connection you will be using for this model.
   macro connection(name)
-    class_getter adapter : Granite::Adapter::Base = Granite::Connections[{{(name.is_a?(StringLiteral) ? name : name.stringify)}}] || raise "No registered connection with the name '{{name.id}}'"
+    class_getter adapter : Granite::Adapter::Base = Granite::Connections[{{(name.is_a?(StringLiteral) ? name : name.id.stringify)}}] || raise "No registered connection with the name '{{name.id}}'"
   end
 end
