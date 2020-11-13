@@ -79,16 +79,16 @@ abstract class Granite::Adapter::Base
   end
 
   # This will insert a row in the database and return the id generated.
-  abstract def insert(table_name, fields, params, lastval) : Int64
+  abstract def insert(table_name : String, fields, params, lastval) : Int64
 
   # This will insert an array of models as one insert statement
   abstract def import(table_name : String, primary_name : String, auto : Bool, fields, model_array, **options)
 
   # This will update a row in the database.
-  abstract def update(table_name, primary_name, fields, params)
+  abstract def update(table_name : String, primary_name : String, fields, params)
 
   # This will delete a row from the database.
-  abstract def delete(table_name, primary_name, value)
+  abstract def delete(table_name : String, primary_name : String, value)
 
   module Schema
     TYPES = {
