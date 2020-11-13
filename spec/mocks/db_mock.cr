@@ -30,11 +30,11 @@ class FakeConnection < DB::Connection
     @prepared_statements = false
   end
 
-  def build_unprepared_statement(query : String) : FakeStatement
+  def build_unprepared_statement(query) : FakeStatement
     FakeStatement.new self
   end
 
-  def build_prepared_statement(query : String) : FakeStatement
+  def build_prepared_statement(query) : FakeStatement
     FakeStatement.new self
   end
 end
