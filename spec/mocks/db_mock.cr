@@ -31,11 +31,11 @@ class FakeConnection < DB::Connection
   end
 
   def build_unprepared_statement(query) : FakeStatement
-    FakeStatement.new self
+    FakeStatement.new self, query
   end
 
   def build_prepared_statement(query) : FakeStatement
-    FakeStatement.new self
+    FakeStatement.new self, query
   end
 end
 
@@ -55,7 +55,7 @@ class FieldEmitter < DB::ResultSet
   @values = [] of EmitterType
 
   def initialize
-    @statement = FakeStatement.new FakeConnection.new
+    @statement = FakeStatement.new FakeConnection.new, ""
   end
 
   def _set_values(values : Array(EmitterType))
