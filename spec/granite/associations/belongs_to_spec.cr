@@ -112,4 +112,16 @@ describe "belongs_to" do
 
     courier.service!.owner_id.should eq 123_321
   end
+
+  it "allows a belongs_to association to be a primary key" do
+    chat = Chat.new
+    chat.name = "My Awesome Chat"
+    chat.save
+
+    settings = ChatSettings.new
+    settings.chat = chat
+    settings.save
+
+    settings.chat_id!.should eq chat.id
+  end
 end
