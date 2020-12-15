@@ -76,29 +76,3 @@ $ bin/micrate up
 ```
 
 You should now have a `posts` table in your database ready to query.
-
-## migrator
-
-The purpose of this migration method mainly targets  internal testing. It has some restrictions:
-* Primary keys are always of type BIGINT even if declared as Int32
-* Enums are not supported
-
-You shoud always prefer [micrate](https://github.com/juanedi/micrate) over this solution.
-
-The migrator provides `drop`, `create` and `drop_and_create` methods
-
-   ```crystal
-   class User < Granite::Base
-     connection mysql
-  
-  	 column id : Int64, primary: true
-     column name : String
-   end
-   
-   User.migrator.drop_and_create
-   # => "DROP TABLE IF EXISTS `users`;"
-   # => "CREATE TABLE `users` (id BIGSERIAL PRIMARY KEY, name VARCHAR(255));"
-   
-   User.migrator(table_options: "ENGINE=InnoDB DEFAULT CHARSET=utf8").create
-   # => "CREATE TABLE ... ENGINE=InnoDB DEFAULT CHARSET=utf8;"
-   ```
