@@ -8,6 +8,26 @@ end
 {% begin %}
   {% adapter_literal = env("CURRENT_ADAPTER").id %}
 
+  class Chat < Granite::Base
+    connection {{ adapter_literal }}
+    table chats
+
+    column id : Int64, primary: true
+
+    column name : String
+
+    has_one settings : ChatSettings, foreign_key: :chat_id
+  end
+
+  class ChatSettings < Granite::Base
+    connection {{ adapter_literal }}
+    table chat_settings
+
+    belongs_to chat : Chat, primary: true
+
+    column flood_limit : Int32
+  end
+
   class Parent < Granite::Base
     connection {{ adapter_literal }}
     table parents

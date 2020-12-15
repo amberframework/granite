@@ -63,6 +63,17 @@ class Site < Granite::Base
 end
 ```
 
+`belongs_to` associations can also be used as a primary key in much the same way.
+
+```crystal
+class ChatSettings < Granite::Base
+  connection mysql
+
+  # chat_id would be the primary key
+  belongs_to chat : Chat, primary: true
+end
+```
+
 ### Custom
 
 The name and type of the primary key can also be changed from the recommended `id : Int64`.
