@@ -72,8 +72,10 @@ module Granite::Migrator
               "{{ann[:column_type].id}}"
             {% elsif ivar.name.id == "created_at" || ivar.name.id == "updated_at" %}
               resolve.call("{{ivar.name}}")
-            {% else %}
+            {% elsif ann[:nilable] %}
               resolve.call("{{ivar.type.union_types.find { |t| t != Nil }.id}}")
+            {% else %}
+              resolve.call("{{ivar.type.union_types.find { |t| t != Nil }.id}}") + " NOT NULL"
             {% end %}
           s.puts "#{k} #{v}"
         {% end %}
