@@ -169,11 +169,10 @@ end
 
 Granite supports custom/special types via converters.  Converters will convert the type into something the database can store when saving the model, and will convert the returned database value into that type on read.
 
-Each converter has a `T` generic argument that tells the converter what type should be read from the `DB::ResultSet`.  For example, if you wanted to use the `UUID` converter and your underlying database column is `BLOB`, you would use `Bytes`, if it was `TEXT`, you would use `String`.
+Each converter has a `T` generic argument that tells the converter what type should be read from the `DB::ResultSet`.  For example, if you wanted to use the `JSON` converter and your underlying database column is `BLOB`, you would use `Bytes`, if it was `TEXT`, you would use `String`.
 
 Currently Granite supports various converters, each with their own supported database column types:
 
-- `Uuid(T)` - Converts a `UUID` to/from a database column of type `T`.  Supported types for `T` are: `String`, and `Bytes`.
 - `Enum(E, T)` - Converts an Enum of type `E` to/from a database column of type `T`. Supported types for `T` are: `Number`, `String`, and `Bytes`.
 - `Json(M, T)` - Converters an `Object` of type `M` to/from a database column of type `T.`  Supported types for `T` are: `String`, `JSON::Any`, and `Bytes`.
   - **NOTE:**  `M` must implement `#to_json` and `.from_json` methods.
