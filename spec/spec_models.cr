@@ -526,7 +526,7 @@ end
     table enum_model
 
     column id : Int64, primary: true
-    column my_enum : MyEnum?, column_type: "TEXT"
+    column my_enum : MyEnum?, column_type: "TEXT", converter: Granite::Converters::Enum(MyEnum, String)
   end
 
   class MyApp::Namespace::Model < Granite::Base
