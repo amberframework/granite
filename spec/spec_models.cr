@@ -394,15 +394,15 @@ end
     connection {{ adapter_literal }}
     table uuids
 
-    column uuid : UUID?, primary: true, converter: Granite::Converters::Uuid(String)
+    column uuid : UUID?, primary: true
   end
 
   class UUIDNaturalModel < Granite::Base
     connection {{ adapter_literal }}
     table uuids
 
-    column uuid : UUID, primary: true, converter: Granite::Converters::Uuid(String), auto: false
-    column field_uuid : UUID?, converter: Granite::Converters::Uuid(String)
+    column uuid : UUID, primary: true, auto: false
+    column field_uuid : UUID?
   end
 
   class TodoJsonOptions < Granite::Base
@@ -552,9 +552,6 @@ end
       column enum_enum : MyEnum?, column_type: "my_enum_type", converter: Granite::Converters::Enum(MyEnum, Bytes)
       column binary_enum : MyEnum?, column_type: "BYTEA", converter: Granite::Converters::Enum(MyEnum, Bytes)
 
-      column string_uuid : UUID?, converter: Granite::Converters::Uuid(String) # Test PG native UUID type
-      column binary_uuid : UUID?, column_type: "BYTEA", converter: Granite::Converters::Uuid(Bytes)
-
       column numeric : Float64?, column_type: "DECIMAL(21, 20)", converter: Granite::Converters::PgNumeric
     end
     ConverterModel.exec(<<-TYPE
@@ -579,9 +576,6 @@ end
       column int_enum : MyEnum?, column_type: "INTEGER", converter: Granite::Converters::Enum(MyEnum, Int64)
       column string_enum : MyEnum?, column_type: "TEXT", converter: Granite::Converters::Enum(MyEnum, String)
       column binary_enum : MyEnum?, column_type: "BLOB", converter: Granite::Converters::Enum(MyEnum, String)
-
-      column string_uuid : UUID?, column_type: "TEXT", converter: Granite::Converters::Uuid(String)
-      column binary_uuid : UUID?, column_type: "BLOB", converter: Granite::Converters::Uuid(Bytes)
     end
   {% elsif env("CURRENT_ADAPTER") == "mysql" %}
     class ConverterModel < Granite::Base
@@ -597,9 +591,6 @@ end
       column string_enum : MyEnum?, column_type: "VARCHAR(5)", converter: Granite::Converters::Enum(MyEnum, String)
       column enum_enum : MyEnum?, column_type: "ENUM('Zero', 'One', 'Two', 'Three', 'Four')", converter: Granite::Converters::Enum(MyEnum, String)
       column binary_enum : MyEnum?, column_type: "BLOB", converter: Granite::Converters::Enum(MyEnum, Bytes)
-
-      column string_uuid : UUID?, column_type: "TEXT", converter: Granite::Converters::Uuid(String)
-      column binary_uuid : UUID?, column_type: "BLOB", converter: Granite::Converters::Uuid(Bytes)
     end
   {% end %}
 

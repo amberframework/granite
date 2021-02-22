@@ -15,10 +15,6 @@ describe Granite::Converters do
         model.enum_enum.should be_nil
         model.binary_enum.should be_nil
 
-        # UUID
-        model.string_uuid.should be_nil
-        model.binary_uuid.should be_nil
-
         # Numeric
         model.numeric.should be_nil
 
@@ -29,10 +25,9 @@ describe Granite::Converters do
       end
 
       it "should handle actual values" do
-        uuid = UUID.random
         obj = MyType.new
 
-        model = ConverterModel.new binary_uuid: uuid, string_uuid: uuid, numeric: Math::PI.round(20)
+        model = ConverterModel.new numeric: Math::PI.round(20)
 
         model.binary_json = model.string_jsonb = model.string_json = obj
 
@@ -51,10 +46,6 @@ describe Granite::Converters do
         model.string_enum.should eq MyEnum::Two
         model.enum_enum.should eq MyEnum::Three
         model.binary_enum.should eq MyEnum::Four
-
-        # UUID
-        model.string_uuid.should eq uuid
-        model.binary_uuid.should eq uuid
 
         # Numeric
         model.numeric.should eq Math::PI.round(20)
@@ -81,10 +72,6 @@ describe Granite::Converters do
         retrieved_model.enum_enum.should be_nil
         retrieved_model.binary_enum.should be_nil
 
-        # UUID
-        retrieved_model.string_uuid.should be_nil
-        retrieved_model.binary_uuid.should be_nil
-
         # Numeric
         retrieved_model.numeric.should be_nil
 
@@ -95,10 +82,9 @@ describe Granite::Converters do
       end
 
       it "should handle actual values" do
-        uuid = UUID.random
         obj = MyType.new
 
-        model = ConverterModel.new binary_uuid: uuid, string_uuid: uuid, numeric: Math::PI.round(20)
+        model = ConverterModel.new numeric: Math::PI.round(20)
 
         model.binary_json = model.string_jsonb = model.string_json = obj
 
@@ -119,10 +105,6 @@ describe Granite::Converters do
         retrieved_model.string_enum.should eq MyEnum::Two
         retrieved_model.enum_enum.should eq MyEnum::Three
         retrieved_model.binary_enum.should eq MyEnum::Four
-
-        # UUID
-        retrieved_model.string_uuid.should eq uuid
-        retrieved_model.binary_uuid.should eq uuid
 
         # Numeric
         retrieved_model.numeric.should eq Math::PI.round(20)
@@ -145,20 +127,15 @@ describe Granite::Converters do
         model.string_enum.should be_nil
         model.binary_enum.should be_nil
 
-        # UUID
-        model.string_uuid.should be_nil
-        model.binary_uuid.should be_nil
-
         # JSON
         model.string_json.should be_nil
         model.binary_json.should be_nil
       end
 
       it "should handle actual values" do
-        uuid = UUID.random
         obj = MyType.new
 
-        model = ConverterModel.new binary_uuid: uuid, string_uuid: uuid
+        model = ConverterModel.new
 
         model.binary_json = model.string_json = obj
 
@@ -173,10 +150,6 @@ describe Granite::Converters do
         model.int_enum.should eq MyEnum::Zero
         model.string_enum.should eq MyEnum::Two
         model.binary_enum.should eq MyEnum::Four
-
-        # UUID
-        model.string_uuid.should eq uuid
-        model.binary_uuid.should eq uuid
 
         # JSON
         model.string_json.should eq obj
@@ -197,20 +170,15 @@ describe Granite::Converters do
         retrieved_model.string_enum.should be_nil
         retrieved_model.binary_enum.should be_nil
 
-        # UUID
-        retrieved_model.string_uuid.should be_nil
-        retrieved_model.binary_uuid.should be_nil
-
         # JSON
         retrieved_model.string_json.should be_nil
         retrieved_model.binary_json.should be_nil
       end
 
       it "should handle actual values" do
-        uuid = UUID.random
         obj = MyType.new
 
-        model = ConverterModel.new binary_uuid: uuid, string_uuid: uuid
+        model = ConverterModel.new
 
         model.binary_json = model.string_json = obj
 
@@ -227,10 +195,6 @@ describe Granite::Converters do
         retrieved_model.int_enum.should eq MyEnum::Zero
         retrieved_model.string_enum.should eq MyEnum::Two
         retrieved_model.binary_enum.should eq MyEnum::Four
-
-        # UUID
-        retrieved_model.string_uuid.should eq uuid
-        retrieved_model.binary_uuid.should eq uuid
 
         # JSON
         retrieved_model.string_json.should eq obj
@@ -250,20 +214,15 @@ describe Granite::Converters do
         model.enum_enum.should be_nil
         model.binary_enum.should be_nil
 
-        # UUID
-        model.string_uuid.should be_nil
-        model.binary_uuid.should be_nil
-
         # JSON
         model.string_json.should be_nil
         model.binary_json.should be_nil
       end
 
       it "should handle actual values" do
-        uuid = UUID.random
         obj = MyType.new
 
-        model = ConverterModel.new binary_uuid: uuid, string_uuid: uuid
+        model = ConverterModel.new
 
         model.binary_json = model.string_json = obj
 
@@ -280,10 +239,6 @@ describe Granite::Converters do
         model.string_enum.should eq MyEnum::Two
         model.enum_enum.should eq MyEnum::Three
         model.binary_enum.should eq MyEnum::Four
-
-        # UUID
-        model.string_uuid.should eq uuid
-        model.binary_uuid.should eq uuid
 
         # JSON
         model.string_json.should eq obj
@@ -305,20 +260,15 @@ describe Granite::Converters do
         retrieved_model.enum_enum.should be_nil
         retrieved_model.binary_enum.should be_nil
 
-        # UUID
-        retrieved_model.string_uuid.should be_nil
-        retrieved_model.binary_uuid.should be_nil
-
         # JSON
         retrieved_model.string_json.should be_nil
         retrieved_model.binary_json.should be_nil
       end
 
       it "should handle actual values" do
-        uuid = UUID.random
         obj = MyType.new
 
-        model = ConverterModel.new binary_uuid: uuid, string_uuid: uuid
+        model = ConverterModel.new
 
         model.binary_json = model.string_json = obj
 
@@ -337,10 +287,6 @@ describe Granite::Converters do
         retrieved_model.string_enum.should eq MyEnum::Two
         retrieved_model.enum_enum.should eq MyEnum::Three
         retrieved_model.binary_enum.should eq MyEnum::Four
-
-        # UUID
-        retrieved_model.string_uuid.should eq uuid
-        retrieved_model.binary_uuid.should eq uuid
 
         # JSON
         retrieved_model.string_json.should eq obj

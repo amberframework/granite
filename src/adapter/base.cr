@@ -33,7 +33,7 @@ abstract class Granite::Adapter::Base
   end
 
   # remove all rows from a table and reset the counter on the id.
-  abstract def clear(table_name)
+  abstract def clear(table_name : String)
 
   # select performs a query against a table.  The query object contains table_name,
   # fields (configured using the sql_mapping directive in your model), and an optional
@@ -79,16 +79,16 @@ abstract class Granite::Adapter::Base
   end
 
   # This will insert a row in the database and return the id generated.
-  abstract def insert(table_name, fields, params, lastval) : Int64
+  abstract def insert(table_name : String, fields, params, lastval) : Int64
 
   # This will insert an array of models as one insert statement
   abstract def import(table_name : String, primary_name : String, auto : Bool, fields, model_array, **options)
 
   # This will update a row in the database.
-  abstract def update(table_name, primary_name, fields, params)
+  abstract def update(table_name : String, primary_name : String, fields, params)
 
   # This will delete a row from the database.
-  abstract def delete(table_name, primary_name, value)
+  abstract def delete(table_name : String, primary_name : String, value)
 
   module Schema
     TYPES = {

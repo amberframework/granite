@@ -35,7 +35,6 @@ describe "custom select" do
   end
 
   # TODO:  `find` on this ViewModel fails because "id" is ambiguous in a complex SELECT.
-
   # it "uses custom SQL to populate a view model - #find" do
   #   first = Article.new.tap do |model|
   #     model.articlebody = "The Article Body"
