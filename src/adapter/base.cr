@@ -43,7 +43,7 @@ abstract class Granite::Adapter::Base
     clause = ensure_clause_template(clause)
     statement = query.custom ? "#{query.custom} #{clause}" : String.build do |stmt|
       stmt << "SELECT "
-      stmt << query.fields.map { |name| "#{quote(query.table_name)}.#{quote(name)}" }.join(", ")
+      stmt << query.fields.map { |name| "#{quote_if_required(query.table_name)}.#{quote(name)}" }.join(", ")
       stmt << " FROM #{quote(query.table_name)} #{clause}"
     end
 
@@ -60,7 +60,7 @@ abstract class Granite::Adapter::Base
 
   # Returns `true` if a record exists that matches *criteria*, otherwise `false`.
   def exists?(table_name : String, criteria : String, params = [] of Granite::Columns::Type) : Bool
-    statement = "SELECT EXISTS(SELECT 1 FROM #{table_name} WHERE #{ensure_clause_template(criteria)})"
+    statement = "SELECT EXISTS(SELECT 1 FROM #{quote_if_required(table_name)} WHERE #{ensure_clause_template(criteria)})"
 
     exists = false
     elapsed_time = Time.measure do
@@ -104,6 +104,15 @@ abstract class Granite::Adapter::Base
 
   # Use macro in order to read a constant defined in each subclasses.
   macro inherited
+    # quote the string only if it hasn't already been quoted
+    def quote_if_required(name : String) : String
+      if name[0] != QUOTING_CHAR && name[name.size - 1] != QUOTING_CHAR
+        quote(name)
+      else
+        name
+      end
+    end
+
     # quotes table and column names
     def quote(name : String) : String
       String.build do |str|

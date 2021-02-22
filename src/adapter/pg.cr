@@ -28,7 +28,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
 
   # remove all rows from a table and reset the counter on the id.
   def clear(table_name : String)
-    statement = "DELETE FROM #{quote(table_name)}"
+    statement = "DELETE FROM #{quote_if_required(table_name)}"
 
     elapsed_time = Time.measure do
       open do |db|
@@ -41,7 +41,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
 
   def insert(table_name : String, fields, params, lastval) : Int64
     statement = String.build do |stmt|
-      stmt << "INSERT INTO #{quote(table_name)} ("
+      stmt << "INSERT INTO #{quote_if_required(table_name)} ("
       stmt << fields.map { |name| "#{quote(name)}" }.join(", ")
       stmt << ") VALUES ("
       stmt << fields.map { |name| "$#{fields.index(name).not_nil! + 1}" }.join(", ")
@@ -75,7 +75,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
 
     statement = String.build do |stmt|
       stmt << "INSERT"
-      stmt << " INTO #{quote(table_name)} ("
+      stmt << " INTO #{quote_if_required(table_name)} ("
       stmt << fields.map { |field| quote(field) }.join(", ")
       stmt << ") VALUES "
 
@@ -115,7 +115,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
   # This will update a row in the database.
   def update(table_name : String, primary_name : String, fields, params)
     statement = String.build do |stmt|
-      stmt << "UPDATE #{quote(table_name)} SET "
+      stmt << "UPDATE #{quote_if_required(table_name)} SET "
       stmt << fields.map { |name| "#{quote(name)}=$#{fields.index(name).not_nil! + 1}" }.join(", ")
       stmt << " WHERE #{quote(primary_name)}=$#{fields.size + 1}"
     end
@@ -131,7 +131,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
 
   # This will delete a row from the database.
   def delete(table_name : String, primary_name : String, value)
-    statement = "DELETE FROM #{quote(table_name)} WHERE #{quote(primary_name)}=$1"
+    statement = "DELETE FROM #{quote_if_required(table_name)} WHERE #{quote(primary_name)}=$1"
 
     elapsed_time = Time.measure do
       open do |db|
