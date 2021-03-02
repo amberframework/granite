@@ -1,4 +1,4 @@
-FROM crystallang/crystal:0.35.1
+FROM crystallang/crystal:0.36.1
 
 ARG sqlite_version=3110000
 ARG sqlite_version_year=2016

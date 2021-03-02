@@ -2,7 +2,7 @@ require "./error"
 
 # DB migration tool that prepares a table for the class
 #
-# ```crystal
+# ```
 # class User < Granite::Base
 #   adapter mysql
 #   field name : String
