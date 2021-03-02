@@ -36,6 +36,23 @@ module Granite::Query::Assembler
       clauses.compact!.join " "
     end
 
+    # Use macro in order to read a constant defined in each subclasses.
+    macro inherited
+      # quotes table and column names
+      def quote(name : String) : String
+        # only quote the string if it isn't already quoted
+        if name[0] != QUOTING_CHAR && name[name.size - 1] != QUOTING_CHAR
+          String.build do |str|
+            str << QUOTING_CHAR
+            str << name
+            str << QUOTING_CHAR
+          end
+        else
+          name
+        end
+      end
+    end
+
     def where
       return @where if @where
 
@@ -60,7 +77,7 @@ module Granite::Query::Assembler
           add_aggregate_field expression[:field]
 
           if expression[:value].nil?
-            clauses << "#{expression[:field]} IS NULL"
+            clauses << "#{quote(expression[:field])} IS NULL"
           elsif expression[:value].is_a?(Array)
             in_stmt = String.build do |str|
               str << '('
@@ -72,9 +89,9 @@ module Granite::Query::Assembler
               end
               str << ')'
             end
-            clauses << "#{expression[:field]} #{sql_operator(expression[:operator])} #{in_stmt}"
+            clauses << "#{quote(expression[:field])} #{sql_operator(expression[:operator])} #{in_stmt}"
           else
-            clauses << "#{expression[:field]} #{sql_operator(expression[:operator])} #{add_parameter expression[:value]}"
+            clauses << "#{quote(expression[:field])} #{sql_operator(expression[:operator])} #{add_parameter expression[:value]}"
           end
         end
       end
@@ -101,9 +118,9 @@ module Granite::Query::Assembler
         add_aggregate_field expression[:field]
 
         if expression[:direction] == Builder::Sort::Ascending
-          "#{expression[:field]} ASC"
+          "#{quote(expression[:field])} ASC"
         else
-          "#{expression[:field]} DESC"
+          "#{quote(expression[:field])} DESC"
         end
       end
 
@@ -115,7 +132,7 @@ module Granite::Query::Assembler
       group_fields = @query.group_fields
       return nil if group_fields.none?
       group_clauses = group_fields.map do |expression|
-        "#{expression[:field]}"
+        "#{quote(expression[:field])}"
       end
 
       @group_by = "GROUP BY #{group_clauses.join ", "}"
