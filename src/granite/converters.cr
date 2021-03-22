@@ -135,9 +135,9 @@ module Granite::Converters
       result_string = String.new result.read(Slice(UInt8))
       result_enums = Array(E).new
       E.each do |enum_value|
-        results << enum_value if result_string.includes?(enum_value.to_s)
+        result_enums << enum_value if result_string.includes?(enum_value.to_s)
       end
-      results
+      result_enums
     end
   end
 end
