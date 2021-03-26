@@ -155,7 +155,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       end
     end
 
-    log statement, elapsed_time, value
+    log statement, elapsed_time
   end
 
   protected def ensure_clause_template(clause : String) : String
