@@ -151,7 +151,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
 
     elapsed_time = Time.measure do
       open do |db|
-        db.exec statement, value
+        db.exec statement
       end
     end
 
