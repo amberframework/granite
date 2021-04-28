@@ -111,7 +111,7 @@ module Granite::Converters
       value = value.gsub("\\", "")
 
       # If present, we want to strip off the starting and ending quotes
-      value = value[1..-2] if value[0] == "\"" && value[-1] == "\""
+      value = value[1..-2] if value[0] == '"' && value[-1] == '"'
       value
     end
   end
