@@ -107,18 +107,5 @@ module Granite::Converters
       result.read(::PG::Numeric?).try &.to_f
     end
   end
-
-  # Converts a `Slice(UInt8)/Bytes` value into a `String`. Usually for PG Enums
-  module EnumSlice
-    extend self
-
-    def self.to_db(value) : Granite::Columns::Type
-      value
-    end
-
-    def self.from_rs(result : ::DB::ResultSet) : String
-      String.new result.read Slice(UInt8)
-    end
-  end
   
 end
