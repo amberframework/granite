@@ -2,7 +2,6 @@ class Granite::AssociationCollection(Owner, Target)
   forward_missing_to all
 
   def initialize(@owner : Owner, @foreign_key : (Symbol | String), @through : (Symbol | String | Nil) = nil)
-    @target_key = "#{Target.to_s.underscore}_id" if @target_key.nil?
   end
 
   def all(clause = "", params = [] of DB::Any)
