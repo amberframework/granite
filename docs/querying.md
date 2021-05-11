@@ -133,6 +133,8 @@ You can combine this with an argument to `all` or `first` for maximum flexibilit
 results = CustomView.all("WHERE articles.author = ?", ["Noah"])
 ```
 
+Note - the column order does matter, and you should match your SELECT query to have the columns in the same order they are in the database.
+
 ## Exists?
 
 The `exists?` class method returns `true` if a record exists in the table that matches the provided *id* or *criteria*, otherwise `false`.
