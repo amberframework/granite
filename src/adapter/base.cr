@@ -106,15 +106,10 @@ abstract class Granite::Adapter::Base
   macro inherited
     # quotes table and column names
     def quote(name : String) : String
-      # only quote the string if it isn't already quoted
-      if name[0] != QUOTING_CHAR && name[name.size - 1] != QUOTING_CHAR
-        String.build do |str|
-          str << QUOTING_CHAR
-          str << name
-          str << QUOTING_CHAR
-        end
-      else
-        name
+      String.build do |str|
+        str << QUOTING_CHAR
+        str << name
+        str << QUOTING_CHAR
       end
     end
 
