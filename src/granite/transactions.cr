@@ -6,10 +6,6 @@ module Granite::Transactions
       adapter.clear table_name
     end
 
-    def truncate(cascade : Bool = false)
-      adapter.truncate(table_name, cascade)
-    end
-
     def create(**args)
       create(args.to_h)
     end

@@ -2,7 +2,6 @@
 # This will likely require adapter specific subclassing :[.
 module Granite::Query::Assembler
   class Mysql(Model) < Base(Model)
-    QUOTING_CHAR = '`'
     @placeholder = "?"
 
     def add_parameter(value : Granite::Columns::Type) : String
