@@ -95,27 +95,6 @@ module Granite::Converters
     end
   end
 
-  # We may want the JSON object as a string to parse later on
-  module JsonString
-    extend self
-
-    def to_db(value) : Granite::Columns::Type
-      return nil if value.nil?
-      value.to_json
-    end
-
-    def from_rs(result : ::DB::ResultSet) : String
-      value = result.read(JSON::Any).to_json
-      
-      # We want to remove any escape characters so that the string can be parsed correctly
-      value = value.gsub("\\", "")
-
-      # If present, we want to strip off the starting and ending quotes
-      value = value[1..-2] if value[0] == '"' && value[-1] == '"'
-      value
-    end
-  end
-
   # Converters a `PG::Numeric` value into a `Float64`.
   module PgNumeric
     extend self
