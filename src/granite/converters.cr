@@ -107,5 +107,4 @@ module Granite::Converters
       result.read(::PG::Numeric?).try &.to_f
     end
   end
-  
 end
