@@ -142,6 +142,22 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     log statement, elapsed_time, value
   end
 
+  # This will truncate a table and cascade to other dependent tables
+  def truncate(table_name : String, cascade : Bool = false)
+    statement = String.build do |stmt|
+      stmt << "TRUNCATE #{quote(table_name)}"
+      stmt << " CASCADE" if cascade
+    end
+
+    elapsed_time = Time.measure do
+      open do |db|
+        db.exec statement
+      end
+    end
+
+    log statement, elapsed_time
+  end
+
   protected def ensure_clause_template(clause : String) : String
     if clause.includes?("?")
       num_subs = clause.count("?")
