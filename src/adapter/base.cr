@@ -60,7 +60,7 @@ abstract class Granite::Adapter::Base
 
   # Returns `true` if a record exists that matches *criteria*, otherwise `false`.
   def exists?(table_name : String, criteria : String, params = [] of Granite::Columns::Type) : Bool
-    statement = "SELECT EXISTS(SELECT 1 FROM #{quote(table_name)} WHERE #{ensure_clause_template(criteria)})"
+    statement = "SELECT EXISTS(SELECT 1 FROM #{table_name} WHERE #{ensure_clause_template(criteria)})"
 
     exists = false
     elapsed_time = Time.measure do
