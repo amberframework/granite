@@ -2,7 +2,7 @@ name: granite
 
 version: 1.0.0
 
-crystal: 1.0.0
+crystal: ">= 0.35, < 2.0s"
 
 authors:
   - drujensen <drujensen@gmail.com>
