@@ -2,7 +2,7 @@ name: granite
 
 version: 1.0.0
 
-crystal: ">= 0.35.0, < 2.0"
+crystal: ">= 0.35.0, < 2.0.0"
 
 authors:
   - drujensen <drujensen@gmail.com>
