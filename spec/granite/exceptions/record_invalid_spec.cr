@@ -8,7 +8,7 @@ describe Granite::RecordNotSaved do
     Granite::RecordNotSaved
       .new(Parent.name, parent)
       .message
-      .should eq("Could not process Parent")
+      .should eq("Could not process Parent: Name cannot be blank")
   end
 
   it "should have a model" do
