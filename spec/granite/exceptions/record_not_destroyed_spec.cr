@@ -8,7 +8,7 @@ describe Granite::RecordNotDestroyed do
     Granite::RecordNotDestroyed
       .new(Parent.name, parent)
       .message
-      .should eq("Could not destroy Parent")
+      .should eq("Could not destroy Parent: Name cannot be blank")
   end
 
   it "should have a model" do
