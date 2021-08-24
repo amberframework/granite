@@ -49,7 +49,7 @@ We should now be able to run micrate commands.
 Let's create a `posts` table in our database.
 
 ```sh
-$ bin/micrate create create_posts
+$ bin/micrate scaffold create_posts
 ```
 
 This will create a file under `db/migrations`. Let's open it and define our posts schema.
