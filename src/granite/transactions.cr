@@ -78,13 +78,13 @@ module Granite::Transactions
   end
 
   def set_timestamps(*, to time = Time.local(Granite.settings.default_timezone), mode = :create)
-    {% if @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) }.map(&.name.stringify).includes? "created_at" %}
+    {% if @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) && ivar.type == Time? }.map(&.name.stringify).includes? "created_at" %}
       if mode == :create
         @created_at = time.at_beginning_of_second
       end
     {% end %}
 
-    {% if @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) }.map(&.name.stringify).includes? "updated_at" %}
+    {% if @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) && ivar.type == Time? }.map(&.name.stringify).includes? "updated_at" %}
       @updated_at = time.at_beginning_of_second
     {% end %}
   end
