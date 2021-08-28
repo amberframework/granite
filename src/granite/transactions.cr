@@ -24,7 +24,7 @@ module Granite::Transactions
     def create!(args)
       instance = create(args)
 
-      if instance.errors.any?
+      unless instance.errors.empty?
         raise Granite::RecordNotSaved.new(self.name, instance)
       end
 

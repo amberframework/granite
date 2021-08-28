@@ -87,7 +87,7 @@ module Granite::Querying
 
     loop do
       results = all "#{clause} LIMIT ? OFFSET ?", params + [limit, offset]
-      break unless results.any?
+      break if results.empty?
       yield results
       offset += limit
     end
@@ -115,7 +115,7 @@ module Granite::Querying
   end
 
   def exec(clause = "")
-    adapter.open { |db| db.exec(clause) }
+    adapter.open(&.exec(clause))
   end
 
   def query(clause = "", params = [] of Granite::Columns::Type, &block)
