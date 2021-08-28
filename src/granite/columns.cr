@@ -124,7 +124,7 @@ module Granite::Columns
     fields
   end
 
-  def set_attributes(hash : Hash(String | Symbol, Type)) : self
+  def set_attributes(hash) : self
     {% for column in @type.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && (!ann[:primary] || (ann[:primary] && ann[:auto] == false)) } %}
       if hash.has_key?({{column.stringify}})
         begin
