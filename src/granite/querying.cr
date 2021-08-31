@@ -135,7 +135,7 @@ module Granite::Querying
     criteria_hash = criteria.dup
 
     clauses = keys.map do |name|
-      if criteria_hash[name]
+      if criteria_hash.has_key?(name) && !criteria_hash[name].nil?
         matcher = "= ?"
       else
         matcher = "IS NULL"
