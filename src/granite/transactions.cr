@@ -99,19 +99,25 @@ module Granite::Transactions
       set_timestamps
       fields = self.class.content_fields.dup
       params = content_values
+
       if value = @{{primary_key.name.id}}
         fields << {{primary_key.name.stringify}}
         params << value
       end
+
       {% if primary_key.type == Int32? && ann[:auto] == true %}
         @{{primary_key.name.id}} = self.class.adapter.insert(self.class.table_name, fields, params, lastval: {{primary_key.name.stringify}}).to_i32
       {% elsif primary_key.type == Int64? && ann[:auto] == true %}
         @{{primary_key.name.id}} = self.class.adapter.insert(self.class.table_name, fields, params, lastval: {{primary_key.name.stringify}})
       {% elsif primary_key.type == UUID? && ann[:auto] == true %}
-          _uuid = UUID.random
-          @{{primary_key.name.id}} = _uuid
-          params << _uuid
-          fields << {{primary_key.name.stringify}}
+          # if the primary key has not been set, then do so
+
+          unless fields.includes?({{primary_key.name.stringify}})
+            _uuid = UUID.random
+            @{{primary_key.name.id}} = _uuid
+            params << _uuid
+            fields << {{primary_key.name.stringify}}
+          end
           self.class.adapter.insert(self.class.table_name, fields, params, lastval: nil)
       {% elsif ann[:auto] == true %}
         {% raise "Failed to define #{@type.name}#save: Primary key must be Int(32|64) or UUID, or set `auto: false` for natural keys.\n\n  column #{primary_key.name} : #{primary_key.type}, primary: true, auto: false\n" %}
