@@ -59,6 +59,8 @@ class Granite::Query::Builder(Model)
     matches.each do |field, value|
       if value.is_a?(Array)
         and(field: field.to_s, operator: :in, value: value.compact)
+      elsif value.is_a?(Enum)
+        and(field: field.to_s, operator: :eq, value: value.to_s)
       else
         and(field: field.to_s, operator: :eq, value: value)
       end
@@ -95,6 +97,8 @@ class Granite::Query::Builder(Model)
     matches.each do |field, value|
       if value.is_a?(Array)
         and(field: field.to_s, operator: :in, value: value.compact)
+      elsif value.is_a?(Enum)
+        and(field: field.to_s, operator: :eq, value: value.to_s)
       else
         and(field: field.to_s, operator: :eq, value: value)
       end
@@ -110,6 +114,8 @@ class Granite::Query::Builder(Model)
     matches.each do |field, value|
       if value.is_a?(Array)
         or(field: field.to_s, operator: :in, value: value.compact)
+      elsif value.is_a?(Enum)
+        or(field: field.to_s, operator: :eq, value: value.to_s)
       else
         or(field: field.to_s, operator: :eq, value: value)
       end
