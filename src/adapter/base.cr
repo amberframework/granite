@@ -25,7 +25,9 @@ abstract class Granite::Adapter::Base
   end
 
   def open(&block)
-    yield database
+    database.retry do
+      yield database
+    end
   end
 
   def log(query : String, elapsed_time : Time::Span, params = [] of String) : Nil
