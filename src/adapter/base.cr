@@ -26,7 +26,17 @@ abstract class Granite::Adapter::Base
 
   def open(&block)
     database.retry do
-      yield database
+      begin
+        yield database
+      rescue ex : IO::Error
+        raise ::DB::ConnectionLost.new(database)
+      rescue ex : Exception
+        if ex.message =~ /client was disconnected/
+          raise ::DB::ConnectionLost.new(database)
+        else
+          raise ex
+        end
+      end
     end
   end
 
