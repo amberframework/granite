@@ -26,13 +26,13 @@ abstract class Granite::Adapter::Base
 
   def open(&block)
     database.retry do
-      begin
-        yield database
+      database.using_connection do |conn|
+        yield conn
       rescue ex : IO::Error
-        raise ::DB::ConnectionLost.new(database)
+        raise ::DB::ConnectionLost.new(conn)
       rescue ex : Exception
         if ex.message =~ /client was disconnected/
-          raise ::DB::ConnectionLost.new(database)
+          raise ::DB::ConnectionLost.new(conn)
         else
           raise ex
         end

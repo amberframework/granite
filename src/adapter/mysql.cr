@@ -41,11 +41,9 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
 
     last_id = -1_i64
     elapsed_time = Time.measure do
-      open do |db|
-        db.using_connection do |conn|
-          conn.exec statement, args: params
-          last_id = conn.scalar(last_val()).as(Int64) if lastval
-        end
+      open do |conn|
+        conn.exec statement, args: params
+        last_id = conn.scalar(last_val()).as(Int64) if lastval
       end
     end
 
