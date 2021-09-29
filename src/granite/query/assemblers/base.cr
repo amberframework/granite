@@ -65,9 +65,12 @@ module Granite::Query::Assembler
             in_stmt = String.build do |str|
               str << '('
               expression[:value].as(Array).each_with_index do |val, idx|
-                str << '\'' if expression[:value].is_a?(Array(String))
-                str << val
-                str << '\'' if expression[:value].is_a?(Array(String))
+                case val
+                when Bool, Float32, Float64, Int16
+                  str << val
+                else
+                  str << add_parameter val
+                end
                 str << ',' if expression[:value].as(Array).size - 1 != idx
               end
               str << ')'
