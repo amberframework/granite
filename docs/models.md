@@ -54,6 +54,7 @@ end
 Each model is required to have a primary key defined.  Use the `column` macro with the `primary: true` option to denote the primary key. 
 
 > **NOTE:** Composite primary keys are not yet supported.
+
 ```crystal
 class Site < Granite::Base
   connection mysql
