@@ -15,6 +15,7 @@ dependencies:
 ```
 
 Update shards
+
 ```sh
 $ shards update
 ```
@@ -36,6 +37,7 @@ Micrate::Cli.run
 ```
 
 Make it executable:
+
 ```sh
 $ chmod +x bin/micrate
 ```
@@ -71,6 +73,7 @@ DROP TABLE posts;
 ```
 
 And now let's run the migration
+
 ```sh
 $ bin/micrate up
 ```

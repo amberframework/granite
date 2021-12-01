@@ -39,6 +39,7 @@ end
 
 post = Post.find! 1 # raises when no records found
 ```
+
 ### find_by
 
 Finds the record(s) that match the given criteria
@@ -52,6 +53,7 @@ end
 post = Post.find_by!(slug: "foo") # raises when no records found.
 other_post = Post.find_by(slug: "foo", type: "bar") # Also works for multiple arguments.
 ```
+
 ### first
 
 Returns the first record.
@@ -99,6 +101,7 @@ post.update(name: "Granite Really Rocks!") # Assigns attributes and calls save
 post = Post.find 1
 post.update!(name: "Granite Really Rocks!") # Assigns attributes and calls save!. Will throw an exception when the save failed
 ```
+
 ## Delete
 
 Delete a specific record.
@@ -111,6 +114,7 @@ puts "deleted" if post.destroyed?
 post = Post.find 1
 post.destroy! # raises when delete failed
 ```
+
 Clear all records of a model
 
 ```crystal

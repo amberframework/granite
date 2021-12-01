@@ -5,8 +5,8 @@
 ### Installation
 
 Add this library to your projects dependencies along with the driver in
-your `shard.yml`.  This can be used with any framework but was originally
-designed to work with the amber framework in mind.  This library will work
+your `shard.yml`. This can be used with any framework but was originally
+designed to work with the amber framework in mind. This library will work
 with Kemal or any other framework as well.
 
 ```yaml
@@ -23,12 +23,11 @@ dependencies:
 
   pg:
     github: will/crystal-pg
-
 ```
 
 ### Register a Connection
 
-Next you will need to register a connection.  This should be one of the first things in your main Crystal file, before Granite is required.
+Next you will need to register a connection. This should be one of the first things in your main Crystal file, before Granite is required.
 
 ```crystal
 Granite::Connections << Granite::Adapter::Mysql.new(name: "mysql", url: "YOUR_DATABASE_URL")

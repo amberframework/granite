@@ -7,6 +7,7 @@ post = Post.new
 post.save
 post.errors[0].to_s.should eq "ERROR: name cannot be null"
 ```
+
 ## Validations
 
 Validations can be made on models to ensure that given criteria are met.
