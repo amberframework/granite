@@ -149,7 +149,13 @@ module Granite::Columns
     {% begin %}
       case attribute_name.to_s
       {% for column in @type.instance_vars.select(&.annotation(Granite::Column)) %}
-        when "{{ column.name }}" then @{{ column.name.id }}
+        {% ann = column.annotation(Granite::Column) %}
+      when "{{ column.name }}"
+        {% if ann[:converter] %}
+          {{ann[:converter]}}.to_db @{{column.name.id}}
+        {% else %}
+          @{{ column.name.id }}
+        {% end %}
       {% end %}
       else
         raise "Cannot read attribute #{attribute_name}, invalid attribute"
