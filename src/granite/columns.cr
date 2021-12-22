@@ -112,19 +112,19 @@ module Granite::Columns
     fields = {{"Hash(String, Union(#{@type.instance_vars.select(&.annotation(Granite::Column)).map(&.type.id).splat})).new".id}}
 
     {% for column in @type.instance_vars.select(&.annotation(Granite::Column)) %}
-        {% if column.type.id == Time.id %}
-          fields["{{column.name}}"] = {{column.name.id}}.try(&.in(Granite.settings.default_timezone).to_s(Granite::DATETIME_FORMAT))
-        {% elsif column.type.id == Slice.id %}
-          fields["{{column.name}}"] = {{column.name.id}}.try(&.to_s(""))
-        {% else %}
-          fields["{{column.name}}"] = {{column.name.id}}
-        {% end %}
+      {% if column.type.id == Time.id %}
+        fields["{{column.name}}"] = {{column.name.id}}.try(&.in(Granite.settings.default_timezone).to_s(Granite::DATETIME_FORMAT))
+      {% elsif column.type.id == Slice.id %}
+        fields["{{column.name}}"] = {{column.name.id}}.try(&.to_s(""))
+      {% else %}
+        fields["{{column.name}}"] = {{column.name.id}}
       {% end %}
+    {% end %}
 
     fields
   end
 
-  def set_attributes(hash) : self
+  def set_attributes(hash : Hash(String | Symbol, T)) : self forall T
     {% for column in @type.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && (!ann[:primary] || (ann[:primary] && ann[:auto] == false)) } %}
       if hash.has_key?({{column.stringify}})
         begin

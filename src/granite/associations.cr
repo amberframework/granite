@@ -46,9 +46,13 @@ module Granite::Associations
     {% end %}
     {% foreign_key = options[:foreign_key] || @type.stringify.split("::").last.underscore + "_id" %}
     {% primary_key = options[:primary_key] || "id" %}
+    {% if primary_key.is_a? TypeDeclaration %}
+      {% primary_key = primary_key.var %}
+    {% end %}
 
     @[Granite::Relationship(target: {{class_name.id}}, type: :has_one,
       primary_key: {{primary_key.id}}, foreign_key: {{foreign_key.id}})]
+
     def {{method_name}} : {{class_name}}?
       {{class_name.id}}.find_by({{foreign_key.id}}: self.{{primary_key.id}})
     end
