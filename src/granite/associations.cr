@@ -45,9 +45,12 @@ module Granite::Associations
       {% class_name = options[:class_name] || model.id.camelcase %}
     {% end %}
     {% foreign_key = options[:foreign_key] || @type.stringify.split("::").last.underscore + "_id" %}
-    {% primary_key = options[:primary_key] || "id" %}
-    {% if primary_key.is_a? TypeDeclaration %}
-      {% primary_key = primary_key.var %}
+
+    {% if options[:primary_key] && options[:primary_key].is_a? TypeDeclaration %}
+      {% primary_key = options[:primary_key].var %}
+      column {{options[:primary_key]}}
+    {% else %}
+      {% primary_key = "id" %}
     {% end %}
 
     @[Granite::Relationship(target: {{class_name.id}}, type: :has_one,
@@ -75,11 +78,12 @@ module Granite::Associations
       {% class_name = options[:class_name] || model.id.camelcase %}
     {% end %}
     {% foreign_key = options[:foreign_key] || @type.stringify.split("::").last.underscore + "_id" %}
+    {% primary_key = options[:primary_key] || class_name.stringify.split("::").last.underscore + "_id" %}
     {% through = options[:through] %}
     @[Granite::Relationship(target: {{class_name.id}}, through: {{through.id}}, type: :has_many,
       primary_key: {{through}}, foreign_key: {{foreign_key.id}})]
     def {{method_name.id}}
-      Granite::AssociationCollection(self, {{class_name.id}}).new(self, {{foreign_key}}, {{through}})
+      Granite::AssociationCollection(self, {{class_name.id}}).new(self, {{foreign_key}}, {{through}}, {{primary_key}})
     end
   end
 end
