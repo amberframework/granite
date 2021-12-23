@@ -112,6 +112,9 @@ module Granite::Columns
     fields = {{"Hash(String, Union(#{@type.instance_vars.select(&.annotation(Granite::Column)).map(&.type.id).splat})).new".id}}
 
     {% for column in @type.instance_vars.select(&.annotation(Granite::Column)) %}
+      {% nilable = (column.type.is_a?(Path) ? column.type.resolve.nilable? : (column.type.is_a?(Union) ? column.type.types.any?(&.resolve.nilable?) : (column.type.is_a?(Generic) ? column.type.resolve.nilable? : column.type.nilable?))) %}
+
+      begin
       {% if column.type.id == Time.id %}
         fields["{{column.name}}"] = {{column.name.id}}.try(&.in(Granite.settings.default_timezone).to_s(Granite::DATETIME_FORMAT))
       {% elsif column.type.id == Slice.id %}
@@ -119,6 +122,11 @@ module Granite::Columns
       {% else %}
         fields["{{column.name}}"] = {{column.name.id}}
       {% end %}
+      rescue ex : NilAssertionError
+        {% if nilable %}
+        fields["{{column.name}}"] = nil
+        {% end %}
+      end
     {% end %}
 
     fields

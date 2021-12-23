@@ -41,7 +41,15 @@ module Granite::Transactions
         {% ann = primary_key.annotation(Granite::Column) %}
         fields_duplicate = fields.dup
         model_array.each_slice(batch_size, true) do |slice|
+          slice.each do |i|
+            i.before_save
+            i.before_create
+          end
           adapter.import(table_name, {{primary_key.name.stringify}}, {{ann[:auto]}}, fields_duplicate, slice)
+          slice.each do |i|
+            i.after_create
+            i.after_save
+          end
         end
       {% end %}
     rescue err
@@ -55,7 +63,15 @@ module Granite::Transactions
         {% ann = primary_key.annotation(Granite::Column) %}
         fields_duplicate = fields.dup
         model_array.each_slice(batch_size, true) do |slice|
+          slice.each do |i|
+            i.before_save
+            i.before_create
+          end
           adapter.import(table_name, {{primary_key.name.stringify}}, {{ann[:auto]}}, fields_duplicate, slice, update_on_duplicate: update_on_duplicate, columns: columns)
+          slice.each do |i|
+            i.after_create
+            i.after_save
+          end
         end
       {% end %}
     rescue err
@@ -69,7 +85,15 @@ module Granite::Transactions
         {% ann = primary_key.annotation(Granite::Column) %}
         fields_duplicate = fields.dup
         model_array.each_slice(batch_size, true) do |slice|
+          slice.each do |i|
+            i.before_save
+            i.before_create
+          end
           adapter.import(table_name, {{primary_key.name.stringify}}, {{ann[:auto]}}, fields_duplicate, slice, ignore_on_duplicate: ignore_on_duplicate)
+          slice.each do |i|
+            i.after_create
+            i.after_save
+          end
         end
       {% end %}
     rescue err
