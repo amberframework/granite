@@ -5,7 +5,9 @@ the [Crystal](https://github.com/crystal-lang/crystal) language.
 
 This project is to provide an ORM in Crystal.
 
-[![Build Status](https://img.shields.io/travis/amberframework/granite.svg?maxAge=360)](https://travis-ci.org/amberframework/granite)
+# Looking for maintainers
+
+Granite is looking for volunteers to take over maintainership of the repository, reviewing and merging pull requests, stewarding updates to follow along with Crystal language updates, etc. [More information here](https://github.com/amberframework/granite/issues/462)
 
 ## Documentation
 
