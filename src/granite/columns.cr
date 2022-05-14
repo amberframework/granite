@@ -105,7 +105,6 @@ module Granite::Columns
   # include created_at and updated_at that will automatically be updated
   macro timestamps
     column created_at : Time?
-    column updated_at : Time?
   end
 
   def to_h
