@@ -262,7 +262,6 @@ module Granite::Transactions
       end
     {% end %}
     set_timestamps mode: :update
-    #@updated_at = Time.local(Granite.settings.default_timezone).at_beginning_of_second
     save
   end
 end
