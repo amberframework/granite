@@ -149,7 +149,12 @@ module Granite::Columns
     {% begin %}
       case attribute_name.to_s
       {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
-        when "{{ column.name }}" then @{{ column.name.id }}
+        {% if column.type.union? && column.type.union_types.includes?(JSON::Any) %}
+          {% puts "registering #{column} with a .to_json" %}
+          when "{{ column.name }}" then @{{ column.name.id }}.to_json
+        {% else %}
+          when "{{ column.name }}" then @{{ column.name.id }}
+        {% end %}
       {% end %}
       else
         raise "Cannot read attribute #{attribute_name}, invalid attribute"
