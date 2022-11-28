@@ -4,7 +4,7 @@ describe "#find_each" do
   it "finds all the records" do
     Parent.clear
     model_ids = (0...100).map do |i|
-      Parent.new(name: "role_#{i}").tap { |r| r.save }
+      Parent.new(name: "role_#{i}").tap(&.save)
     end.map(&.id)
 
     found_roles = [] of Int64 | Nil

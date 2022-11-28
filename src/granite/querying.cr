@@ -115,7 +115,7 @@ module Granite::Querying
   end
 
   def exec(clause = "")
-    adapter.open { |db| db.exec(clause) }
+    adapter.open(&.exec(clause))
   end
 
   def query(clause = "", params = [] of Granite::Columns::Type, &block)

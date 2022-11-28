@@ -38,7 +38,7 @@ describe "#import" do
 
         reviews = Review.all("WHERE name LIKE ?", ["ImportReview%"])
         reviews.size.should eq 4
-        reviews.none? { |r| r.published }.should be_true
+        reviews.none?(&.published).should be_true
         reviews.all? { |r| r.upvotes == 0 }.should be_true
 
         reviews.each { |r| r.published = true; r.upvotes = 1.to_i64 }
@@ -48,7 +48,7 @@ describe "#import" do
         reviews = Review.all("WHERE name LIKE ?", ["ImportReview%"])
 
         reviews.size.should eq 4
-        reviews.all? { |r| r.published }.should be_true
+        reviews.all?(&.published).should be_true
         reviews.all? { |r| r.upvotes == 1 }.should be_true
       end
     end
@@ -132,7 +132,7 @@ describe "#import" do
         schools.size.should eq 4
         schools.all? { |s| s.name == "ImportExistingSchool" }.should be_true
 
-        schools.each { |s| s.name = "ImportExistingSchoolEdited" }
+        schools.each(&.name=("ImportExistingSchoolEdited"))
 
         School.import(schools, update_on_duplicate: true, columns: ["name"])
 
