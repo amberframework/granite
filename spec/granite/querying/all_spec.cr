@@ -9,7 +9,7 @@ describe "#all" do
 
     all = Parent.all
     all.size.should eq model_ids.size
-    all.map(&.id).compact.sort.should eq model_ids.compact
+    all.map(&.id).compact.sort!.should eq model_ids.compact
   end
 
   # TODO Fails under MySQL

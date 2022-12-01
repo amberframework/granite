@@ -12,7 +12,7 @@ describe "#find_each" do
       found_roles << model.id
     end
 
-    found_roles.compact.sort.should eq model_ids.compact
+    found_roles.compact.sort!.should eq model_ids.compact
   end
 
   it "doesnt yield when no records are found" do
@@ -38,7 +38,7 @@ describe "#find_each" do
       found_models << model.id
     end
 
-    found_models.compact.sort.should eq created_models.compact
+    found_models.compact.sort!.should eq created_models.compact
   end
 
   it "doesnt obliterate a parameterized query" do

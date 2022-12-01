@@ -12,7 +12,7 @@ describe "#find_in_batches" do
       batch.size.should eq 10
     end
 
-    found_models.compact.sort.should eq model_ids.compact
+    found_models.compact.sort!.should eq model_ids.compact
   end
 
   it "doesnt yield when no records are found" do
@@ -56,7 +56,7 @@ describe "#find_in_batches" do
       end
     end
 
-    found_models.compact.sort.should eq created_models.compact
+    found_models.compact.sort!.should eq created_models.compact
   end
 
   it "doesnt obliterate a parameterized query" do
