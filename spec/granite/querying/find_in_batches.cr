@@ -67,7 +67,7 @@ describe "#find_in_batches" do
     looking_for_ids = created_models[0...5]
 
     Parent.find_in_batches("WHERE id IN(#{looking_for_ids.join(",")})") do |batch|
-      batch.map(&.id).compact.should eq looking_for_ids
+      batch.compact_map(&.id).should eq looking_for_ids
     end
   end
 end

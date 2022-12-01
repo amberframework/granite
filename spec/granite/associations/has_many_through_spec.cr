@@ -37,9 +37,9 @@ describe "has_many, through:" do
     enrollment3.student = unrelated_student
     enrollment3.save
 
-    student.klasses.map(&.id).compact.sort!.should eq [klass1.id, klass2.id].compact.sort!
+    student.klasses.compact_map(&.id).sort!.should eq [klass1.id, klass2.id].compact.sort!
 
-    klass2.students.map(&.id).compact.sort!.should eq [student.id, unrelated_student.id].compact.sort!
+    klass2.students.compact_map(&.id).sort!.should eq [student.id, unrelated_student.id].compact.sort!
   end
 
   context "querying association" do
