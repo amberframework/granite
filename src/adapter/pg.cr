@@ -44,7 +44,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
       stmt << "INSERT INTO #{quote(table_name)} ("
       stmt << fields.map { |name| "#{quote(name)}" }.join(", ")
       stmt << ") VALUES ("
-      stmt << fields.map { |name| "$#{fields.index(name).not_nil! + 1}" }.join(", ")
+      stmt << position_str(fields.size)
       stmt << ")"
 
       stmt << " RETURNING #{quote(lastval)}" if lastval
@@ -116,7 +116,7 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
   def update(table_name : String, primary_name : String, fields, params)
     statement = String.build do |stmt|
       stmt << "UPDATE #{quote(table_name)} SET "
-      stmt << fields.map { |name| "#{quote(name)}=$#{fields.index(name).not_nil! + 1}" }.join(", ")
+      stmt << fields.map_with_index { |name, i| "#{quote(name)}=$#{i + 1}" }.join(", ")
       stmt << " WHERE #{quote(primary_name)}=$#{fields.size + 1}"
     end
 
@@ -152,5 +152,16 @@ class Granite::Adapter::Pg < Granite::Adapter::Base
     end
 
     clause
+  end
+
+  private def position_str(n : Int32) : String
+    i = 1
+    String.build do |str|
+      while i <= n
+        str << "$" << i
+        i += 1
+        str << ", " if i <= n
+      end
+    end
   end
 end
