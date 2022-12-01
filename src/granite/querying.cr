@@ -87,7 +87,7 @@ module Granite::Querying
 
     loop do
       results = all "#{clause} LIMIT ? OFFSET ?", params + [limit, offset]
-      break unless results.any?
+      break if results.empty?
       yield results
       offset += limit
     end
