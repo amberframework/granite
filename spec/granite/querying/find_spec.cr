@@ -8,7 +8,7 @@ describe "#find, #find!" do
 
     found = Parent.find model.id
     found.should_not be_nil
-    found.not_nil!.id.should eq model.id
+    found && (found.id.should eq model.id)
 
     found = Parent.find! model.id
     found.id.should eq model.id
