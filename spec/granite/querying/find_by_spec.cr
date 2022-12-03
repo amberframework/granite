@@ -9,7 +9,11 @@ describe "#find_by, #find_by!" do
     model.save.should be_true
 
     found = Parent.find_by(name: name)
-    found.not_nil!.id.should eq model.id
+    if pa = found
+      pa.id.should eq model.id
+    else
+      pa.should_not be_nil
+    end
 
     found = Parent.find_by!(name: name)
     found.should be_a(Parent)
@@ -23,7 +27,12 @@ describe "#find_by, #find_by!" do
 
     expected = Review.create(name: "review3", upvotes: 10.to_i64)
 
-    Review.find_by(name: "review3", upvotes: 10).not_nil!.id.should eq expected.id
+    r = Review.find_by(name: "review3", upvotes: 10)
+    if r
+      r.id.should eq expected.id
+    else
+      r.should_not be_nil
+    end
 
     expect_raises(Granite::Querying::NotFound, /No .*Review.* found where name = review1 and upvotes = 20/) do
       Review.find_by!(name: "review1", upvotes: 20)
@@ -37,7 +46,11 @@ describe "#find_by, #find_by!" do
     model.save.should be_true
 
     found = Student.find_by(name: nil)
-    found.not_nil!.id.should eq model.id
+    if stu = found
+      stu.id.should eq model.id
+    else
+      stu.should_not be_nil
+    end
 
     found = Student.find_by!(name: nil)
     found.should be_a(Student)
@@ -52,7 +65,11 @@ describe "#find_by, #find_by!" do
     model.save.should be_true
 
     found = ReservedWord.find_by(all: value)
-    found.not_nil!.id.should eq model.id
+    if rw = found
+      rw.id.should eq model.id
+    else
+      rw.should_not be_nil
+    end
 
     found = ReservedWord.find_by!(all: value)
     found.id.should eq model.id
@@ -66,7 +83,11 @@ describe "#find_by, #find_by!" do
     model.save.should be_true
 
     found = Parent.find_by({"name" => name})
-    found.not_nil!.id.should eq model.id
+    if pa = found
+      pa.id.should eq model.id
+    else
+      pa.should_not be_nil
+    end
 
     found = Parent.find_by!({"name" => name})
     found.should be_a(Parent)

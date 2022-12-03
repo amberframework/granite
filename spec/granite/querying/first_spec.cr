@@ -14,7 +14,11 @@ describe "#first, #first!" do
     end
 
     found = Parent.first
-    found.not_nil!.id.should eq first.id
+    if pa = found
+      pa.id.should eq first.id
+    else
+      pa.should_not be_nil
+    end
 
     found = Parent.first!
     found.id.should eq first.id
@@ -33,7 +37,11 @@ describe "#first, #first!" do
     end
 
     found = Parent.first("ORDER BY id DESC")
-    found.not_nil!.id.should eq second.id
+    if pa = found
+      found.id.should eq second.id
+    else
+      pa.should_not be_nil
+    end
 
     found = Parent.first!("ORDER BY id DESC")
     found.id.should eq second.id

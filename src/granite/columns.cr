@@ -9,7 +9,7 @@ module Granite::Columns
     # All fields
     def fields : Array(String)
       {% begin %}
-        {% columns = @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) }.map(&.name.stringify) %}
+        {% columns = @type.instance_vars.select(&.annotation(Granite::Column)).map(&.name.stringify) %}
         {{columns.empty? ? "[] of String".id : columns}}
       {% end %}
     end
@@ -37,7 +37,7 @@ module Granite::Columns
     {% begin %}
       result.column_names.each do |col|
         case col
-        {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
+        {% for column in @type.instance_vars.select(&.annotation(Granite::Column)) %}
           {% ann = column.annotation(Granite::Column) %}
           when {{column.name.stringify}}
             @{{column.id}} = {% if ann[:converter] %}
@@ -109,9 +109,9 @@ module Granite::Columns
   end
 
   def to_h
-    fields = {{"Hash(String, Union(#{@type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) }.map(&.type.id).splat})).new".id}}
+    fields = {{"Hash(String, Union(#{@type.instance_vars.select(&.annotation(Granite::Column)).map(&.type.id).splat})).new".id}}
 
-    {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
+    {% for column in @type.instance_vars.select(&.annotation(Granite::Column)) %}
         {% if column.type.id == Time.id %}
           fields["{{column.name}}"] = {{column.name.id}}.try(&.in(Granite.settings.default_timezone).to_s(Granite::DATETIME_FORMAT))
         {% elsif column.type.id == Slice.id %}
@@ -148,7 +148,7 @@ module Granite::Columns
   def read_attribute(attribute_name : Symbol | String) : Type
     {% begin %}
       case attribute_name.to_s
-      {% for column in @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) } %}
+      {% for column in @type.instance_vars.select(&.annotation(Granite::Column)) %}
         when "{{ column.name }}" then @{{ column.name.id }}
       {% end %}
       else

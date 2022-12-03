@@ -24,7 +24,7 @@ module Granite::Transactions
     def create!(args : Granite::ModelArgs)
       instance = create(args)
 
-      if instance.errors.any?
+      if !instance.errors.empty?
         raise Granite::RecordNotSaved.new(self.name, instance)
       end
 
@@ -78,13 +78,13 @@ module Granite::Transactions
   end
 
   def set_timestamps(*, to time = Time.local(Granite.settings.default_timezone), mode = :create)
-    {% if @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) }.map(&.name.stringify).includes? "created_at" %}
+    {% if @type.instance_vars.select(&.annotation(Granite::Column)).map(&.name.stringify).includes? "created_at" %}
       if mode == :create
         @created_at = time.at_beginning_of_second
       end
     {% end %}
 
-    {% if @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) }.map(&.name.stringify).includes? "updated_at" %}
+    {% if @type.instance_vars.select(&.annotation(Granite::Column)).map(&.name.stringify).includes? "updated_at" %}
       @updated_at = time.at_beginning_of_second
     {% end %}
   end

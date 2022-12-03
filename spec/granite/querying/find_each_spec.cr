@@ -4,7 +4,7 @@ describe "#find_each" do
   it "finds all the records" do
     Parent.clear
     model_ids = (0...100).map do |i|
-      Parent.new(name: "role_#{i}").tap { |r| r.save }
+      Parent.new(name: "role_#{i}").tap(&.save)
     end.map(&.id)
 
     found_roles = [] of Int64 | Nil
@@ -12,7 +12,7 @@ describe "#find_each" do
       found_roles << model.id
     end
 
-    found_roles.compact.sort.should eq model_ids.compact
+    found_roles.compact.sort!.should eq model_ids.compact
   end
 
   it "doesnt yield when no records are found" do
@@ -38,7 +38,7 @@ describe "#find_each" do
       found_models << model.id
     end
 
-    found_models.compact.sort.should eq created_models.compact
+    found_models.compact.sort!.should eq created_models.compact
   end
 
   it "doesnt obliterate a parameterized query" do

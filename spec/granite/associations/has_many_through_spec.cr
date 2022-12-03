@@ -37,9 +37,9 @@ describe "has_many, through:" do
     enrollment3.student = unrelated_student
     enrollment3.save
 
-    student.klasses.map(&.id).compact.sort.should eq [klass1.id, klass2.id].compact.sort
+    student.klasses.compact_map(&.id).sort!.should eq [klass1.id, klass2.id].compact.sort!
 
-    klass2.students.map(&.id).compact.sort.should eq [student.id, unrelated_student.id].compact.sort
+    klass2.students.compact_map(&.id).sort!.should eq [student.id, unrelated_student.id].compact.sort!
   end
 
   context "querying association" do
@@ -91,9 +91,13 @@ describe "has_many, through:" do
       enrollment3.student = student
       enrollment3.save
 
-      klass = student.klasses.find_by(name: "Test class with different name").not_nil!
-      klass.id.should eq klass3.id
-      klass.name.should eq "Test class with different name"
+      klass = student.klasses.find_by(name: "Test class with different name")
+      if klass
+        klass.id.should eq klass3.id
+        klass.name.should eq "Test class with different name"
+      else
+        klass.should_not be_nil
+      end
     end
 
     it "#find_by!" do
@@ -118,7 +122,7 @@ describe "has_many, through:" do
       enrollment3.student = student
       enrollment3.save
 
-      klass = student.klasses.find_by!(name: "Test class with different name").not_nil!
+      klass = student.klasses.find_by!(name: "Test class with different name")
       klass.id.should eq klass3.id
       klass.name.should eq "Test class with different name"
 
@@ -152,9 +156,13 @@ describe "has_many, through:" do
       enrollment3.student = student
       enrollment3.save
 
-      klass = student.klasses.find(klass1.id).not_nil!
-      klass.id.should eq klass1.id
-      klass.name.should eq "Test class X"
+      klass = student.klasses.find(klass1.id)
+      if klass
+        klass.id.should eq klass1.id
+        klass.name.should eq "Test class X"
+      else
+        klass.should_not be_nil
+      end
     end
 
     it "#find!" do
@@ -179,7 +187,7 @@ describe "has_many, through:" do
       enrollment3.student = student
       enrollment3.save
 
-      klass = student.klasses.find!(klass1.id).not_nil!
+      klass = student.klasses.find!(klass1.id)
       klass.id.should eq klass1.id
       klass.name.should eq "Test class X"
 
