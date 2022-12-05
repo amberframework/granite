@@ -1,0 +1,88 @@
+name: Granite Sanity Test
+on: [push, pull_request]
+jobs:
+  sanity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup PostgreSQL test environment
+        run: |
+          sudo systemctl start postgresql.service
+          sudo -u postgres psql -c "CREATE USER tester WITH PASSWORD 'pass';"
+          sudo -u postgres createdb --owner=tester testdb
+      - name: Install Crystal
+        run: |
+          curl -fsSL https://crystal-lang.org/install.sh | sudo bash
+          sudo apt update
+          sudo apt install crystal
+      - uses: actions/checkout@v3
+      - name: OS Hash Version
+        id: os-hash
+        run: echo "os_ver=$(cat /etc/lsb-release|shasum|cut -c 1-6)" >> $GITHUB_OUTPUT
+        shell: bash
+      - name: crystal hash version
+        id: crystal
+        run: |
+          crystal -v
+          echo "hash_ver=$(crystal -v|shasum|cut -c 1-6)" >> $GITHUB_OUTPUT
+        shell: bash
+      - name: Cache dependent shards
+        id: cache-lib
+        uses: actions/cache@v3
+        with:
+          path: |
+            lib
+            bin/ameba
+          key: os-${{ steps.os-hash.outputs.os_ver }}-crystal-${{ steps.crystal.outputs.hash_ver }}-shards-${{ hashFiles('shard.yml') }}
+      - name: Install dependencies
+        if: steps.cache-lib.outputs.cache-hit != 'true'
+        run: shards install
+      - name: Code Styles
+        run: bin/ameba
+      - name: Code Format
+        run: crystal tool format --check
+      - name: Run testing on PostgreSQL
+        env:
+          PG_DATABASE_URL: 'postgres://tester:pass@localhost:5432/testdb'
+          MYSQL_DATABASE_URL: 'mysql://root:root@localhost:3306/test'
+          SQLITE_DATABASE_URL: 'sqlite3:./test.db'
+          CURRENT_ADAPTER: pg
+        run: crystal spec
+      - name: Run testing on SQLite3
+        env:
+          PG_DATABASE_URL: 'postgres://tester:pass@localhost:5432/testdb'
+          MYSQL_DATABASE_URL: 'mysql://root:root@localhost:3306/test'
+          SQLITE_DATABASE_URL: 'sqlite3:./test.db'
+          CURRENT_ADAPTER: sqlite
+        run: crystal spec
+  mysql:
+    runs-on: ubuntu-latest
+    container:
+      image: crystallang/crystal
+    steps:
+      - name: Install sqlite3 dev libs
+        run: |
+          apt-get update
+          apt-get install -y libsqlite3-dev
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: shards install
+      - name: Run testing on MySQL
+        env:
+          PG_DATABASE_URL: 'postgres://tester:pass@localhost:5432/testdb'
+          MYSQL_DATABASE_URL: 'mysql://tester:pass@mysql:3306/testdb'
+          SQLITE_DATABASE_URL: 'sqlite3:./test.db'
+          CURRENT_ADAPTER: mysql
+        run: crystal spec
+    services:
+      mysql:
+        image: mysql:5.7.40
+        env:
+          MYSQL_DATABASE: testdb
+          MYSQL_USER: tester
+          MYSQL_PASSWORD: pass
+          MYSQL_ROOT_PASSWORD: rootpass
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5

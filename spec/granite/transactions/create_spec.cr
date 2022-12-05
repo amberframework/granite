@@ -13,8 +13,8 @@ describe "#create" do
   end
 
   it "doesn't have a race condition on IDs" do
-    n = 1000
-    ids = Array(Int64).new(n)
+    n = 100
+    ids = Set(Int64).new(n)
     channel = Channel(Int64).new
 
     n.times do
@@ -25,7 +25,7 @@ describe "#create" do
       end
     end
     n.times { ids << channel.receive }
-    ids.uniq!.size.should eq n
+    ids.size.should eq n
   end
 
   describe "with a custom primary key" do
