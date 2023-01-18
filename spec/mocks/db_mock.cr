@@ -88,4 +88,8 @@ class FieldEmitter < DB::ResultSet
   def column_name(index : Int32) : String
     "Column #{index}"
   end
+
+  def next_column_index : Int32
+    @field_position
+  end
 end
