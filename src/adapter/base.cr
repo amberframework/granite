@@ -25,7 +25,19 @@ abstract class Granite::Adapter::Base
   end
 
   def open(&block)
-    yield database
+    database.retry do
+      database.using_connection do |conn|
+        yield conn
+      rescue ex : IO::Error
+        raise ::DB::ConnectionLost.new(conn)
+      rescue ex : Exception
+        if ex.message =~ /client was disconnected/
+          raise ::DB::ConnectionLost.new(conn)
+        else
+          raise ex
+        end
+      end
+    end
   end
 
   def log(query : String, elapsed_time : Time::Span, params = [] of String) : Nil

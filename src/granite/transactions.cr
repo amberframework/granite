@@ -10,7 +10,7 @@ module Granite::Transactions
       create(args.to_h)
     end
 
-    def create(args : Granite::ModelArgs)
+    def create(args)
       instance = new
       instance.set_attributes(args.transform_keys(&.to_s))
       instance.save
@@ -21,10 +21,10 @@ module Granite::Transactions
       create!(args.to_h)
     end
 
-    def create!(args : Granite::ModelArgs)
+    def create!(args)
       instance = create(args)
 
-      if !instance.errors.empty?
+      unless instance.errors.empty?
         raise Granite::RecordNotSaved.new(self.name, instance)
       end
 
@@ -41,7 +41,15 @@ module Granite::Transactions
         {% ann = primary_key.annotation(Granite::Column) %}
         fields_duplicate = fields.dup
         model_array.each_slice(batch_size, true) do |slice|
+          slice.each do |i|
+            i.before_save
+            i.before_create
+          end
           adapter.import(table_name, {{primary_key.name.stringify}}, {{ann[:auto]}}, fields_duplicate, slice)
+          slice.each do |i|
+            i.after_create
+            i.after_save
+          end
         end
       {% end %}
     rescue err
@@ -55,7 +63,15 @@ module Granite::Transactions
         {% ann = primary_key.annotation(Granite::Column) %}
         fields_duplicate = fields.dup
         model_array.each_slice(batch_size, true) do |slice|
+          slice.each do |i|
+            i.before_save
+            i.before_create
+          end
           adapter.import(table_name, {{primary_key.name.stringify}}, {{ann[:auto]}}, fields_duplicate, slice, update_on_duplicate: update_on_duplicate, columns: columns)
+          slice.each do |i|
+            i.after_create
+            i.after_save
+          end
         end
       {% end %}
     rescue err
@@ -69,7 +85,15 @@ module Granite::Transactions
         {% ann = primary_key.annotation(Granite::Column) %}
         fields_duplicate = fields.dup
         model_array.each_slice(batch_size, true) do |slice|
+          slice.each do |i|
+            i.before_save
+            i.before_create
+          end
           adapter.import(table_name, {{primary_key.name.stringify}}, {{ann[:auto]}}, fields_duplicate, slice, ignore_on_duplicate: ignore_on_duplicate)
+          slice.each do |i|
+            i.after_create
+            i.after_save
+          end
         end
       {% end %}
     rescue err
@@ -78,13 +102,13 @@ module Granite::Transactions
   end
 
   def set_timestamps(*, to time = Time.local(Granite.settings.default_timezone), mode = :create)
-    {% if @type.instance_vars.select(&.annotation(Granite::Column)).map(&.name.stringify).includes? "created_at" %}
+    {% if @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) && ivar.type == Time? }.map(&.name.stringify).includes? "created_at" %}
       if mode == :create
         @created_at = time.at_beginning_of_second
       end
     {% end %}
 
-    {% if @type.instance_vars.select(&.annotation(Granite::Column)).map(&.name.stringify).includes? "updated_at" %}
+    {% if @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) && ivar.type == Time? }.map(&.name.stringify).includes? "updated_at" %}
       @updated_at = time.at_beginning_of_second
     {% end %}
   end
@@ -99,19 +123,25 @@ module Granite::Transactions
       set_timestamps
       fields = self.class.content_fields.dup
       params = content_values
+
       if value = @{{primary_key.name.id}}
         fields << {{primary_key.name.stringify}}
         params << value
       end
+
       {% if primary_key.type == Int32? && ann[:auto] == true %}
         @{{primary_key.name.id}} = self.class.adapter.insert(self.class.table_name, fields, params, lastval: {{primary_key.name.stringify}}).to_i32
       {% elsif primary_key.type == Int64? && ann[:auto] == true %}
         @{{primary_key.name.id}} = self.class.adapter.insert(self.class.table_name, fields, params, lastval: {{primary_key.name.stringify}})
       {% elsif primary_key.type == UUID? && ann[:auto] == true %}
-          _uuid = UUID.random
-          @{{primary_key.name.id}} = _uuid
-          params << _uuid
-          fields << {{primary_key.name.stringify}}
+          # if the primary key has not been set, then do so
+
+          unless fields.includes?({{primary_key.name.stringify}})
+            _uuid = UUID.random
+            @{{primary_key.name.id}} = _uuid
+            params << _uuid
+            fields << {{primary_key.name.stringify}}
+          end
           self.class.adapter.insert(self.class.table_name, fields, params, lastval: nil)
       {% elsif ann[:auto] == true %}
         {% raise "Failed to define #{@type.name}#save: Primary key must be Int(32|64) or UUID, or set `auto: false` for natural keys.\n\n  column #{primary_key.name} : #{primary_key.type}, primary: true, auto: false\n" %}

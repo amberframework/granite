@@ -2,7 +2,7 @@ require "json"
 require "uuid"
 
 module Granite::Columns
-  alias SupportedArrayTypes = Array(String) | Array(Int16) | Array(Int32) | Array(Int64) | Array(Float32) | Array(Float64) | Array(Bool)
+  alias SupportedArrayTypes = Array(String) | Array(Int16) | Array(Int32) | Array(Int64) | Array(Float32) | Array(Float64) | Array(Bool) | Array(UUID)
   alias Type = DB::Any | SupportedArrayTypes | UUID
 
   module ClassMethods
@@ -112,19 +112,27 @@ module Granite::Columns
     fields = {{"Hash(String, Union(#{@type.instance_vars.select(&.annotation(Granite::Column)).map(&.type.id).splat})).new".id}}
 
     {% for column in @type.instance_vars.select(&.annotation(Granite::Column)) %}
-        {% if column.type.id == Time.id %}
-          fields["{{column.name}}"] = {{column.name.id}}.try(&.in(Granite.settings.default_timezone).to_s(Granite::DATETIME_FORMAT))
-        {% elsif column.type.id == Slice.id %}
-          fields["{{column.name}}"] = {{column.name.id}}.try(&.to_s(""))
-        {% else %}
-          fields["{{column.name}}"] = {{column.name.id}}
-        {% end %}
+      {% nilable = (column.type.is_a?(Path) ? column.type.resolve.nilable? : (column.type.is_a?(Union) ? column.type.types.any?(&.resolve.nilable?) : (column.type.is_a?(Generic) ? column.type.resolve.nilable? : column.type.nilable?))) %}
+
+      begin
+      {% if column.type.id == Time.id %}
+        fields["{{column.name}}"] = {{column.name.id}}.try(&.in(Granite.settings.default_timezone).to_s(Granite::DATETIME_FORMAT))
+      {% elsif column.type.id == Slice.id %}
+        fields["{{column.name}}"] = {{column.name.id}}.try(&.to_s(""))
+      {% else %}
+        fields["{{column.name}}"] = {{column.name.id}}
       {% end %}
+      rescue ex : NilAssertionError
+        {% if nilable %}
+        fields["{{column.name}}"] = nil
+        {% end %}
+      end
+    {% end %}
 
     fields
   end
 
-  def set_attributes(hash : Hash(String | Symbol, Type)) : self
+  def set_attributes(hash : Hash(String | Symbol, T)) : self forall T
     {% for column in @type.instance_vars.select { |ivar| (ann = ivar.annotation(Granite::Column)) && (!ann[:primary] || (ann[:primary] && ann[:auto] == false)) } %}
       if hash.has_key?({{column.stringify}})
         begin
@@ -149,7 +157,13 @@ module Granite::Columns
     {% begin %}
       case attribute_name.to_s
       {% for column in @type.instance_vars.select(&.annotation(Granite::Column)) %}
-        when "{{ column.name }}" then @{{ column.name.id }}
+        {% ann = column.annotation(Granite::Column) %}
+      when "{{ column.name }}"
+        {% if ann[:converter] %}
+          {{ann[:converter]}}.to_db @{{column.name.id}}
+        {% else %}
+          @{{ column.name.id }}
+        {% end %}
       {% end %}
       else
         raise "Cannot read attribute #{attribute_name}, invalid attribute"

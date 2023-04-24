@@ -10,6 +10,7 @@ module Granite
 
   alias ModelArgs = Hash(Symbol | String, Granite::Columns::Type)
 
+  annotation Relationship; end
   annotation Column; end
   annotation Table; end
 end

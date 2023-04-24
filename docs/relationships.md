@@ -79,12 +79,13 @@ end
 
 class Coach < Granite::Base
   belongs_to :team
-  
+
   column id : Int64, primary: true
 end
 ```
 
 The class name inferred from the name but you can specify the class name:
+
 ```crystal
 class Team < Granite::Base
   has_one coach : Coach, foreign_key: :custom_id
@@ -101,7 +102,7 @@ class Coach < Granite::Base
 
   # provide a custom foreign key
   belongs_to team : Team, foreign_key: team_uuid : String
-  
+
   column id : Int64, primary: true
 end
 ```
@@ -186,7 +187,7 @@ CREATE INDEX user_id_idx ON posts (user_id);
 
 ## Many to Many
 
-Instead of using a hidden many-to-many table, Granite recommends always creating a model for your join tables.  For example, let's say you have many `users` that belong to many `rooms`. We recommend adding a new model called `participants` to represent the many-to-many relationship.
+Instead of using a hidden many-to-many table, Granite recommends always creating a model for your join tables. For example, let's say you have many `users` that belong to many `rooms`. We recommend adding a new model called `participants` to represent the many-to-many relationship.
 
 Then you can use the `belongs_to` and `has_many` relationships going both ways.
 
@@ -203,7 +204,7 @@ class Participant < Granite::Base
 
   belongs_to :user
   belongs_to :room
-  
+
   column id : Int64, primary: true
 end
 
@@ -250,7 +251,7 @@ end
 class Participant < Granite::Base
   belongs_to :user
   belongs_to :room
-  
+
   column id : Int64, primary: true
 end
 

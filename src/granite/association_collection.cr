@@ -1,7 +1,7 @@
 class Granite::AssociationCollection(Owner, Target)
   forward_missing_to all
 
-  def initialize(@owner : Owner, @foreign_key : (Symbol | String), @through : (Symbol | String | Nil) = nil)
+  def initialize(@owner : Owner, @foreign_key : (Symbol | String), @through : (Symbol | String | Nil) = nil, @primary_key : (Symbol | String | Nil) = nil)
   end
 
   def all(clause = "", params = [] of DB::Any)
@@ -38,7 +38,8 @@ class Granite::AssociationCollection(Owner, Target)
     if through.nil?
       "WHERE #{Target.table_name}.#{@foreign_key} = ?"
     else
-      "JOIN #{through} ON #{through}.#{Target.to_s.underscore}_id = #{Target.table_name}.#{Target.primary_name} " \
+      key = @primary_key || "#{Target.to_s.underscore}_id"
+      "JOIN #{through} ON #{through}.#{key} = #{Target.table_name}.#{Target.primary_name} " \
       "WHERE #{through}.#{@foreign_key} = ?"
     end
   end
