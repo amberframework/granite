@@ -13,20 +13,19 @@ describe "#create" do
   end
 
   it "doesn't have a race condition on IDs" do
+    n = 1000
+    ids = Array(Int64).new(n)
     channel = Channel(Int64).new
 
-    2.times do
+    n.times do
       spawn do
         parent = Parent.new(name: "Test Parent")
         parent.save
-        channel.send(parent.id.not_nil!)
+        (id = parent.id) && channel.send(id)
       end
     end
-
-    id1 = channel.receive
-    id2 = channel.receive
-
-    id1.should_not eq id2
+    n.times { ids << channel.receive }
+    ids.uniq!.size.should eq n
   end
 
   describe "with a custom primary key" do
