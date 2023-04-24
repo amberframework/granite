@@ -124,4 +124,15 @@ describe "belongs_to" do
 
     settings.chat_id!.should eq chat.id
   end
+
+  it "provides the ability to define a converter for the foreign key" do
+    uuid_model = UUIDModel.new
+    uuid_model.save
+
+    uuid_relation = UUIDRelation.new
+    uuid_relation.uuid_model = uuid_model
+    uuid_relation.save
+
+    uuid_relation.uuid_model_id.should eq uuid_model.uuid
+  end
 end
