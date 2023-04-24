@@ -397,6 +397,14 @@ end
     column uuid : UUID?, primary: true
   end
 
+  class UUIDRelation < Granite::Base
+    connection {{ adapter_literal }}
+    table uuid_relations
+
+    column uuid : UUID?, primary: true, converter: Granite::Converters::Uuid(String)
+    belongs_to uuid_model : UUIDModel, foreign_key: uuid_model_id : UUID, primary_key: :uuid, converter: Granite::Converters::Uuid(String)
+  end
+
   class UUIDNaturalModel < Granite::Base
     connection {{ adapter_literal }}
     table uuids
