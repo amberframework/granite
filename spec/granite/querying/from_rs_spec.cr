@@ -6,11 +6,11 @@ macro build_review_emitter
       [
         8_i64,
         "name",
-        nil,   # downvotes
-        nil,   # upvotes
-        nil,   # sentiment
-        nil,   # interest
-        true,  # published
+        nil,        # downvotes
+        nil,        # upvotes
+        nil,        # sentiment
+        nil,        # interest
+        true,       # published
         Time.local, # created_at
       ]
     )
