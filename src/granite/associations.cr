@@ -50,7 +50,7 @@ module Granite::Associations
       {% primary_key = options[:primary_key].var %}
       column {{options[:primary_key]}}
     {% else %}
-      {% primary_key = "id" %}
+      {% primary_key = options[:primary_key] || "id" %}
     {% end %}
 
     @[Granite::Relationship(target: {{class_name.id}}, type: :has_one,
