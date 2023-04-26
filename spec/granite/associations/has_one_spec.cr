@@ -1,6 +1,13 @@
 require "../../spec_helper"
 
 describe "has_one" do
+  before_each do
+    User.clear
+    Profile.clear
+    Courier.clear
+    Character.clear
+  end
+
   it "provides a setter to set childrens's foriegn_key from parent" do
     profile = Profile.new
     profile.name = "Test Profile"
@@ -34,9 +41,8 @@ describe "has_one" do
   it "provides a method to retrieve associated object that will raise if record is not found" do
     user = User.new
     user.email = "test@domain.com"
-    user.save
-
-    expect_raises Granite::Querying::NotFound, "No Profile found where user_id = 3" { user.profile! }
+    user.save!
+    expect_raises Granite::Querying::NotFound, "No Profile found where user_id = #{user.id}" { user.profile! }
   end
 
   it "provides the ability to use a custom primary key" do
