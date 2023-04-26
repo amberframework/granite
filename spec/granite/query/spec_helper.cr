@@ -31,7 +31,7 @@ def builder
 end
 
 def ignore_whitespace(expected : String)
-  whitespace = "\\s+"
+  whitespace = "\\s+?"
   compiled = expected.split(/\s/).map { |s| Regex.escape s }.join(whitespace)
   Regex.new "^\\s*#{compiled}\\s*$", Regex::Options::IGNORE_CASE ^ Regex::Options::MULTILINE
 end

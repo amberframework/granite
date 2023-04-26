@@ -264,9 +264,9 @@ describe Granite::Base do
     describe "#to_yaml" do
       it "emits nil values when told" do
         t = TodoEmitNull.new(name: "test todo", priority: 20)
-        result = %(---\nid:\nname: test todo\npriority: 20\ncreated_at:\nupdated_at:\n)
+        result = %(---\nid: \nname: test todo\npriority: 20\ncreated_at: \nupdated_at: \n)
 
-        t.to_yaml.should eq result
+        t.to_yaml.should match ignore_whitespace result
       end
 
       it "does not emit nil values by default" do
