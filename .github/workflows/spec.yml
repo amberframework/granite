@@ -3,8 +3,8 @@ on:
   push:
   pull_request:
     branches: [main, master]
-  schedule:
-    - cron: "0 6 * * 6" # Every Saturday 6 AM
+  # schedule:
+  #   - cron: "0 6 * * 6" # Every Saturday 6 AM
 jobs:
   formatting:
     runs-on: ubuntu-latest
