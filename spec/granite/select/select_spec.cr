@@ -8,7 +8,7 @@ describe "custom select" do
   end
 
   it "generates custom SQL with the query macro" do
-    ArticleViewModel.select.should eq "SELECT articles.id AS id, articles.articlebody, comments.commentbody FROM articles JOIN comments ON comments.articleid = articles.id"
+    ArticleViewModel.select.should eq "SELECT articles.id, articles.articlebody, comments.commentbody FROM articles JOIN comments ON comments.articleid = articles.id"
   end
 
   it "uses custom SQL to populate a view model - #all" do
