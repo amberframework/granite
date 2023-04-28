@@ -264,8 +264,11 @@ describe Granite::Base do
     describe "#to_yaml" do
       it "emits nil values when told" do
         t = TodoEmitNull.new(name: "test todo", priority: 20)
-        result = %(---\nid: \nname: test todo\npriority: 20\ncreated_at: \nupdated_at: \n)
-
+        result = {% if flag?(:darwin) %}
+                   %(---\nid:\nname: test todo\npriority: 20\ncreated_at:\nupdated_at:\n)
+                 {% else %}
+                   %(---\nid: \nname: test todo\npriority: 20\ncreated_at: \nupdated_at: \n)
+                 {% end %}
         t.to_yaml.should eq result
       end
 

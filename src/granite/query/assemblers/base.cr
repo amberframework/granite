@@ -66,7 +66,7 @@ module Granite::Query::Assembler
               str << '('
               expression[:value].as(Array).each_with_index do |val, idx|
                 case val
-                when Bool, Float32, Float64, Int16
+                when Bool, Number
                   str << val
                 else
                   str << add_parameter val
