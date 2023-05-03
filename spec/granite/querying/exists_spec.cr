@@ -1,6 +1,10 @@
 require "../../spec_helper"
 
 describe ".exists?" do
+  before_each do
+    Parent.clear
+  end
+
   describe "when there is a record with that ID" do
     describe "with a numeric PK" do
       it "should return true" do

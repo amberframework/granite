@@ -1,6 +1,10 @@
 require "../../spec_helper"
 
 describe "#abort!" do
+  before_each do
+    CallbackWithAbort.clear
+  end
+
   context "when create" do
     it "doesn't run other callbacks if abort at before_save" do
       cwa = CallbackWithAbort.new(abort_at: "before_save", do_abort: true)

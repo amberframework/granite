@@ -1,6 +1,12 @@
 require "../../spec_helper"
 
 describe "custom select" do
+  before_each do
+    Article.clear
+    Comment.clear
+    EventCon.clear
+  end
+
   it "generates custom SQL with the query macro" do
     ArticleViewModel.select.should eq "SELECT articles.id, articles.articlebody, comments.commentbody FROM articles JOIN comments ON comments.articleid = articles.id"
   end
@@ -8,13 +14,13 @@ describe "custom select" do
   it "uses custom SQL to populate a view model - #all" do
     first = Article.new.tap do |model|
       model.articlebody = "The Article Body"
-      model.save
+      model.save!
     end
 
     Comment.new.tap do |model|
       model.commentbody = "The Comment Body"
       model.articleid = first.id
-      model.save
+      model.save!
     end
 
     viewmodel = ArticleViewModel.all

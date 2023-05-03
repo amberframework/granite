@@ -2,7 +2,7 @@ require "../../spec_helper"
 
 describe Granite::ValidationHelpers do
   context "Uniqueness" do
-    Spec.before_each do
+    before_each do
       Validators::PersonUniqueness.migrator.drop_and_create
     end
 

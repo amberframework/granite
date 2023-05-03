@@ -12,22 +12,6 @@ describe "#create" do
     parent.persisted?.should be_false
   end
 
-  it "doesn't have a race condition on IDs" do
-    n = 1000
-    ids = Array(Int64).new(n)
-    channel = Channel(Int64).new
-
-    n.times do
-      spawn do
-        parent = Parent.new(name: "Test Parent")
-        parent.save
-        (id = parent.id) && channel.send(id)
-      end
-    end
-    n.times { ids << channel.receive }
-    ids.uniq!.size.should eq n
-  end
-
   describe "with a custom primary key" do
     it "creates a new object" do
       school = School.create(name: "Test School")

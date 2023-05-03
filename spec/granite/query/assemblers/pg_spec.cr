@@ -48,13 +48,13 @@ require "../spec_helper"
       end
 
       it "property defines IN query" do
-        sql = "SELECT #{query_fields} FROM table WHERE date_completed IS NULL AND status IN ('outstanding','in_progress') ORDER BY id DESC"
+        sql = "SELECT #{query_fields} FROM table WHERE date_completed IS NULL AND status IN ($1,$2) ORDER BY id DESC"
         query = builder.where(date_completed: nil, status: ["outstanding", "in_progress"])
         query.raw_sql.should match ignore_whitespace sql
 
         assembler = query.assembler
         assembler.where
-        assembler.numbered_parameters.should eq [] of Granite::Columns::Type
+        assembler.numbered_parameters.should eq ["outstanding", "in_progress"]
       end
 
       it "property defines IN query with numbers" do

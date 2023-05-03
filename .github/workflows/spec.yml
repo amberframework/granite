@@ -1,0 +1,121 @@
+name: spec
+on:
+  push:
+  pull_request:
+    branches: [main, master]
+  # schedule:
+  #   - cron: "0 6 * * 6" # Every Saturday 6 AM
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download source
+        uses: actions/checkout@v2
+      - name: Install Crystal
+        uses: oprypin/install-crystal@v1.8.0
+        with:
+          crystal: latest
+      - name: Check formatting
+        run: crystal tool format --check
+  sqlite-spec:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        crystal: [1.6.2, 1.7.2, 1.8.1, latest]
+    steps:
+      - name: Download source
+        uses: actions/checkout@v2
+      - name: Install Crystal
+        uses: oprypin/install-crystal@v1.8.0
+        with:
+          crystal: ${{ matrix.crystal }}
+      - name: Install shards
+        run: shards update --ignore-crystal-version
+      - name: Run tests
+        timeout-minutes: 2
+        run: crystal spec
+        env:
+          CURRENT_ADAPTER: sqlite
+          SQLITE_DATABASE_URL: sqlite3:./granite.db
+          MYSQL_DATABASE_URL: mysql://granite:password@localhost:3306/granite_db
+          PG_DATABASE_URL: postgres://granite:password@localhost:5432/granite_db
+  mysql-spec:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        crystal: [1.6.2, 1.7.2, 1.8.1, latest]
+    services:
+      mysql:
+        image: mysql:5.7
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: granite_db
+          MYSQL_USER: granite
+          MYSQL_PASSWORD: password
+        ports:
+          - 3306:3306
+    steps:
+      - name: Download source
+        uses: actions/checkout@v2
+      - name: Install Crystal
+        uses: oprypin/install-crystal@v1.8.0
+        with:
+          crystal: ${{ matrix.crystal }}
+      - name: Install shards
+        run: shards update --ignore-crystal-version
+      - name: Run tests
+        timeout-minutes: 2
+        run: crystal spec
+        env:
+          CURRENT_ADAPTER: mysql
+          SQLITE_DATABASE_URL: sqlite3:./granite.db
+          MYSQL_DATABASE_URL: mysql://granite:password@localhost:3306/granite_db
+          PG_DATABASE_URL: postgres://granite:password@localhost:5432/granite_db
+  psql-spec:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        crystal: [1.6.2, 1.7.2, 1.8.1, latest]
+    services:
+      postgres:
+        image: postgres:15.2
+        env:
+          POSTGRES_USER: granite
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: granite_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+    steps:
+      - name: Download source
+        uses: actions/checkout@v2
+      - name: Install Crystal
+        uses: oprypin/install-crystal@v1.8.0
+        with:
+          crystal: ${{ matrix.crystal }}
+      - name: Install shards
+        run: shards update --ignore-crystal-version
+      - name: Run tests
+        timeout-minutes: 2
+        run: crystal spec
+        env:
+          CURRENT_ADAPTER: pg
+          SQLITE_DATABASE_URL: sqlite3:./granite.db
+          MYSQL_DATABASE_URL: mysql://granite:password@localhost:3306/granite_db
+          PG_DATABASE_URL: postgres://granite:password@localhost:5432/granite_db
