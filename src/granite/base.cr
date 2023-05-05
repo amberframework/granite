@@ -39,6 +39,29 @@ abstract class Granite::Base
   extend Integrators
   extend Select
 
+  @@last_write_time = Time.utc
+
+  def self.last_write_time
+    @@last_write_time
+  end
+
+  # This is done this way because callbacks don't work on class mthods
+  def self.update_last_write_time
+    @@last_write_time = Time.utc
+  end
+
+  def update_last_write_time
+    self.class.update_last_write_time
+  end
+
+  def self.time_since_last_write
+    Time.utc - @@last_write_time
+  end
+
+  def time_since_last_write
+    self.class.time_since_last_write
+  end
+
   macro inherited
     protected class_getter select_container : Container = Container.new(table_name: table_name, fields: fields)
 
@@ -70,5 +93,10 @@ abstract class Granite::Base
 
     disable_granite_docs? def initialize
     end
+
+    after_save :update_last_write_time
+    after_update :update_last_write_time
+    after_create :update_last_write_time
+    after_destroy :update_last_write_time
   end
 end
