@@ -68,6 +68,10 @@ abstract class Granite::Base
     end
   end
 
+  def switch_to_reader_adapter
+    self.class.switch_to_reader_adapter
+  end
+
   def self.switch_to_writer_adapter
     @@adapter = @@writer_adapter
   end
@@ -79,7 +83,7 @@ abstract class Granite::Base
   def self.schedule_adapter_switch
     spawn do
       sleep 2.seconds
-      self.class.switch_to_reader_adapter
+      switch_to_reader_adapter
     end
   end
 
