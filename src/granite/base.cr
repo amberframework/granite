@@ -62,6 +62,16 @@ abstract class Granite::Base
     self.class.time_since_last_write
   end
 
+  def self.switch_to_reader_adapter
+    if time_since_last_write > 2.seconds
+      @@adapter = @@reader_adapter
+    end
+  end
+
+  def self.switch_to_writer_adapter
+    @@adapter = @@writer_adapter
+  end
+
   macro inherited
     protected class_getter select_container : Container = Container.new(table_name: table_name, fields: fields)
 

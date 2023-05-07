@@ -8,6 +8,13 @@ module Granite
       @@registered_connections << {writer: adapter, reader: adapter}
     end
 
+    # TODO: Find cleaner type restriction method
+    def self.<<(*, name : String, reader : String, writer : String, adapter_type : Granite::Adapter::Base.class) : Nil
+      reader_adapter = adapter_type.new(name: name, url: reader)
+      writer_adapter = adapter_type.new(name: name, url: writer)
+      @@registered_connections << {writer: writer_adapter, reader: reader_adapter}
+    end
+
     # Returns a registered connection with the given *name*, otherwise `nil`.
     def self.[](name : String) : {writer: Granite::Adapter::Base, reader: Granite::Adapter::Base}?
       registered_connections.find { |conn| conn[:writer].name == name }
