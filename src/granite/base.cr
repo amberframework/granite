@@ -39,7 +39,7 @@ abstract class Granite::Base
   extend Integrators
   extend Select
 
-  @@last_write_time = Time.utc
+  @@last_write_time = Time.monotonic
 
   def self.last_write_time
     @@last_write_time
@@ -47,7 +47,7 @@ abstract class Granite::Base
 
   # This is done this way because callbacks don't work on class mthods
   def self.update_last_write_time
-    @@last_write_time = Time.utc
+    @@last_write_time = Time.monotonic
   end
 
   def update_last_write_time
@@ -55,7 +55,7 @@ abstract class Granite::Base
   end
 
   def self.time_since_last_write
-    Time.utc - @@last_write_time
+    Time.monotonic - @@last_write_time
   end
 
   def time_since_last_write
