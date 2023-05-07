@@ -11,7 +11,7 @@ end
 module Granite::Tables
   module ClassMethods
     def adapter : Granite::Adapter::Base
-      Granite::Connections.registered_connections.first? || raise "No connections have been registered."
+      Granite::Connections.registered_connections.first?.not_nil![:writer] || raise "No connections have been registered."
     end
 
     def primary_name
@@ -57,6 +57,9 @@ module Granite::Tables
 
   # specify the database connection you will be using for this model.
   macro connection(name)
-    class_getter adapter : Granite::Adapter::Base = Granite::Connections[{{(name.is_a?(StringLiteral) ? name : name.id.stringify)}}] || raise "No registered connection with the name '{{name.id}}'"
+    class_getter writer_adapter : Granite::Adapter::Base = Granite::Connections[{{(name.is_a?(StringLiteral) ? name : name.id.stringify)}}].not_nil![:writer]
+    class_getter reader_adapter : Granite::Adapter::Base = Granite::Connections[{{(name.is_a?(StringLiteral) ? name : name.id.stringify)}}].not_nil![:reader]
+    class_getter adapter : Granite::Adapter::Base = @@writer_adapter
+
   end
 end

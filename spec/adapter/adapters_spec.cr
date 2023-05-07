@@ -16,17 +16,17 @@ describe Granite::Connections do
       Granite::Connections.registered_connections.size.should eq 3
 
       if connection = Granite::Connections["mysql"]
-        connection.url.should eq ENV["MYSQL_DATABASE_URL"]
+        connection[:writer].url.should eq ENV["MYSQL_DATABASE_URL"]
       else
         connection.should_not be_falsey
       end
       if connection = Granite::Connections["pg"]
-        connection.url.should eq ENV["PG_DATABASE_URL"]
+        connection[:writer].url.should eq ENV["PG_DATABASE_URL"]
       else
         connection.should_not be_falsey
       end
       if connection = Granite::Connections["sqlite"]
-        connection.url.should eq ENV["SQLITE_DATABASE_URL"]
+        connection[:writer].url.should eq ENV["SQLITE_DATABASE_URL"]
       else
         connection.should_not be_falsey
       end
