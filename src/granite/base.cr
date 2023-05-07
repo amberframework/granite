@@ -73,7 +73,7 @@ abstract class Granite::Base
   end
 
   def switch_to_writer_adapter
-    self.switch_to_writer_adapter
+    self.class.switch_to_writer_adapter
   end
 
   macro inherited
@@ -108,6 +108,8 @@ abstract class Granite::Base
     disable_granite_docs? def initialize
     end
 
+    before_save :switch_to_writer_adapter
+    before_destroy :switch_to_writer_adapter
     after_save :update_last_write_time
     after_destroy :update_last_write_time
   end
