@@ -223,6 +223,7 @@ class Granite::Query::Builder(Model)
   end
 
   def delete
+    Model.switch_to_writer_adapter
     assembler.delete
   end
 
