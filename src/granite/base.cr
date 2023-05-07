@@ -76,6 +76,17 @@ abstract class Granite::Base
     self.class.switch_to_writer_adapter
   end
 
+  def self.schedule_adapter_switch
+    spawn do
+      sleep 2.seconds
+      self.class.switch_to_reader_adapter
+    end
+  end
+
+  def schedule_adapter_switch
+    self.class.schedule_adapter_switch
+  end
+
   macro inherited
     protected class_getter select_container : Container = Container.new(table_name: table_name, fields: fields)
 
@@ -111,6 +122,8 @@ abstract class Granite::Base
     before_save :switch_to_writer_adapter
     before_destroy :switch_to_writer_adapter
     after_save :update_last_write_time
+    after_save :schedule_adapter_switch
     after_destroy :update_last_write_time
+    after_destroy :schedule_adapter_switch
   end
 end
