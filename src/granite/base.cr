@@ -72,6 +72,10 @@ abstract class Granite::Base
     @@adapter = @@writer_adapter
   end
 
+  def switch_to_writer_adapter
+    self.switch_to_writer_adapter
+  end
+
   macro inherited
     protected class_getter select_container : Container = Container.new(table_name: table_name, fields: fields)
 
@@ -105,8 +109,6 @@ abstract class Granite::Base
     end
 
     after_save :update_last_write_time
-    after_update :update_last_write_time
-    after_create :update_last_write_time
     after_destroy :update_last_write_time
   end
 end
