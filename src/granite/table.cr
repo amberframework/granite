@@ -57,9 +57,17 @@ module Granite::Tables
 
   # specify the database connection you will be using for this model.
   macro connection(name)
-    class_getter writer_adapter : Granite::Adapter::Base = Granite::Connections[{{(name.is_a?(StringLiteral) ? name : name.id.stringify)}}].not_nil![:writer]
-    class_getter reader_adapter : Granite::Adapter::Base = Granite::Connections[{{(name.is_a?(StringLiteral) ? name : name.id.stringify)}}].not_nil![:reader]
-    class_getter adapter : Granite::Adapter::Base = @@writer_adapter
+    {% name = name.id.stringify %}
 
+    error_message = "Connection #{{{name}}} not found in Granite::Connections.
+    Available connections are:
+
+    #{Granite::Connections.registered_connections.map{ |conn| "#{conn[:writer].name}"}.join(", ")}"
+
+    raise error_message if Granite::Connections[{{name}}].nil?
+
+    class_getter writer_adapter : Granite::Adapter::Base = Granite::Connections[{{name}}].not_nil![:writer]
+    class_getter reader_adapter : Granite::Adapter::Base = Granite::Connections[{{name}}].not_nil![:reader]
+    class_getter adapter : Granite::Adapter::Base = @@writer_adapter
   end
 end
