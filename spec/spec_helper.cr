@@ -10,7 +10,7 @@ Granite::Connections << Granite::Adapter::Sqlite.new(name: "sqlite", url: ENV["S
 # TODO: Experiment to find a better API.
 Granite::Connections.<<(name: "sqlite_with_replica", writer: ENV["SQLITE_DATABASE_URL"], reader: ENV["SQLITE_REPLICA_URL"], adapter_type: Granite::Adapter::Sqlite)
 Granite::Connections.<<(name: "mysql_with_replica", writer: ENV["MYSQL_DATABASE_URL"], reader: ENV["MYSQL_REPLICA_URL"], adapter_type: Granite::Adapter::Mysql)
-Granite::Connections.<<(name: "pg_with_replica", writer: ENV["PG_DATABASE_URL"], reader: ENV["PG_REPLICA_URL"], adapter_type: Granite::Adapter::Mysql)
+Granite::Connections.<<(name: "pg_with_replica", writer: ENV["PG_DATABASE_URL"], reader: ENV["PG_REPLICA_URL"], adapter_type: Granite::Adapter::Pg)
 
 require "spec"
 require "../src/granite"
