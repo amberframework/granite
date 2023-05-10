@@ -10,10 +10,6 @@ end
 
 module Granite::Tables
   module ClassMethods
-    def adapter : Granite::Adapter::Base
-      Granite::Connections.registered_connections.first?.not_nil![:writer] || raise "No connections have been registered."
-    end
-
     def primary_name
       {% begin %}
       {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
@@ -33,11 +29,11 @@ module Granite::Tables
     end
 
     def quoted_table_name : String
-      adapter.quote(table_name)
+      self.adapter.quote(table_name)
     end
 
     def quote(column_name) : String
-      adapter.quote(column_name)
+      self.adapter.quote(column_name)
     end
 
     # Returns the name of the table for `self`
@@ -66,8 +62,10 @@ module Granite::Tables
 
     raise error_message if Granite::Connections[{{name}}].nil?
 
+
+
     class_getter writer_adapter : Granite::Adapter::Base = Granite::Connections[{{name}}].not_nil![:writer]
     class_getter reader_adapter : Granite::Adapter::Base = Granite::Connections[{{name}}].not_nil![:reader]
-    class_getter adapter : Granite::Adapter::Base = @@writer_adapter
+    class_getter current_adapter : Granite::Adapter::Base? = @@writer_adapter
   end
 end

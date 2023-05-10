@@ -40,6 +40,7 @@ abstract class Granite::Base
   extend Select
 
   @@last_write_time = Time.monotonic
+  @@current_adapter : Granite::Adapter::Base?
 
   def self.last_write_time
     @@last_write_time
@@ -64,7 +65,7 @@ abstract class Granite::Base
 
   def self.switch_to_reader_adapter
     if time_since_last_write > 2.seconds
-      @@adapter = @@reader_adapter
+      @@current_adapter = @@reader_adapter
     end
   end
 
@@ -73,7 +74,7 @@ abstract class Granite::Base
   end
 
   def self.switch_to_writer_adapter
-    @@adapter = @@writer_adapter
+    @@current_adapter = @@writer_adapter
   end
 
   def switch_to_writer_adapter
@@ -89,6 +90,14 @@ abstract class Granite::Base
 
   def schedule_adapter_switch
     self.class.schedule_adapter_switch
+  end
+
+  def self.adapter
+    begin
+      @@current_adapter.not_nil!
+    rescue NilAssertionError
+      Granite::Connections.registered_connections.first?.not_nil![:writer]
+    end
   end
 
   macro inherited

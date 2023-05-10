@@ -131,7 +131,7 @@ module Granite::Querying
   end
 
   private def exec_exists(clause : String, params : Array(Granite::Columns::Type)) : Bool
-    adapter.exists? quoted_table_name, clause, params
+    self.adapter.exists? quoted_table_name, clause, params
   end
 
   private def build_find_by_clause(criteria : Granite::ModelArgs)

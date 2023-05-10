@@ -1,4 +1,5 @@
 export PG_DATABASE_URL=postgres://granite:password@localhost:5432/granite_db
+export PG_REPLICA_URL=postgres://granite:password@localhost:5432/granite__replica_db
 export MYSQL_DATABASE_URL=mysql://granite:password@localhost:3306/granite_db
 export MYSQL_REPLICA_URL=mysql://granite:password@localhost:3306/granite_replica_db
 export SQLITE_DATABASE_URL=sqlite3:./granite.db
