@@ -13,7 +13,7 @@ end
 describe Granite::Connections do
   describe "registration" do
     it "should allow connections to be be saved and looked up" do
-      Granite::Connections.registered_connections.size.should eq 4
+      Granite::Connections.registered_connections.size.should eq 5
 
       if connection = Granite::Connections["mysql"]
         connection[:writer].url.should eq ENV["MYSQL_DATABASE_URL"]
@@ -30,7 +30,7 @@ describe Granite::Connections do
       else
         connection.should_not be_falsey
       end
-      if connection = Granite::Connections["sqlite_replica"]
+      if connection = Granite::Connections["sqlite_with_replica"]
         connection[:writer].url.should eq ENV["SQLITE_DATABASE_URL"]
         connection[:reader].url.should eq ENV["SQLITE_REPLICA_URL"]
       else
