@@ -2,15 +2,21 @@ require "mysql"
 require "pg"
 require "sqlite3"
 
-Granite::Connections << Granite::Adapter::Mysql.new(name: "mysql", url: ENV["MYSQL_DATABASE_URL"])
-Granite::Connections << Granite::Adapter::Pg.new(name: "pg", url: ENV["PG_DATABASE_URL"])
-Granite::Connections << Granite::Adapter::Sqlite.new(name: "sqlite", url: ENV["SQLITE_DATABASE_URL"])
-
-# Connections with replicas
-# TODO: Experiment to find a better API.
-Granite::Connections.<<(name: "sqlite_with_replica", writer: ENV["SQLITE_DATABASE_URL"], reader: ENV["SQLITE_REPLICA_URL"], adapter_type: Granite::Adapter::Sqlite)
-Granite::Connections.<<(name: "mysql_with_replica", writer: ENV["MYSQL_DATABASE_URL"], reader: ENV["MYSQL_REPLICA_URL"], adapter_type: Granite::Adapter::Mysql)
-Granite::Connections.<<(name: "pg_with_replica", writer: ENV["PG_DATABASE_URL"], reader: ENV["PG_REPLICA_URL"], adapter_type: Granite::Adapter::Pg)
+case ENV["CURRENT_ADAPTER"]?
+when "pg"
+  Granite::Connections << Granite::Adapter::Pg.new(name: "pg", url: ENV["PG_DATABASE_URL"])
+  Granite::Connections.<<(name: "pg_with_replica", writer: ENV["PG_DATABASE_URL"], reader: ENV["PG_REPLICA_URL"], adapter_type: Granite::Adapter::Pg)
+when "mysql"
+  Granite::Connections << Granite::Adapter::Mysql.new(name: "mysql", url: ENV["MYSQL_DATABASE_URL"])
+  Granite::Connections.<<(name: "mysql_with_replica", writer: ENV["MYSQL_DATABASE_URL"], reader: ENV["MYSQL_REPLICA_URL"], adapter_type: Granite::Adapter::Mysql)
+when "sqlite"
+  Granite::Connections << Granite::Adapter::Sqlite.new(name: "sqlite", url: ENV["SQLITE_DATABASE_URL"])
+  Granite::Connections.<<(name: "sqlite_with_replica", writer: ENV["SQLITE_DATABASE_URL"], reader: ENV["SQLITE_REPLICA_URL"], adapter_type: Granite::Adapter::Sqlite)
+when Nil
+  raise "Please set CURRENT_ADAPTER"
+else
+  raise "Unknown adapter #{ENV["CURRENT_ADAPTER"]}"
+end
 
 require "spec"
 require "../src/granite"

@@ -9,7 +9,7 @@ docker run --name mysql -d \
   -e MYSQL_USER=granite \
   -e MYSQL_PASSWORD=password \
   -p 3306:3306 \
-  mysql:%{MYSQL_VERSION}
+  mysql:${MYSQL_VERSION}
 
 docker run --name psql -d \
   -e POSTGRES_USER=granite \
