@@ -32,15 +32,14 @@ jobs:
         with:
           crystal: ${{ matrix.crystal }}
       - name: Install shards
-        run: shards update --ignore-crystal-version
+        run: shards update --ignore-crystal-version --skip-postinstall --skip-executables
       - name: Run tests
         timeout-minutes: 2
         run: crystal spec
         env:
           CURRENT_ADAPTER: sqlite
           SQLITE_DATABASE_URL: sqlite3:./granite.db
-          MYSQL_DATABASE_URL: mysql://granite:password@localhost:3306/granite_db
-          PG_DATABASE_URL: postgres://granite:password@localhost:5432/granite_db
+          SQLITE_REPLICA_URL: sqlite3:./granite_replica.db
   mysql-spec:
     runs-on: ubuntu-latest
     strategy:
@@ -71,7 +70,7 @@ jobs:
         with:
           crystal: ${{ matrix.crystal }}
       - name: Install shards
-        run: shards update --ignore-crystal-version
+        run: shards update --ignore-crystal-version --skip-postinstall --skip-executables
       - name: Run tests
         timeout-minutes: 2
         run: crystal spec
@@ -79,7 +78,7 @@ jobs:
           CURRENT_ADAPTER: mysql
           SQLITE_DATABASE_URL: sqlite3:./granite.db
           MYSQL_DATABASE_URL: mysql://granite:password@localhost:3306/granite_db
-          PG_DATABASE_URL: postgres://granite:password@localhost:5432/granite_db
+          MYSQL_REPLICA_URL: mysql://granite:password@localhost:3306/granite_db
   psql-spec:
     runs-on: ubuntu-latest
     strategy:
@@ -110,12 +109,11 @@ jobs:
         with:
           crystal: ${{ matrix.crystal }}
       - name: Install shards
-        run: shards update --ignore-crystal-version
+        run: shards update --ignore-crystal-version --skip-postinstall --skip-executables
       - name: Run tests
         timeout-minutes: 2
         run: crystal spec
         env:
           CURRENT_ADAPTER: pg
-          SQLITE_DATABASE_URL: sqlite3:./granite.db
-          MYSQL_DATABASE_URL: mysql://granite:password@localhost:3306/granite_db
           PG_DATABASE_URL: postgres://granite:password@localhost:5432/granite_db
+          PG_REPLICA_URL: postgres://granite:password@localhost:5432/granite_db
