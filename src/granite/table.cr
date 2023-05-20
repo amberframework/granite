@@ -63,7 +63,6 @@ module Granite::Tables
     raise error_message if Granite::Connections[{{name}}].nil?
 
 
-
     class_getter writer_adapter : Granite::Adapter::Base = Granite::Connections[{{name}}].not_nil![:writer]
     class_getter reader_adapter : Granite::Adapter::Base = Granite::Connections[{{name}}].not_nil![:reader]
     class_getter current_adapter : Granite::Adapter::Base? = @@writer_adapter
