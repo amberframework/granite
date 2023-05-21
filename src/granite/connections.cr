@@ -20,5 +20,13 @@ module Granite
     def self.[](name : String) : {writer: Granite::Adapter::Base, reader: Granite::Adapter::Base}?
       registered_connections.find { |conn| conn[:writer].name == name }
     end
+
+    def self.first_writer
+      @@registered_connections.first?.not_nil![:writer]
+    end
+
+    def self.first_reader
+      @@registered_connections.first?.not_nil![:reader]
+    end
   end
 end

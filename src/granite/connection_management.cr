@@ -6,7 +6,10 @@ module Granite::ConnectionManagement
     # to change it in all Granite::Base models.
     class_property connection_switch_wait_period : Int64 = Granite::Connections.connection_switch_wait_period
     @@last_write_time = Time.monotonic
-    @@current_adapter : Granite::Adapter::Base?
+
+    class_property current_adapter : Granite::Adapter::Base?
+    class_property reader_adapter : Granite::Adapter::Base = Granite::Connections.first_reader
+    class_property writer_adapter : Granite::Adapter::Base = Granite::Connections.first_writer
 
     def self.last_write_time
       @@last_write_time
@@ -79,8 +82,8 @@ module Granite::ConnectionManagement
 
     raise error_message if Granite::Connections[{{name}}].nil?
 
-    class_getter writer_adapter : Granite::Adapter::Base = Granite::Connections[{{name}}].not_nil![:writer]
-    class_getter reader_adapter : Granite::Adapter::Base = Granite::Connections[{{name}}].not_nil![:reader]
-    class_getter current_adapter : Granite::Adapter::Base? = @@writer_adapter
+    self.writer_adapter = Granite::Connections[{{name}}].not_nil![:writer]
+    self.reader_adapter = Granite::Connections[{{name}}].not_nil![:reader]
+    self.current_adapter = @@writer_adapter
   end
 end
