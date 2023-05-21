@@ -9,13 +9,13 @@ ADAPTER_REPLICA_URL = ENV["#{CURRENT_ADAPTER.upcase}_REPLICA_URL"]? || ADAPTER_U
 case CURRENT_ADAPTER
 when "pg"
   Granite::Connections << Granite::Adapter::Pg.new(name: CURRENT_ADAPTER, url: ADAPTER_URL)
-  Granite::Connections.<<(name: "pg_with_replica", writer: ADAPTER_URL, reader: ADAPTER_REPLICA_URL, adapter_type: Granite::Adapter::Pg)
+  Granite::Connections << {name: "pg_with_replica", writer: ADAPTER_URL, reader: ADAPTER_REPLICA_URL, adapter_type: Granite::Adapter::Pg}
 when "mysql"
   Granite::Connections << Granite::Adapter::Mysql.new(name: CURRENT_ADAPTER, url: ADAPTER_URL)
-  Granite::Connections.<<(name: "mysql_with_replica", writer: ADAPTER_URL, reader: ADAPTER_REPLICA_URL, adapter_type: Granite::Adapter::Mysql)
+  Granite::Connections << {name: "mysql_with_replica", writer: ADAPTER_URL, reader: ADAPTER_REPLICA_URL, adapter_type: Granite::Adapter::Mysql}
 when "sqlite"
   Granite::Connections << Granite::Adapter::Sqlite.new(name: CURRENT_ADAPTER, url: ADAPTER_URL)
-  Granite::Connections.<<(name: "sqlite_with_replica", writer: ADAPTER_URL, reader: ADAPTER_REPLICA_URL, adapter_type: Granite::Adapter::Sqlite)
+  Granite::Connections << {name: "sqlite_with_replica", writer: ADAPTER_URL, reader: ADAPTER_REPLICA_URL, adapter_type: Granite::Adapter::Sqlite}
 when Nil
   raise "Please set CURRENT_ADAPTER"
 else

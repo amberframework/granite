@@ -9,10 +9,11 @@ module Granite
       @@registered_connections << {writer: adapter, reader: adapter}
     end
 
-    # TODO: Find cleaner type restriction method
-    def self.<<(*, name : String, reader : String, writer : String, adapter_type : Granite::Adapter::Base.class) : Nil
-      reader_adapter = adapter_type.new(name: name, url: reader)
-      writer_adapter = adapter_type.new(name: name, url: writer)
+    def self.<<(data : NamedTuple(name: String, reader: String, writer: String, adapter_type: Granite::Adapter::Base.class)) : Nil
+      raise "Adapter with name '#{data[:name]}' has already been registered." if @@registered_connections.any? { |conn| conn[:writer].name == data[:name] }
+
+      reader_adapter = data[:adapter_type].new(name: data[:name], url: data[:reader])
+      writer_adapter = data[:adapter_type].new(name: data[:name], url: data[:writer])
       @@registered_connections << {writer: writer_adapter, reader: reader_adapter}
     end
 
