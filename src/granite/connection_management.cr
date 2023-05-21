@@ -26,7 +26,7 @@ module Granite::ConnectionManagement
     end
 
     def self.switch_to_reader_adapter
-      if time_since_last_write > 2.seconds
+      if time_since_last_write > @@connection_switch_wait_period.milliseconds
         @@current_adapter = @@reader_adapter
       end
     end
@@ -45,7 +45,7 @@ module Granite::ConnectionManagement
 
     def self.schedule_adapter_switch
       spawn do
-        sleep connection_switch_wait_period.milliseconds
+        sleep @@connection_switch_wait_period.milliseconds
         switch_to_reader_adapter
       end
 
