@@ -1,6 +1,10 @@
 module Granite::ConnectionManagement
   macro included
-    class_property connection_switch_wait_period : Int64 = 2000
+    # Default value for the time a model waits before using a reader
+    # database connection for read operations
+    # all models use this value. Change it
+    # to change it in all Granite::Base models.
+    class_property connection_switch_wait_period : Int64 = Granite::Connections.connection_switch_wait_period
     @@last_write_time = Time.monotonic
     @@current_adapter : Granite::Adapter::Base?
 
