@@ -28,13 +28,14 @@ module Granite::Querying
   # that you are using so you are not restricted or dummied down to support a
   # DSL.
   # Lazy load prevent running unnecessary queries from unused variables.
-  def all(clause = "", params = [] of Granite::Columns::Type)
+  def all(clause = "", params = [] of Granite::Columns::Type, use_primary_adapter = true)
+    switch_to_writer_adapter if use_primary_adapter == true
     Collection(self).new(->{ raw_all(clause, params) })
   end
 
   # First adds a `LIMIT 1` clause to the query and returns the first result
   def first(clause = "", params = [] of Granite::Columns::Type)
-    all([clause.strip, "LIMIT 1"].join(" "), params).first?
+    all([clause.strip, "LIMIT 1"].join(" "), params, false).first?
   end
 
   def first!(clause = "", params = [] of Granite::Columns::Type)
@@ -86,7 +87,7 @@ module Granite::Querying
     end
 
     loop do
-      results = all "#{clause} LIMIT ? OFFSET ?", params + [limit, offset]
+      results = all "#{clause} LIMIT ? OFFSET ?", params + [limit, offset], false
       break if results.empty?
       yield results
       offset += limit
@@ -115,19 +116,22 @@ module Granite::Querying
   end
 
   def exec(clause = "")
+    switch_to_writer_adapter
     adapter.open(&.exec(clause))
   end
 
   def query(clause = "", params = [] of Granite::Columns::Type, &block)
+    switch_to_writer_adapter
     adapter.open { |db| yield db.query(clause, args: params) }
   end
 
   def scalar(clause = "", &block)
+    switch_to_writer_adapter
     adapter.open { |db| yield db.scalar(clause) }
   end
 
   private def exec_exists(clause : String, params : Array(Granite::Columns::Type)) : Bool
-    adapter.exists? quoted_table_name, clause, params
+    self.adapter.exists? quoted_table_name, clause, params
   end
 
   private def build_find_by_clause(criteria : Granite::ModelArgs)

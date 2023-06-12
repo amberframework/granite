@@ -8,6 +8,14 @@ end
 {% begin %}
   {% adapter_literal = env("CURRENT_ADAPTER").id %}
 
+  class ReplicatedChat < Granite::Base
+    connection {{ "#{adapter_literal}_with_replica" }}
+    table replicated_chats
+
+    column id : Int64, primary: true
+    column content : String
+  end
+
   class Chat < Granite::Base
     connection {{ adapter_literal }}
     table chats

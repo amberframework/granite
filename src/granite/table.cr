@@ -10,10 +10,6 @@ end
 
 module Granite::Tables
   module ClassMethods
-    def adapter : Granite::Adapter::Base
-      Granite::Connections.registered_connections.first? || raise "No connections have been registered."
-    end
-
     def primary_name
       {% begin %}
       {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
@@ -33,11 +29,11 @@ module Granite::Tables
     end
 
     def quoted_table_name : String
-      adapter.quote(table_name)
+      self.adapter.quote(table_name)
     end
 
     def quote(column_name) : String
-      adapter.quote(column_name)
+      self.adapter.quote(column_name)
     end
 
     # Returns the name of the table for `self`
@@ -53,10 +49,5 @@ module Granite::Tables
   macro table(name)
     @[Granite::Table(name: {{(name.is_a?(StringLiteral) ? name : name.id.stringify) || nil}})]
     class ::{{@type.name.id}}; end
-  end
-
-  # specify the database connection you will be using for this model.
-  macro connection(name)
-    class_getter adapter : Granite::Adapter::Base = Granite::Connections[{{(name.is_a?(StringLiteral) ? name : name.id.stringify)}}] || raise "No registered connection with the name '{{name.id}}'"
   end
 end

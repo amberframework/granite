@@ -16,6 +16,7 @@ require "./connections"
 require "./integrators"
 require "./converters"
 require "./type"
+require "./connection_management"
 
 # Granite::Base is the base class for your model objects.
 abstract class Granite::Base
@@ -28,6 +29,8 @@ abstract class Granite::Base
   include ValidationHelpers
   include Migrator
   include Select
+
+  include ConnectionManagement
 
   extend Columns::ClassMethods
   extend Tables::ClassMethods
@@ -70,5 +73,12 @@ abstract class Granite::Base
 
     disable_granite_docs? def initialize
     end
+
+    before_save :switch_to_writer_adapter
+    before_destroy :switch_to_writer_adapter
+    after_save :update_last_write_time
+    after_save :schedule_adapter_switch
+    after_destroy :update_last_write_time
+    after_destroy :schedule_adapter_switch
   end
 end
