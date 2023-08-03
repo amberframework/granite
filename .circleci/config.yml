@@ -1,0 +1,113 @@
+version: 2.1
+
+jobs:
+  ameba-test:
+    resource_class: medium
+    docker:
+      - image: crystallang/crystal:1.9.2
+
+    working_directory: ~/granite
+    steps:
+      - checkout
+      - restore_cache:
+          name: Restore Shards Cache
+          keys: 
+            - shards-cache
+      - run:
+          name: shards install
+          command: shards install
+      - save_cache:
+          key: shards-cache
+          paths:
+            - lib
+      - run:
+          name: Running Ameba
+          command: ./bin/ameba
+  
+  # Eventually add MySQL tests in once the db driver supports the newer authentication for MySQL 8
+  #mysql-specs:
+    # Add them here :)
+  
+  pg-specs:
+    resource_class: medium
+    docker:
+      - image: crystallang/crystal:1.9.2
+        environment:
+          PG_DATABASE_URL: postgresql://postgres@localhost/circle_test
+          CURRENT_ADAPTER: pg
+      - image: cimg/postgres:14.6
+        environment:
+          DATABASE_URL: postgresql://postgres@localhost/circle_test
+        
+
+    working_directory: ~/granite
+    steps:
+      - checkout
+      - run:
+          name: Create test results folder
+          command: |
+            mkdir ~/granite/test-results
+      - restore_cache:
+          name: Restore Shards Cache
+          keys: 
+            - shards-cache
+      - run:
+          name: shards install
+          command: shards install
+      - save_cache:
+          key: shards-cache
+          paths:
+            - lib
+      - run:
+          name: Running granite specs
+          command: crystal spec --junit_output ~/granite/test-results/granite-specs.xml
+
+      - store_test_results:
+          path: ~/granite/test-results
+
+  sqlite-specs:
+    resource_class: medium
+    docker:
+      - image: crystallang/crystal:1.9.2
+        environment: 
+          SQLITE_VERSION: 3250200
+          SQLITE_VERSION_YEAR: 2018
+          CURRENT_ADAPTER: sqlite
+
+    working_directory: ~/granite
+    steps:
+      - run:
+          name: Install missing dependencies
+          command: |
+            apt-get update -qq && apt-get install -y libsqlite3-dev
+      - checkout
+      - run:
+          name: Create test results folder
+          command: |
+            mkdir ~/granite/test-results
+      - restore_cache:
+          name: Restore Shards Cache
+          keys: 
+            - shards-cache
+      - run:
+          name: shards install
+          command: shards install
+      - save_cache:
+          key: shards-cache
+          paths:
+            - lib
+      - run:
+          name: Running granite specs for sqlite
+          command: crystal spec --junit_output ~/granite/test-results/granite-specs.xml
+
+      - store_test_results:
+          path: ~/granite/test-results
+
+workflows:
+  version: 2
+  granite:
+    jobs:
+      - ameba-test
+      - sqlite-specs
+      #- pg-specs
+
