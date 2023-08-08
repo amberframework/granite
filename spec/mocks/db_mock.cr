@@ -88,4 +88,9 @@ class FieldEmitter < DB::ResultSet
   def column_name(index : Int32) : String
     "Column #{index}"
   end
+
+  # Method is here to satisfy ResultSet abstract def only
+  def next_column_index : Int32
+    1
+  end
 end
