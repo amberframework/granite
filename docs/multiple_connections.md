@@ -26,7 +26,7 @@ The final argument is a subclass of `Granite::Adapter::Base`. You're basically t
 
 By default, when you perform a write operation on a Granite model, all read requests switch to using the primary database node. This is to allow the changes done to propogate to the read replicas before using them again. 
 
-The default value is `2000` miliseconds. You can change this value like this
+The default value is `2000` milliseconds. You can change this value like this
 
 ```cr
 Granite::Conections.connection_switch_wait_period = 2000 #=> time in milliseconds
