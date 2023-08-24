@@ -2,7 +2,7 @@
 
 In Granite, you can create a connection that has a write/read node. If this is done. Granite will perform write operations on the primary node and read operations on the secondary node. Here is an example:
 
-```cr
+```crystal
 Granite::Connections << {name: "psql", writer: "...", reader: "...", adapter_type: Granite::Adapter::Pg}
 ```
 
