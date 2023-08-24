@@ -8,7 +8,7 @@ Granite::Connections << {name: "psql", writer: "...", reader: "...", adapter_typ
 
 The first parameter `name` is the name of the connection. When you create a model in Granite, you can specify a connection via the `connection` macro. If I wanted to use the above connection in a model. I would write
 
-```cr
+```crystal
 class User < Granite::Base
   connection "psql"
 end
