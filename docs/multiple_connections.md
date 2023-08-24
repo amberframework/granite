@@ -28,6 +28,6 @@ By default, when you perform a write operation on a Granite model, all read requ
 
 The default value is `2000` milliseconds. You can change this value like this
 
-```cr
+```crystal
 Granite::Conections.connection_switch_wait_period = 2000 #=> time in milliseconds
 ```
