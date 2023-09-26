@@ -17,12 +17,29 @@ module Granite::Transactions
       instance
     end
 
+    def create(args, skip_timestamps : Bool = false)
+      instance = new
+      instance.set_attributes(args.to_h.transform_keys(&.to_s))
+      instance.save(skip_timestamps: skip_timestamps)
+      instance
+    end
+
     def create!(**args)
       create!(args.to_h)
     end
 
     def create!(args)
       instance = create(args)
+
+      unless instance.errors.empty?
+        raise Granite::RecordNotSaved.new(self.name, instance)
+      end
+
+      instance
+    end
+
+    def create!(args, skip_timestamps : Bool = false)
+      instance = create(args, skip_timestamps: skip_timestamps)
 
       unless instance.errors.empty?
         raise Granite::RecordNotSaved.new(self.name, instance)
@@ -113,14 +130,14 @@ module Granite::Transactions
     {% end %}
   end
 
-  private def __create
+  private def __create(skip_timestamps : Bool = false)
     {% begin %}
       {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
       {% raise raise "A primary key must be defined for #{@type.name}." unless primary_key %}
       {% raise "Composite primary keys are not yet supported for '#{@type.name}'." if @type.instance_vars.select { |ivar| ann = ivar.annotation(Granite::Column); ann && ann[:primary] }.size > 1 %}
       {% ann = primary_key.annotation(Granite::Column) %}
 
-      set_timestamps
+      set_timestamps unless skip_timestamps
       fields = self.class.content_fields.dup
       params = content_values
 
@@ -163,12 +180,12 @@ module Granite::Transactions
     self.new_record = false
   end
 
-  private def __update
+  private def __update(skip_timestamps : Bool = false)
     {% begin %}
     {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
     {% raise raise "A primary key must be defined for #{@type.name}." unless primary_key %}
     {% ann = primary_key.annotation(Granite::Column) %}
-    set_timestamps mode: :update
+    set_timestamps(mode: :update) unless skip_timestamps
     fields = self.class.content_fields.dup
     params = content_values + [@{{primary_key.name.id}}]
 
@@ -199,7 +216,7 @@ module Granite::Transactions
   # The save method will check to see if the primary key exists yet. If it does
   # it will call the update method, otherwise it will call the create method.
   # This will update the timestamps appropriately.
-  def save(*, validate : Bool = true)
+  def save(*, validate : Bool = true, skip_timestamps : Bool = false)
     {% begin %}
     {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
     {% raise raise "A primary key must be defined for #{@type.name}." unless primary_key %}
@@ -210,11 +227,11 @@ module Granite::Transactions
       __before_save
       if @{{primary_key.name.id}} && !new_record?
         __before_update
-        __update
+        __update(skip_timestamps: skip_timestamps)
         __after_update
       else
         __before_create
-        __create
+        __create(skip_timestamps: skip_timestamps)
         __after_create
       end
       __after_save
@@ -229,8 +246,8 @@ module Granite::Transactions
   {% end %}
   end
 
-  def save!(*, validate : Bool = true)
-    save(validate: validate) || raise Granite::RecordNotSaved.new(self.class.name, self)
+  def save!(*, validate : Bool = true, skip_timestamps : Bool = false)
+    save(validate: validate, skip_timestamps: skip_timestamps) || raise Granite::RecordNotSaved.new(self.class.name, self)
   end
 
   def update(**args)
@@ -243,6 +260,12 @@ module Granite::Transactions
     save
   end
 
+  def update(args, skip_timestamps : Bool = false)
+    set_attributes(args.to_h.transform_keys(&.to_s))
+
+    save(skip_timestamps: skip_timestamps)
+  end
+
   def update!(**args)
     update!(args.to_h)
   end
@@ -251,6 +274,12 @@ module Granite::Transactions
     set_attributes(args.transform_keys(&.to_s))
 
     save!
+  end
+
+  def update!(args, skip_timestamps : Bool = false)
+    set_attributes(args.to_h.transform_keys(&.to_s))
+
+    save!(skip_timestamps: skip_timestamps)
   end
 
   # Destroy will remove this from the database.
