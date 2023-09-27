@@ -10,13 +10,6 @@ module Granite::Transactions
       create(args.to_h)
     end
 
-    def create(args)
-      instance = new
-      instance.set_attributes(args.transform_keys(&.to_s))
-      instance.save
-      instance
-    end
-
     def create(args, skip_timestamps : Bool = false)
       instance = new
       instance.set_attributes(args.to_h.transform_keys(&.to_s))
@@ -26,16 +19,6 @@ module Granite::Transactions
 
     def create!(**args)
       create!(args.to_h)
-    end
-
-    def create!(args)
-      instance = create(args)
-
-      unless instance.errors.empty?
-        raise Granite::RecordNotSaved.new(self.name, instance)
-      end
-
-      instance
     end
 
     def create!(args, skip_timestamps : Bool = false)
@@ -254,12 +237,6 @@ module Granite::Transactions
     update(args.to_h)
   end
 
-  def update(args : Granite::ModelArgs)
-    set_attributes(args.transform_keys(&.to_s))
-
-    save
-  end
-
   def update(args, skip_timestamps : Bool = false)
     set_attributes(args.to_h.transform_keys(&.to_s))
 
@@ -268,12 +245,6 @@ module Granite::Transactions
 
   def update!(**args)
     update!(args.to_h)
-  end
-
-  def update!(args : Granite::ModelArgs)
-    set_attributes(args.transform_keys(&.to_s))
-
-    save!
   end
 
   def update!(args, skip_timestamps : Bool = false)
