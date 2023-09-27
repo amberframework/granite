@@ -25,6 +25,20 @@ post.body = "Check this out."
 post.save! # raises when save failed
 ```
 
+To skip the validation callbacks, pass in `validate: false`:
+
+```crystal
+post.save(validate: false)
+post.save!(validate: false)
+```
+
+You can also pass in `skip_timestamps` to save without changing the `updated_at` field on update:
+
+```crystal
+post.save(skip_timestamps: true)
+post.save!(skip_timestamps: true)
+```
+
 ## Read
 
 ### find
@@ -100,6 +114,14 @@ post.update(name: "Granite Really Rocks!") # Assigns attributes and calls save
 
 post = Post.find 1
 post.update!(name: "Granite Really Rocks!") # Assigns attributes and calls save!. Will throw an exception when the save failed
+```
+
+To update a record without changing the `updated_at` field, you can pass in `skip_timestamps`:
+
+```crystal
+post = Post.find 1
+post.update({name: "Granite Really Rocks!"}, skip_timestamps: true)
+post.update!({name: "Granite Really Rocks!"}, skip_timestamps: true)
 ```
 
 ## Delete

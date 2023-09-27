@@ -10,10 +10,10 @@ module Granite::Transactions
       create(args.to_h)
     end
 
-    def create(args, skip_timestamps : Bool = false)
+    def create(args)
       instance = new
-      instance.set_attributes(args.to_h.transform_keys(&.to_s))
-      instance.save(skip_timestamps: skip_timestamps)
+      instance.set_attributes(args.transform_keys(&.to_s))
+      instance.save
       instance
     end
 
@@ -21,8 +21,8 @@ module Granite::Transactions
       create!(args.to_h)
     end
 
-    def create!(args, skip_timestamps : Bool = false)
-      instance = create(args, skip_timestamps: skip_timestamps)
+    def create!(args)
+      instance = create(args)
 
       unless instance.errors.empty?
         raise Granite::RecordNotSaved.new(self.name, instance)
@@ -113,14 +113,14 @@ module Granite::Transactions
     {% end %}
   end
 
-  private def __create(skip_timestamps : Bool = false)
+  private def __create
     {% begin %}
       {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
       {% raise raise "A primary key must be defined for #{@type.name}." unless primary_key %}
       {% raise "Composite primary keys are not yet supported for '#{@type.name}'." if @type.instance_vars.select { |ivar| ann = ivar.annotation(Granite::Column); ann && ann[:primary] }.size > 1 %}
       {% ann = primary_key.annotation(Granite::Column) %}
 
-      set_timestamps unless skip_timestamps
+      set_timestamps
       fields = self.class.content_fields.dup
       params = content_values
 
@@ -214,7 +214,7 @@ module Granite::Transactions
         __after_update
       else
         __before_create
-        __create(skip_timestamps: skip_timestamps)
+        __create
         __after_create
       end
       __after_save

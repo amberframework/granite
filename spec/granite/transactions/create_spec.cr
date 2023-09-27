@@ -35,15 +35,6 @@ describe "#create" do
       reserved_word.all.should eq("foo")
     end
   end
-
-  describe "when skip_timestamps is true" do
-    it "does not set the created_at and updated_at fields" do
-      parent = Parent.create({name: "New Parent"}, skip_timestamps: true)
-
-      parent.created_at.should eq nil
-      parent.updated_at.should eq nil
-    end
-  end
 end
 
 describe "#create!" do
@@ -56,15 +47,6 @@ describe "#create!" do
   it "does not save but raise an exception" do
     expect_raises(Granite::RecordNotSaved, "Parent") do
       Parent.create!(name: "")
-    end
-  end
-
-  describe "when skip_timestamps is true" do
-    it "does not set the created_at and updated_at fields" do
-      parent = Parent.create!({name: "New Parent"}, skip_timestamps: true)
-
-      parent.created_at.should eq nil
-      parent.updated_at.should eq nil
     end
   end
 end
