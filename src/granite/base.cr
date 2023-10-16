@@ -29,6 +29,7 @@ abstract class Granite::Base
   include ValidationHelpers
   include Migrator
   include Select
+  include Querying
 
   include ConnectionManagement
 
@@ -36,7 +37,7 @@ abstract class Granite::Base
   extend Tables::ClassMethods
   extend Granite::Migrator::ClassMethods
 
-  extend Querying
+  extend Querying::ClassMethods
   extend Query::BuilderMethods
   extend Transactions::ClassMethods
   extend Integrators
