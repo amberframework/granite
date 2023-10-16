@@ -35,6 +35,17 @@ describe "#save" do
     model.save.should be_false
   end
 
+  it "does not update timestamps is skip_timestamps is true" do
+    time = Time.utc(2023, 9, 1)
+    parent = Parent.new
+    parent.name = "Test Parent"
+    parent.created_at = time
+    parent.updated_at = time
+    parent.save(skip_timestamps: true)
+    parent.created_at.should eq time
+    parent.updated_at.should eq time
+  end
+
   it "updates an existing object" do
     Parent.clear
     parent = Parent.new

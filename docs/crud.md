@@ -9,6 +9,12 @@ Post.create(name: "Granite Rocks!", body: "Check this out.") # Set attributes an
 Post.create!(name: "Granite Rocks!", body: "Check this out.") # Set attributes and call save!. Will throw an exception when the save failed
 ```
 
+To create a record without setting the `created_at` & `updated_at` fields, you can pass in `skip_timestamps`.
+
+```crystal
+Post.create({name: "Granite Rocks!", body: "Check this out."}, skip_timestamps: true)
+```
+
 ## Insert
 
 Inserts an already created object into the database.
