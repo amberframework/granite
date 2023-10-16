@@ -154,6 +154,7 @@ module Granite::Querying
     end
   end
 
+  # reload returns the record with the attributes reloaded from the database
   def reload
     self.class.find!(primary_key_value)
   end
