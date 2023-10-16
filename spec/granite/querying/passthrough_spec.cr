@@ -5,6 +5,7 @@ describe "#query" do
     Parent.clear
     Parent.query "SELECT name FROM parents" do |rs|
       rs.column_name(0).should eq "name"
+      rs.close
     end
   end
 end
