@@ -15,8 +15,12 @@ jobs:
         uses: oprypin/install-crystal@v1.8.0
         with:
           crystal: latest
+      - name: Install Ameba
+        run: shards install
       - name: Check formatting
         run: crystal tool format --check
+      - name: Check linting
+        run: ./bin/ameba 
   sqlite-spec:
     runs-on: ubuntu-latest
     strategy:
