@@ -51,6 +51,17 @@ describe "#update" do
       saved_parent.updated_at.should eq Time.utc.at_beginning_of_second
     end
   end
+
+  context "when skip_timestamps is true" do
+    it "does not update the updated_at field" do
+      time = Time.utc(2023, 9, 1)
+      parent = Parent.create(name: "New Parent")
+      parent.updated_at = time
+      parent.update({name: "Other Parent"}, skip_timestamps: true)
+
+      Parent.find!(parent.id).updated_at.should eq time
+    end
+  end
 end
 
 describe "#update!" do
@@ -73,5 +84,16 @@ describe "#update!" do
     end
 
     Parent.find!(parent.id).name.should eq "New Parent"
+  end
+
+  context "when skip_timestamps is true" do
+    it "does not update the updated_at field" do
+      time = Time.utc(2023, 9, 1)
+      parent = Parent.create(name: "New Parent")
+      parent.updated_at = time
+      parent.update!({name: "Other Parent"}, skip_timestamps: true)
+
+      Parent.find!(parent.id).updated_at.should eq time
+    end
   end
 end
