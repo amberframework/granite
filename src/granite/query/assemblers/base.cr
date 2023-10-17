@@ -30,7 +30,7 @@ module Granite::Query::Assembler
       [Model.fields].flatten.join ", "
     end
 
-    def build_sql
+    def build_sql(&)
       clauses = [] of String?
       yield clauses
       clauses.compact!.join " "

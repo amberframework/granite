@@ -243,13 +243,13 @@ class Granite::Query::Builder(Model)
     count
   end
 
-  def reject(&block)
+  def reject(&)
     assembler.select.run.reject do |record|
       yield record
     end
   end
 
-  def each(&block)
+  def each(&)
     assembler.select.tap do |record_set|
       record_set.each do |record|
         yield record
@@ -257,7 +257,7 @@ class Granite::Query::Builder(Model)
     end
   end
 
-  def map(&block)
+  def map(&)
     assembler.select.run.map do |record|
       yield record
     end
