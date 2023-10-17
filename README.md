@@ -91,5 +91,8 @@ CREATE DATABASE granite_db;
 GRANT ALL PRIVILEGES ON granite_db.* TO 'granite'@'localhost' WITH GRANT OPTION;
 ```
 
-4. Export `.env` with `$ source .env`
+4. Export `.env` with `$ source .env`.
+
+> If this does not work, you can use `$ source ./export.sh` to automatically export all the variables. You will need to update the export script with your wanted variable changes.
+
 5. `$ crystal spec`
