@@ -22,7 +22,7 @@ Granite is looking for volunteers to take over maintainership of the repository,
 5. Create a new Pull Request
 
 ## Running tests
-Granite uses Crystal's built in test framework. The tests can be run with `$ crystal spec`.
+Granite uses Crystal's built in test framework. The tests can be run either within a [dockerized testing environment](#docker-setup) or [locally](#local-setup). 
 
 The test suite depends on access to a PostgreSQL, MySQL, and SQLite database to ensure the adapters work as intended.
 
