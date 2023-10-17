@@ -24,7 +24,7 @@ abstract class Granite::Adapter::Base
     @_database ||= DB.open(@url)
   end
 
-  def open(&block)
+  def open(&)
     database.retry do
       database.using_connection do |conn|
         yield conn
@@ -51,7 +51,7 @@ abstract class Granite::Adapter::Base
   # fields (configured using the sql_mapping directive in your model), and an optional
   # raw query string.  The clause and params is the query and params that is passed
   # in via .all() method
-  def select(query : Granite::Select::Container, clause = "", params = [] of DB::Any, &block)
+  def select(query : Granite::Select::Container, clause = "", params = [] of DB::Any, &)
     clause = ensure_clause_template(clause)
     statement = query.custom ? "#{query.custom} #{clause}" : String.build do |stmt|
       stmt << "SELECT "

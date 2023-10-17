@@ -73,7 +73,7 @@ module Granite::Querying
     find_by(criteria) || raise NotFound.new("No #{{{@type.name.stringify}}} found where #{criteria.map { |k, v| %(#{k} #{v.nil? ? "is NULL" : "= #{v}"}) }.join(" and ")}")
   end
 
-  def find_each(clause = "", params = [] of Granite::Columns::Type, batch_size limit = 100, offset = 0)
+  def find_each(clause = "", params = [] of Granite::Columns::Type, batch_size limit = 100, offset = 0, &)
     find_in_batches(clause, params, batch_size: limit, offset: offset) do |batch|
       batch.each do |record|
         yield record
@@ -81,7 +81,7 @@ module Granite::Querying
     end
   end
 
-  def find_in_batches(clause = "", params = [] of Granite::Columns::Type, batch_size limit = 100, offset = 0)
+  def find_in_batches(clause = "", params = [] of Granite::Columns::Type, batch_size limit = 100, offset = 0, &)
     if limit < 1
       raise ArgumentError.new("batch_size must be >= 1")
     end
@@ -120,12 +120,12 @@ module Granite::Querying
     adapter.open(&.exec(clause))
   end
 
-  def query(clause = "", params = [] of Granite::Columns::Type, &block)
+  def query(clause = "", params = [] of Granite::Columns::Type, &)
     switch_to_writer_adapter
     adapter.open { |db| yield db.query(clause, args: params) }
   end
 
-  def scalar(clause = "", &block)
+  def scalar(clause = "", &)
     switch_to_writer_adapter
     adapter.open { |db| yield db.scalar(clause) }
   end
