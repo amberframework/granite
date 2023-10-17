@@ -38,7 +38,6 @@ describe "#create" do
 
   context "when skip_timestamps is true" do
     it "does not update the created_at & updated_at fields" do
-      time = Time.utc(2023, 9, 1)
       parent = Parent.create({name: "new parent"}, skip_timestamps: true)
 
       Parent.find!(parent.id).created_at.should be_nil
@@ -62,7 +61,6 @@ describe "#create!" do
 
   context "when skip_timestamps is true" do
     it "does not update the created_at & updated_at fields" do
-      time = Time.utc(2023, 9, 1)
       parent = Parent.create!({name: "new parent"}, skip_timestamps: true)
 
       Parent.find!(parent.id).created_at.should be_nil
