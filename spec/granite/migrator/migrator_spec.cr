@@ -87,7 +87,7 @@ describe Granite::Migrator do
           ,
           `published` BOOL
           ,
-          `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP
           ) ;\n
           SQL
 
