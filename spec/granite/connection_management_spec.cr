@@ -6,7 +6,9 @@ describe "Granite::Base track time since last write" do
     ReplicatedChat.new(content: "hello world!").save!
     sleep 500.milliseconds
     current_url = ReplicatedChat.adapter.url
-    reader_url = Granite::Connections[ENV["CURRENT_ADAPTER"] + "_with_replica"].not_nil![:reader].url
+    reader_connection = Granite::Connections["#{ENV["CURRENT_ADAPTER"]}_with_replica"]
+    raise "Reader connection cannot be nil" if reader_connection.nil?
+    reader_url = reader_connection[:reader].url
     current_url.should eq reader_url
   end
 end

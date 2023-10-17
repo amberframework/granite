@@ -29,12 +29,18 @@ module Granite
       registered_connections.find { |conn| conn[:writer].name == name }
     end
 
-    def self.first_writer
-      @@registered_connections.first?.not_nil![:writer]
+    def self.first_connection
+      first_connection = @@registered_connections.first?
+      raise "First registered connection cannot be nil" if first_connection.nil?
+      first_connection
     end
 
-    def self.first_reader
-      @@registered_connections.first?.not_nil![:reader]
+    def self.first_writer : Granite::Adapter::Base
+      first_connection[:writer]
+    end
+
+    def self.first_reader : Granite::Adapter::Base
+      first_connection[:reader]
     end
   end
 end
