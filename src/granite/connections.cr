@@ -16,7 +16,7 @@ module Granite
 
       # if reader/writer reference the same db. Make them point to the same granite adapter.
       # This avoids connection pool duplications on the same database.
-      if (data[:reader] == data[:writer])
+      if data[:reader] == data[:writer]
         return @@registered_connections << {writer: writer_adapter, reader: writer_adapter}
       end
 
