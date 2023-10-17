@@ -30,15 +30,20 @@ The test suite depends on access to a PostgreSQL, MySQL, and SQLite database to 
 
 There is a self-contained testing environment provided via the `docker-compose.yml` file in this repository.
 We are testing against multiple databases so you have to specify which docker-compose file you would like to use.
-Replace "{database_type}" with "mysql" or "pg" or "sqlite". Before you can run the docker configuration you have to set the appropriate
-env variables. To do so you can either load them yourself or modify the `.env` file that docker-compose loads by default.
 
-You can find postgres versions at https://hub.docker.com/_/postgres/
-You can find mysql versions at https://hub.docker.com/_/mysql/
+- You can find postgres versions at https://hub.docker.com/_/postgres/
+- You can find mysql versions at https://hub.docker.com/_/mysql/
 
 After you have docker installed do the following to run tests:
+#### Environment variable setup
+##### Option 1
+Export `.env` with `$ source ./export.sh` or `$ source .env`.
+
+##### Option 2
+Modify the `.env` file that docker-compose loads by default. The `.env` file can either be copied to the same directory as the docker-compose.{database_type}.yml files or passed as an option to the docker-compose commands `--env-file ./foo/.env`.
 
 #### First run
+> Replace "{database_type}" with "mysql" or "pg" or "sqlite". 
 
 ```
 $ docker-compose -f docker/docker-compose.{database_type}.yml build spec
@@ -91,8 +96,5 @@ CREATE DATABASE granite_db;
 GRANT ALL PRIVILEGES ON granite_db.* TO 'granite'@'localhost' WITH GRANT OPTION;
 ```
 
-4. Export `.env` with `$ source .env`.
-
-> If this does not work, you can use `$ source ./export.sh` to automatically export all the variables. You will need to update the export script with your wanted variable changes.
-
+4. Export `.env` with `$ source ./export.sh` or `$ source .env`.
 5. `$ crystal spec`
