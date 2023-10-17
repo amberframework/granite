@@ -12,8 +12,8 @@ class Granite::Adapter::Mysql < Granite::Adapter::Base
       "AUTO_UUID"  => "CHAR(36)",
       "Float64"    => "DOUBLE",
       "UUID"       => "CHAR(36)",
-      "created_at" => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
-      "updated_at" => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+      "created_at" => "TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP",
+      "updated_at" => "TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
     }
   end
 
