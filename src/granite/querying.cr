@@ -154,8 +154,18 @@ module Granite::Querying
     end
   end
 
-  # reload returns the record with the attributes reloaded from the database
-  def reload
-    self.class.find!(primary_key_value)
-  end
+  {% if parse_type("Spec").resolve? %}
+    # Returns the record with the attributes reloaded from the database.
+    #
+    # **Note:** this method is only defined when the `Spec` module is present.
+    #
+    # ```
+    # post = Post.create(name: "Granite Rocks!", body: "Check this out.")
+    # # record gets updated by another process
+    # post.reload # performs another find to fetch the record again
+    # ```
+    def reload
+      self.class.find!(primary_key_value)
+    end
+  {% end %}
 end

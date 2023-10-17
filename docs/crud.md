@@ -91,6 +91,8 @@ post = Post.first! # raises when no records exist
 
 Returns the record with the attributes reloaded from the database.
 
+**Note:** this method is only defined when the `Spec` module is present.
+
 ```
 post = Post.create(name: "Granite Rocks!", body: "Check this out.")
 # record gets updated by another process
