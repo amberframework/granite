@@ -87,6 +87,18 @@ end
 post = Post.first! # raises when no records exist
 ```
 
+### reload
+
+Returns the record with the attributes reloaded from the database.
+
+**Note:** this method is only defined when the `Spec` module is present.
+
+```
+post = Post.create(name: "Granite Rocks!", body: "Check this out.")
+# record gets updated by another process
+post.reload # performs another find to fetch the record again
+```
+
 ### where, order, limit, offset, group_by
 
 See [querying](./querying.md) for more details of using the QueryBuilder.
