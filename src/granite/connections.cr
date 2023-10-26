@@ -1,6 +1,6 @@
 module Granite
   class Connections
-    class_property connection_switch_wait_period : Int64 = 2000
+    class_property connection_switch_wait_period : Int32 = 2000
     class_getter registered_connections = [] of {writer: Granite::Adapter::Base, reader: Granite::Adapter::Base}
 
     # Registers the given *adapter*.  Raises if an adapter with the same name has already been registered.
