@@ -4,12 +4,12 @@ module Granite::ConnectionManagement
     # database connection for read operations
     # all models use this value. Change it
     # to change it in all Granite::Base models.
-    class_property connection_switch_wait_period : Int64 = Granite::Connections.connection_switch_wait_period
+    class_property connection_switch_wait_period : Int32 = Granite::Connections.connection_switch_wait_period
     @@last_write_time = Time.monotonic
 
     class_property current_adapter : Granite::Adapter::Base?
-    class_property reader_adapter : Granite::Adapter::Base = Granite::Connections.first_reader
-    class_property writer_adapter : Granite::Adapter::Base = Granite::Connections.first_writer
+    class_property reader_adapter : Granite::Adapter::Base?
+    class_property writer_adapter : Granite::Adapter::Base?
 
     def self.last_write_time
       @@last_write_time
