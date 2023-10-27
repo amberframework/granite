@@ -1,7 +1,6 @@
 version: '2'
 services:
   spec:
-    command: 'bash -c "cd /app/user && bin/ameba && crystal tool format --check && crystal spec"'
     extends:
       file: ../docker-compose.yml
       service: spec
