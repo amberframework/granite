@@ -166,7 +166,7 @@ module Granite::Querying
     # ```
     def reload
       {% if !@top_level.has_constant? "Spec" %}
-        raise "#reload is a convenience method for testing only, please use #find in your application code"    
+        raise "#reload is a convenience method for testing only, please use #find in your application code"
       {% end %}
       self.class.find!(primary_key_value)
     end
