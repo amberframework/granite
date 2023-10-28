@@ -1,16 +1,15 @@
-FROM crystallang/crystal:1.8.0
-
-ARG sqlite_version=3110000
-ARG sqlite_version_year=2016
+FROM 84codes/crystal:latest-ubuntu-jammy
 
 # Install deps
-RUN apt-get update -qq && apt-get install -y --no-install-recommends libpq-dev libmysqlclient-dev libsqlite3-dev wget unzip lib32z1
+RUN apt-get update -qq && apt-get install -y --no-install-recommends libpq-dev libmysqlclient-dev libsqlite3-dev
 
 WORKDIR /app/user
 
-COPY shard.yml ./
+COPY shard.yml /app/user
+COPY shard.lock /app/user
 RUN shards install
 
-COPY . /app/user
+COPY src /app/user/src
+COPY spec /app/user/spec
 
-RUN wget -O sqlite.zip https://www.sqlite.org/$sqlite_version_year/sqlite-tools-linux-x86-$sqlite_version.zip && unzip -d /usr/bin/ -j sqlite.zip && rm sqlite.zip
+ENTRYPOINT []
