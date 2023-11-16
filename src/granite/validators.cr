@@ -18,6 +18,8 @@ require "./error"
 module Granite::Validators
   @[JSON::Field(ignore: true)]
   @[YAML::Field(ignore: true)]
+
+  # Returns all errors on the model.
   getter errors = [] of Error
 
   macro included
@@ -42,6 +44,11 @@ module Granite::Validators
     end
   end
 
+  # Runs all of `self`'s validators, returning `true` if they all pass, and `false`
+  # otherwise.
+  #
+  # If the validation fails, `#errors` will contain all the errors responsible for
+  # the failing.
   def valid?
     # Return false if any `ConversionError` were added
     # when setting model properties

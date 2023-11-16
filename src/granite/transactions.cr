@@ -2,14 +2,23 @@ require "./exceptions"
 
 module Granite::Transactions
   module ClassMethods
+    # Removes all records from a table.
     def clear
       adapter.clear table_name
     end
 
+    # Creates a new record, and attempts to save it to the database. Returns the
+    # newly created record.
+    #
+    # **NOTE**: This method still outputs the new object even when it failed to save
+    # to the database. The only way to determine a failure is to check any errors on
+    # the object, or to use `#create!`.
     def create(**args)
       create(args.to_h)
     end
 
+    # Creates a new record, and attempts to save it to the database. Allows saving
+    # the record without timestamps. Returns the newly created record.
     def create(args, skip_timestamps : Bool = false)
       instance = new
       instance.set_attributes(args.to_h.transform_keys(&.to_s))
@@ -17,10 +26,16 @@ module Granite::Transactions
       instance
     end
 
+    # Creates a new record, and attempts to save it to the database. Returns the
+    # newly created record. Raises `Granite::RecordNotSaved` if the save is
+    # unsuccessful.
     def create!(**args)
       create!(args.to_h)
     end
 
+    # Creates a new record, and attempts to save it to the database. Allows saving
+    # the record without timestamps. Returns the newly created record. Raises
+    # `Granite::RecordNotSaved` if the save is unsuccessful.
     def create!(args, skip_timestamps : Bool = false)
       instance = create(args, skip_timestamps)
 
@@ -31,7 +46,7 @@ module Granite::Transactions
       instance
     end
 
-    # The import class method will run a batch INSERT statement for each model in the array
+    # Runs an INSERT statement for all records in *model_array*.
     # the array must contain only one model class
     # invalid model records will be skipped
     def import(model_array : Array(self) | Granite::Collection(self), batch_size : Int32 = model_array.size)
@@ -56,6 +71,8 @@ module Granite::Transactions
       raise DB::Error.new(err.message)
     end
 
+    # Runs an INSERT statement for all records in *model_array*, with options to
+    # update any duplicate records, and provide column names.
     def import(model_array : Array(self) | Granite::Collection(self), update_on_duplicate : Bool, columns : Array(String), batch_size : Int32 = model_array.size)
       {% begin %}
         {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
@@ -101,6 +118,7 @@ module Granite::Transactions
     end
   end
 
+  # Sets the record's timestamps(created_at & updated_at) to the current time.
   def set_timestamps(*, to time = Time.local(Granite.settings.default_timezone), mode = :create)
     {% if @type.instance_vars.select { |ivar| ivar.annotation(Granite::Column) && ivar.type == Time? }.map(&.name.stringify).includes? "created_at" %}
       if mode == :create
@@ -196,9 +214,9 @@ module Granite::Transactions
   {% end %}
   end
 
-  # The save method will check to see if the primary key exists yet. If it does
-  # it will call the update method, otherwise it will call the create method.
-  # This will update the timestamps appropriately.
+  # Attempts to save the record to the database, returning `true` if successful,
+  # and `false` if not. If the save is unsuccessful, `#errors` will be populated
+  # with the errors which caused the save to fail.
   def save(*, validate : Bool = true, skip_timestamps : Bool = false)
     {% begin %}
     {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
@@ -229,31 +247,43 @@ module Granite::Transactions
   {% end %}
   end
 
+  # Same as `#save`, but raises `Granite::RecordNotSaved` if the save is unsuccessful.
   def save!(*, validate : Bool = true, skip_timestamps : Bool = false)
     save(validate: validate, skip_timestamps: skip_timestamps) || raise Granite::RecordNotSaved.new(self.class.name, self)
   end
 
+  # Updates the record with the new data specified by *args*. Returns `true` if the
+  # update is successful, `false` if it isn't.
   def update(**args)
     update(args.to_h)
   end
 
+  # Updates the record with the new data specified by *args*, with the option to
+  # not update timestamps. Returns `true` if the update is successful, `false` if
+  # it isn't.
   def update(args, skip_timestamps : Bool = false)
     set_attributes(args.to_h.transform_keys(&.to_s))
 
     save(skip_timestamps: skip_timestamps)
   end
 
+  # Updates the record with the new data specified by *args*. Raises
+  # `Granite::RecordNotSaved` if the save is unsuccessful.
   def update!(**args)
     update!(args.to_h)
   end
 
+  # Updates the record with the new data specified by *args*, with the option to
+  # not update timestamps. Raises `Granite::RecordNotSaved` if the save is
+  # unsuccessful.
   def update!(args, skip_timestamps : Bool = false)
     set_attributes(args.to_h.transform_keys(&.to_s))
 
     save!(skip_timestamps: skip_timestamps)
   end
 
-  # Destroy will remove this from the database.
+  # Removes the record from the database. Returns `true` if successful, `false`
+  # otherwise.
   def destroy
     begin
       __before_destroy
@@ -269,11 +299,14 @@ module Granite::Transactions
     true
   end
 
+  # Same as `#destroy`, but raises `Granite::RecordNotDestroyed` if unsuccessful.
   def destroy!
     destroy || raise Granite::RecordNotDestroyed.new(self.class.name, self)
   end
 
-  # Saves the record with the *updated_at*/*names* fields updated to the current time.
+  # Updates the *updated_at* field to the current time, without saving other fields.
+  #
+  # Raises error if record hasn't been saved to the database yet.
   def touch(*fields) : Bool
     raise "Cannot touch on a new record object" unless persisted?
     {% begin %}
