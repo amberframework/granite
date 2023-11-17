@@ -217,6 +217,10 @@ module Granite::Transactions
   # Attempts to save the record to the database, returning `true` if successful,
   # and `false` if not. If the save is unsuccessful, `#errors` will be populated
   # with the errors which caused the save to fail.
+  #
+  # **NOTE**: This method can be used both on new records, and existing records.
+  # In the case of new records, it creates the record in the database, otherwise,
+  # it updates the record in the database.
   def save(*, validate : Bool = true, skip_timestamps : Bool = false)
     {% begin %}
     {% primary_key = @type.instance_vars.find { |ivar| (ann = ivar.annotation(Granite::Column)) && ann[:primary] } %}
