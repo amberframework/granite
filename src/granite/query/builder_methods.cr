@@ -1,9 +1,9 @@
 module Granite::Query::BuilderMethods
   def __builder
-    db_type = case adapter.class.to_s
-              when "Granite::Adapter::Pg"
+    db_type = case adapter
+              when Granite::Adapter::Pg
                 Granite::Query::Builder::DbType::Pg
-              when "Granite::Adapter::Mysql"
+              when Granite::Adapter::Mysql
                 Granite::Query::Builder::DbType::Mysql
               else
                 Granite::Query::Builder::DbType::Sqlite
