@@ -68,7 +68,7 @@ module Granite::Transactions
         end
       {% end %}
     rescue err
-      raise DB::Error.new(err.message)
+      raise DB::Error.new(err.message, cause: err)
     end
 
     # Runs an INSERT statement for all records in *model_array*, with options to
@@ -92,7 +92,7 @@ module Granite::Transactions
         end
       {% end %}
     rescue err
-      raise DB::Error.new(err.message)
+      raise DB::Error.new(err.message, cause: err)
     end
 
     def import(model_array : Array(self) | Granite::Collection(self), ignore_on_duplicate : Bool, batch_size : Int32 = model_array.size)
@@ -114,7 +114,7 @@ module Granite::Transactions
         end
       {% end %}
     rescue err
-      raise DB::Error.new(err.message)
+      raise DB::Error.new(err.message, cause: err)
     end
   end
 
@@ -176,7 +176,7 @@ module Granite::Transactions
   rescue err : DB::Error
     raise err
   rescue err
-    raise DB::Error.new(err.message)
+    raise DB::Error.new(err.message, cause: err)
   else
     self.new_record = false
   end
@@ -199,7 +199,7 @@ module Granite::Transactions
     begin
      self.class.adapter.update(self.class.table_name, self.class.primary_name, fields, params)
     rescue err
-      raise DB::Error.new(err.message)
+      raise DB::Error.new(err.message, cause: err)
     end
   {% end %}
   end

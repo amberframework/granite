@@ -51,6 +51,8 @@ module Granite::ConnectionManagement
     end
 
     def self.schedule_adapter_switch
+      return if @@writer_adapter == @@reader_adapter
+
       spawn do
         sleep @@connection_switch_wait_period.milliseconds
         switch_to_reader_adapter
