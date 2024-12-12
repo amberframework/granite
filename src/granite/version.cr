@@ -1,3 +1,3 @@
 module Granite
-  VERSION = "0.23.1"
+  VERSION = {{ `shards version #{__DIR__}`.strip.stringify }}
 end
