@@ -26,6 +26,7 @@ end
 
 class FakeConnection < DB::Connection
   def initialize
+    super(DB::Connection::Options.new)
     @context = FakeContext.new
     @prepared_statements = false
   end
