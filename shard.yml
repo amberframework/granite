@@ -1,6 +1,6 @@
 name: granite
 
-version: 0.23.2
+version: 0.23.4
 
 crystal: ">= 1.6.0, < 2.0.0"
 
