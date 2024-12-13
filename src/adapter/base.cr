@@ -153,7 +153,7 @@ abstract class Granite::Adapter::Base
     elsif elapsed_time > 0.001
       "#{(elapsed_time * 1_000).trunc}ms".colorize.yellow
     elsif elapsed_time > 0.000_001
-      "#{(elapsed_time * 100_000).trunc}µs".colorize.green
+      "#{(elapsed_time * 1_000_000).trunc}µs".colorize.green
     elsif elapsed_time > 0.000_000_001
       "#{(elapsed_time * 1_000_000_000).trunc}ns".colorize.green
     else
