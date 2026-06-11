@@ -31,7 +31,7 @@ module Granite::Querying
     # Lazy load prevent running unnecessary queries from unused variables.
     def all(clause = "", params = [] of Granite::Columns::Type, use_primary_adapter = true)
       switch_to_writer_adapter if use_primary_adapter == true
-      Collection(self).new(->{ raw_all(clause, params) })
+      Collection(self).new(-> { raw_all(clause, params) })
     end
 
     # First adds a `LIMIT 1` clause to the query and returns the first result

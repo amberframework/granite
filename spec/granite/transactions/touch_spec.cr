@@ -23,7 +23,7 @@ describe "#touch" do
     old_time = Time.utc.at_beginning_of_second
     object = TimeTest.create(test: old_time)
 
-    sleep 3
+    sleep 3.seconds
 
     new_time = Time.utc.at_beginning_of_second
     object.touch
@@ -37,7 +37,7 @@ describe "#touch" do
     old_time = Time.utc.at_beginning_of_second
     object = TimeTest.create(test: old_time)
 
-    sleep 3
+    sleep 3.seconds
 
     new_time = Time.utc.at_beginning_of_second
     object.touch("test")
