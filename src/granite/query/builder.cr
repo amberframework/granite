@@ -55,6 +55,7 @@ class Granite::Query::Builder(Model)
     where(matches)
   end
 
+    @[TargetFeature("+avx2")]
   def where(matches)
     matches.each do |field, value|
       if value.is_a?(Array)
@@ -77,12 +78,14 @@ class Granite::Query::Builder(Model)
     and(stmt: stmt, value: value)
   end
 
+    @[TargetFeature("+avx2")]
   def and(field : (Symbol | String), operator : Symbol, value : Granite::Columns::Type)
     @where_fields << {join: :and, field: field.to_s, operator: operator, value: value}
 
     self
   end
 
+    @[TargetFeature("+avx2")]
   def and(stmt : String, value : Granite::Columns::Type = nil)
     @where_fields << {join: :and, stmt: stmt, value: value}
 
@@ -93,6 +96,7 @@ class Granite::Query::Builder(Model)
     and(matches)
   end
 
+    @[TargetFeature("+avx2")]
   def and(matches)
     matches.each do |field, value|
       if value.is_a?(Array)
@@ -110,6 +114,7 @@ class Granite::Query::Builder(Model)
     or(matches)
   end
 
+    @[TargetFeature("+avx2")]
   def or(matches)
     matches.each do |field, value|
       if value.is_a?(Array)
@@ -123,18 +128,21 @@ class Granite::Query::Builder(Model)
     self
   end
 
+    @[TargetFeature("+avx2")]
   def or(field : (Symbol | String), operator : Symbol, value : Granite::Columns::Type)
     @where_fields << {join: :or, field: field.to_s, operator: operator, value: value}
 
     self
   end
 
+    @[TargetFeature("+avx2")]
   def or(stmt : String, value : Granite::Columns::Type = nil)
     @where_fields << {join: :or, stmt: stmt, value: value}
 
     self
   end
 
+    @[TargetFeature("+avx2")]
   def order(field : Symbol)
     @order_fields << {field: field.to_s, direction: Sort::Ascending}
 
@@ -153,6 +161,7 @@ class Granite::Query::Builder(Model)
     order(dsl)
   end
 
+    @[TargetFeature("+avx2")]
   def order(dsl)
     dsl.each do |field, dsl_direction|
       direction = Sort::Ascending
@@ -185,6 +194,7 @@ class Granite::Query::Builder(Model)
     group_by(dsl)
   end
 
+    @[TargetFeature("+avx2")]
   def group_by(dsl)
     dsl.each do |field|
       @group_fields << {field: field.to_s}

@@ -30,12 +30,14 @@ module Granite::Query::Assembler
       [Model.fields].flatten.join ", "
     end
 
+    @[TargetFeature("+avx2")]
     def build_sql(&)
       clauses = [] of String?
       yield clauses
       clauses.compact!.join " "
     end
 
+    @[TargetFeature("+avx2")]
     def where
       return @where if @where
 
@@ -87,6 +89,7 @@ module Granite::Query::Assembler
       @where = clauses.join(" ")
     end
 
+    @[TargetFeature("+avx2")]
     def order(use_default_order = true)
       return @order if @order
 
@@ -113,6 +116,7 @@ module Granite::Query::Assembler
       @order = "ORDER BY #{order_clauses.join ", "}"
     end
 
+    @[TargetFeature("+avx2")]
     def group_by
       return @group_by if @group_by
       group_fields = @query.group_fields
@@ -143,6 +147,7 @@ module Granite::Query::Assembler
       [{field: Model.primary_name, direction: "ASC"}]
     end
 
+    @[TargetFeature("+avx2")]
     def count : (Executor::MultiValue(Model, Int64) | Executor::Value(Model, Int64))
       sql = build_sql do |s|
         s << "SELECT COUNT(*)"
@@ -161,6 +166,7 @@ module Granite::Query::Assembler
       end
     end
 
+    @[TargetFeature("+avx2")]
     def first(n : Int32 = 1) : Executor::List(Model)
       sql = build_sql do |s|
         s << "SELECT #{field_list}"
@@ -175,6 +181,7 @@ module Granite::Query::Assembler
       Executor::List(Model).new sql, numbered_parameters
     end
 
+    @[TargetFeature("+avx2")]
     def delete
       sql = build_sql do |s|
         s << "DELETE FROM #{table_name}"
@@ -187,6 +194,7 @@ module Granite::Query::Assembler
       end
     end
 
+    @[TargetFeature("+avx2")]
     def select
       sql = build_sql do |s|
         s << "SELECT #{field_list}"
@@ -201,6 +209,7 @@ module Granite::Query::Assembler
       Executor::List(Model).new sql, numbered_parameters
     end
 
+    @[TargetFeature("+avx2")]
     def exists? : Executor::Value(Model, Bool)
       sql = build_sql do |s|
         s << "SELECT EXISTS(SELECT 1 "

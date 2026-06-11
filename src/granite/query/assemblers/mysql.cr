@@ -4,6 +4,7 @@ module Granite::Query::Assembler
   class Mysql(Model) < Base(Model)
     @placeholder = "?"
 
+    @[TargetFeature("+avx2")]
     def add_parameter(value : Granite::Columns::Type) : String
       @numbered_parameters << value
       "?"
