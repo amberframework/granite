@@ -5,7 +5,7 @@ module Granite::ConnectionManagement
     # all models use this value. Change it
     # to change it in all Granite::Base models.
     class_property connection_switch_wait_period : Int32 = Granite::Connections.connection_switch_wait_period
-    @@last_write_time = Time.monotonic
+    @@last_write_time = Time.instant
 
     class_property current_adapter : Granite::Adapter::Base?
     class_property reader_adapter : Granite::Adapter::Base?
@@ -17,7 +17,7 @@ module Granite::ConnectionManagement
 
     # This is done this way because callbacks don't work on class mthods
     def self.update_last_write_time
-      @@last_write_time = Time.monotonic
+      @@last_write_time = Time.instant
     end
 
     def update_last_write_time
@@ -25,7 +25,7 @@ module Granite::ConnectionManagement
     end
 
     def self.time_since_last_write
-      Time.monotonic - @@last_write_time
+      Time.instant - @@last_write_time
     end
 
     def time_since_last_write
