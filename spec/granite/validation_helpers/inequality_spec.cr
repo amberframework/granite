@@ -21,9 +21,8 @@ describe Granite::ValidationHelpers do
 
       less_than_test_nil = Validators::LessThanTest.new
 
-      expect_raises(Exception, "Nil assertion failed") do
-        less_than_test_nil.save
-      end
+      less_than_test_nil.save
+      less_than_test_nil.errors.size.should eq 4
     end
   end
 
@@ -47,9 +46,8 @@ describe Granite::ValidationHelpers do
 
       greater_than_test = Validators::GreaterThanTest.new
 
-      expect_raises(Exception, "Nil assertion failed") do
-        greater_than_test.save
-      end
+      greater_than_test.save
+      greater_than_test.errors.size.should eq 4
     end
   end
 end
