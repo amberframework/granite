@@ -20,10 +20,8 @@ describe Granite::ValidationHelpers do
       less_than_test.errors[3].message.should eq "float_32_lte must be less than or equal to 100.25"
 
       less_than_test_nil = Validators::LessThanTest.new
-
-      expect_raises(Exception, "Nil assertion failed") do
-        less_than_test_nil.save
-      end
+      less_than_test_nil.save
+      less_than_test_nil.errors.size.should eq 4
     end
   end
 
@@ -46,10 +44,8 @@ describe Granite::ValidationHelpers do
       greater_than_test.errors[3].message.should eq "float_32_lte must be greater than or equal to 100.25"
 
       greater_than_test = Validators::GreaterThanTest.new
-
-      expect_raises(Exception, "Nil assertion failed") do
-        greater_than_test.save
-      end
+      greater_than_test.save
+      greater_than_test.errors.size.should eq 4
     end
   end
 end

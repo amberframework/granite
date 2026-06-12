@@ -89,16 +89,20 @@ module Granite::Columns
       end
 
       def {{decl.var.id}}! : {{not_nilable_type}}
-        raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{decl.var.stringify}} + " cannot be nil" if @{{decl.var}}.nil?
-        @{{decl.var}}.not_nil!
+        val = @{{decl.var}}
+        raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{decl.var.stringify}} + " cannot be nil" if val.nil?
+        val
       end
+
     {% else %}
       def {{decl.var.id}}=(@{{decl.var.id}} : {{type.id}}); end
 
       def {{decl.var.id}} : {{type.id}}
-        raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{decl.var.stringify}} + " cannot be nil" if @{{decl.var}}.nil?
-        @{{decl.var}}.not_nil!
+        val = @{{decl.var}}
+        raise NilAssertionError.new {{@type.name.stringify}} + "#" + {{decl.var.stringify}} + " cannot be nil" if val.nil?
+        val
       end
+
     {% end %}
   end
 
