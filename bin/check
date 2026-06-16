@@ -1,0 +1,44 @@
+#!/bin/sh
+# Granite full local check — the single command granite previously lacked.
+# Mirrors the per-PR CI gates: format check, ameba lint, then the sqlite spec suite.
+# The sqlite adapter is the zero-setup adapter (no external DB service needed).
+# Bypass nothing here — this is the check, run it deliberately.
+#
+# Usage (from anywhere in the repo):  bin/check
+
+set -e
+
+# Run from the repo top level so all paths below are repo-relative.
+ROOT=$(git rev-parse --show-toplevel)
+cd "$ROOT"
+
+echo "==> crystal tool format --check"
+crystal tool format --check
+
+echo
+if [ -x ./bin/ameba ]; then
+  echo "==> ./bin/ameba"
+  ./bin/ameba
+else
+  echo "==> ./bin/ameba not found — run 'shards install' to get bin/ameba. Skipping lint."
+fi
+
+echo
+echo "==> crystal spec (CURRENT_ADAPTER=sqlite — no DB service required)"
+CURRENT_ADAPTER=sqlite \
+  SQLITE_DATABASE_URL=sqlite3:./granite.db \
+  SQLITE_REPLICA_URL=sqlite3:./granite_replica.db \
+  crystal spec
+
+echo
+echo "============================================================"
+echo " Local check passed (sqlite adapter)."
+echo "============================================================"
+echo
+echo "Note: this covers ONLY the sqlite adapter and your installed Crystal."
+echo "The complete CI-matching run also exercises:"
+echo "  - the mysql + pg adapters (builds + runs each adapter in docker, then cleans up)"
+echo "  - the Crystal version matrix down to 1.6.2"
+echo
+echo "To run the full multi-adapter check via the dockerized services:"
+echo "  ./spec/run_all_specs.sh"

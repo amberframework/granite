@@ -13,3 +13,6 @@ shard.lock
 # Ignore bin because they will be build with shards install
 bin
 .env
+
+# Local-only: linked review skills and assistant state (see bin/setup-dev)
+/.claude/
