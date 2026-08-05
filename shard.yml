@@ -27,4 +27,4 @@ development_dependencies:
     version: ~> 0.29.0
   ameba:
     github: crystal-ameba/ameba
-    version: ~> 1.5.0
+    commit: 34a3de4598aa009c878a1812bb018f0deaf15126  # v1.7.0-dev; <= 1.6.4 does not build on Crystal 1.21 (same pin amber v1.5.0 took)
