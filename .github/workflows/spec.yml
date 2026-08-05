@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download source
-        uses: actions/checkout@v2
+        uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e  # v2
       - name: Install Crystal
-        uses: oprypin/install-crystal@v1.8.0
+        uses: oprypin/install-crystal@9b5495775080480de42edffd4b49ef733a946ba7  # v1.8.0
         with:
           crystal: latest
       - name: Install Ameba
@@ -30,9 +30,9 @@ jobs:
         crystal: [1.6.2, 1.7.2, 1.8.1, latest]
     steps:
       - name: Download source
-        uses: actions/checkout@v2
+        uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e  # v2
       - name: Install Crystal
-        uses: oprypin/install-crystal@v1.8.0
+        uses: oprypin/install-crystal@9b5495775080480de42edffd4b49ef733a946ba7  # v1.8.0
         with:
           crystal: ${{ matrix.crystal }}
       - name: Install shards
@@ -68,9 +68,9 @@ jobs:
           - 3306:3306
     steps:
       - name: Download source
-        uses: actions/checkout@v2
+        uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e  # v2
       - name: Install Crystal
-        uses: oprypin/install-crystal@v1.8.0
+        uses: oprypin/install-crystal@9b5495775080480de42edffd4b49ef733a946ba7  # v1.8.0
         with:
           crystal: ${{ matrix.crystal }}
       - name: Install shards
@@ -107,9 +107,9 @@ jobs:
           - 5432:5432
     steps:
       - name: Download source
-        uses: actions/checkout@v2
+        uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e  # v2
       - name: Install Crystal
-        uses: oprypin/install-crystal@v1.8.0
+        uses: oprypin/install-crystal@9b5495775080480de42edffd4b49ef733a946ba7  # v1.8.0
         with:
           crystal: ${{ matrix.crystal }}
       - name: Install shards
