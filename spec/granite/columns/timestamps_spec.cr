@@ -111,7 +111,7 @@ require "../../spec_helper"
         to_update = Parent.all("WHERE name = ?", ["ParentOne"])
         to_update.each { |parent| parent.name = "ParentOneEdited" }
 
-        sleep 1
+        sleep 1.second
 
         Parent.import(to_update, update_on_duplicate: true, columns: ["name"])
         update_time = Time.utc.at_beginning_of_second
